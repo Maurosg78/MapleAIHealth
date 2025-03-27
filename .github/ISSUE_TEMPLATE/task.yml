@@ -1,0 +1,78 @@
+name: Tarea
+description: Crear una nueva tarea para el proyecto
+title: "[Tipo] Título de la tarea"
+labels: ["task"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por crear una tarea para MapleAI Health!
+  - type: dropdown
+    id: type
+    attributes:
+      label: Tipo de tarea
+      options:
+        - feature
+        - bug
+        - docs
+        - test
+    validations:
+      required: true
+  - type: dropdown
+    id: epic
+    attributes:
+      label: Epic
+      options:
+        - EPIC-1: Core Clinical Record
+        - EPIC-2: Clinical Assessment
+        - EPIC-3: Data Analysis
+        - EPIC-4: AI Integration
+    validations:
+      required: true
+  - type: dropdown
+    id: sprint
+    attributes:
+      label: Sprint
+      options:
+        - Sprint 1: Fundación
+        - Sprint 2: Gestión de Pacientes
+        - Sprint 3: Historia Clínica
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      options:
+        - Alta
+        - Media
+        - Baja
+    validations:
+      required: true
+  - type: number
+    id: estimation
+    attributes:
+      label: Estimación (horas)
+      placeholder: 0
+    validations:
+      required: true
+      min: 0
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: Describe detalladamente la tarea
+      placeholder: |
+        ## Objetivo
+        [Describe el objetivo de la tarea]
+
+        ## Criterios de Aceptación
+        - [ ] Criterio 1
+        - [ ] Criterio 2
+        - [ ] Criterio 3
+
+        ## Recursos Necesarios
+        - [ ] Recurso 1
+        - [ ] Recurso 2
+    validations:
+      required: true 
