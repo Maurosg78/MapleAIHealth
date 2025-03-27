@@ -3,6 +3,9 @@
     "css:S4667": "OFF"
   },
   "exclusions": {
-    "**/*.css": "css:S4667"
+    "**/*.css": "css:S4667",
+    "src/**/*.css": "css:S4667",
+    "src/index.css": "css:S4667",
+    "src/App.css": "css:S4667"
   }
 } 
