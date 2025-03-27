@@ -1,0 +1,37 @@
+[
+  {
+    "name": "setup",
+    "color": "0366d6",
+    "description": "Tareas de configuración inicial"
+  },
+  {
+    "name": "high-priority",
+    "color": "d73a4a",
+    "description": "Tareas de alta prioridad"
+  },
+  {
+    "name": "sprint-1",
+    "color": "7057ff",
+    "description": "Tareas del Sprint 1"
+  },
+  {
+    "name": "epic-1",
+    "color": "1d76db",
+    "description": "EPIC-1: Core Clinical Record"
+  },
+  {
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "Tareas de documentación"
+  },
+  {
+    "name": "testing",
+    "color": "fbca04",
+    "description": "Tareas de testing"
+  },
+  {
+    "name": "components",
+    "color": "5319e7",
+    "description": "Tareas de componentes"
+  }
+] 
