@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "css:S4667": "OFF"
+  },
+  "exclusions": {
+    "**/*.css": "css:S4667"
+  }
+} 
