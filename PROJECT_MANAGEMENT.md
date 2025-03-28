@@ -3,33 +3,38 @@
 ## 📊 GitHub Projects Structure
 
 ### 🎯 Epics
+
 1. **EPIC-1: Core Clinical Record**
-   - Base de datos local
-   - CRUD pacientes
-   - Historia clínica básica
-   - Exportar datos
+
+    - Base de datos local
+    - CRUD pacientes
+    - Historia clínica básica
+    - Exportar datos
 
 2. **EPIC-2: Clinical Assessment**
-   - Anamnesis
-   - Evaluación física
-   - Plan de tratamiento
-   - Evolución
+
+    - Anamnesis
+    - Evaluación física
+    - Plan de tratamiento
+    - Evolución
 
 3. **EPIC-3: Data Analysis**
-   - Validación de datos
-   - Patrones clínicos
-   - Reportes básicos
-   - Exportación
+
+    - Validación de datos
+    - Patrones clínicos
+    - Reportes básicos
+    - Exportación
 
 4. **EPIC-4: AI Integration**
-   - Análisis de texto
-   - Sugerencias clínicas
-   - Alertas de seguridad
-   - Mejores prácticas
+    - Análisis de texto
+    - Sugerencias clínicas
+    - Alertas de seguridad
+    - Mejores prácticas
 
 ### 📅 Milestone 1: MVP Ficha Clínica (6 semanas)
 
 #### Sprint 1: Fundación (2 semanas)
+
 ```kanban
 Backlog:
 - Setup inicial del proyecto
@@ -45,6 +50,7 @@ Completado:
 ```
 
 #### Sprint 2: Gestión de Pacientes (2 semanas)
+
 ```kanban
 Backlog:
 - CRUD pacientes
@@ -60,6 +66,7 @@ Completado:
 ```
 
 #### Sprint 3: Historia Clínica (2 semanas)
+
 ```kanban
 Backlog:
 - Formulario de anamnesis
@@ -75,6 +82,7 @@ Completado:
 ```
 
 ### 📋 Task Template
+
 ```yaml
 Título: [Tipo] Breve descripción
 Tipo: feature/bug/docs/test
@@ -89,80 +97,93 @@ Descripción:
 ```
 
 ### 🔄 Workflow Diario
+
 1. **Daily Standup (15min)**
-   - ¿Qué se completó?
-   - ¿Qué se hará hoy?
-   - ¿Hay bloqueantes?
+
+    - ¿Qué se completó?
+    - ¿Qué se hará hoy?
+    - ¿Hay bloqueantes?
 
 2. **Task Management**
-   - Actualizar GitHub Projects
-   - Mover tarjetas según progreso
-   - Documentar decisiones
+
+    - Actualizar GitHub Projects
+    - Mover tarjetas según progreso
+    - Documentar decisiones
 
 3. **Code Review**
-   - Pull requests pequeños
-   - Revisión de código
-   - Merge a develop
+    - Pull requests pequeños
+    - Revisión de código
+    - Merge a develop
 
 ### 📈 KPIs
+
 - Velocidad de desarrollo
 - Tasks completadas
 - Bugs encontrados
 - Cobertura de tests
 
 ### 🛠️ Herramientas Gratuitas
+
 1. **Gestión de Proyecto**
-   - GitHub Projects (Kanban + Roadmap)
-   - GitHub Issues
-   - GitHub Wiki
+
+    - GitHub Projects (Kanban + Roadmap)
+    - GitHub Issues
+    - GitHub Wiki
 
 2. **Desarrollo**
-   - GitHub (repositorio)
-   - VS Code
-   - Git
+
+    - GitHub (repositorio)
+    - VS Code
+    - Git
 
 3. **CI/CD**
-   - GitHub Actions
-   - Vercel (deploy)
+
+    - GitHub Actions
+    - Vercel (deploy)
 
 4. **Colaboración**
-   - GitHub Discussions
-   - Discord (comunicación)
-   - Google Docs (documentación)
+    - GitHub Discussions
+    - Discord (comunicación)
+    - Google Docs (documentación)
 
 ### 📝 Documentation
+
 1. **GitHub Wiki**
-   ```markdown
-   /wiki
-   ├── Home
-   ├── Architecture
-   ├── Development-Guide
-   ├── API-Documentation
-   └── Testing-Guide
-   ```
+
+    ```markdown
+    /wiki
+    ├── Home
+    ├── Architecture
+    ├── Development-Guide
+    ├── API-Documentation
+    └── Testing-Guide
+    ```
 
 2. **Código**
-   ```markdown
-   /docs
-   ├── setup.md
-   ├── contributing.md
-   ├── architecture.md
-   └── api-reference.md
-   ```
+    ```markdown
+    /docs
+    ├── setup.md
+    ├── contributing.md
+    ├── architecture.md
+    └── api-reference.md
+    ```
 
 ### 🔍 Review Process
+
 1. **Code Review**
-   - Estándares de código
-   - Tests
-   - Performance
-   - Seguridad
+
+    - Estándares de código
+    - Tests
+    - Performance
+    - Seguridad
 
 2. **Documentation Review**
-   - Actualización de docs
-   - API docs
-   - Guías de usuario
+
+    - Actualización de docs
+    - API docs
+    - Guías de usuario
 
 3. **Testing Review**
-   - Unit tests
-   - Integration tests
-   - UI tests 
+    - Unit tests
+    - Integration tests
+    - UI tests

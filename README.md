@@ -1,54 +1,68 @@
-# React + TypeScript + Vite
+# MapleAI Health
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Descripción
 
-Currently, two official plugins are available:
+MapleAI Health es una aplicación diseñada para gestionar datos de salud de manera eficiente, utilizando tecnologías modernas como React, TypeScript y Tailwind CSS.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Instalación
 
-## Expanding the ESLint configuration
+1. Clona el repositorio:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+    ```bash
+    git clone https://github.com/Maurosg78/MapleAIHealth.git
+    cd MapleAIHealth
+    ```
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+2. Instala las dependencias:
+    ```bash
+    npm install
+    ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Configuración de ESLint y Prettier
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Este proyecto utiliza ESLint y Prettier para mantener un código limpio y consistente. Asegúrate de tener las siguientes extensiones instaladas en tu editor:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+- ESLint
+- Prettier
+
+### Scripts
+
+- **Lint**: Para verificar problemas de código:
+
+    ```bash
+    npm run lint
+    ```
+
+- **Format**: Para formatear el código:
+    ```bash
+    npm run format
+    ```
+
+## Estructura del Proyecto
+
+- `src/`: Contiene el código fuente de la aplicación.
+    - `components/`: Componentes reutilizables.
+    - `hooks/`: Hooks personalizados.
+    - `pages/`: Páginas de la aplicación.
+    - `services/`: Servicios para manejar la lógica de negocio.
+    - `types/`: Tipos TypeScript utilizados en la aplicación.# Contribución
+    ### Configuración del Editor
+    Para VS Code, asegúrate de:
+    1. Instalar las extensiones:
+        - ESLint
+        - Prettier
+    2. El proyecto incluye configuración automática para:
+        - Formateo al guardar
+        - Corrección automática de problemas de ESLint
+
+Si deseas contribuir a este proyecto, por favor sigue estos pasos:
+
+1. Haz un fork del repositorio.
+2. Crea una nueva rama (`git checkout -b feature/nueva-funcionalidad`).
+3. Realiza tus cambios y haz commit (`git commit -m 'Agrega nueva funcionalidad'`).
+4. Haz push a la rama (`git push origin feature/nueva-funcionalidad`).
+5. Abre un Pull Request.
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.

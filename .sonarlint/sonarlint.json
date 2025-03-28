@@ -1,17 +1,13 @@
 {
-  "rules": {
-    "css:S4667": "OFF"
-  },
-  "exclusions": {
-    "**/*.css": "css:S4667",
-    "src/**/*.css": "css:S4667",
-    "src/index.css": "css:S4667",
-    "src/App.css": "css:S4667",
-    "node_modules/**/*.css": "css:S4667"
-  },
-  "ignoreFiles": [
-    "**/*.css",
-    "src/App.css",
-    "src/index.css"
-  ]
-} 
+    "rules": {
+        "css:S4667": "OFF"
+    },
+    "exclusions": {
+        "**/*.css": "css:S4667",
+        "src/**/*.css": "css:S4667",
+        "src/index.css": "css:S4667",
+        "src/App.css": "css:S4667",
+        "node_modules/**/*.css": "css:S4667"
+    },
+    "ignoreFiles": ["**/*.css", "src/App.css", "src/index.css"]
+}

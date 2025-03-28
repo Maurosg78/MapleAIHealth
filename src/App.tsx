@@ -1,20 +1,15 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { MainLayout } from './components/layout/MainLayout';
-import { DashboardPage } from './pages/dashboard/DashboardPage';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { AppRouter } from './routes';
+import { queryClient } from './lib/queryClient';
 
 function App() {
-  return (
-    <Router>
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/patients" element={<div>Pacientes</div>} />
-          <Route path="/patients/new" element={<div>Nuevo Paciente</div>} />
-          <Route path="/patients/:id" element={<div>Detalle del Paciente</div>} />
-        </Routes>
-      </MainLayout>
-    </Router>
-  );
+    return (
+        <QueryClientProvider client={queryClient}>
+            <AppRouter />
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+    );
 }
 
 export default App;
