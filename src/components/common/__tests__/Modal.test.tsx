@@ -42,7 +42,9 @@ describe('Modal', () => {
                 <div>Contenido del modal</div>
             </Modal>
         );
-        const backdrop = screen.getByRole('dialog').parentElement;
+        const backdrop = screen
+            .getByRole('dialog')
+            .parentElement?.querySelector('[aria-hidden="true"]');
         fireEvent.click(backdrop!);
         expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
