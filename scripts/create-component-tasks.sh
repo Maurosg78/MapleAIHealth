@@ -45,14 +45,23 @@ create_issue() {
 
     echo "Creando issue: $title"
     
+    # Escapar caracteres especiales en el body
+    body=$(echo "$body" | sed 's/"/\\"/g')
+    
+    # Crear el JSON payload
+    json_payload=$(cat <<EOF
+{
+    "title": "$title",
+    "body": "$body",
+    "labels": $labels
+}
+EOF
+)
+    
     response=$(curl -s -w "\n%{http_code}" -X POST "$GITHUB_API/issues" \
         -H "Authorization: token $GITHUB_TOKEN" \
         -H "Accept: application/vnd.github.v3+json" \
-        -d "{
-            \"title\": \"$title\",
-            \"body\": \"$body\",
-            \"labels\": $labels
-        }")
+        -d "$json_payload")
     
     http_code=$(echo "$response" | tail -n1)
     body=$(echo "$response" | sed '$d')
