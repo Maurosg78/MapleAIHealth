@@ -21,10 +21,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             rightIcon,
             fullWidth = false,
             disabled,
+            id,
             ...props
         },
         ref
     ) => {
+        const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
         const baseStyles =
             'px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 transition-colors';
         const widthStyles = fullWidth ? 'w-full' : 'w-auto';
@@ -36,7 +38,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         return (
             <div className={twMerge('flex flex-col gap-1', widthStyles)}>
-                {label && <label className="text-sm font-medium text-gray-700">{label}</label>}
+                {label && (
+                    <label htmlFor={inputId} className="text-sm font-medium text-gray-700">
+                        {label}
+                    </label>
+                )}
                 <div className="relative">
                     {leftIcon && (
                         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -45,6 +51,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                     )}
                     <input
                         ref={ref}
+                        id={inputId}
                         className={twMerge(
                             baseStyles,
                             widthStyles,
