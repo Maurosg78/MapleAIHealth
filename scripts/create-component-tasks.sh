@@ -1,10 +1,22 @@
 #!/bin/bash
 
-# Token de GitHub necesario para la API
-# Asegúrate de tener configurada la variable de entorno GITHUB_TOKEN
+# Verificar si el token está configurado
+if [ -z "$GITHUB_TOKEN" ]; then
+    echo "Error: GITHUB_TOKEN no está configurado"
+    echo "Por favor, configura el token con: export GITHUB_TOKEN='tu-token-aquí'"
+    exit 1
+fi
 
+# Verificar que el token es válido
 REPO="Maurosg78/MapleAIHealth"
-GITHUB_API="https://api.github.com/repos/$REPO/issues"
+GITHUB_API="https://api.github.com/repos/$REPO"
+
+# Verificar acceso al repositorio
+if ! curl -s -H "Authorization: token $GITHUB_TOKEN" $GITHUB_API > /dev/null; then
+    echo "Error: Token inválido o sin permisos suficientes"
+    echo "Por favor, verifica que el token tenga los permisos 'repo' y 'project'"
+    exit 1
+fi
 
 # Función para crear un issue
 create_issue() {
@@ -12,14 +24,25 @@ create_issue() {
     local body="$2"
     local labels="$3"
 
-    curl -X POST $GITHUB_API \
+    echo "Creando issue: $title"
+    
+    response=$(curl -s -w "\n%{http_code}" -X POST "$GITHUB_API/issues" \
         -H "Authorization: token $GITHUB_TOKEN" \
         -H "Accept: application/vnd.github.v3+json" \
         -d "{
             \"title\": \"$title\",
             \"body\": \"$body\",
             \"labels\": $labels
-        }"
+        }")
+    
+    http_code=$(echo "$response" | tail -n1)
+    body=$(echo "$response" | sed '$d')
+    
+    if [ "$http_code" = "201" ]; then
+        echo "✓ Issue creado exitosamente"
+    else
+        echo "✗ Error al crear el issue: $body"
+    fi
 }
 
 # Componentes Comunes
