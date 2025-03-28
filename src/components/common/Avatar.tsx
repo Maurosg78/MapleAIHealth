@@ -67,7 +67,7 @@ export const Avatar: React.FC<AvatarProps> = ({
 
     return (
         <div
-            role="img"
+            role="presentation"
             className={twMerge(
                 'relative inline-flex items-center justify-center bg-gray-200 text-gray-600 font-medium',
                 sizeStyles[size],
