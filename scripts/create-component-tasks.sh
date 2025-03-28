@@ -7,16 +7,35 @@ if [ -z "$GITHUB_TOKEN" ]; then
     exit 1
 fi
 
+# Verificar que el token no sea el valor por defecto
+if [ "$GITHUB_TOKEN" = "tu-token-aquí" ]; then
+    echo "Error: El token no ha sido configurado correctamente"
+    echo "Por favor, reemplaza 'tu-token-aquí' con tu token real de GitHub"
+    echo "Puedes crear uno en: https://github.com/settings/tokens"
+    exit 1
+fi
+
 # Verificar que el token es válido
 REPO="Maurosg78/MapleAIHealth"
 GITHUB_API="https://api.github.com/repos/$REPO"
 
 # Verificar acceso al repositorio
-if ! curl -s -H "Authorization: token $GITHUB_TOKEN" $GITHUB_API > /dev/null; then
-    echo "Error: Token inválido o sin permisos suficientes"
-    echo "Por favor, verifica que el token tenga los permisos 'repo' y 'project'"
+echo "Verificando acceso al repositorio..."
+response=$(curl -s -w "\n%{http_code}" -H "Authorization: token $GITHUB_TOKEN" $GITHUB_API)
+http_code=$(echo "$response" | tail -n1)
+body=$(echo "$response" | sed '$d')
+
+if [ "$http_code" != "200" ]; then
+    echo "Error: No se pudo acceder al repositorio"
+    echo "Detalles del error: $body"
+    echo "Por favor, verifica:"
+    echo "1. Que el token tenga los permisos 'repo' y 'project'"
+    echo "2. Que el nombre del repositorio sea correcto"
+    echo "3. Que tengas acceso al repositorio"
     exit 1
 fi
+
+echo "✓ Acceso al repositorio verificado"
 
 # Función para crear un issue
 create_issue() {
