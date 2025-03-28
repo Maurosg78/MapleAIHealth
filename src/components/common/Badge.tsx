@@ -62,6 +62,8 @@ export const Badge: React.FC<BadgeProps> = ({
             className={twMerge('mr-1.5', iconSizeStyles[size])}
             viewBox="0 0 20 20"
             fill="currentColor"
+            role="img"
+            aria-hidden="true"
         >
             {type === 'success' && (
                 <path

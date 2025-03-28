@@ -46,18 +46,24 @@ describe('Badge', () => {
 
     it('muestra el icono correcto según el tipo', () => {
         const { rerender } = render(<Badge type="success">Éxito</Badge>);
-        expect(screen.getByText('Éxito').querySelector('.text-green-800')).toBeInTheDocument();
+        const successIcon = screen.getByRole('img', { hidden: true });
+        expect(successIcon).toBeInTheDocument();
+        expect(screen.getByText('Éxito')).toHaveClass('text-green-800');
 
         rerender(<Badge type="error">Error</Badge>);
-        expect(screen.getByText('Error').querySelector('.text-red-800')).toBeInTheDocument();
+        const errorIcon = screen.getByRole('img', { hidden: true });
+        expect(errorIcon).toBeInTheDocument();
+        expect(screen.getByText('Error')).toHaveClass('text-red-800');
 
         rerender(<Badge type="warning">Advertencia</Badge>);
-        expect(
-            screen.getByText('Advertencia').querySelector('.text-yellow-800')
-        ).toBeInTheDocument();
+        const warningIcon = screen.getByRole('img', { hidden: true });
+        expect(warningIcon).toBeInTheDocument();
+        expect(screen.getByText('Advertencia')).toHaveClass('text-yellow-800');
 
         rerender(<Badge type="info">Info</Badge>);
-        expect(screen.getByText('Info').querySelector('.text-blue-800')).toBeInTheDocument();
+        const infoIcon = screen.getByRole('img', { hidden: true });
+        expect(infoIcon).toBeInTheDocument();
+        expect(screen.getByText('Info')).toHaveClass('text-blue-800');
     });
 
     it('permite personalizar el icono', () => {
@@ -73,8 +79,8 @@ describe('Badge', () => {
 
     it('tiene la estructura correcta con icono y texto', () => {
         render(<Badge>Texto con icono</Badge>);
-        const badge = screen.getByText('Texto con icono');
-        expect(badge.parentElement).toHaveClass('inline-flex', 'items-center');
-        expect(badge.previousElementSibling).toHaveClass('flex-shrink-0');
+        const badge = screen.getByText('Texto con icono').closest('span');
+        expect(badge).toHaveClass('inline-flex', 'items-center');
+        expect(badge?.querySelector('.flex-shrink-0')).toBeInTheDocument();
     });
 });
