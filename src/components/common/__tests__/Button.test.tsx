@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Button } from '../Button';
+import { describe, it, expect, vi } from 'vitest';
 
 describe('Button', () => {
     it('renderiza correctamente con el texto proporcionado', () => {
@@ -21,19 +22,20 @@ describe('Button', () => {
 
     it('muestra el estado de carga cuando isLoading es true', () => {
         render(<Button isLoading>Click me</Button>);
-        expect(screen.getByRole('button')).toHaveClass('opacity-50');
-        expect(screen.getByRole('button')).toBeDisabled();
+        const button = screen.getByRole('button');
+        expect(button).toHaveClass('disabled:opacity-50');
+        expect(button).toBeDisabled();
     });
 
     it('llama a onClick cuando se hace clic', () => {
-        const handleClick = jest.fn();
+        const handleClick = vi.fn();
         render(<Button onClick={handleClick}>Click me</Button>);
         fireEvent.click(screen.getByText('Click me'));
         expect(handleClick).toHaveBeenCalledTimes(1);
     });
 
     it('no llama a onClick cuando está deshabilitado', () => {
-        const handleClick = jest.fn();
+        const handleClick = vi.fn();
         render(
             <Button onClick={handleClick} disabled>
                 Click me
