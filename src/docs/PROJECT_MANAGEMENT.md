@@ -100,17 +100,60 @@
 ## Sprint Actual: Sprint 2 - Gestión de Pacientes y Evidencia
 
 ### Backlog
-- [ ] Implementar motor de búsqueda de evidencia científica
-- [ ] Desarrollar sistema de consentimiento informado
-- [ ] Crear validación de técnicas fisioterapéuticas
-- [ ] Implementar adaptadores para diferentes formatos de fichas
-- [ ] Desarrollar sistema de recomendaciones inicial
+- **#18**: Implementar motor de búsqueda de evidencia científica
+  - Integración con bases de datos médicas
+  - Sistema de filtrado por calidad de evidencia
+  - Caché de resultados frecuentes
+  - Sistema de actualización automática
+
+- **#19**: Desarrollar sistema de consentimiento informado
+  - Plantillas personalizables
+  - Sistema de firma digital
+  - Historial de consentimientos
+  - Validación de requisitos legales
+
+- **#20**: Crear validación de técnicas fisioterapéuticas
+  - Base de datos de técnicas validadas
+  - Sistema de recomendaciones
+  - Alertas de contraindicaciones
+  - Integración con evidencia científica
+
+- **#21**: Implementar adaptadores para diferentes formatos de fichas
+  - Adaptador para formato libre
+  - Adaptador para formatos estructurados
+  - Sistema de mapeo de campos
+  - Validación de datos
+
+- **#22**: Desarrollar sistema de recomendaciones inicial
+  - Motor de recomendaciones basado en evidencia
+  - Personalización por especialidad
+  - Sistema de priorización
+  - Integración con alertas
 
 ### En Progreso
-- [ ] Implementar formulario especializado de fisioterapia
-- [ ] Desarrollar sistema de alertas básicas
-- [ ] Crear integración inicial con nuestro EMR
-- [ ] Implementar procesamiento básico de lenguaje natural
+- **#33**: Implementar formulario especializado de fisioterapia
+  - Campos específicos de la especialidad
+  - Validación de datos
+  - Sistema de guardado automático
+  - Integración con capa de IA
+
+- **#34**: Desarrollar sistema de alertas básicas
+  - Alertas de contraindicaciones
+  - Alertas de seguimiento
+  - Alertas de evidencia
+  - Sistema de priorización
+
+- **#35**: Crear integración inicial con nuestro EMR
+  - Conexión con base de datos
+  - Sincronización de datos
+  - Sistema de caché
+  - Manejo de conflictos
+
+- **#36**: Implementar procesamiento básico de lenguaje natural
+  - Extracción de entidades médicas
+  - Análisis de contexto
+  - Sistema de clasificación
+  - Integración con recomendaciones
 
 ### Completado
 - [x] Definir tipos e interfaces para fisioterapia
@@ -119,10 +162,10 @@
 - [x] Crear estructura base de la capa de IA
 
 ### Próximos Pasos
-1. Completar la implementación del formulario especializado
-2. Integrar el sistema de alertas con la capa de IA
-3. Desarrollar el sistema de consentimiento informado
-4. Implementar la validación de técnicas
-5. Crear los adaptadores para diferentes formatos
+1. Completar la implementación del formulario especializado (#33)
+2. Integrar el sistema de alertas con la capa de IA (#34)
+3. Desarrollar el sistema de consentimiento informado (#19)
+4. Implementar la validación de técnicas (#20)
+5. Crear los adaptadores para diferentes formatos (#21)
 
 // ... resto del contenido existente ...

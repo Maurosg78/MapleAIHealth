@@ -35,7 +35,7 @@ export const DashboardPage = () => {
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 <MetricCard
                     title="Total de Pacientes"
-                    value={metrics?.totalPatients || 0}
+                    value={metrics?.totalPatients ?? 0}
                     icon={
                         <svg
                             className="h-6 w-6 text-gray-400"
@@ -55,7 +55,7 @@ export const DashboardPage = () => {
                 />
                 <MetricCard
                     title="Pacientes Activos"
-                    value={metrics?.activePatients || 0}
+                    value={metrics?.activePatients ?? 0}
                     icon={
                         <svg
                             className="h-6 w-6 text-gray-400"
@@ -75,7 +75,7 @@ export const DashboardPage = () => {
                 />
                 <MetricCard
                     title="Citas Pendientes"
-                    value={metrics?.pendingAppointments || 0}
+                    value={metrics?.pendingAppointments ?? 0}
                     icon={
                         <svg
                             className="h-6 w-6 text-gray-400"
@@ -96,7 +96,7 @@ export const DashboardPage = () => {
             </div>
 
             <div className="mt-8">
-                <RecentActivities activities={metrics?.recentActivities || []} />
+                <RecentActivities activities={metrics?.recentActivities ?? []} />
             </div>
         </div>
     );

@@ -67,7 +67,6 @@ export const Avatar: React.FC<AvatarProps> = ({
 
     return (
         <div
-            role="presentation"
             className={twMerge(
                 'relative inline-flex items-center justify-center bg-gray-200 text-gray-600 font-medium',
                 sizeStyles[size],
@@ -84,7 +83,7 @@ export const Avatar: React.FC<AvatarProps> = ({
                     className={twMerge('w-full h-full object-cover', variantStyles[variant])}
                 />
             ) : (
-                <span>{getInitials(alt)}</span>
+                <span aria-label={alt}>{getInitials(alt)}</span>
             )}
             {isLoading && (
                 <div

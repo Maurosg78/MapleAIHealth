@@ -1,97 +1,104 @@
 import React, { useEffect, useRef } from 'react';
-import { twMerge } from 'tailwind-merge';
 import { createPortal } from 'react-dom';
+import { cn } from '../../lib/utils';
 
-export interface ModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    title?: string;
+interface ModalProps {
+    /**
+     * El contenido del modal
+     */
     children: React.ReactNode;
-    size?: 'sm' | 'md' | 'lg' | 'xl';
+    /**
+     * Si el modal está abierto
+     */
+    isOpen: boolean;
+    /**
+     * Función para cerrar el modal
+     */
+    onClose: () => void;
+    /**
+     * El título del modal
+     */
+    title?: string;
+    /**
+     * Clases CSS adicionales
+     */
     className?: string;
 }
 
-const sizeClasses = {
-    sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-    xl: 'max-w-xl',
-};
-
-export const Modal: React.FC<ModalProps> = ({
-    isOpen,
-    onClose,
-    title,
-    children,
-    size = 'md',
-    className,
-}) => {
-    const modalRef = useRef<HTMLDivElement>(null);
-    const previousActiveElement = useRef<HTMLElement | null>(null);
+export const Modal: React.FC<ModalProps> = ({ children, isOpen, onClose, title, className }) => {
+    const dialogRef = useRef<HTMLDialogElement>(null);
 
     useEffect(() => {
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+
         if (isOpen) {
-            previousActiveElement.current = document.activeElement as HTMLElement;
-            document.body.style.overflow = 'hidden';
+            dialog.showModal();
         } else {
-            document.body.style.overflow = 'unset';
-            previousActiveElement.current?.focus();
+            dialog.close();
         }
-    }, [isOpen]);
 
-    useEffect(() => {
-        const handleEscape = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                onClose();
-            }
+        const handleClose = () => {
+            onClose();
         };
 
-        if (isOpen) {
-            document.addEventListener('keydown', handleEscape);
-        }
-
+        dialog.addEventListener('close', handleClose);
         return () => {
-            document.removeEventListener('keydown', handleEscape);
+            dialog.removeEventListener('close', handleClose);
         };
     }, [isOpen, onClose]);
+
+    const handleOverlayClick = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
+
+    const handleOverlayKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            onClose();
+        }
+    };
 
     if (!isOpen) return null;
 
     return createPortal(
-        <div
-            className="fixed inset-0 z-50 overflow-y-auto"
-            aria-labelledby="modal-title"
-            role="dialog"
-            aria-modal="true"
-        >
-            <div className="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
-                <div
-                    className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                    aria-hidden="true"
-                    onClick={onClose}
-                />
-                <div
-                    ref={modalRef}
-                    className={twMerge(
-                        'relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full',
-                        sizeClasses[size],
-                        className
+        <>
+            <button
+                className="fixed inset-0 w-full h-full bg-black/50 backdrop-blur-sm"
+                onClick={handleOverlayClick}
+                onKeyDown={handleOverlayKeyDown}
+                aria-label="Cerrar modal (clic fuera)"
+            />
+            <dialog
+                ref={dialogRef}
+                className={cn(
+                    'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
+                    'rounded-lg shadow-xl border border-gray-200',
+                    'p-6 max-w-lg w-full',
+                    'bg-white dark:bg-gray-800',
+                    'focus:outline-none focus:ring-2 focus:ring-primary-500',
+                    'animate-fade-in',
+                    className
+                )}
+            >
+                <div className="relative">
+                    {title && (
+                        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                            {title}
+                        </h2>
                     )}
-                >
-                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                        {title && (
-                            <h3
-                                className="text-lg font-medium leading-6 text-gray-900 mb-4"
-                                id="modal-title"
-                            >
-                                {title}
-                            </h3>
-                        )}
-                        {children}
-                    </div>
+                    <button
+                        onClick={onClose}
+                        className="absolute top-0 right-0 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                        aria-label="Cerrar modal (botón x)"
+                    >
+                        ×
+                    </button>
+                    {children}
                 </div>
-            </div>
-        </div>,
+            </dialog>
+        </>,
         document.body
     );
 };

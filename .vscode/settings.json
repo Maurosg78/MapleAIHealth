@@ -1,0 +1,30 @@
+{
+    "css.validate": false,
+    "tailwindCSS.emmetCompletions": true,
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "sonarlint.rules": {
+        "css:S4667": "OFF"
+    },
+    "sonarlint.output.showVerboseLogs": true,
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null,
+    "editor.codeActionsOnSave": null,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "files.autoSave": "onFocusChange",
+    "editor.rulers": [80],
+    "editor.tabSize": 2,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "git.ignoreLimitWarning": true
+}

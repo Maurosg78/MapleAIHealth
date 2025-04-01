@@ -4,6 +4,13 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
+// Filtrar globals.browser para eliminar el problema con AudioWorkletGlobalScope
+const browserGlobals = Object.fromEntries(
+    Object.entries(globals.browser)
+        .filter(([key]) => !key.includes(' '))
+        .map(([key, value]) => [key, value])
+);
+
 export default tseslint.config(
     { ignores: ['dist'] },
     {
@@ -11,7 +18,7 @@ export default tseslint.config(
         files: ['**/*.{ts,tsx}'],
         languageOptions: {
             ecmaVersion: 2020,
-            globals: globals.browser,
+            globals: browserGlobals,
         },
         plugins: {
             'react-hooks': reactHooks,

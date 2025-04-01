@@ -1,88 +1,128 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Modal } from '../Modal';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('Modal', () => {
     const mockOnClose = vi.fn();
 
     beforeEach(() => {
         mockOnClose.mockClear();
+        // Mock del elemento dialog
+        HTMLDialogElement.prototype.showModal = vi.fn();
+        HTMLDialogElement.prototype.close = vi.fn();
     });
 
-    it('no renderiza cuando isOpen es false', () => {
+    it('renders correctly when open', () => {
         render(
-            <Modal isOpen={false} onClose={mockOnClose}>
-                <div>Contenido del modal</div>
+            <Modal isOpen={true} onClose={mockOnClose} title="Test Modal">
+                <div>Modal content</div>
             </Modal>
         );
-        expect(screen.queryByText('Contenido del modal')).not.toBeInTheDocument();
+
+        expect(screen.getByRole('dialog', { hidden: true })).toBeInTheDocument();
+        expect(screen.getByText('Test Modal')).toBeInTheDocument();
+        expect(screen.getByText('Modal content')).toBeInTheDocument();
     });
 
-    it('renderiza correctamente cuando isOpen es true', () => {
+    it('does not render when closed', () => {
         render(
-            <Modal isOpen={true} onClose={mockOnClose}>
-                <div>Contenido del modal</div>
+            <Modal isOpen={false} onClose={mockOnClose} title="Test Modal">
+                <div>Modal content</div>
             </Modal>
         );
-        expect(screen.getByText('Contenido del modal')).toBeInTheDocument();
+
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
-    it('muestra el título cuando se proporciona', () => {
+    it('calls onClose when clicking outside', () => {
         render(
-            <Modal isOpen={true} onClose={mockOnClose} title="Título del Modal">
-                <div>Contenido del modal</div>
+            <Modal isOpen={true} onClose={mockOnClose} title="Test Modal">
+                <div>Modal content</div>
             </Modal>
         );
-        expect(screen.getByText('Título del Modal')).toBeInTheDocument();
+
+        const overlay = screen.getByRole('button', {
+            name: /cerrar modal \(clic fuera\)/i,
+            hidden: true,
+        });
+        fireEvent.click(overlay);
+        expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('llama a onClose cuando se hace clic en el backdrop', () => {
+    it('llama a onClose cuando se hace clic en el botón de cerrar', () => {
         render(
-            <Modal isOpen={true} onClose={mockOnClose}>
-                <div>Contenido del modal</div>
+            <Modal isOpen={true} onClose={mockOnClose} title="Test Modal">
+                <div>Modal content</div>
             </Modal>
         );
-        const backdrop = screen
-            .getByRole('dialog')
-            .parentElement?.querySelector('[aria-hidden="true"]');
-        fireEvent.click(backdrop!);
+
+        const closeButton = screen.getByRole('button', {
+            name: /cerrar modal \(botón x\)/i,
+            hidden: true,
+        });
+        fireEvent.click(closeButton);
         expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
-    it('aplica diferentes tamaños correctamente', () => {
-        const { rerender } = render(
-            <Modal isOpen={true} onClose={mockOnClose} size="sm">
-                <div>Contenido del modal</div>
+    it('llama a onClose cuando se hace clic en el overlay', () => {
+        render(
+            <Modal isOpen={true} onClose={mockOnClose} title="Test Modal">
+                <div>Modal content</div>
             </Modal>
         );
-        expect(screen.getByRole('dialog').querySelector('.max-w-sm')).toBeInTheDocument();
 
-        rerender(
-            <Modal isOpen={true} onClose={mockOnClose} size="xl">
-                <div>Contenido del modal</div>
-            </Modal>
-        );
-        expect(screen.getByRole('dialog').querySelector('.max-w-xl')).toBeInTheDocument();
+        const overlay = screen.getByRole('button', {
+            name: /cerrar modal \(clic fuera\)/i,
+            hidden: true,
+        });
+        fireEvent.click(overlay);
+        expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
-    it('tiene los atributos ARIA correctos', () => {
+    it('llama a onClose cuando se presiona Enter en el overlay', () => {
         render(
-            <Modal isOpen={true} onClose={mockOnClose} title="Título del Modal">
-                <div>Contenido del modal</div>
+            <Modal isOpen={true} onClose={mockOnClose} title="Test Modal">
+                <div>Modal content</div>
             </Modal>
         );
-        const dialog = screen.getByRole('dialog');
-        expect(dialog).toHaveAttribute('aria-modal', 'true');
-        expect(dialog).toHaveAttribute('aria-labelledby', 'modal-title');
+
+        const overlay = screen.getByRole('button', {
+            name: /cerrar modal \(clic fuera\)/i,
+            hidden: true,
+        });
+        fireEvent.keyDown(overlay, { key: 'Enter' });
+        expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
     it('aplica clases personalizadas a través de className', () => {
         render(
-            <Modal isOpen={true} onClose={mockOnClose} className="bg-blue-100">
-                <div>Contenido del modal</div>
+            <Modal isOpen={true} onClose={mockOnClose} title="Test Modal" className="custom-class">
+                <div>Modal content</div>
             </Modal>
         );
-        const modalContent = screen.getByRole('dialog').querySelector('.bg-blue-100');
-        expect(modalContent).toBeInTheDocument();
+
+        const dialog = screen.getByRole('dialog', { hidden: true });
+        expect(dialog).toHaveClass('custom-class');
+    });
+
+    it('no muestra el título cuando no se proporciona', () => {
+        render(
+            <Modal isOpen={true} onClose={mockOnClose}>
+                <div>Modal content</div>
+            </Modal>
+        );
+
+        expect(screen.queryByRole('heading')).not.toBeInTheDocument();
+    });
+
+    it('muestra el contenido del modal', () => {
+        render(
+            <Modal isOpen={true} onClose={mockOnClose}>
+                <div data-testid="modal-content">Contenido personalizado</div>
+            </Modal>
+        );
+
+        expect(screen.getByTestId('modal-content')).toBeInTheDocument();
     });
 });

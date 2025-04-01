@@ -77,3 +77,31 @@ coverage
 .sonarlint/
 .scannerwork/
 .sonar/
+
+# Archivos temporales y de sistema
+*~
+._*
+.Trash-*
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Informes de errores y análisis
+report.*
+*.report.*
+*.sarif
+lint-results.*
+
+# Configuración específica del desarrollador
+.tool-versions
+.nvmrc
+.npmrc
+.yarnrc
+
+# Archivos generados por herramientas
+.eslintrc.*.json
+storybook-static
+.storybook-out
+.jest-*
+/playwright-report/
+/test-results/

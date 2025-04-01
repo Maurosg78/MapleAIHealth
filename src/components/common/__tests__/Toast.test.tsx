@@ -1,4 +1,4 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Toast } from '../Toast';
 import { describe, it, expect, vi } from 'vitest';
 
@@ -42,9 +42,7 @@ describe('Toast', () => {
         const onClose = vi.fn();
         render(<Toast message="Mensaje" duration={1000} onClose={onClose} />);
 
-        act(() => {
-            vi.advanceTimersByTime(1000);
-        });
+        vi.advanceTimersByTime(1000);
 
         expect(onClose).toHaveBeenCalledTimes(1);
     });

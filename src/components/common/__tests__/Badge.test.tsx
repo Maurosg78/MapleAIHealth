@@ -4,83 +4,84 @@ import { describe, it, expect } from 'vitest';
 
 describe('Badge', () => {
     it('renderiza correctamente con el contenido proporcionado', () => {
-        render(<Badge>Nuevo</Badge>);
-        expect(screen.getByText('Nuevo')).toBeInTheDocument();
+        render(<Badge>Test Badge</Badge>);
+        expect(screen.getByText('Test Badge')).toBeInTheDocument();
     });
 
     it('aplica los estilos correctos según el tipo', () => {
-        const { rerender } = render(<Badge type="success">Éxito</Badge>);
-        expect(screen.getByText('Éxito')).toHaveClass('bg-green-100');
+        const { rerender } = render(<Badge type="success">Success</Badge>);
+        const badge = screen.getByText('Success').closest('div');
+        expect(badge).toHaveClass('bg-green-100', 'text-green-800');
 
         rerender(<Badge type="error">Error</Badge>);
-        expect(screen.getByText('Error')).toHaveClass('bg-red-100');
+        expect(badge).toHaveClass('bg-red-100', 'text-red-800');
 
-        rerender(<Badge type="warning">Advertencia</Badge>);
-        expect(screen.getByText('Advertencia')).toHaveClass('bg-yellow-100');
+        rerender(<Badge type="warning">Warning</Badge>);
+        expect(badge).toHaveClass('bg-yellow-100', 'text-yellow-800');
 
         rerender(<Badge type="info">Info</Badge>);
-        expect(screen.getByText('Info')).toHaveClass('bg-blue-100');
+        expect(badge).toHaveClass('bg-blue-100', 'text-blue-800');
     });
 
     it('aplica las variantes correctamente', () => {
-        const { rerender } = render(<Badge variant="solid">Sólido</Badge>);
-        expect(screen.getByText('Sólido')).toHaveClass('bg-blue-100');
+        const { rerender } = render(<Badge variant="solid">Solid</Badge>);
+        const badge = screen.getByText('Solid').closest('div');
+        expect(badge).toHaveClass('bg-blue-100', 'text-blue-800');
 
-        rerender(<Badge variant="outlined">Outline</Badge>);
-        expect(screen.getByText('Outline')).toHaveClass('bg-white');
+        rerender(<Badge variant="outlined">Outlined</Badge>);
+        expect(badge).toHaveClass('border-blue-200', 'text-blue-800');
 
         rerender(<Badge variant="ghost">Ghost</Badge>);
-        expect(screen.getByText('Ghost')).toHaveClass('bg-transparent');
+        expect(badge).toHaveClass('text-blue-800');
     });
 
     it('aplica los tamaños correctamente', () => {
-        const { rerender } = render(<Badge size="sm">Pequeño</Badge>);
-        expect(screen.getByText('Pequeño')).toHaveClass('text-xs');
+        const { rerender } = render(<Badge size="sm">Small</Badge>);
+        const badge = screen.getByText('Small').closest('div');
+        expect(badge).toHaveClass('text-xs', 'px-2', 'py-0.5');
 
-        rerender(<Badge size="md">Mediano</Badge>);
-        expect(screen.getByText('Mediano')).toHaveClass('text-sm');
+        rerender(<Badge size="md">Medium</Badge>);
+        expect(badge).toHaveClass('text-sm', 'px-2.5', 'py-0.5');
 
-        rerender(<Badge size="lg">Grande</Badge>);
-        expect(screen.getByText('Grande')).toHaveClass('text-base');
+        rerender(<Badge size="lg">Large</Badge>);
+        expect(badge).toHaveClass('text-base', 'px-3', 'py-1');
     });
 
-    it('muestra el icono correcto según el tipo', () => {
-        const { rerender } = render(<Badge type="success">Éxito</Badge>);
-        const successIcon = screen.getByRole('img', { hidden: true });
-        expect(successIcon).toBeInTheDocument();
-        expect(screen.getByText('Éxito')).toHaveClass('text-green-800');
-
-        rerender(<Badge type="error">Error</Badge>);
-        const errorIcon = screen.getByRole('img', { hidden: true });
-        expect(errorIcon).toBeInTheDocument();
-        expect(screen.getByText('Error')).toHaveClass('text-red-800');
-
-        rerender(<Badge type="warning">Advertencia</Badge>);
-        const warningIcon = screen.getByRole('img', { hidden: true });
-        expect(warningIcon).toBeInTheDocument();
-        expect(screen.getByText('Advertencia')).toHaveClass('text-yellow-800');
-
-        rerender(<Badge type="info">Info</Badge>);
-        const infoIcon = screen.getByRole('img', { hidden: true });
-        expect(infoIcon).toBeInTheDocument();
-        expect(screen.getByText('Info')).toHaveClass('text-blue-800');
-    });
-
-    it('permite personalizar el icono', () => {
-        const customIcon = <span data-testid="custom-icon">🔔</span>;
-        render(<Badge icon={customIcon}>Personalizado</Badge>);
-        expect(screen.getByTestId('custom-icon')).toBeInTheDocument();
+    it('muestra el icono cuando se proporciona', () => {
+        render(<Badge icon="https://example.com/icon.svg">With Icon</Badge>);
+        const icon = screen.getByAltText('');
+        expect(icon).toBeInTheDocument();
+        expect(icon).toHaveAttribute('src', 'https://example.com/icon.svg');
+        expect(icon).toHaveAttribute('alt', '');
     });
 
     it('aplica clases personalizadas a través de className', () => {
-        render(<Badge className="custom-class">Personalizado</Badge>);
-        expect(screen.getByText('Personalizado')).toHaveClass('custom-class');
+        render(<Badge className="custom-class">Custom</Badge>);
+        const badge = screen.getByText('Custom').closest('div');
+        expect(badge).toHaveClass('custom-class');
     });
 
-    it('tiene la estructura correcta con icono y texto', () => {
-        render(<Badge>Texto con icono</Badge>);
-        const badge = screen.getByText('Texto con icono').closest('span');
-        expect(badge).toHaveClass('inline-flex', 'items-center');
-        expect(badge?.querySelector('.flex-shrink-0')).toBeInTheDocument();
+    it('aplica el tamaño correcto al icono según el tamaño del badge', () => {
+        const { rerender } = render(
+            <Badge size="sm" icon="https://example.com/icon.svg">
+                Small
+            </Badge>
+        );
+        const icon = screen.getByAltText('');
+        expect(icon).toHaveClass('w-3', 'h-3');
+
+        rerender(
+            <Badge size="md" icon="https://example.com/icon.svg">
+                Medium
+            </Badge>
+        );
+        expect(icon).toHaveClass('w-4', 'h-4');
+
+        rerender(
+            <Badge size="lg" icon="https://example.com/icon.svg">
+                Large
+            </Badge>
+        );
+        expect(icon).toHaveClass('w-5', 'h-5');
     });
 });

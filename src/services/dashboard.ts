@@ -1,14 +1,34 @@
-import { DashboardMetrics } from '@/types/dashboard';
+import { api } from './api';
+import type { DashboardMetrics } from '../types/dashboard';
 
-// Datos de ejemplo para el desarrollo
-const mockMetrics: DashboardMetrics = {
-    totalPatients: 0,
-    activePatients: 0,
-    pendingAppointments: 0,
-    recentActivities: [],
-};
+export const dashboardService = {
+  async getMetrics(): Promise<DashboardMetrics> {
+    try {
+      const response = await api.get<DashboardMetrics>('/dashboard/metrics');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching dashboard metrics:', error);
+      throw error;
+    }
+  },
 
-export const getDashboardMetrics = async (): Promise<DashboardMetrics> => {
-    // TODO: Implementar llamada a API real
-    return mockMetrics;
+  async getHealthScore(): Promise<number> {
+    try {
+      const response = await api.get<{ score: number }>('/dashboard/health-score');
+      return response.data.score;
+    } catch (error) {
+      console.error('Error fetching health score:', error);
+      throw error;
+    }
+  },
+
+  async getActivityHistory(): Promise<Array<{ date: string; value: number }>> {
+    try {
+      const response = await api.get<Array<{ date: string; value: number }>>('/dashboard/activity-history');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching activity history:', error);
+      throw error;
+    }
+  }
 };

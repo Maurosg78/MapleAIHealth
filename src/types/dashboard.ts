@@ -3,13 +3,14 @@ export interface DashboardMetrics {
     activePatients: number;
     pendingAppointments: number;
     recentActivities: Activity[];
+    appointmentsToday: number;
+    pendingTasks: number;
+    aiQueries: number;
 }
 
 export interface Activity {
     id: string;
-    type: 'patient_created' | 'appointment_scheduled' | 'assessment_completed';
     description: string;
     timestamp: string;
-    patientId?: string;
-    patientName?: string;
+    type: 'appointment' | 'patient' | 'task' | 'ai_query';
 }
