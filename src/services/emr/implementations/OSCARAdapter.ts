@@ -409,7 +409,7 @@ export class OSCARAdapter implements EMRAdapter {
 
       // Convertir tratamiento según su tipo
       let endpoint: string;
-      let payload: Record<string, any>;
+      let payload: Record<string, string | number | boolean | object>;
 
       if (treatment.type === 'medication') {
         endpoint = '/prescription';
@@ -860,7 +860,7 @@ export class OSCARAdapter implements EMRAdapter {
     return updatedNote;
   }
 
-  private convertToOscarPrescription(treatment: EMRTreatment): Record<string, string | number | boolean | null> {
+  private convertToOscarPrescription(treatment: EMRTreatment): Record<string, string | number | boolean | object> {
     return {
       demographicNo: treatment.patientId,
       providerNo: treatment.providerId,
@@ -876,7 +876,7 @@ export class OSCARAdapter implements EMRAdapter {
     };
   }
 
-  private convertToOscarProcedure(treatment: EMRTreatment): Record<string, any> {
+  private convertToOscarProcedure(treatment: EMRTreatment): Record<string, string | number | boolean | object> {
     return {
       demographicNo: treatment.patientId,
       preventionType: treatment.type === 'procedure' ? 'Procedure' : 'Other',
@@ -923,7 +923,7 @@ export class OSCARAdapter implements EMRAdapter {
             units: entry.units
           });
         } else {
-          (metrics[metricType as keyof EMRPatientMetrics] as any[]).push(entry);
+          (metrics[metricType as keyof EMRPatientMetrics] as Array<{date: Date, value: number, units: string}>).push(entry);
         }
       }
     });
