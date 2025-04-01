@@ -12,10 +12,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
@@ -47,14 +47,14 @@ jobs:
           fi
 
       - name: Upload ESLint report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: eslint-report
           path: eslint-report.json
 
       - name: Create PR Comment with Error Report
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -70,10 +70,10 @@ jobs:
   typescript:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
@@ -106,14 +106,14 @@ jobs:
           echo "- 🟡 Errores de tipo incorrectos: $TYPE_ERRORS" >> ts-error-report.md
 
       - name: Upload TypeScript errors
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: typescript-errors
           path: ts-errors.txt
 
       - name: Create PR Comment with TS Error Report
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -131,15 +131,15 @@ jobs:
     needs: [lint, typescript]
     if: always()
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Download ESLint report
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: eslint-report
 
       - name: Download TypeScript errors
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: typescript-errors
 
@@ -188,14 +188,14 @@ jobs:
           echo "Para ver detalles completos, consulta los artefactos de este workflow." >> error-summary.md
 
       - name: Upload Error Summary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: error-summary
           path: error-summary.md
 
       - name: Create PR Comment with Summary
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -213,13 +213,13 @@ jobs:
     needs: [summary]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - name: Create GitHub issues for critical errors
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

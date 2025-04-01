@@ -148,6 +148,117 @@ interface ClinicCloudAdditionalData {
 }
 
 /**
+ * Interfaz para el resultado del historial médico
+ */
+interface MedicalHistoryResult {
+  alergias: Array<{
+    id: string;
+    descripcion: string;
+    reaccion?: string;
+    gravedad?: string;
+  }>;
+  condicionesCronicas: Array<{
+    id: string;
+    codigo: string;
+    sistema: string;
+    descripcion: string;
+    fecha: string;
+    estado: string;
+    cronica: boolean;
+    notas?: string;
+  }>;
+}
+
+/**
+ * Interfaz para resultados de laboratorio
+ */
+interface LabResultData {
+  id: string;
+  patientId: string;
+  date: Date;
+  category: string;
+  name: string;
+  results: Record<string, {
+    value: string | number;
+    unit?: string;
+    normalRange?: string;
+    isAbnormal?: boolean;
+  }>;
+  units: string;
+  range?: string;
+  abnormal?: boolean;
+  notes: string;
+}
+
+/**
+ * Interfaz para consulta de ClinicCloud
+ */
+interface ClinicCloudConsulta {
+  id: string;
+  pacienteId: string;
+  medicoId: string;
+  fecha: string;
+  motivo: string;
+  notas: string;
+  especialidad?: string;
+  citaProxima?: string;
+  diagnosticos?: Array<{
+    codigo: string;
+    sistema: string;
+    descripcion: string;
+  }>;
+  signosVitales?: {
+    temperatura?: number;
+    frecuenciaCardiaca?: number;
+    frecuenciaRespiratoria?: number;
+    tensionSistolica?: number;
+    tensionDiastolica?: number;
+    saturacion?: number;
+    peso?: number;
+    altura?: number;
+  };
+}
+
+/**
+ * Interfaz para tratamiento de ClinicCloud
+ */
+interface ClinicCloudTratamiento {
+  pacienteId: string;
+  medicoId: string;
+  fechaInicio: string;
+  fechaFin: string | null;
+  nombre: string;
+  tipo: string;
+  descripcion: string;
+  dosis: string | null;
+  frecuencia: string | null;
+  instrucciones: string | null;
+  estado: string;
+  consultaId: string | null;
+}
+
+/**
+ * Interfaz para métricas de ClinicCloud
+ */
+interface ClinicCloudMetrica {
+  id: string;
+  pacienteId: string;
+  fecha: string;
+  tipo: string;
+  valor: number;
+  unidad?: string;
+  sistolica?: number;
+  diastolica?: number;
+}
+
+/**
+ * Interfaz para resultado de métricas de ClinicCloud
+ */
+interface ClinicCloudMetricaResult {
+  metricas: ClinicCloudMetrica[];
+}
+
+/**
  * Adaptador para integración con ClinicCloud
  * ClinicCloud es uno de los sistemas EMR más utilizados en España
  * Especializado en clínicas privadas y consultas médicas particulares
@@ -667,7 +778,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
   /**
    * Extrae el historial médico de los datos adicionales
    */
-  private extractMedicalHistory(data: ClinicCloudAdditionalData): Record<string, unknown> {
+  private extractMedicalHistory(data: ClinicCloudAdditionalData): MedicalHistoryResult {
     // Extraer alergias
     const alergias = data.alergias.map((alergia) => ({
       id: alergia.id,
@@ -851,7 +962,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
   /**
    * Convierte resultados de laboratorio de ClinicCloud al formato de la aplicación
    */
-  private convertLaboratorio(laboratorio: ClinicCloudLabResult): any[] {
+  private convertLaboratorio(laboratorio: ClinicCloudLabResult): LabResultData[] {
     if (!laboratorio.resultados) return [];
 
     return laboratorio.resultados.map((resultado) => ({
@@ -890,8 +1001,9 @@ export class ClinicCloudAdapter implements EMRAdapter {
   /**
    * Convierte una consulta al formato de ClinicCloud
    */
-  private convertToClinicCloudConsulta(consultation: EMRConsultation): Record<string, any> {
-    const consulta: Record<string, any> = {
+  private convertToClinicCloudConsulta(consultation: EMRConsultation): ClinicCloudConsulta {
+    const consulta: ClinicCloudConsulta = {
+      id: consultation.id,
       pacienteId: consultation.patientId,
       medicoId: consultation.providerId,
       fecha: this.formatDate(consultation.date),
@@ -934,7 +1046,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
   /**
    * Aplica actualizaciones a una consulta existente
    */
-  private applyConsultaUpdates(consultaExistente: any, updates: Partial<EMRConsultation>): Record<string, any> {
+  private applyConsultaUpdates(consultaExistente: ClinicCloudConsulta, updates: Partial<EMRConsultation>): ClinicCloudConsulta {
     const updatedConsulta = { ...consultaExistente };
 
     if (updates.reason) {
@@ -959,7 +1071,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
   /**
    * Convierte un tratamiento al formato de ClinicCloud
    */
-  private convertToClinicCloudTratamiento(treatment: EMRTreatment): Record<string, any> {
+  private convertToClinicCloudTratamiento(treatment: EMRTreatment): ClinicCloudTratamiento {
     return {
       pacienteId: treatment.patientId,
       medicoId: treatment.providerId,
@@ -1015,10 +1127,10 @@ export class ClinicCloudAdapter implements EMRAdapter {
   /**
    * Procesa métricas del formato de ClinicCloud al formato de la aplicación
    */
-  private processMetricas(metricas: any, metrics: EMRPatientMetrics): void {
+  private processMetricas(metricas: ClinicCloudMetricaResult, metrics: EMRPatientMetrics): void {
     if (!metricas?.metricas) return;
 
-    metricas.metricas.forEach((metrica: any) => {
+    metricas.metricas.forEach((metrica: ClinicCloudMetrica) => {
       const fecha = new Date(metrica.fecha);
 
       switch (metrica.tipo.toLowerCase()) {

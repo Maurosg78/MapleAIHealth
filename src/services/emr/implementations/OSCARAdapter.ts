@@ -132,6 +132,65 @@ interface OSCARAdditionalData {
 }
 
 /**
+ * Interfaz para un resultado de historial médico
+ */
+interface MedicalHistoryResult {
+  allergies: Array<{
+    id: string;
+    description: string;
+    reaction?: string;
+    severity?: string;
+  }>;
+  chronicConditions: Array<{
+    id: string;
+    code: string;
+    codeSystem: string;
+    description: string;
+    dateRecorded: string;
+    status: string;
+    active: boolean;
+    notes?: string;
+  }>;
+}
+
+/**
+ * Interfaz para resultados de laboratorio
+ */
+interface LabResultData {
+  id: string;
+  patientId: string;
+  date: Date;
+  category: string;
+  name: string;
+  results: Record<string, {
+    value: string | number;
+    unit?: string;
+    normalRange?: string;
+    isAbnormal?: boolean;
+  }>;
+  units: string;
+  range?: string;
+  abnormal?: boolean;
+  notes?: string;
+}
+
+/**
+ * Interfaz para notas de OSCAR
+ */
+interface OSCARNote {
+  demographicNo: string;
+  providerNo: string;
+  note: string;
+  encounter: string;
+  observationDate: string;
+  programId: string;
+  appointmentNo: number;
+  revision: number;
+  noteStatus: string;
+  archived: number;
+}
+
+/**
  * Adaptador para integración con OSCAR EMR
  * OSCAR (Open Source Clinical Application Resource) es uno de los sistemas EMR más utilizados en Ontario, Canadá
  * Es un sistema de código abierto diseñado específicamente para el sistema de salud canadiense
@@ -621,9 +680,9 @@ export class OSCARAdapter implements EMRAdapter {
   /**
    * Extrae el historial médico del formato OSCAR
    */
-  private extractMedicalHistoryFromOscar(data: OSCARAdditionalData): any {
+  private extractMedicalHistoryFromOscar(data: OSCARAdditionalData): MedicalHistoryResult {
     // Extraer alergias
-    const allergies = data.allergies.map((allergy: any) => ({
+    const allergies = data.allergies.map((allergy) => ({
       id: allergy.id,
       description: allergy.description,
       reaction: allergy.reaction,
@@ -631,7 +690,7 @@ export class OSCARAdapter implements EMRAdapter {
     }));
 
     // Extraer condiciones crónicas (problemas activos)
-    const problems = data.problems.filter((problem: any) => problem.active).map((problem: any) => ({
+    const problems = data.problems.filter((problem) => problem.active).map((problem) => ({
       id: problem.id,
       code: problem.code,
       codeSystem: problem.codeSystem,
@@ -730,10 +789,10 @@ export class OSCARAdapter implements EMRAdapter {
     }));
   }
 
-  private convertOscarLabResults(labs: OSCARLabResult): any[] {
+  private convertOscarLabResults(labs: OSCARLabResult): LabResultData[] {
     if (!labs?.labs) return [];
 
-    return labs.labs.map((lab: OSCARLab) => ({
+    return labs.labs.map((lab) => ({
       id: lab.id,
       patientId: lab.demographicNo,
       date: new Date(lab.date),
@@ -765,7 +824,7 @@ export class OSCARAdapter implements EMRAdapter {
 
   // Métodos de conversión del formato interno a OSCAR
 
-  private convertToOscarNote(consultation: EMRConsultation): Record<string, any> {
+  private convertToOscarNote(consultation: EMRConsultation): Record<string, string | number | boolean> {
     return {
       demographicNo: consultation.patientId,
       providerNo: consultation.providerId,
@@ -780,7 +839,7 @@ export class OSCARAdapter implements EMRAdapter {
     };
   }
 
-  private applyConsultationUpdates(existingNote: any, updates: Partial<EMRConsultation>): Record<string, any> {
+  private applyConsultationUpdates(existingNote: OSCARNote, updates: Partial<EMRConsultation>): Record<string, string | number | boolean> {
     const updatedNote = { ...existingNote };
 
     if (updates.notes) {
@@ -796,12 +855,12 @@ export class OSCARAdapter implements EMRAdapter {
     }
 
     // Incrementar revisión
-    updatedNote.revision = (parseInt(updatedNote.revision, 10) ?? 1) + 1;
+    updatedNote.revision = (parseInt(String(updatedNote.revision), 10) ?? 1) + 1;
 
     return updatedNote;
   }
 
-  private convertToOscarPrescription(treatment: EMRTreatment): Record<string, any> {
+  private convertToOscarPrescription(treatment: EMRTreatment): Record<string, string | number | boolean | null> {
     return {
       demographicNo: treatment.patientId,
       providerNo: treatment.providerId,
