@@ -22,7 +22,7 @@
     {
         "name": "documentation",
         "color": "0075ca",
-        "description": "Tareas de documentación"
+        "description": "Tareas de documentación y mejoras"
     },
     {
         "name": "testing",
@@ -33,5 +33,85 @@
         "name": "components",
         "color": "5319e7",
         "description": "Tareas de componentes"
+    },
+    {
+        "name": "error",
+        "color": "d73a4a",
+        "description": "Error en el código o funcionalidad"
+    },
+    {
+        "name": "critical",
+        "color": "b60205",
+        "description": "Error crítico que requiere atención inmediata"
+    },
+    {
+        "name": "important",
+        "color": "ff9800",
+        "description": "Error importante que debe resolverse pronto"
+    },
+    {
+        "name": "minor",
+        "color": "fbca04",
+        "description": "Error menor que puede resolverse en próximas iteraciones"
+    },
+    {
+        "name": "linting",
+        "color": "0075ca",
+        "description": "Problemas relacionados con linting o estilo de código"
+    },
+    {
+        "name": "typescript",
+        "color": "3178c6",
+        "description": "Problemas relacionados con tipos en TypeScript"
+    },
+    {
+        "name": "security",
+        "color": "d93f0b",
+        "description": "Problemas de seguridad"
+    },
+    {
+        "name": "performance",
+        "color": "0e8a16",
+        "description": "Problemas de rendimiento"
+    },
+    {
+        "name": "ui",
+        "color": "c2e0c6",
+        "description": "Problemas relacionados con la interfaz de usuario"
+    },
+    {
+        "name": "duplicate",
+        "color": "cfd3d7",
+        "description": "Este issue o pull request ya existe"
+    },
+    {
+        "name": "enhancement",
+        "color": "a2eeef",
+        "description": "Nueva característica o solicitud"
+    },
+    {
+        "name": "good first issue",
+        "color": "7057ff",
+        "description": "Bueno para contribuyentes por primera vez"
+    },
+    {
+        "name": "help wanted",
+        "color": "008672",
+        "description": "Se necesita ayuda extra"
+    },
+    {
+        "name": "invalid",
+        "color": "e4e669",
+        "description": "Esto no parece correcto"
+    },
+    {
+        "name": "question",
+        "color": "d876e3",
+        "description": "Más información necesaria"
+    },
+    {
+        "name": "wontfix",
+        "color": "ffffff",
+        "description": "Esto no será resuelto"
     }
 ]
