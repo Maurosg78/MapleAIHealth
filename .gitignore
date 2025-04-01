@@ -7,14 +7,45 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencias
 node_modules
+node_modules/
+/.pnp
+.pnp.js
+
+# Archivos de compilación
 dist
 dist-ssr
+build
 *.local
+coverage
+
+# Cache
+.cache
+.npm
+.eslintcache
+.stylelintcache
+.parcel-cache
+.next
+.nuxt
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+.temp
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.tern-port
+.yarn-integrity
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea
 .DS_Store
 *.suo
@@ -22,6 +53,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.swo
+.project
+.classpath
+.c9/
+*.launch
+.settings/
 
 # Environment variables
 .env
@@ -29,3 +67,13 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Testing
+/coverage
+/.nyc_output
+.nyc_output
+
+# Sonarlint
+.sonarlint/
+.scannerwork/
+.sonar/
