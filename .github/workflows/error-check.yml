@@ -33,7 +33,7 @@ jobs:
           ./scripts/error-check.sh
 
       - name: Upload error reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: error-reports
           path: reports/
