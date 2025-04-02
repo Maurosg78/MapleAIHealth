@@ -99,7 +99,7 @@ const EMRPatientSearch: React.FC = () => {
 
   return (
     <Box p={6} borderWidth="1px" borderRadius="lg" bg="white" shadow="md">
-      <VStack spacing={6} align="stretch">
+      <VStack align="stretch">
         <Heading size="md">Búsqueda de Pacientes</Heading>
         <Text fontSize="sm" color="gray.600">
           Este componente simula la búsqueda de pacientes en un sistema EMR.
@@ -156,7 +156,7 @@ const EMRPatientSearch: React.FC = () => {
           <Button
             colorScheme="blue"
             onClick={handleSearch}
-            isLoading={isSearching}
+            loading={isSearching}
           >
             Buscar Paciente
           </Button>
