@@ -32,12 +32,6 @@ jobs:
           chmod +x ./scripts/error-check.sh
           ./scripts/error-check.sh
 
-      - name: Upload error reports
-        uses: actions/upload-artifact@v2
-        with:
-          name: error-reports
-          path: reports/
-
       - name: Check critical errors
         id: error-count
         run: |
@@ -53,22 +47,19 @@ jobs:
 
       - name: Create PR comment with error summary
         if: github.event_name == 'pull_request' && env.TOTAL_CRITICAL > 0
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            try {
-              const summary = fs.readFileSync('reports/error-summary.md', 'utf8');
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `## 🚨 Error Monitoring Alert\n\nSe encontraron ${process.env.TOTAL_CRITICAL} errores críticos en este PR.\n\n${summary}`
-              });
-            } catch (error) {
-              console.error('Error al crear comentario:', error);
-            }
+        run: |
+          SUMMARY=$(cat reports/error-summary.md)
+          cat << EOF > pr_comment.md
+          ## 🚨 Error Monitoring Alert
+
+          Se encontraron $TOTAL_CRITICAL errores críticos en este PR.
+
+          $SUMMARY
+          EOF
+
+          gh pr comment ${{ github.event.pull_request.number }} -F pr_comment.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fail if critical errors exceed threshold on PRs
         if: github.event_name == 'pull_request' && env.TOTAL_CRITICAL > 50

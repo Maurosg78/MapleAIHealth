@@ -9,16 +9,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint:
+  lint-and-typescript:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        run: |
+          git clone https://github.com/${{ github.repository }}.git .
+          git checkout ${{ github.ref }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'
-          cache: 'npm'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nodejs npm
+          node --version
+          npm --version
 
       - name: Install dependencies
         run: npm ci
@@ -26,8 +30,15 @@ jobs:
       - name: Run ESLint
         run: npx eslint src/ --format json > eslint-report.json || true
 
-      - name: Categorize ESLint errors
+      - name: Run TypeScript check
+        run: npx tsc --noEmit --pretty false > ts-errors.txt || true
+
+      - name: Generate error report
         run: |
+          # Crear directorio para reportes
+          mkdir -p reports
+
+          # Generar reporte de ESLint
           echo "## ESLint Error Report" > error-report.md
           echo "" >> error-report.md
 
@@ -35,128 +46,47 @@ jobs:
           CRITICAL=$(grep -c '"severity":2' eslint-report.json || echo 0)
           echo "### 🔴 Errores Críticos: $CRITICAL" >> error-report.md
 
-          # Contar errores importantes (warnings)
+          # Contar errores importantes
           IMPORTANT=$(grep -c '"severity":1' eslint-report.json || echo 0)
           echo "### 🟠 Errores Importantes: $IMPORTANT" >> error-report.md
 
-          # Mostrar los 10 errores críticos más comunes si hay alguno
+          # Mostrar errores más comunes
           if [ "$CRITICAL" -gt 0 ]; then
             echo "" >> error-report.md
             echo "#### Top Errores Críticos:" >> error-report.md
             grep '"severity":2' eslint-report.json | grep -o '"ruleId":"[^"]*"' | sort | uniq -c | sort -nr | head -10 | awk '{print "- " $2 ": " $1 " ocurrencias"}' >> error-report.md
           fi
 
-      - name: Upload ESLint report
-        uses: actions/upload-artifact@v2
-        with:
-          name: eslint-report
-          path: eslint-report.json
+          # Generar reporte de TypeScript
+          echo "" >> error-report.md
+          echo "## TypeScript Error Report" >> error-report.md
+          echo "" >> error-report.md
 
-      - name: Create PR Comment with Error Report
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const report = fs.readFileSync('error-report.md', 'utf8');
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: report
-            });
-
-  typescript:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check TypeScript
-        run: npx tsc --noEmit || true
-
-      - name: Generate TypeScript error report
-        run: |
-          echo "## TypeScript Error Report" > ts-error-report.md
-          echo "" >> ts-error-report.md
-
-          npx tsc --noEmit --pretty false > ts-errors.txt || true
-
-          # Contar errores totales
+          # Contar errores TypeScript
           TS_ERRORS=$(grep -c "error TS" ts-errors.txt || echo 0)
-          echo "### ⚠️ Errores TypeScript totales: $TS_ERRORS" >> ts-error-report.md
+          echo "### ⚠️ Errores TypeScript totales: $TS_ERRORS" >> error-report.md
 
           # Categorizar errores
           ANY_ERRORS=$(grep -c "TS7016\|TS7005\|TS7006" ts-errors.txt || echo 0)
           NULL_ERRORS=$(grep -c "TS2531\|TS2532\|TS2533" ts-errors.txt || echo 0)
           TYPE_ERRORS=$(grep -c "TS2322\|TS2345\|TS2339" ts-errors.txt || echo 0)
 
-          echo "" >> ts-error-report.md
-          echo "- 🔴 Errores de tipo 'any': $ANY_ERRORS" >> ts-error-report.md
-          echo "- 🟠 Errores de null/undefined: $NULL_ERRORS" >> ts-error-report.md
-          echo "- 🟡 Errores de tipo incorrectos: $TYPE_ERRORS" >> ts-error-report.md
+          echo "" >> error-report.md
+          echo "- 🔴 Errores de tipo 'any': $ANY_ERRORS" >> error-report.md
+          echo "- 🟠 Errores de null/undefined: $NULL_ERRORS" >> error-report.md
+          echo "- 🟡 Errores de tipo incorrectos: $TYPE_ERRORS" >> error-report.md
 
-      - name: Upload TypeScript errors
-        uses: actions/upload-artifact@v2
-        with:
-          name: typescript-errors
-          path: ts-errors.txt
-
-      - name: Create PR Comment with TS Error Report
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const report = fs.readFileSync('ts-error-report.md', 'utf8');
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: report
-            });
-
-  summary:
-    runs-on: ubuntu-latest
-    needs: [lint, typescript]
-    if: always()
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Download ESLint report
-        uses: actions/download-artifact@v2
-        with:
-          name: eslint-report
-
-      - name: Download TypeScript errors
-        uses: actions/download-artifact@v2
-        with:
-          name: typescript-errors
-
-      - name: Generate Error Summary
-        run: |
+          # Generar resumen
+          echo "" >> error-report.md
           echo "# 📊 Reporte de Supervisión de Errores" > error-summary.md
           echo "" >> error-summary.md
           echo "Fecha: $(date)" >> error-summary.md
           echo "Rama: ${{ github.ref }}" >> error-summary.md
           echo "" >> error-summary.md
 
-          # Contar errores de ESLint
-          ESLINT_CRITICAL=$(grep -c '"severity":2' eslint-report.json || echo 0)
-          ESLINT_IMPORTANT=$(grep -c '"severity":1' eslint-report.json || echo 0)
-
-          # Contar errores de TypeScript
-          TS_ERRORS=$(grep -c "error TS" ts-errors.txt || echo 0)
+          # Contar errores
+          ESLINT_CRITICAL=$CRITICAL
+          ESLINT_IMPORTANT=$IMPORTANT
 
           echo "## Resumen" >> error-summary.md
           echo "" >> error-summary.md
@@ -168,6 +98,7 @@ jobs:
 
           # Evaluar estado general
           TOTAL_CRITICAL=$((ESLINT_CRITICAL + TS_ERRORS))
+          echo "TOTAL_CRITICAL=$TOTAL_CRITICAL" >> $GITHUB_ENV
 
           echo "" >> error-summary.md
           if [ "$TOTAL_CRITICAL" -gt 50 ]; then
@@ -184,90 +115,47 @@ jobs:
             echo "El proyecto no tiene errores críticos." >> error-summary.md
           fi
 
-          echo "" >> error-summary.md
-          echo "Para ver detalles completos, consulta los artefactos de este workflow." >> error-summary.md
+          # Copiar los archivos de reporte
+          cp eslint-report.json reports/
+          cp ts-errors.txt reports/
+          cp error-summary.md reports/
+          cp error-report.md reports/
 
-      - name: Upload Error Summary
-        uses: actions/upload-artifact@v2
-        with:
-          name: error-summary
-          path: error-summary.md
+          # Mostrar resumen en la consola
+          echo "=======================================";
+          echo "          RESUMEN DE ERRORES            ";
+          echo "=======================================";
+          echo "ESLint Errores Críticos: $ESLINT_CRITICAL";
+          echo "ESLint Warnings: $ESLINT_IMPORTANT";
+          echo "TypeScript Errores: $TS_ERRORS";
+          echo "Total Errores Críticos: $TOTAL_CRITICAL";
+          echo "=======================================";
 
-      - name: Create PR Comment with Summary
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const summary = fs.readFileSync('error-summary.md', 'utf8');
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: summary
-            });
+      - name: Create PR comment with error summary
+        if: github.event_name == 'pull_request' && env.TOTAL_CRITICAL > 0
+        run: |
+          SUMMARY=$(cat reports/error-summary.md)
+          cat << EOF > pr_comment.md
+          ## 🚨 Error Monitoring Alert
 
-  create-issues:
-    runs-on: ubuntu-latest
-    needs: [summary]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v2
+          Se encontraron $TOTAL_CRITICAL errores críticos en este PR.
 
-      - name: Download all artifacts
-        uses: actions/download-artifact@v2
+          $SUMMARY
+          EOF
 
-      - name: Create GitHub issues for critical errors
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
+          # Instalar CLI de GitHub si no está instalada
+          if ! command -v gh &> /dev/null; then
+            echo "Instalando GitHub CLI..."
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update
+            sudo apt install gh
+          fi
 
-            // Verificar errores críticos en ESLint
-            const eslintReport = JSON.parse(fs.readFileSync('eslint-report/eslint-report.json', 'utf8'));
-            const criticalEslintErrors = eslintReport.filter(item => item.severity === 2);
+          # Autenticar con GitHub CLI
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
-            // Agrupar por tipo de error
-            const errorGroups = {};
-            criticalEslintErrors.forEach(error => {
-              if (!errorGroups[error.ruleId]) {
-                errorGroups[error.ruleId] = [];
-              }
-              errorGroups[error.ruleId].push(error);
-            });
-
-            // Crear issues para cada grupo de errores críticos
-            for (const [ruleId, errors] of Object.entries(errorGroups)) {
-              if (errors.length >= 10) { // Solo crear issues para errores frecuentes
-                const title = `[ERROR] Error crítico de ESLint: ${ruleId}`;
-
-                let body = `## Error crítico de linting detectado\n\n`;
-                body += `**Regla**: ${ruleId}\n`;
-                body += `**Ocurrencias**: ${errors.length}\n\n`;
-                body += `### Ejemplos:\n`;
-
-                // Mostrar hasta 5 ejemplos
-                errors.slice(0, 5).forEach(error => {
-                  body += `- Archivo: \`${error.filePath}\`\n`;
-                  body += `  - Línea ${error.line}, columna ${error.column}\n`;
-                  body += `  - Mensaje: ${error.message}\n\n`;
-                });
-
-                body += `### Prioridad\n`;
-                body += `- [x] Crítico\n`;
-                body += `- [ ] Importante\n`;
-                body += `- [ ] Menor\n\n`;
-
-                body += `Este issue ha sido generado automáticamente por el sistema de supervisión de errores.`;
-
-                await github.rest.issues.create({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  title: title,
-                  body: body,
-                  labels: ['error', 'critical', 'linting']
-                });
-              }
-            }
+          # Comentar en el PR
+          gh pr comment ${{ github.event.pull_request.number }} -F pr_comment.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
