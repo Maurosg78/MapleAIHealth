@@ -10,7 +10,7 @@ class PatientService {
         params: filters,
       });
       return response.data;
-    } catch (error) {
+    } catch {
       throw new Error('Error al obtener la lista de pacientes');
     }
   }
@@ -19,7 +19,7 @@ class PatientService {
     try {
       const response = await api.get<Patient>(`/patients/${id}`);
       return response.data;
-    } catch (error) {
+    } catch {
       throw new Error('Error al obtener los detalles del paciente');
     }
   }
@@ -30,7 +30,7 @@ class PatientService {
     try {
       const response = await api.post<Patient>('/patients', patient);
       return response.data;
-    } catch (error) {
+    } catch {
       throw new Error('Error al crear el paciente');
     }
   }
@@ -42,7 +42,7 @@ class PatientService {
     try {
       const response = await api.put<Patient>(`/patients/${id}`, patient);
       return response.data;
-    } catch (error) {
+    } catch {
       throw new Error('Error al actualizar el paciente');
     }
   }
@@ -50,7 +50,7 @@ class PatientService {
   static async deletePatient(id: string): Promise<void> {
     try {
       await api.delete(`/patients/${id}`);
-    } catch (error) {
+    } catch {
       throw new Error('Error al eliminar el paciente');
     }
   }
