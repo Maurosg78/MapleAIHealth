@@ -2,99 +2,129 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
-  Container,
-  FormControl,
-  FormLabel,
   Heading,
   Input,
-  Stack,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  useToast
+  Text,
+  VStack
 } from '@chakra-ui/react';
-import { EMRService } from '../../services/emr/EMRService';
-import { EMRAdapter, EMRPatientSearchResult } from '../../services/emr/EMRAdapter';
-import { EMRConfigService } from '../../services/emr/EMRConfigService';
 
-// Definir la interfaz correcta para los resultados de búsqueda
-interface ExtendedEMRPatientSearchResult extends EMRPatientSearchResult {
+// Definir la interfaz para la consulta de búsqueda
+interface EMRSearchQuery {
+  name: string;
+  documentId: string;
+  email: string;
+  phone: string;
+}
+
+// Interfaz para los resultados de búsqueda conforme a EMRPatientSearchResult
+interface SearchResult {
+  id: string;
   fullName: string;
   name: string;
   birthDate: string;
   gender: string;
   mrn: string;
+  dateOfBirth?: Date;
+  documentId?: string;
+  contactInfo?: {
+    email?: string;
+    phone?: string;
+  };
 }
 
-// Componente para buscar pacientes en EMR
+/**
+ * Componente de ejemplo para búsqueda de pacientes
+ */
 const EMRPatientSearch: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<ExtendedEMRPatientSearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const toast = useToast();
+  // Estado para el formulario de búsqueda
+  const [searchQuery, setSearchQuery] = useState<EMRSearchQuery>({
+    name: '',
+    documentId: '',
+    email: '',
+    phone: '',
+  });
 
-  // Función para buscar pacientes
-  const searchPatients = async () => {
-    if (!searchTerm) {
-      toast({
-        title: 'Error',
-        description: 'Introduce un término de búsqueda',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      });
+  // Estado para los resultados de búsqueda
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+
+  // Estado de carga
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Estado para indicar si se ha realizado una búsqueda
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Actualizar campo de búsqueda
+  const handleSearchChange = (field: keyof EMRSearchQuery, value: string) => {
+    setSearchQuery((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  // Realizar búsqueda de pacientes
+  const handleSearch = async () => {
+    // Validar que al menos un campo tenga valor
+    if (!searchQuery.name && !searchQuery.documentId && !searchQuery.email && !searchQuery.phone) {
+      console.error("Error: Introduce al menos un criterio de búsqueda");
       return;
     }
 
-    setIsLoading(true);
+    // Simulamos búsqueda para evitar dependencias externas
+    setIsSearching(true);
 
-    try {
-      const emrService = new EMRService();
-      const emrConfig = EMRConfigService.getActiveEMR();
+    // Simulación de tiempo de carga
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (!emrConfig) {
-        throw new Error('No hay EMR configurado');
-      }
-
-      const adapter = EMRAdapter.create(emrConfig.type, emrConfig.config);
-      const results = await adapter.searchPatients(searchTerm);
-
-      setSearchResults(results as ExtendedEMRPatientSearchResult[]);
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al buscar pacientes',
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // Resultado de ejemplo
+    const mockResults: SearchResult[] = [
+      {
         id: '1',
         fullName: 'Juan García',
-        name: 'Juan García', // Compatibilidad con tests
+        name: 'Juan García',
         birthDate: '1980-05-15',
-        dateOfBirth: new Date('1980-05-15'), // Compatibilidad con tests
         gender: 'M',
-        mrn: 'MRN12345'
+        mrn: 'MRN12345',
+        dateOfBirth: new Date('1980-05-15'),
+        documentId: 'MRN12345',
+        contactInfo: {
+          email: 'juan@example.com',
+          phone: '123-456-7890'
+        }
       },
       {
         id: '2',
         fullName: 'María López',
-        name: 'María López', // Compatibilidad con tests
+        name: 'María López',
         birthDate: '1975-08-22',
-        dateOfBirth: new Date('1975-08-22'), // Compatibilidad con tests
         gender: 'F',
-        mrn: 'MRN67890'
+        mrn: 'MRN67890',
+        dateOfBirth: new Date('1975-08-22'),
+        documentId: 'MRN67890',
+        contactInfo: {
+          email: 'maria@example.com',
+          phone: '098-765-4321'
+        }
       }
     ];
 
-    setSearchResults(mockResults);
+    // Aplicar filtros según los criterios de búsqueda
+    const filteredResults = mockResults.filter(patient => {
+      const nameMatch = searchQuery.name ?
+        patient.name.toLowerCase().includes(searchQuery.name.toLowerCase()) : true;
+
+      const docMatch = searchQuery.documentId ?
+        patient.documentId?.includes(searchQuery.documentId) : true;
+
+      const emailMatch = searchQuery.email ?
+        patient.contactInfo?.email?.toLowerCase().includes(searchQuery.email.toLowerCase()) : true;
+
+      const phoneMatch = searchQuery.phone ?
+        patient.contactInfo?.phone?.includes(searchQuery.phone) : true;
+
+      return nameMatch && docMatch && emailMatch && phoneMatch;
+    });
+
+    setSearchResults(filteredResults);
     setHasSearched(true);
     setIsSearching(false);
   };
