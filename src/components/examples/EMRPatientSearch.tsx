@@ -14,11 +14,21 @@ import {
   Th,
   Thead,
   Tr,
-  useToast
+  useToast,
+  VStack,
+  Text
 } from '@chakra-ui/react';
 import { EMRService } from '../../services/emr/EMRService';
 import { EMRAdapter, EMRPatientSearchResult } from '../../services/emr/EMRAdapter';
 import { EMRConfigService } from '../../services/emr/EMRConfigService';
+
+// Definir la interfaz para la consulta de búsqueda
+interface EMRSearchQuery {
+  name: string;
+  documentId: string;
+  email: string;
+  phone: string;
+}
 
 // Definir la interfaz correcta para los resultados de búsqueda
 interface ExtendedEMRPatientSearchResult extends EMRPatientSearchResult {
@@ -28,68 +38,6 @@ interface ExtendedEMRPatientSearchResult extends EMRPatientSearchResult {
   gender: string;
   mrn: string;
 }
-
-// Componente para buscar pacientes en EMR
-const EMRPatientSearch: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<ExtendedEMRPatientSearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const toast = useToast();
-
-  // Función para buscar pacientes
-  const searchPatients = async () => {
-    if (!searchTerm) {
-      toast({
-        title: 'Error',
-        description: 'Introduce un término de búsqueda',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      });
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const emrService = new EMRService();
-      const emrConfig = EMRConfigService.getActiveEMR();
-
-      if (!emrConfig) {
-        throw new Error('No hay EMR configurado');
-      }
-
-      const adapter = EMRAdapter.create(emrConfig.type, emrConfig.config);
-      const results = await adapter.searchPatients(searchTerm);
-
-      setSearchResults(results as ExtendedEMRPatientSearchResult[]);
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al buscar pacientes',
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-        duration: 5000,
-        isClosable: true
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-        duration: 5000,
-        isClosable: true
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-} from '../../services/emr/EMRAdapter';
 
 /**
  * Componente de ejemplo para búsqueda de pacientes utilizando el adaptador EMR configurado
@@ -107,9 +55,7 @@ const EMRPatientSearch: React.FC = () => {
   });
 
   // Estado para los resultados de búsqueda
-  const [searchResults, setSearchResults] = useState<EMRPatientSearchResult[]>(
-    []
-  );
+  const [searchResults, setSearchResults] = useState<ExtendedEMRPatientSearchResult[]>([]);
 
   // Estado de carga
   const [isSearching, setIsSearching] = useState(false);
@@ -154,7 +100,7 @@ const EMRPatientSearch: React.FC = () => {
       // Realizar búsqueda
       const results = await emrAdapter.searchPatients(searchQuery, 10);
 
-      setSearchResults(results);
+      setSearchResults(results as ExtendedEMRPatientSearchResult[]);
       setHasSearched(true);
 
       toast({
@@ -204,7 +150,7 @@ const EMRPatientSearch: React.FC = () => {
             <FormLabel>Nombre</FormLabel>
             <Input
               placeholder="Ej. Juan García"
-              value={searchQuery.name ?? ''}
+              value={searchQuery.name}
               onChange={(e) => handleSearchChange('name', e.target.value)}
             />
           </FormControl>
@@ -213,7 +159,7 @@ const EMRPatientSearch: React.FC = () => {
             <FormLabel>Documento de Identidad</FormLabel>
             <Input
               placeholder="Ej. 12345678X o Número de Seguro"
-              value={searchQuery.documentId ?? ''}
+              value={searchQuery.documentId}
               onChange={(e) => handleSearchChange('documentId', e.target.value)}
             />
           </FormControl>
@@ -223,7 +169,7 @@ const EMRPatientSearch: React.FC = () => {
               <FormLabel>Email</FormLabel>
               <Input
                 placeholder="Ej. paciente@correo.com"
-                value={searchQuery.email ?? ''}
+                value={searchQuery.email}
                 type="email"
                 onChange={(e) => handleSearchChange('email', e.target.value)}
               />
@@ -233,7 +179,7 @@ const EMRPatientSearch: React.FC = () => {
               <FormLabel>Teléfono</FormLabel>
               <Input
                 placeholder="Ej. 612345678"
-                value={searchQuery.phone ?? ''}
+                value={searchQuery.phone}
                 onChange={(e) => handleSearchChange('phone', e.target.value)}
               />
             </FormControl>
@@ -270,21 +216,21 @@ const EMRPatientSearch: React.FC = () => {
                 <Table variant="simple" size="sm">
                   <Thead>
                     <Tr>
-                      <Th>ID</Th>
                       <Th>Nombre</Th>
+                      <Th>ID</Th>
                       <Th>Fecha Nacimiento</Th>
                       <Th>Género</Th>
-                      <Th>Nº Historia</Th>
+                      <Th>MRN</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
                     {searchResults.map((patient) => (
                       <Tr key={patient.id}>
-                        <Td>{patient.id}</Td>
                         <Td>{patient.name}</Td>
+                        <Td>{patient.id}</Td>
                         <Td>{patient.birthDate}</Td>
                         <Td>{patient.gender}</Td>
-                        <Td>{patient.mrn || '-'}</Td>
+                        <Td>{patient.mrn}</Td>
                       </Tr>
                     ))}
                   </Tbody>
