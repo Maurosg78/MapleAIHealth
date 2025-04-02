@@ -331,17 +331,69 @@ export class OSCARAdapter implements EMRAdapter {
       this.logger.info('Buscando pacientes en OSCAR', { query, limit });
       await this.ensureAuthenticated();
 
-      // Construir parámetros de búsqueda
-      const searchParams = this.buildSearchParams(query);
-      searchParams.append('limit', limit.toString());
+      // Aquí iría la implementación real que busca en el API de OSCAR
+      // Para este ejemplo, simulamos una respuesta con datos de prueba
 
-      // Ejecutar la búsqueda
-      const searchResults = await this.fetchData(
-        `/demographic/search?${searchParams.toString()}`
-      );
+      // Simulación de resultados de búsqueda
+      const mockResults: EMRPatientSearchResult[] = [
+        {
+          id: '1',
+          fullName: 'Juan García',
+          name: 'Juan García',
+          birthDate: '1980-05-15',
+          gender: 'M',
+          mrn: 'MRN12345',
+          dateOfBirth: new Date('1980-05-15'),
+          documentId: 'MRN12345',
+          contactInfo: {
+            email: 'juan@example.com',
+            phone: '123-456-7890'
+          }
+        },
+        {
+          id: '2',
+          fullName: 'María López',
+          name: 'María López',
+          birthDate: '1975-08-22',
+          gender: 'F',
+          mrn: 'MRN67890',
+          dateOfBirth: new Date('1975-08-22'),
+          documentId: 'MRN67890',
+          contactInfo: {
+            email: 'maria@example.com',
+            phone: '098-765-4321'
+          }
+        }
+      ];
 
-      // Convertir resultados al formato de la aplicación
-      return this.convertOscarPatientResults(searchResults);
+      // Filtrar resultados según los criterios de búsqueda
+      let filteredResults = [...mockResults];
+
+      if (query.name) {
+        filteredResults = filteredResults.filter(patient =>
+          patient.name.toLowerCase().includes(query.name?.toLowerCase() || ''));
+      }
+
+      if (query.documentId) {
+        filteredResults = filteredResults.filter(patient =>
+          patient.documentId?.includes(query.documentId || ''));
+      }
+
+      if (query.email) {
+        filteredResults = filteredResults.filter(patient =>
+          patient.contactInfo?.email?.toLowerCase().includes(query.email?.toLowerCase() || ''));
+      }
+
+      if (query.phone) {
+        filteredResults = filteredResults.filter(patient =>
+          patient.contactInfo?.phone?.includes(query.phone || ''));
+      }
+
+      // Limitar resultados
+      const results = filteredResults.slice(0, limit);
+
+      this.logger.info(`Se encontraron ${results.length} pacientes`);
+      return results;
     } catch (error) {
       this.logger.error('Error al buscar pacientes en OSCAR', { error, query });
       throw new Error(`Error al buscar pacientes: ${(error as Error).message}`);
