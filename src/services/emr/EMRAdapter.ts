@@ -147,7 +147,7 @@ export interface EMRPatientHistory {
 export interface EMRConsultation {
   id?: string;
   patientId: string;
-  providerId: string;
+  providerId?: string;
   date: Date;
   reason: string;
   notes: string;
@@ -256,12 +256,15 @@ export interface EMRImagingResult {
  * Diagnóstico médico
  */
 export interface EMRDiagnosis {
+  id?: string;
+  patientId?: string;
   code: string;
-  system: 'ICD-10' | 'ICD-11' | 'SNOMED-CT' | 'other';
+  system: 'ICD-10' | 'ICD-11' | 'SNOMED-CT' | 'other' | string;
   description: string;
-  date: Date;
+  date?: Date;
   status: 'active' | 'resolved' | 'recurrent' | 'chronic' | 'suspected';
   notes?: string;
+  type?: string;
 }
 
 /**
