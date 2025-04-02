@@ -121,6 +121,10 @@ export interface EMRPatientSearchResult {
     phone?: string;
   };
   lastVisit?: Date;
+  name?: string;
+  birthDate?: string;
+  gender?: string;
+  mrn?: string;
 }
 
 /**

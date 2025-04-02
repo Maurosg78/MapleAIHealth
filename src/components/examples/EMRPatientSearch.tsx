@@ -23,6 +23,9 @@ interface EMRPatientSearchResult {
   birthDate: string;
   gender: string;
   mrn: string;
+  // Añadir compatibilidad con las pruebas
+  name?: string;
+  dateOfBirth?: Date;
 }
 
 /**
@@ -67,14 +70,18 @@ const EMRPatientSearch: React.FC = () => {
       {
         id: '1',
         fullName: 'Juan García',
+        name: 'Juan García', // Compatibilidad con tests
         birthDate: '1980-05-15',
+        dateOfBirth: new Date('1980-05-15'), // Compatibilidad con tests
         gender: 'M',
         mrn: 'MRN12345'
       },
       {
         id: '2',
         fullName: 'María López',
+        name: 'María López', // Compatibilidad con tests
         birthDate: '1975-08-22',
+        dateOfBirth: new Date('1975-08-22'), // Compatibilidad con tests
         gender: 'F',
         mrn: 'MRN67890'
       }
