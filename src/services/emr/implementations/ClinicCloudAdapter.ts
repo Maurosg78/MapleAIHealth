@@ -1191,7 +1191,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
       consulta.diagnosticos = consultation.diagnoses.map((diag) => ({
         codigo: diag.code,
         sistema: diag.system,
-        descripcion?: diag.description,
+        descripcion: diag.description,
       }));
     }
 
@@ -1250,15 +1250,15 @@ export class ClinicCloudAdapter implements EMRAdapter {
       pacienteId: treatment.patientId,
       medicoId: treatment.providerId,
       fechaInicio: this.formatDate(treatment.startDate),
-      fechaFin?: treatment.endDate ? this.formatDate(treatment.endDate) : null,
+      fechaFin: treatment.endDate ? this.formatDate(treatment.endDate) : null,
       nombre: treatment.name,
       tipo: this.reverseMapTreatmentType(treatment.type),
-      descripcion?: treatment.description,
+      descripcion: treatment.description,
       dosis: treatment.dosage ?? null,
       frecuencia: treatment.frequency ?? null,
-      instrucciones?: treatment.instructions ?? null,
+      instrucciones: treatment.instructions ?? null,
       estado: this.reverseMapTreatmentStatus(treatment.status),
-      consultaId?: treatment.consultationId ?? null,
+      consultaId: treatment.consultationId ?? null,
     };
   }
 
