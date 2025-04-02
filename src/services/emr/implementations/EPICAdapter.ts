@@ -879,6 +879,7 @@ export class EPICAdapter implements EMRAdapter {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private extractVitalSignsFromFHIR(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _data: FHIRAdditionalData
   ): Record<string, unknown> {
     // Implementación simplificada - en un caso real se obtendría de recursos Observation
