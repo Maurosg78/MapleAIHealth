@@ -114,6 +114,10 @@ export interface EMRSearchQuery {
 export interface EMRPatientSearchResult {
   id: string;
   fullName: string;
+  name: string;
+  birthDate: string;
+  gender: string;
+  mrn: string;
   dateOfBirth?: Date;
   documentId?: string;
   contactInfo?: {
@@ -121,10 +125,6 @@ export interface EMRPatientSearchResult {
     phone?: string;
   };
   lastVisit?: Date;
-  name?: string;
-  birthDate?: string;
-  gender?: string;
-  mrn?: string;
 }
 
 /**

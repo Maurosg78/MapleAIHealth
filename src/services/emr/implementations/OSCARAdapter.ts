@@ -343,7 +343,7 @@ export class OSCARAdapter implements EMRAdapter {
           birthDate: '1980-05-15',
           gender: 'M',
           mrn: 'MRN12345',
-          dateOfBirth: new Date('1980-05-15'),
+          birthDate: new Date('1980-05-15'),
           documentId: 'MRN12345',
           contactInfo: {
             email: 'juan@example.com',
@@ -357,7 +357,7 @@ export class OSCARAdapter implements EMRAdapter {
           birthDate: '1975-08-22',
           gender: 'F',
           mrn: 'MRN67890',
-          dateOfBirth: new Date('1975-08-22'),
+          birthDate: new Date('1975-08-22'),
           documentId: 'MRN67890',
           contactInfo: {
             email: 'maria@example.com',
