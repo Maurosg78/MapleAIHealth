@@ -35,20 +35,6 @@ interface ClinicCloudPaciente {
 interface ClinicCloudSearchResult {
   pacientes: ClinicCloudPaciente[];
   totalResultados: number;
-  pacientes: ClinicCloudPaciente[];
-  totalResultados: number;
-  pacientes: ClinicCloudPaciente[];
-  totalResultados: number;
-  pacientes: ClinicCloudPaciente[];
-  totalResultados: number;
-  pacientes: ClinicCloudPaciente[];
-  totalResultados: number;
-  pacientes: ClinicCloudPaciente[];
-  totalResultados: number;
-  pacientes: ClinicCloudPaciente[];
-  totalResultados: number;
-  pacientes: ClinicCloudPaciente[];
-  totalResultados: number;
 }
 
 // Tipo para consulta médica en ClinicCloud
@@ -77,13 +63,6 @@ interface ClinicCloudConsulta {
 // Tipo para respuesta de consultas
 interface ClinicCloudConsultaResult {
   consultas: ClinicCloudConsulta[];
-  consultas: ClinicCloudConsulta[];
-  consultas: ClinicCloudConsulta[];
-  consultas: ClinicCloudConsulta[];
-  consultas: ClinicCloudConsulta[];
-  consultas: ClinicCloudConsulta[];
-  consultas: ClinicCloudConsulta[];
-  consultas: ClinicCloudConsulta[];
 }
 
 // Tipo para tratamientos en ClinicCloud
@@ -106,13 +85,6 @@ interface ClinicCloudTratamiento {
 // Tipo para respuesta de tratamientos
 interface ClinicCloudTratamientoResult {
   tratamientos: ClinicCloudTratamiento[];
-  tratamientos: ClinicCloudTratamiento[];
-  tratamientos: ClinicCloudTratamiento[];
-  tratamientos: ClinicCloudTratamiento[];
-  tratamientos: ClinicCloudTratamiento[];
-  tratamientos: ClinicCloudTratamiento[];
-  tratamientos: ClinicCloudTratamiento[];
-  tratamientos: ClinicCloudTratamiento[];
 }
 
 // Tipo para diagnósticos en ClinicCloud
@@ -130,13 +102,6 @@ interface ClinicCloudDiagnostico {
 // Tipo para respuesta de diagnósticos
 interface ClinicCloudDiagnosticoResult {
   diagnosticos: ClinicCloudDiagnostico[];
-  diagnosticos?: ClinicCloudDiagnostico[];
-  diagnosticos?: ClinicCloudDiagnostico[];
-  diagnosticos?: ClinicCloudDiagnostico[];
-  diagnosticos?: ClinicCloudDiagnostico[];
-  diagnosticos?: ClinicCloudDiagnostico[];
-  diagnosticos?: ClinicCloudDiagnostico[];
-  diagnosticos?: ClinicCloudDiagnostico[];
 }
 
 // Tipo para resultados de laboratorio en ClinicCloud
@@ -159,13 +124,6 @@ interface ClinicCloudResultadoLab {
 // Tipo para respuesta de laboratorio
 interface ClinicCloudLabResult {
   resultados: ClinicCloudResultadoLab[];
-  resultados: ClinicCloudResultadoLab[];
-  resultados: ClinicCloudResultadoLab[];
-  resultados: ClinicCloudResultadoLab[];
-  resultados: ClinicCloudResultadoLab[];
-  resultados: ClinicCloudResultadoLab[];
-  resultados: ClinicCloudResultadoLab[];
-  resultados: ClinicCloudResultadoLab[];
 }
 
 // Tipo para métricas en ClinicCloud
@@ -179,13 +137,6 @@ interface ClinicCloudMetrica {
 
 // Tipo para respuesta de métricas
 interface ClinicCloudMetricaResult {
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
   metricas: ClinicCloudMetrica[];
 }
 
@@ -982,7 +933,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     // Extraer alergias
     const alergias = data.alergias.map((alergia) => ({
       id: alergia.id,
-      descripcion?: alergia.descripcion,
+      descripcion: alergia.descripcion,
       reaccion: alergia.reaccion,
       gravedad: alergia.gravedad,
     }));
@@ -994,7 +945,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
         id: condicion.id,
         codigo: condicion.codigo,
         sistema: condicion.sistema,
-        descripcion?: condicion.descripcion,
+        descripcion: condicion.descripcion,
         fecha: condicion.fecha,
         estado: condicion.estado,
         cronica: condicion.cronica,
