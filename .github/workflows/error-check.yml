@@ -1,0 +1,77 @@
+name: Error Monitoring
+
+on:
+  push:
+    branches: [main, develop, feature/**, fix/**]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  error-check:
+    name: Verificar errores críticos
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Run error check script
+        run: |
+          chmod +x ./scripts/error-check.sh
+          ./scripts/error-check.sh
+
+      - name: Upload error reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: error-reports
+          path: reports/
+
+      - name: Check critical errors
+        id: error-count
+        run: |
+          ESLINT_CRITICAL=$(grep -c '"severity":2' reports/eslint-report.json || echo 0)
+          TS_ERRORS=$(grep -c "error TS" reports/typescript-errors.txt || echo 0)
+          TOTAL_CRITICAL=$((ESLINT_CRITICAL + TS_ERRORS))
+          echo "TOTAL_CRITICAL=$TOTAL_CRITICAL" >> $GITHUB_ENV
+          if [ $TOTAL_CRITICAL -gt 0 ]; then
+            echo "::warning::Se encontraron $TOTAL_CRITICAL errores críticos"
+          else
+            echo "::notice::No se encontraron errores críticos"
+          fi
+
+      - name: Create PR comment with error summary
+        if: github.event_name == 'pull_request' && env.TOTAL_CRITICAL > 0
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            try {
+              const summary = fs.readFileSync('reports/error-summary.md', 'utf8');
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 🚨 Error Monitoring Alert\n\nSe encontraron ${process.env.TOTAL_CRITICAL} errores críticos en este PR.\n\n${summary}`
+              });
+            } catch (error) {
+              console.error('Error al crear comentario:', error);
+            }
+
+      - name: Fail if critical errors exceed threshold on PRs
+        if: github.event_name == 'pull_request' && env.TOTAL_CRITICAL > 50
+        run: |
+          echo "❌ El número de errores críticos ($TOTAL_CRITICAL) excede el límite permitido (50)"
+          exit 1
