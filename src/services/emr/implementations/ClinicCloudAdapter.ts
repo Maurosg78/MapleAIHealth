@@ -1004,18 +1004,25 @@ export class ClinicCloudAdapter implements EMRAdapter {
   ): EMRPatientSearchResult[] {
     if (!results || !results.pacientes) return [];
 
-    return results.pacientes.map((paciente) => ({
-      id: paciente.id,
-      fullName: `${paciente.nombre ?? ''} ${paciente.apellidos ?? ''}`.trim(),
-      dateOfBirth: paciente.fechaNacimiento
-        ? new Date(paciente.fechaNacimiento)
-        : undefined,
-      documentId: paciente.numeroTarjetaSanitaria,
-      contactInfo: {
-        email: paciente.email,
-        phone: paciente.telefono,
-      },
-    }));
+    return results.pacientes.map((paciente) => {
+      const fullName = `${paciente.nombre ?? ''} ${paciente.apellidos ?? ''}`.trim();
+      return {
+        id: paciente.id,
+        fullName: fullName,
+        name: fullName,
+        birthDate: paciente.fechaNacimiento ?? '',
+        gender: paciente.genero ?? 'desconocido',
+        mrn: paciente.numeroTarjetaSanitaria ?? '',
+        dateOfBirth: paciente.fechaNacimiento
+          ? new Date(paciente.fechaNacimiento)
+          : undefined,
+        documentId: paciente.numeroTarjetaSanitaria,
+        contactInfo: {
+          email: paciente.email,
+          phone: paciente.telefono,
+        },
+      };
+    });
   }
 
   /**

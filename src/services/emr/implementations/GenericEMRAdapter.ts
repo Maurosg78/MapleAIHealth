@@ -295,9 +295,18 @@ export class GenericEMRAdapter implements EMRAdapter {
           ? patient.consultations[patient.consultations.length - 1].date
           : undefined;
 
+        // Formatear fecha de nacimiento como cadena
+        const birthDateStr = patient.personalInfo.dateOfBirth
+          ? new Date(patient.personalInfo.dateOfBirth).toISOString().split('T')[0]
+          : '';
+
         return {
           id: patient.id,
           fullName: patient.personalInfo.fullName,
+          name: patient.personalInfo.fullName, // Propiedad name requerida
+          birthDate: birthDateStr, // Propiedad birthDate requerida como string
+          gender: patient.personalInfo.gender || 'unknown', // Propiedad gender requerida
+          mrn: patient.id, // Usar ID como número de registro médico
           dateOfBirth: new Date(patient.personalInfo.dateOfBirth),
           documentId: patient.personalInfo.documentId,
           contactInfo: patient.personalInfo.contactInfo,

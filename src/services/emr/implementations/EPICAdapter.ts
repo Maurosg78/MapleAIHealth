@@ -982,9 +982,22 @@ export class EPICAdapter implements EMRAdapter {
         const lastName = primaryName.family ?? '';
         const fullName = `${firstName} ${lastName}`.trim();
 
+        // Extraer género del recurso FHIR
+        const gender = resource.gender || 'unknown';
+
+        // Extraer MRN del recurso FHIR
+        const mrn = this.extractIdentifierFromFHIR(resource, 'MR') || '';
+
+        // Convertir fecha de nacimiento a formato string para la interfaz
+        const birthDateStr = resource.birthDate || '';
+
         return {
           id: resource.id ?? '',
           fullName,
+          name: fullName, // Usar mismo valor que fullName
+          birthDate: birthDateStr, // Fecha en formato string
+          gender: gender, // Género extraído del recurso
+          mrn: mrn, // MRN extraído del recurso
           dateOfBirth: resource.birthDate
             ? new Date(resource.birthDate)
             : undefined,
