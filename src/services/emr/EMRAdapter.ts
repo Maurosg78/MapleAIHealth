@@ -29,7 +29,10 @@ export interface EMRAdapter {
    * @param limit Límite de resultados a devolver
    * @returns Promise con array de resultados de pacientes
    */
-  searchPatients(query: EMRSearchQuery, limit?: number): Promise<EMRPatientSearchResult[]>;
+  searchPatients(
+    query: EMRSearchQuery,
+    limit?: number
+  ): Promise<EMRPatientSearchResult[]>;
 
   /**
    * Obtiene el historial médico de un paciente
@@ -37,7 +40,10 @@ export interface EMRAdapter {
    * @param options Opciones para filtrar el historial
    * @returns Promise con el historial médico estructurado
    */
-  getPatientHistory(patientId: string, options?: EMRHistoryOptions): Promise<EMRPatientHistory>;
+  getPatientHistory(
+    patientId: string,
+    options?: EMRHistoryOptions
+  ): Promise<EMRPatientHistory>;
 
   /**
    * Guarda una nueva consulta en el historial del paciente
@@ -52,7 +58,10 @@ export interface EMRAdapter {
    * @param updates Campos a actualizar
    * @returns Promise que resuelve a true si la actualización fue exitosa
    */
-  updateConsultation(consultationId: string, updates: Partial<EMRConsultation>): Promise<boolean>;
+  updateConsultation(
+    consultationId: string,
+    updates: Partial<EMRConsultation>
+  ): Promise<boolean>;
 
   /**
    * Registra un nuevo tratamiento para un paciente
@@ -67,7 +76,10 @@ export interface EMRAdapter {
    * @param metricTypes Tipos de métricas a obtener
    * @returns Promise con las métricas de salud solicitadas
    */
-  getPatientMetrics(patientId: string, metricTypes: string[]): Promise<EMRPatientMetrics>;
+  getPatientMetrics(
+    patientId: string,
+    metricTypes: string[]
+  ): Promise<EMRPatientMetrics>;
 }
 
 /**
@@ -168,10 +180,18 @@ export interface EMRPatientMetrics {
   patientId: string;
   vitalSigns?: EMRVitalSigns[];
   labValues?: Record<string, number[]>;
-  weightHistory?: Array<{date: Date, value: number}>;
-  heightHistory?: Array<{date: Date, value: number}>;
-  bloodPressureHistory?: Array<{date: Date, systolic: number, diastolic: number}>;
-  glucoseHistory?: Array<{date: Date, value: number, type: 'fasting' | 'postprandial' | 'random'}>;
+  weightHistory?: Array<{ date: Date; value: number }>;
+  heightHistory?: Array<{ date: Date; value: number }>;
+  bloodPressureHistory?: Array<{
+    date: Date;
+    systolic: number;
+    diastolic: number;
+  }>;
+  glucoseHistory?: Array<{
+    date: Date;
+    value: number;
+    type: 'fasting' | 'postprandial' | 'random';
+  }>;
   [key: string]: unknown;
 }
 
@@ -200,12 +220,15 @@ export interface EMRLabResult {
   patientId: string;
   date: Date;
   type: string;
-  results: Record<string, {
-    value: string | number;
-    unit?: string;
-    referenceRange?: string;
-    isAbnormal?: boolean;
-  }>;
+  results: Record<
+    string,
+    {
+      value: string | number;
+      unit?: string;
+      referenceRange?: string;
+      isAbnormal?: boolean;
+    }
+  >;
   orderedBy: string;
   notes?: string;
 }

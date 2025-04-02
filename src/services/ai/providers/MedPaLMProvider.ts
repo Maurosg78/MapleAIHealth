@@ -29,7 +29,11 @@ export class MedPaLMProvider implements AIProviderClient {
   readonly id = 'med-palm-2';
   readonly name = 'Med-PaLM 2';
   readonly costPerQuery = 0.05;
-  readonly capabilities = ['emr-analysis', 'clinical-evidence', 'treatment-patterns'];
+  readonly capabilities = [
+    'emr-analysis',
+    'clinical-evidence',
+    'treatment-patterns',
+  ];
 
   private readonly apiKey: string;
   private readonly projectId: string;
@@ -60,8 +64,14 @@ export class MedPaLMProvider implements AIProviderClient {
   estimateQueryCost(query: AIQuery): number {
     // Estimación básica basada en la longitud de la consulta
     const baseLength = query.query.length;
-    const notesLength = query.unstructuredNotes?.reduce((acc, note) => acc + note.content.length, 0) ?? 0;
-    const contextLength = query.context?.data ? JSON.stringify(query.context.data).length : 0;
+    const notesLength =
+      query.unstructuredNotes?.reduce(
+        (acc, note) => acc + note.content.length,
+        0
+      ) ?? 0;
+    const contextLength = query.context?.data
+      ? JSON.stringify(query.context.data).length
+      : 0;
 
     const totalLength = baseLength + notesLength + contextLength;
     const estimatedTokens = totalLength / 4; // Aproximación: 4 caracteres = 1 token
@@ -79,7 +89,9 @@ export class MedPaLMProvider implements AIProviderClient {
     }
 
     try {
-      this.logger.debug('Processing query with MedPaLM', { queryType: query.context?.type });
+      this.logger.debug('Processing query with MedPaLM', {
+        queryType: query.context?.type,
+      });
 
       // Preparar el prompt
       const prompt = this.buildPrompt(query);
@@ -91,7 +103,9 @@ export class MedPaLMProvider implements AIProviderClient {
       return this.processResponse(response);
     } catch (error) {
       this.logger.error('Error processing query with MedPaLM', { error });
-      throw new Error(`Error al procesar consulta con MedPaLM: ${(error as Error).message}`);
+      throw new Error(
+        `Error al procesar consulta con MedPaLM: ${(error as Error).message}`
+      );
     }
   }
 
@@ -136,26 +150,28 @@ Consulta del usuario: ${query.query}
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`
+        Authorization: `Bearer ${this.apiKey}`,
       },
       body: JSON.stringify({
-        instances: [
-          { prompt: prompt }
-        ],
+        instances: [{ prompt: prompt }],
         parameters: {
           temperature: 0.2,
           maxOutputTokens: 2048,
-          candidateCount: 1
-        }
-      })
+          candidateCount: 1,
+        },
+      }),
     });
 
     if (!response.ok) {
-      const errorData = await response.json() as { error?: { message?: string } };
-      throw new Error(`Google API error: ${errorData.error?.message ?? 'Unknown error'}`);
+      const errorData = (await response.json()) as {
+        error?: { message?: string };
+      };
+      throw new Error(
+        `Google API error: ${errorData.error?.message ?? 'Unknown error'}`
+      );
     }
 
-    return await response.json() as MedPaLMResponse;
+    return (await response.json()) as MedPaLMResponse;
   }
 
   private processResponse(medpalmResponse: MedPaLMResponse): AIResponse {
@@ -204,7 +220,7 @@ Consulta del usuario: ${query.query}
       // Construir la respuesta estructurada
       const aiResponse: AIResponse = {
         answer: parsedResponse.answer ?? 'No se pudo generar una respuesta',
-        confidence: parsedResponse.confidence ?? 0.5
+        confidence: parsedResponse.confidence ?? 0.5,
       };
 
       // Añadir timeline si existe
@@ -214,23 +230,32 @@ Consulta del usuario: ${query.query}
 
       // Añadir insights si existen
       if (parsedResponse.insights) {
-        aiResponse.insights = parsedResponse.insights.map(insight => ({
+        aiResponse.insights = parsedResponse.insights.map((insight) => ({
           type: insight.type as InsightType,
           description: insight.description,
           severity: insight.severity as 'high' | 'medium' | 'low',
-          evidence: Array.isArray(insight.evidence) ? insight.evidence : [insight.evidence],
-          recommendation: insight.recommendation
+          evidence: Array.isArray(insight.evidence)
+            ? insight.evidence
+            : [insight.evidence],
+          recommendation: insight.recommendation,
         }));
       }
 
       // Añadir recomendaciones si existen
       if (parsedResponse.recommendations) {
-        aiResponse.recommendations = parsedResponse.recommendations.map(rec => ({
-          type: rec.type as 'medication' | 'test' | 'follow-up' | 'alert' | 'referral',
-          description: rec.description,
-          priority: rec.priority as 'high' | 'medium' | 'low',
-          evidence: rec.evidence
-        }));
+        aiResponse.recommendations = parsedResponse.recommendations.map(
+          (rec) => ({
+            type: rec.type as
+              | 'medication'
+              | 'test'
+              | 'follow-up'
+              | 'alert'
+              | 'referral',
+            description: rec.description,
+            priority: rec.priority as 'high' | 'medium' | 'low',
+            evidence: rec.evidence,
+          })
+        );
       }
 
       return aiResponse;
@@ -239,7 +264,7 @@ Consulta del usuario: ${query.query}
       // Devolver una respuesta mínima en caso de error
       return {
         answer: 'Error al procesar la respuesta de la IA',
-        confidence: 0.1
+        confidence: 0.1,
       };
     }
   }

@@ -33,7 +33,9 @@ export class EMRConfigService {
    */
   public getAdapter(): EMRAdapter {
     if (!this.currentAdapter) {
-      this.logger.info('No hay adaptador configurado, usando adaptador genérico');
+      this.logger.info(
+        'No hay adaptador configurado, usando adaptador genérico'
+      );
       this.currentAdapter = EMRAdapterFactory.getAdapter('GENERIC');
       this.currentAdapterName = 'GENERIC';
     }
@@ -59,7 +61,10 @@ export class EMRConfigService {
    * @param adapterName Nombre del adaptador a configurar
    * @param config Configuración del adaptador
    */
-  public async configureAdapter(adapterName: string, config: EMRAdapterConfig): Promise<boolean> {
+  public async configureAdapter(
+    adapterName: string,
+    config: EMRAdapterConfig
+  ): Promise<boolean> {
     try {
       this.logger.info(`Configurando adaptador EMR: ${adapterName}`);
 
@@ -70,7 +75,9 @@ export class EMRConfigService {
       const isConnected = await adapter.testConnection();
 
       if (!isConnected) {
-        this.logger.error(`Error al probar conexión con adaptador: ${adapterName}`);
+        this.logger.error(
+          `Error al probar conexión con adaptador: ${adapterName}`
+        );
         return false;
       }
 
@@ -82,10 +89,14 @@ export class EMRConfigService {
       // Persistir configuración
       this.saveConfig();
 
-      this.logger.info(`Adaptador EMR configurado exitosamente: ${adapterName}`);
+      this.logger.info(
+        `Adaptador EMR configurado exitosamente: ${adapterName}`
+      );
       return true;
     } catch (error) {
-      this.logger.error(`Error al configurar adaptador EMR: ${adapterName}`, { error });
+      this.logger.error(`Error al configurar adaptador EMR: ${adapterName}`, {
+        error,
+      });
       return false;
     }
   }
@@ -102,10 +113,15 @@ export class EMRConfigService {
       if (savedAdapterName && savedConfig) {
         const config = JSON.parse(savedConfig);
 
-        this.logger.info(`Cargando configuración guardada para: ${savedAdapterName}`);
+        this.logger.info(
+          `Cargando configuración guardada para: ${savedAdapterName}`
+        );
 
         // Obtener adaptador con la configuración guardada
-        this.currentAdapter = EMRAdapterFactory.getAdapter(savedAdapterName, config);
+        this.currentAdapter = EMRAdapterFactory.getAdapter(
+          savedAdapterName,
+          config
+        );
         this.currentAdapterName = savedAdapterName;
         this.currentConfig = config;
       } else {
@@ -122,8 +138,13 @@ export class EMRConfigService {
   private saveConfig(): void {
     if (this.currentAdapterName && this.currentConfig) {
       localStorage.setItem('emrAdapterName', this.currentAdapterName);
-      localStorage.setItem('emrAdapterConfig', JSON.stringify(this.currentConfig));
-      this.logger.info(`Configuración guardada para: ${this.currentAdapterName}`);
+      localStorage.setItem(
+        'emrAdapterConfig',
+        JSON.stringify(this.currentConfig)
+      );
+      this.logger.info(
+        `Configuración guardada para: ${this.currentAdapterName}`
+      );
     }
   }
 
@@ -143,7 +164,9 @@ export class EMRConfigService {
    * Verifica si hay un adaptador configurado
    */
   public hasConfiguredAdapter(): boolean {
-    return this.currentAdapter !== null && this.currentAdapterName !== 'GENERIC';
+    return (
+      this.currentAdapter !== null && this.currentAdapterName !== 'GENERIC'
+    );
   }
 }
 

@@ -26,17 +26,21 @@ interface EMRSetupFormProps {
 export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
   onSetupComplete,
   initialAdapterName,
-  initialConfig
+  initialConfig,
 }) => {
   // Estado para el adaptador seleccionado
-  const [selectedAdapter, setSelectedAdapter] = useState(initialAdapterName ?? '');
+  const [selectedAdapter, setSelectedAdapter] = useState(
+    initialAdapterName ?? ''
+  );
 
   // Estado para guardar los adaptadores disponibles
-  const [availableAdapters, setAvailableAdapters] = useState<Array<{
-    id: string;
-    name: string;
-    description: string;
-  }>>([]);
+  const [availableAdapters, setAvailableAdapters] = useState<
+    Array<{
+      id: string;
+      name: string;
+      description: string;
+    }>
+  >([]);
 
   // Estado para guardar la configuración del adaptador
   const [config, setConfig] = useState<EMRAdapterConfig>(initialConfig ?? {});
@@ -45,7 +49,10 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
   const [isTesting, setIsTesting] = useState(false);
 
   // Estado para mensajes
-  const [message, setMessage] = useState<{text: string, type: 'success' | 'error' | 'warning' | 'info'} | null>(null);
+  const [message, setMessage] = useState<{
+    text: string;
+    type: 'success' | 'error' | 'warning' | 'info';
+  } | null>(null);
 
   // Cargar los adaptadores disponibles al montar el componente
   useEffect(() => {
@@ -60,9 +67,9 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
 
   // Actualizar un campo de configuración
   const handleConfigChange = (field: string, value: string) => {
-    setConfig(prev => ({
+    setConfig((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -73,49 +80,65 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
         return (
           <>
             <div className="form-group">
-              <label htmlFor="baseUrl">URL Base <span className="required">*</span></label>
+              <label htmlFor="baseUrl">
+                URL Base <span className="required">*</span>
+              </label>
               <input
                 id="baseUrl"
                 type="text"
                 placeholder="https://oscar-instance.hospital.ca"
                 value={config.baseUrl ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('baseUrl', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('baseUrl', e.target.value)
+                }
                 className="form-input"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="username">Usuario <span className="required">*</span></label>
+              <label htmlFor="username">
+                Usuario <span className="required">*</span>
+              </label>
               <input
                 id="username"
                 type="text"
                 placeholder="usuario-oscar"
                 value={config.username ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('username', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('username', e.target.value)
+                }
                 className="form-input"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Contraseña <span className="required">*</span></label>
+              <label htmlFor="password">
+                Contraseña <span className="required">*</span>
+              </label>
               <input
                 id="password"
                 type="password"
                 placeholder="••••••••"
                 value={config.password ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('password', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('password', e.target.value)
+                }
                 className="form-input"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="clinicId">ID de Clínica <span className="required">*</span></label>
+              <label htmlFor="clinicId">
+                ID de Clínica <span className="required">*</span>
+              </label>
               <input
                 id="clinicId"
                 type="text"
                 placeholder="12345"
                 value={config.clinicId ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('clinicId', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('clinicId', e.target.value)
+                }
                 className="form-input"
               />
             </div>
@@ -126,37 +149,49 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
         return (
           <>
             <div className="form-group">
-              <label htmlFor="apiUrl">URL de la API <span className="required">*</span></label>
+              <label htmlFor="apiUrl">
+                URL de la API <span className="required">*</span>
+              </label>
               <input
                 id="apiUrl"
                 type="text"
                 placeholder="https://api.cliniccloud.es"
                 value={config.apiUrl ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('apiUrl', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('apiUrl', e.target.value)
+                }
                 className="form-input"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="apiKey">API Key <span className="required">*</span></label>
+              <label htmlFor="apiKey">
+                API Key <span className="required">*</span>
+              </label>
               <input
                 id="apiKey"
                 type="text"
                 placeholder="tu-api-key"
                 value={config.apiKey ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('apiKey', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('apiKey', e.target.value)
+                }
                 className="form-input"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="clinicId">ID de Clínica <span className="required">*</span></label>
+              <label htmlFor="clinicId">
+                ID de Clínica <span className="required">*</span>
+              </label>
               <input
                 id="clinicId"
                 type="text"
                 placeholder="id-de-tu-clinica"
                 value={config.clinicId ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('clinicId', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('clinicId', e.target.value)
+                }
                 className="form-input"
               />
             </div>
@@ -168,19 +203,25 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
                 type="text"
                 placeholder="oauth-client-id"
                 value={config.clientId ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('clientId', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('clientId', e.target.value)
+                }
                 className="form-input"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="clientSecret">Client Secret (OAuth, opcional)</label>
+              <label htmlFor="clientSecret">
+                Client Secret (OAuth, opcional)
+              </label>
               <input
                 id="clientSecret"
                 type="password"
                 placeholder="••••••••"
                 value={config.clientSecret ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('clientSecret', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('clientSecret', e.target.value)
+                }
                 className="form-input"
               />
             </div>
@@ -191,13 +232,17 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
         return (
           <>
             <div className="form-group">
-              <label htmlFor="baseUrl">URL Base <span className="required">*</span></label>
+              <label htmlFor="baseUrl">
+                URL Base <span className="required">*</span>
+              </label>
               <input
                 id="baseUrl"
                 type="text"
                 placeholder="https://epic-fhir-api.hospital.org"
                 value={config.baseUrl ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('baseUrl', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('baseUrl', e.target.value)
+                }
                 className="form-input"
               />
             </div>
@@ -209,7 +254,9 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
                 type="text"
                 placeholder="tu-api-key"
                 value={config.apiKey ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('apiKey', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('apiKey', e.target.value)
+                }
                 className="form-input"
               />
             </div>
@@ -221,7 +268,9 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
                 type="text"
                 placeholder="tu-client-id"
                 value={config.clientId ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('clientId', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('clientId', e.target.value)
+                }
                 className="form-input"
               />
             </div>
@@ -233,7 +282,9 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
                 type="password"
                 placeholder="••••••••"
                 value={config.clientSecret ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleConfigChange('clientSecret', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleConfigChange('clientSecret', e.target.value)
+                }
                 className="form-input"
               />
             </div>
@@ -244,7 +295,8 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
         return (
           <div className="info-box">
             <p>
-              El adaptador genérico no requiere configuración. Es útil para desarrollo y demostración.
+              El adaptador genérico no requiere configuración. Es útil para
+              desarrollo y demostración.
             </p>
           </div>
         );
@@ -252,9 +304,7 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
       default:
         return (
           <div className="warning-box">
-            <p>
-              Selecciona un adaptador EMR para configurarlo.
-            </p>
+            <p>Selecciona un adaptador EMR para configurarlo.</p>
           </div>
         );
     }
@@ -274,18 +324,18 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
       if (result) {
         setMessage({
           text: `La conexión con ${selectedAdapter} se ha establecido correctamente.`,
-          type: 'success'
+          type: 'success',
         });
       } else {
         setMessage({
-          text: "No se pudo establecer conexión con el sistema EMR.",
-          type: 'error'
+          text: 'No se pudo establecer conexión con el sistema EMR.',
+          type: 'error',
         });
       }
     } catch (error) {
       setMessage({
         text: `Error: ${(error as Error).message}`,
-        type: 'error'
+        type: 'error',
       });
     } finally {
       setIsTesting(false);
@@ -296,26 +346,31 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
   const saveConfiguration = () => {
     // Validar configuración según el adaptador seleccionado
     if (selectedAdapter === 'OSCAR') {
-      if (!config.baseUrl || !config.username || !config.password || !config.clinicId) {
+      if (
+        !config.baseUrl ||
+        !config.username ||
+        !config.password ||
+        !config.clinicId
+      ) {
         setMessage({
-          text: "Por favor completa todos los campos requeridos.",
-          type: 'warning'
+          text: 'Por favor completa todos los campos requeridos.',
+          type: 'warning',
         });
         return;
       }
     } else if (selectedAdapter === 'CLINICCLOUD') {
       if (!config.apiUrl || !config.apiKey || !config.clinicId) {
         setMessage({
-          text: "Por favor completa todos los campos requeridos.",
-          type: 'warning'
+          text: 'Por favor completa todos los campos requeridos.',
+          type: 'warning',
         });
         return;
       }
     } else if (selectedAdapter === 'EPIC') {
       if (!config.baseUrl) {
         setMessage({
-          text: "Por favor completa todos los campos requeridos.",
-          type: 'warning'
+          text: 'Por favor completa todos los campos requeridos.',
+          type: 'warning',
         });
         return;
       }
@@ -326,11 +381,13 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
 
     setMessage({
       text: `Configuración de ${selectedAdapter} guardada exitosamente.`,
-      type: 'success'
+      type: 'success',
     });
   };
 
-  const selectedAdapterInfo = availableAdapters.find(a => a.id === selectedAdapter);
+  const selectedAdapterInfo = availableAdapters.find(
+    (a) => a.id === selectedAdapter
+  );
 
   return (
     <div className="card">
@@ -355,11 +412,13 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
           <select
             id="emr-select"
             value={selectedAdapter}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedAdapter(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setSelectedAdapter(e.target.value)
+            }
             className="form-select"
             aria-label="Seleccionar sistema EMR"
           >
-            {availableAdapters.map(adapter => (
+            {availableAdapters.map((adapter) => (
               <option key={adapter.id} value={adapter.id}>
                 {adapter.name}
               </option>
@@ -367,15 +426,11 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
           </select>
 
           {selectedAdapterInfo && (
-            <p className="helper-text">
-              {selectedAdapterInfo.description}
-            </p>
+            <p className="helper-text">{selectedAdapterInfo.description}</p>
           )}
         </div>
 
-        <div className="form-fields">
-          {renderConfigFields()}
-        </div>
+        <div className="form-fields">{renderConfigFields()}</div>
 
         <div className="button-group">
           <button

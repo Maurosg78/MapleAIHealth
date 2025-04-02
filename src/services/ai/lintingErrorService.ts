@@ -16,7 +16,7 @@ export enum LintingErrorType {
   /** Errores de compilación */
   COMPILATION = 'compilation',
   /** Otros errores de linting */
-  OTHER = 'other'
+  OTHER = 'other',
 }
 
 /**
@@ -32,7 +32,7 @@ export enum LintingErrorPriority {
   /** Atender cuando sea conveniente */
   MINOR = 'minor',
   /** Informativo, no requiere acción inmediata */
-  INFO = 'info'
+  INFO = 'info',
 }
 
 /**
@@ -80,31 +80,86 @@ export interface LintingError {
 /**
  * Mapeo de reglas de linting a prioridades y características
  */
-const rulesPriorityMap: Record<string, {
-  priority: LintingErrorPriority;
-  blocksCompilation: boolean;
-  isStyleOnly: boolean;
-}> = {
+const rulesPriorityMap: Record<
+  string,
+  {
+    priority: LintingErrorPriority;
+    blocksCompilation: boolean;
+    isStyleOnly: boolean;
+  }
+> = {
   // TypeScript
-  'typescript:S1854': { priority: LintingErrorPriority.MINOR, blocksCompilation: false, isStyleOnly: false }, // Dead store
-  'typescript:S1172': { priority: LintingErrorPriority.MINOR, blocksCompilation: false, isStyleOnly: false }, // Unused parameter
-  'typescript:S3358': { priority: LintingErrorPriority.MINOR, blocksCompilation: false, isStyleOnly: true }, // Nested ternary
+  'typescript:S1854': {
+    priority: LintingErrorPriority.MINOR,
+    blocksCompilation: false,
+    isStyleOnly: false,
+  }, // Dead store
+  'typescript:S1172': {
+    priority: LintingErrorPriority.MINOR,
+    blocksCompilation: false,
+    isStyleOnly: false,
+  }, // Unused parameter
+  'typescript:S3358': {
+    priority: LintingErrorPriority.MINOR,
+    blocksCompilation: false,
+    isStyleOnly: true,
+  }, // Nested ternary
 
   // ESLint
-  'no-unused-vars': { priority: LintingErrorPriority.MINOR, blocksCompilation: false, isStyleOnly: false },
-  'no-console': { priority: LintingErrorPriority.MINOR, blocksCompilation: false, isStyleOnly: true },
-  'prefer-const': { priority: LintingErrorPriority.MINOR, blocksCompilation: false, isStyleOnly: true },
+  'no-unused-vars': {
+    priority: LintingErrorPriority.MINOR,
+    blocksCompilation: false,
+    isStyleOnly: false,
+  },
+  'no-console': {
+    priority: LintingErrorPriority.MINOR,
+    blocksCompilation: false,
+    isStyleOnly: true,
+  },
+  'prefer-const': {
+    priority: LintingErrorPriority.MINOR,
+    blocksCompilation: false,
+    isStyleOnly: true,
+  },
 
   // SonarQube
-  'typescript:S6582': { priority: LintingErrorPriority.MINOR, blocksCompilation: false, isStyleOnly: true }, // Optional chaining
-  'typescript:S6606': { priority: LintingErrorPriority.MINOR, blocksCompilation: false, isStyleOnly: false }, // Nullish coalescing
-  'typescript:S6747': { priority: LintingErrorPriority.MINOR, blocksCompilation: false, isStyleOnly: true }, // Unknown property
+  'typescript:S6582': {
+    priority: LintingErrorPriority.MINOR,
+    blocksCompilation: false,
+    isStyleOnly: true,
+  }, // Optional chaining
+  'typescript:S6606': {
+    priority: LintingErrorPriority.MINOR,
+    blocksCompilation: false,
+    isStyleOnly: false,
+  }, // Nullish coalescing
+  'typescript:S6747': {
+    priority: LintingErrorPriority.MINOR,
+    blocksCompilation: false,
+    isStyleOnly: true,
+  }, // Unknown property
 
   // Errores de TypeScript que bloquean compilación
-  'TS2322': { priority: LintingErrorPriority.BLOCKER, blocksCompilation: true, isStyleOnly: false }, // Type error
-  'TS2531': { priority: LintingErrorPriority.BLOCKER, blocksCompilation: true, isStyleOnly: false }, // Object is possibly null
-  'TS2532': { priority: LintingErrorPriority.BLOCKER, blocksCompilation: true, isStyleOnly: false }, // Object is possibly undefined
-  'TS2339': { priority: LintingErrorPriority.BLOCKER, blocksCompilation: true, isStyleOnly: false }, // Property does not exist on type
+  TS2322: {
+    priority: LintingErrorPriority.BLOCKER,
+    blocksCompilation: true,
+    isStyleOnly: false,
+  }, // Type error
+  TS2531: {
+    priority: LintingErrorPriority.BLOCKER,
+    blocksCompilation: true,
+    isStyleOnly: false,
+  }, // Object is possibly null
+  TS2532: {
+    priority: LintingErrorPriority.BLOCKER,
+    blocksCompilation: true,
+    isStyleOnly: false,
+  }, // Object is possibly undefined
+  TS2339: {
+    priority: LintingErrorPriority.BLOCKER,
+    blocksCompilation: true,
+    isStyleOnly: false,
+  }, // Property does not exist on type
 };
 
 /**
@@ -136,7 +191,10 @@ export class LintingErrorService {
   /**
    * Determina la prioridad de un error de linting basado en su código y tipo
    */
-  private determinePriority(rule: string, type: LintingErrorType): {
+  private determinePriority(
+    rule: string,
+    type: LintingErrorType
+  ): {
     priority: LintingErrorPriority;
     blocksCompilation: boolean;
     isStyleOnly: boolean;
@@ -154,37 +212,37 @@ export class LintingErrorService {
         return {
           priority: LintingErrorPriority.MAJOR,
           blocksCompilation: true,
-          isStyleOnly: false
+          isStyleOnly: false,
         };
       case LintingErrorType.ESLINT:
         return {
           priority: LintingErrorPriority.MINOR,
           blocksCompilation: false,
-          isStyleOnly: true
+          isStyleOnly: true,
         };
       case LintingErrorType.SONAR:
         return {
           priority: LintingErrorPriority.MINOR,
           blocksCompilation: false,
-          isStyleOnly: true
+          isStyleOnly: true,
         };
       case LintingErrorType.PRETTIER:
         return {
           priority: LintingErrorPriority.INFO,
           blocksCompilation: false,
-          isStyleOnly: true
+          isStyleOnly: true,
         };
       case LintingErrorType.COMPILATION:
         return {
           priority: LintingErrorPriority.BLOCKER,
           blocksCompilation: true,
-          isStyleOnly: false
+          isStyleOnly: false,
         };
       default:
         return {
           priority: LintingErrorPriority.MINOR,
           blocksCompilation: false,
-          isStyleOnly: false
+          isStyleOnly: false,
         };
     }
   }
@@ -228,8 +286,10 @@ export class LintingErrorService {
     const errorId = `lint_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     // Determinar prioridad y características
-    const { priority, blocksCompilation, isStyleOnly } =
-      this.determinePriority(error.rule, error.type);
+    const { priority, blocksCompilation, isStyleOnly } = this.determinePriority(
+      error.rule,
+      error.type
+    );
 
     // Crear objeto de error
     const lintingError: LintingError = {
@@ -247,16 +307,18 @@ export class LintingErrorService {
       blocksCompilation,
       isStyleOnly,
       suggestion: error.suggestion,
-      resolved: false
+      resolved: false,
     };
 
     // Registrar el error
     this.lintingErrors.push(lintingError);
 
     // Registrar también en el monitor general para errores prioritarios
-    if (priority === LintingErrorPriority.BLOCKER ||
-        priority === LintingErrorPriority.CRITICAL ||
-        blocksCompilation) {
+    if (
+      priority === LintingErrorPriority.BLOCKER ||
+      priority === LintingErrorPriority.CRITICAL ||
+      blocksCompilation
+    ) {
       const severity = this.mapPriorityToSeverity(priority);
 
       const monitorErrorId = monitorService.captureError({
@@ -268,7 +330,7 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
         severity,
         component: 'Linting',
         path: error.file,
-        code: error.rule
+        code: error.rule,
       });
 
       // Guardar referencia al error en el monitor
@@ -280,7 +342,7 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
       rule: error.rule,
       file: error.file,
       priority,
-      blocksCompilation
+      blocksCompilation,
     });
 
     return errorId;
@@ -290,7 +352,7 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
    * Marca un error de linting como resuelto
    */
   public resolveError(errorId: string, userId: string): boolean {
-    const error = this.lintingErrors.find(e => e.id === errorId);
+    const error = this.lintingErrors.find((e) => e.id === errorId);
     if (!error) return false;
 
     error.resolved = true;
@@ -299,11 +361,9 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
 
     // Si el error está registrado en el monitor general, marcarlo como resuelto ahí también
     if (error.monitorErrorId) {
-      monitorService.resolveError(
-        error.monitorErrorId,
-        userId,
-        { notes: `Error de linting resuelto: ${error.rule}` }
-      );
+      monitorService.resolveError(error.monitorErrorId, userId, {
+        notes: `Error de linting resuelto: ${error.rule}`,
+      });
     }
 
     this.logger.info('Error de linting resuelto', { errorId, userId });
@@ -314,7 +374,7 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
    * Obtiene todos los errores activos de linting
    */
   public getActiveErrors(): LintingError[] {
-    return this.lintingErrors.filter(error => !error.resolved);
+    return this.lintingErrors.filter((error) => !error.resolved);
   }
 
   /**
@@ -336,39 +396,57 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
     if (!filters) return filteredErrors;
 
     if (filters.type) {
-      filteredErrors = filteredErrors.filter(error => error.type === filters.type);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.type === filters.type
+      );
     }
 
     if (filters.priority) {
-      filteredErrors = filteredErrors.filter(error => error.priority === filters.priority);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.priority === filters.priority
+      );
     }
 
     if (filters.file) {
-      filteredErrors = filteredErrors.filter(error => error.file.includes(filters.file!));
+      filteredErrors = filteredErrors.filter((error) =>
+        error.file.includes(filters.file!)
+      );
     }
 
     if (filters.rule) {
-      filteredErrors = filteredErrors.filter(error => error.rule === filters.rule);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.rule === filters.rule
+      );
     }
 
     if (filters.blocksCompilation !== undefined) {
-      filteredErrors = filteredErrors.filter(error => error.blocksCompilation === filters.blocksCompilation);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.blocksCompilation === filters.blocksCompilation
+      );
     }
 
     if (filters.isStyleOnly !== undefined) {
-      filteredErrors = filteredErrors.filter(error => error.isStyleOnly === filters.isStyleOnly);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.isStyleOnly === filters.isStyleOnly
+      );
     }
 
     if (filters.resolved !== undefined) {
-      filteredErrors = filteredErrors.filter(error => error.resolved === filters.resolved);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.resolved === filters.resolved
+      );
     }
 
     if (filters.startDate) {
-      filteredErrors = filteredErrors.filter(error => error.detectedAt >= filters.startDate!);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.detectedAt >= filters.startDate!
+      );
     }
 
     if (filters.endDate) {
-      filteredErrors = filteredErrors.filter(error => error.detectedAt <= filters.endDate!);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.detectedAt <= filters.endDate!
+      );
     }
 
     return filteredErrors;
@@ -390,16 +468,24 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
     const stats = {
       total: this.lintingErrors.length,
       active: activeErrors.length,
-      byPriority: Object.values(LintingErrorPriority).reduce((acc, priority) => {
-        acc[priority] = activeErrors.filter(e => e.priority === priority).length;
-        return acc;
-      }, {} as Record<LintingErrorPriority, number>),
-      byType: Object.values(LintingErrorType).reduce((acc, type) => {
-        acc[type] = activeErrors.filter(e => e.type === type).length;
-        return acc;
-      }, {} as Record<LintingErrorType, number>),
-      blocksCompilation: activeErrors.filter(e => e.blocksCompilation).length,
-      styleOnly: activeErrors.filter(e => e.isStyleOnly).length
+      byPriority: Object.values(LintingErrorPriority).reduce(
+        (acc, priority) => {
+          acc[priority] = activeErrors.filter(
+            (e) => e.priority === priority
+          ).length;
+          return acc;
+        },
+        {} as Record<LintingErrorPriority, number>
+      ),
+      byType: Object.values(LintingErrorType).reduce(
+        (acc, type) => {
+          acc[type] = activeErrors.filter((e) => e.type === type).length;
+          return acc;
+        },
+        {} as Record<LintingErrorType, number>
+      ),
+      blocksCompilation: activeErrors.filter((e) => e.blocksCompilation).length,
+      styleOnly: activeErrors.filter((e) => e.isStyleOnly).length,
     };
 
     return stats;
@@ -408,16 +494,18 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
   /**
    * Importa errores de SonarQube desde un JSON
    */
-  public importSonarQubeErrors(issues: Array<{
-    resource: string;
-    code: string;
-    severity: number;
-    message: string;
-    startLineNumber: number;
-    startColumn: number;
-    endLineNumber: number;
-    endColumn: number;
-  }>): number {
+  public importSonarQubeErrors(
+    issues: Array<{
+      resource: string;
+      code: string;
+      severity: number;
+      message: string;
+      startLineNumber: number;
+      startColumn: number;
+      endLineNumber: number;
+      endColumn: number;
+    }>
+  ): number {
     let importedCount = 0;
 
     for (const issue of issues) {
@@ -433,7 +521,7 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
         line: issue.startLineNumber,
         column: issue.startColumn,
         endLine: issue.endLineNumber,
-        endColumn: issue.endColumn
+        endColumn: issue.endColumn,
       });
 
       importedCount++;
@@ -457,24 +545,28 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
     return {
       // Errores que bloquean la compilación o son BLOCKER
       immediateAttention: activeErrors.filter(
-        e => e.blocksCompilation || e.priority === LintingErrorPriority.BLOCKER
+        (e) =>
+          e.blocksCompilation || e.priority === LintingErrorPriority.BLOCKER
       ),
 
       // Errores CRITICAL que no bloquean compilación
       highPriority: activeErrors.filter(
-        e => !e.blocksCompilation && e.priority === LintingErrorPriority.CRITICAL
+        (e) =>
+          !e.blocksCompilation && e.priority === LintingErrorPriority.CRITICAL
       ),
 
       // Errores MAJOR
       normalPriority: activeErrors.filter(
-        e => e.priority === LintingErrorPriority.MAJOR
+        (e) => e.priority === LintingErrorPriority.MAJOR
       ),
 
       // Errores MINOR o INFO que no son puramente estéticos
       lowPriority: activeErrors.filter(
-        e => (e.priority === LintingErrorPriority.MINOR || e.priority === LintingErrorPriority.INFO)
-          && !e.isStyleOnly
-      )
+        (e) =>
+          (e.priority === LintingErrorPriority.MINOR ||
+            e.priority === LintingErrorPriority.INFO) &&
+          !e.isStyleOnly
+      ),
     };
   }
 
@@ -485,12 +577,15 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
     const initialCount = this.lintingErrors.length;
 
     this.lintingErrors = this.lintingErrors.filter(
-      error => !error.resolved || (error.resolvedAt && error.resolvedAt > olderThan)
+      (error) =>
+        !error.resolved || (error.resolvedAt && error.resolvedAt > olderThan)
     );
 
     const purgedCount = initialCount - this.lintingErrors.length;
     if (purgedCount > 0) {
-      this.logger.info(`Purgados ${purgedCount} errores de linting resueltos antiguos`);
+      this.logger.info(
+        `Purgados ${purgedCount} errores de linting resueltos antiguos`
+      );
     }
 
     return purgedCount;

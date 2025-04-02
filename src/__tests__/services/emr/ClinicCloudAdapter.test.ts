@@ -4,7 +4,7 @@ import {
   clinicCloudPatientData,
   clinicCloudSearchResults,
   clinicCloudPatientHistory,
-  patientMetrics
+  patientMetrics,
 } from './mocks/MockEMRResponses';
 
 // Creamos un mock de la clase Logger para evitar logs en los tests
@@ -15,9 +15,9 @@ jest.mock('../../../lib/logger', () => {
         info: jest.fn(),
         error: jest.fn(),
         warn: jest.fn(),
-        debug: jest.fn()
+        debug: jest.fn(),
       };
-    })
+    }),
   };
 });
 
@@ -34,30 +34,37 @@ describe('ClinicCloudAdapter', () => {
     adapter = new ClinicCloudAdapter({
       apiUrl: 'https://api.cliniccloud-test.es',
       apiKey: 'test-api-key-123',
-      clinicId: 'clinica456'
+      clinicId: 'clinica456',
     });
 
     // Reemplazamos el método httpService privado con nuestro mock
     // Usamos un tipo 'unknown' para evitar problemas de acceso a propiedades privadas
-    (adapter as unknown as { httpService: MockHttpService }).httpService = mockHttp;
+    (adapter as unknown as { httpService: MockHttpService }).httpService =
+      mockHttp;
   });
 
   describe('testConnection', () => {
     it('debería devolver true cuando la conexión es exitosa', async () => {
       // Preparamos el mock para simular una autenticación exitosa
-      jest.spyOn(mockHttp, 'authenticateClinicCloud').mockResolvedValue('mock-token');
+      jest
+        .spyOn(mockHttp, 'authenticateClinicCloud')
+        .mockResolvedValue('mock-token');
 
       // Ejecutamos el método a probar
       const result = await adapter.testConnection();
 
       // Verificamos el resultado
       expect(result).toBe(true);
-      expect(mockHttp.authenticateClinicCloud).toHaveBeenCalledWith('test-api-key-123');
+      expect(mockHttp.authenticateClinicCloud).toHaveBeenCalledWith(
+        'test-api-key-123'
+      );
     });
 
     it('debería devolver false cuando falla la autenticación', async () => {
       // Preparamos el mock para simular un fallo en la autenticación
-      jest.spyOn(mockHttp, 'authenticateClinicCloud').mockRejectedValue(new Error('API Key inválida'));
+      jest
+        .spyOn(mockHttp, 'authenticateClinicCloud')
+        .mockRejectedValue(new Error('API Key inválida'));
 
       // Ejecutamos el método a probar
       const result = await adapter.testConnection();
@@ -70,7 +77,9 @@ describe('ClinicCloudAdapter', () => {
   describe('getPatientData', () => {
     it('debería obtener y convertir correctamente los datos del paciente', async () => {
       // Preparamos el mock para la autenticación
-      jest.spyOn(mockHttp, 'authenticateClinicCloud').mockResolvedValue('mock-token');
+      jest
+        .spyOn(mockHttp, 'authenticateClinicCloud')
+        .mockResolvedValue('mock-token');
       // Preparamos el mock para la obtención de datos
       jest.spyOn(mockHttp, 'get').mockResolvedValue(clinicCloudPatientData);
 
@@ -97,24 +106,28 @@ describe('ClinicCloudAdapter', () => {
             city: 'Madrid',
             state: 'Madrid',
             postalCode: '28013',
-            country: 'España'
-          }
+            country: 'España',
+          },
         },
         identifiers: {
           mrn: 'CC-2023-1234',
           nationalId: {
             type: 'DNI',
-            value: '87654321X'
-          }
-        }
+            value: '87654321X',
+          },
+        },
       });
     });
 
     it('debería manejar errores al obtener datos del paciente', async () => {
       // Preparamos el mock para la autenticación
-      jest.spyOn(mockHttp, 'authenticateClinicCloud').mockResolvedValue('mock-token');
+      jest
+        .spyOn(mockHttp, 'authenticateClinicCloud')
+        .mockResolvedValue('mock-token');
       // Preparamos el mock para simular un error en la API
-      jest.spyOn(mockHttp, 'get').mockRejectedValue(new Error('Error al obtener datos'));
+      jest
+        .spyOn(mockHttp, 'get')
+        .mockRejectedValue(new Error('Error al obtener datos'));
 
       // Ejecutamos el método y verificamos que lance un error
       await expect(adapter.getPatientData('cc-67890')).rejects.toThrow(
@@ -126,15 +139,20 @@ describe('ClinicCloudAdapter', () => {
   describe('searchPatients', () => {
     it('debería buscar y convertir correctamente los resultados', async () => {
       // Preparamos el mock para la autenticación
-      jest.spyOn(mockHttp, 'authenticateClinicCloud').mockResolvedValue('mock-token');
+      jest
+        .spyOn(mockHttp, 'authenticateClinicCloud')
+        .mockResolvedValue('mock-token');
       // Preparamos el mock para la búsqueda
       jest.spyOn(mockHttp, 'get').mockResolvedValue(clinicCloudSearchResults);
 
       // Ejecutamos el método a probar
-      const searchResults = await adapter.searchPatients({
-        name: 'Martín',
-        documentId: 'X1234567Z'
-      }, 10);
+      const searchResults = await adapter.searchPatients(
+        {
+          name: 'Martín',
+          documentId: 'X1234567Z',
+        },
+        10
+      );
 
       // Verificamos que la URL de búsqueda sea correcta
       expect(mockHttp.get).toHaveBeenCalledWith(
@@ -143,7 +161,7 @@ describe('ClinicCloudAdapter', () => {
         expect.objectContaining({
           nombre: 'Martín',
           documento: 'X1234567Z',
-          limite: '10'
+          limite: '10',
         })
       );
 
@@ -160,14 +178,16 @@ describe('ClinicCloudAdapter', () => {
   describe('getPatientHistory', () => {
     it('debería obtener y convertir correctamente el historial médico', async () => {
       // Preparamos el mock para la autenticación
-      jest.spyOn(mockHttp, 'authenticateClinicCloud').mockResolvedValue('mock-token');
+      jest
+        .spyOn(mockHttp, 'authenticateClinicCloud')
+        .mockResolvedValue('mock-token');
       // Preparamos el mock para la obtención del historial
       jest.spyOn(mockHttp, 'get').mockResolvedValue(clinicCloudPatientHistory);
 
       // Opciones para el historial
       const options = {
         startDate: new Date('2023-01-01'),
-        endDate: new Date('2023-12-31')
+        endDate: new Date('2023-12-31'),
       };
 
       // Ejecutamos el método a probar
@@ -175,11 +195,13 @@ describe('ClinicCloudAdapter', () => {
 
       // Verificamos que la URL de obtención sea correcta
       expect(mockHttp.get).toHaveBeenCalledWith(
-        expect.stringContaining('https://api.cliniccloud-test.es/historial/cc-67890'),
+        expect.stringContaining(
+          'https://api.cliniccloud-test.es/historial/cc-67890'
+        ),
         'cliniccloud',
         expect.objectContaining({
           fechaInicio: '2023-01-01',
-          fechaFin: '2023-12-31'
+          fechaFin: '2023-12-31',
         })
       );
 
@@ -207,9 +229,13 @@ describe('ClinicCloudAdapter', () => {
   describe('saveConsultation', () => {
     it('debería guardar una consulta correctamente', async () => {
       // Preparamos el mock para la autenticación
-      jest.spyOn(mockHttp, 'authenticateClinicCloud').mockResolvedValue('mock-token');
+      jest
+        .spyOn(mockHttp, 'authenticateClinicCloud')
+        .mockResolvedValue('mock-token');
       // Preparamos el mock para la creación de la consulta
-      jest.spyOn(mockHttp, 'post').mockResolvedValue({ id: 'nueva-consulta-456', estado: 'creada' });
+      jest
+        .spyOn(mockHttp, 'post')
+        .mockResolvedValue({ id: 'nueva-consulta-456', estado: 'creada' });
 
       // Datos de la consulta a guardar
       const consultation = {
@@ -220,9 +246,9 @@ describe('ClinicCloudAdapter', () => {
         diagnoses: [
           {
             code: 'S83.6',
-            description: 'Esguince de rodilla'
-          }
-        ]
+            description: 'Esguince de rodilla',
+          },
+        ],
       };
 
       // Ejecutamos el método a probar
@@ -236,7 +262,7 @@ describe('ClinicCloudAdapter', () => {
         expect.objectContaining({
           pacienteId: 'cc-67890',
           fecha: expect.any(String),
-          motivo: 'Dolor en rodilla derecha'
+          motivo: 'Dolor en rodilla derecha',
         })
       );
     });
@@ -245,19 +271,27 @@ describe('ClinicCloudAdapter', () => {
   describe('getPatientMetrics', () => {
     it('debería obtener y convertir correctamente las métricas', async () => {
       // Preparamos el mock para la autenticación
-      jest.spyOn(mockHttp, 'authenticateClinicCloud').mockResolvedValue('mock-token');
+      jest
+        .spyOn(mockHttp, 'authenticateClinicCloud')
+        .mockResolvedValue('mock-token');
       // Preparamos el mock para la obtención de métricas
       jest.spyOn(mockHttp, 'get').mockResolvedValue(patientMetrics);
 
       // Ejecutamos el método a probar
-      const metrics = await adapter.getPatientMetrics('cc-67890', ['peso', 'altura', 'tensionArterial']);
+      const metrics = await adapter.getPatientMetrics('cc-67890', [
+        'peso',
+        'altura',
+        'tensionArterial',
+      ]);
 
       // Verificamos que la URL de obtención sea correcta
       expect(mockHttp.get).toHaveBeenCalledWith(
-        expect.stringContaining('https://api.cliniccloud-test.es/metricas/cc-67890'),
+        expect.stringContaining(
+          'https://api.cliniccloud-test.es/metricas/cc-67890'
+        ),
         'cliniccloud',
         expect.objectContaining({
-          tipos: 'peso,altura,tensionArterial'
+          tipos: 'peso,altura,tensionArterial',
         })
       );
 

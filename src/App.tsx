@@ -4,12 +4,12 @@ import { AppRouter } from './routes';
 import { queryClient } from './lib/queryClient';
 
 function App() {
-    return (
-        <QueryClientProvider client={queryClient}>
-            <AppRouter />
-            <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-    );
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppRouter />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
 }
 
 export default App;

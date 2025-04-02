@@ -15,7 +15,7 @@ export enum ErrorSeverity {
   /** Advertencia que no afecta funcionalidad pero podría indicar problemas futuros */
   WARNING = 'warning',
   /** Información para seguimiento y análisis */
-  INFO = 'info'
+  INFO = 'info',
 }
 
 /**
@@ -39,7 +39,7 @@ export enum ErrorCategory {
   /** Errores relacionados con la red */
   NETWORK = 'network',
   /** Otros errores no categorizados */
-  OTHER = 'other'
+  OTHER = 'other',
 }
 
 /**
@@ -117,10 +117,11 @@ export class ErrorMonitorService {
     notificationThreshold?: ErrorSeverity;
   }): void {
     this.webhookUrl = config.webhookUrl;
-    this.notificationThreshold = config.notificationThreshold ?? ErrorSeverity.HIGH;
+    this.notificationThreshold =
+      config.notificationThreshold ?? ErrorSeverity.HIGH;
     this.logger.info('Configuración de monitoreo actualizada', {
       notificationThreshold: this.notificationThreshold,
-      webhookConfigured: !!this.webhookUrl
+      webhookConfigured: !!this.webhookUrl,
     });
   }
 
@@ -129,7 +130,12 @@ export class ErrorMonitorService {
    * @param error Información del error a registrar
    * @returns ID del error registrado
    */
-  public captureError(error: Omit<MonitoredError, 'id' | 'timestamp' | 'acknowledged' | 'resolved'>): string {
+  public captureError(
+    error: Omit<
+      MonitoredError,
+      'id' | 'timestamp' | 'acknowledged' | 'resolved'
+    >
+  ): string {
     const errorId = this.generateErrorId();
 
     const monitoredError: MonitoredError = {
@@ -137,7 +143,7 @@ export class ErrorMonitorService {
       timestamp: new Date(),
       acknowledged: false,
       resolved: false,
-      ...error
+      ...error,
     };
 
     this.errors.push(monitoredError);
@@ -147,7 +153,7 @@ export class ErrorMonitorService {
       message: monitoredError.message,
       category: monitoredError.category,
       severity: monitoredError.severity,
-      component: monitoredError.component
+      component: monitoredError.component,
     });
 
     // Enviar notificación si la severidad del error es igual o mayor al umbral configurado
@@ -193,11 +199,13 @@ export class ErrorMonitorService {
       //   })
       // });
 
-      this.logger.info('Notificación enviada para error', { errorId: error.id });
+      this.logger.info('Notificación enviada para error', {
+        errorId: error.id,
+      });
     } catch (notifyError) {
       this.logger.error('Error al enviar notificación', {
         errorId: error.id,
-        notifyError
+        notifyError,
       });
     }
   }
@@ -209,14 +217,14 @@ export class ErrorMonitorService {
    * @returns true si el error fue encontrado y actualizado
    */
   public acknowledgeError(errorId: string, userId: string): boolean {
-    const error = this.errors.find(e => e.id === errorId);
+    const error = this.errors.find((e) => e.id === errorId);
     if (!error) return false;
 
     error.acknowledged = true;
     error.metadata = {
       ...error.metadata,
       acknowledgedBy: userId,
-      acknowledgedAt: new Date()
+      acknowledgedAt: new Date(),
     };
 
     this.logger.info('Error reconocido', { errorId, userId });
@@ -234,11 +242,11 @@ export class ErrorMonitorService {
     errorId: string,
     userId: string,
     resolution?: {
-      steps?: string[],
-      notes?: string
+      steps?: string[];
+      notes?: string;
     }
   ): boolean {
-    const error = this.errors.find(e => e.id === errorId);
+    const error = this.errors.find((e) => e.id === errorId);
     if (!error) return false;
 
     error.resolved = true;
@@ -252,7 +260,7 @@ export class ErrorMonitorService {
     error.metadata = {
       ...error.metadata,
       resolutionNotes: resolution?.notes,
-      resolutionDate: new Date()
+      resolutionDate: new Date(),
     };
 
     this.logger.info('Error resuelto', { errorId, userId });
@@ -264,7 +272,7 @@ export class ErrorMonitorService {
    * @returns Lista de errores activos
    */
   public getActiveErrors(): MonitoredError[] {
-    return this.errors.filter(error => !error.resolved);
+    return this.errors.filter((error) => !error.resolved);
   }
 
   /**
@@ -286,31 +294,45 @@ export class ErrorMonitorService {
     if (!filters) return filteredErrors;
 
     if (filters.severity) {
-      filteredErrors = filteredErrors.filter(error => error.severity === filters.severity);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.severity === filters.severity
+      );
     }
 
     if (filters.category) {
-      filteredErrors = filteredErrors.filter(error => error.category === filters.category);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.category === filters.category
+      );
     }
 
     if (filters.component) {
-      filteredErrors = filteredErrors.filter(error => error.component === filters.component);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.component === filters.component
+      );
     }
 
     if (filters.resolved !== undefined) {
-      filteredErrors = filteredErrors.filter(error => error.resolved === filters.resolved);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.resolved === filters.resolved
+      );
     }
 
     if (filters.acknowledged !== undefined) {
-      filteredErrors = filteredErrors.filter(error => error.acknowledged === filters.acknowledged);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.acknowledged === filters.acknowledged
+      );
     }
 
     if (filters.startDate) {
-      filteredErrors = filteredErrors.filter(error => error.timestamp >= filters.startDate!);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.timestamp >= filters.startDate!
+      );
     }
 
     if (filters.endDate) {
-      filteredErrors = filteredErrors.filter(error => error.timestamp <= filters.endDate!);
+      filteredErrors = filteredErrors.filter(
+        (error) => error.timestamp <= filters.endDate!
+      );
     }
 
     return filteredErrors;
@@ -330,17 +352,27 @@ export class ErrorMonitorService {
     const stats = {
       total: this.errors.length,
       active: this.getActiveErrors().length,
-      bySeverity: Object.values(ErrorSeverity).reduce((acc, severity) => {
-        acc[severity] = this.errors.filter(e => e.severity === severity).length;
-        return acc;
-      }, {} as Record<ErrorSeverity, number>),
-      byCategory: Object.values(ErrorCategory).reduce((acc, category) => {
-        acc[category] = this.errors.filter(e => e.category === category).length;
-        return acc;
-      }, {} as Record<ErrorCategory, number>),
+      bySeverity: Object.values(ErrorSeverity).reduce(
+        (acc, severity) => {
+          acc[severity] = this.errors.filter(
+            (e) => e.severity === severity
+          ).length;
+          return acc;
+        },
+        {} as Record<ErrorSeverity, number>
+      ),
+      byCategory: Object.values(ErrorCategory).reduce(
+        (acc, category) => {
+          acc[category] = this.errors.filter(
+            (e) => e.category === category
+          ).length;
+          return acc;
+        },
+        {} as Record<ErrorCategory, number>
+      ),
       criticalUnresolved: this.errors.filter(
-        e => e.severity === ErrorSeverity.CRITICAL && !e.resolved
-      ).length
+        (e) => e.severity === ErrorSeverity.CRITICAL && !e.resolved
+      ).length,
     };
 
     return stats;
@@ -362,7 +394,8 @@ export class ErrorMonitorService {
     const initialCount = this.errors.length;
 
     this.errors = this.errors.filter(
-      error => !error.resolved || (error.resolvedAt && error.resolvedAt > olderThan)
+      (error) =>
+        !error.resolved || (error.resolvedAt && error.resolvedAt > olderThan)
     );
 
     const purgedCount = initialCount - this.errors.length;
@@ -396,7 +429,7 @@ export const captureException = (
     severity: options.severity,
     component: options.component,
     userId: options.userId,
-    metadata: options.metadata
+    metadata: options.metadata,
   });
 };
 

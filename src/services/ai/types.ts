@@ -2,131 +2,155 @@
  * Tipos e interfaces comunes para el sistema de IA
  */
 
-export type NoteType = 'consultation' | 'emergency' | 'follow-up' | 'lab-result' | 'prescription' | 'other';
-export type InsightType = 'timeline-gap' | 'treatment-pattern' | 'risk-factor' | 'contradiction' | 'missing-follow-up' | 'vital-signs-trend' | 'symptom-pattern';
+export type NoteType =
+  | 'consultation'
+  | 'emergency'
+  | 'follow-up'
+  | 'lab-result'
+  | 'prescription'
+  | 'other';
+export type InsightType =
+  | 'timeline-gap'
+  | 'treatment-pattern'
+  | 'risk-factor'
+  | 'contradiction'
+  | 'missing-follow-up'
+  | 'vital-signs-trend'
+  | 'symptom-pattern';
 export type SeverityType = 'high' | 'medium' | 'low';
-export type RecommendationType = 'medication' | 'test' | 'follow-up' | 'alert' | 'referral';
+export type RecommendationType =
+  | 'medication'
+  | 'test'
+  | 'follow-up'
+  | 'alert'
+  | 'referral';
 
 export interface VitalSigns {
-    temperature?: number;
-    bloodPressure?: string;
-    heartRate?: number;
-    oxygenSaturation?: number;
-    respiratoryRate?: number;
-    painLevel?: number;
+  temperature?: number;
+  bloodPressure?: string;
+  heartRate?: number;
+  oxygenSaturation?: number;
+  respiratoryRate?: number;
+  painLevel?: number;
 }
 
 export interface EMRData {
-    patientId: string;
-    medicalHistory: Array<{
-        date: string;
-        type: string;
-        description: string;
-    }>;
-    medications: Array<{
-        name: string;
-        dosage: string;
-        frequency: string;
-    }>;
-    vitalSigns: Array<{
-        date: string;
-        values: Omit<VitalSigns, 'respiratoryRate' | 'painLevel'>;
-    }>;
+  patientId: string;
+  medicalHistory: Array<{
+    date: string;
+    type: string;
+    description: string;
+  }>;
+  medications: Array<{
+    name: string;
+    dosage: string;
+    frequency: string;
+  }>;
+  vitalSigns: Array<{
+    date: string;
+    values: Omit<VitalSigns, 'respiratoryRate' | 'painLevel'>;
+  }>;
 }
 
 export interface UnstructuredNote {
-    content: string;
-    timestamp: string;
-    author: string;
-    type: NoteType;
-    symptoms?: string[];
-    medications?: string[];
-    vitalSigns?: VitalSigns;
-    diagnosis?: string;
-    treatment?: string;
-    followUp?: {
-        date: string;
-        notes: string;
-    };
+  content: string;
+  timestamp: string;
+  author: string;
+  type: NoteType;
+  symptoms?: string[];
+  medications?: string[];
+  vitalSigns?: VitalSigns;
+  diagnosis?: string;
+  treatment?: string;
+  followUp?: {
+    date: string;
+    notes: string;
+  };
 }
 
 export interface AIProvider {
-    id: string;
-    name: string;
-    costPerQuery: number;
-    capabilities: string[];
+  id: string;
+  name: string;
+  costPerQuery: number;
+  capabilities: string[];
 }
 
 export interface AIQuery {
-    query: string;
-    patientId?: string;
-    providerId?: string;
-    context?: {
-        type: 'emr' | 'appointment' | 'general';
-        data?: EMRData;
-    };
-    unstructuredNotes?: UnstructuredNote[];
+  query: string;
+  patientId?: string;
+  providerId?: string;
+  context?: {
+    type: 'emr' | 'appointment' | 'general';
+    data?: EMRData;
+  };
+  unstructuredNotes?: UnstructuredNote[];
 }
 
 export interface TimelineEvent {
-    type: string;
-    description: string;
-    source: string;
-    confidence: number;
+  type: string;
+  description: string;
+  source: string;
+  confidence: number;
 }
 
 export interface Insight {
-    type: InsightType;
-    description: string;
-    severity: SeverityType;
-    evidence: string[];
-    recommendation?: string;
+  type: InsightType;
+  description: string;
+  severity: SeverityType;
+  evidence: string[];
+  recommendation?: string;
 }
 
 export interface Recommendation {
-    type: RecommendationType;
-    description: string;
-    priority: SeverityType;
-    evidence: string[];
+  type: RecommendationType;
+  description: string;
+  priority: SeverityType;
+  evidence: string[];
 }
 
 export interface AIResponse {
-    answer: string;
-    confidence: number;
-    sources?: string[];
-    timeline?: Array<{
-        date: string;
-        events: TimelineEvent[];
-    }>;
-    insights?: Insight[];
-    recommendations?: Recommendation[];
+  answer: string;
+  confidence: number;
+  sources?: string[];
+  timeline?: Array<{
+    date: string;
+    events: TimelineEvent[];
+  }>;
+  insights?: Insight[];
+  recommendations?: Recommendation[];
 }
 
 export interface CachedResponse {
-    query: string;
-    response: AIResponse;
-    timestamp: number;
-    id: string;
-    queryHash: string;
-    lastAccessed: string;
-    accessCount: number;
-    metadata?: {
-        provider: string;
-        cost: number;
-        processingTime: number;
-    };
+  query: string;
+  response: AIResponse;
+  timestamp: number;
+  id: string;
+  queryHash: string;
+  lastAccessed: string;
+  accessCount: number;
+  metadata?: {
+    provider: string;
+    cost: number;
+    processingTime: number;
+  };
 }
 
 /**
  * Interfaz para métodos internos de AIService (usado para testing)
  */
 export interface AIServiceInternals {
-    getEMRData: (patientId: string) => Promise<EMRData>;
-    executeWithRetry: <T>(operation: () => Promise<T>, retries?: number) => Promise<T>;
-    generateSimulatedResponse: (query: AIQuery) => Promise<AIResponse>;
-    detectContradictions: (emrData: EMRData, notes: UnstructuredNote[]) => Insight[];
-    generateInsights: (response: AIResponse, emrData: EMRData) => Insight[];
-    generateRecommendations: (response: AIResponse) => Recommendation[];
+  getEMRData: (patientId: string) => Promise<EMRData>;
+  executeWithRetry: <T>(
+    operation: () => Promise<T>,
+    retries?: number
+  ) => Promise<T>;
+  generateSimulatedResponse: (query: AIQuery) => Promise<AIResponse>;
+  detectContradictions: (
+    emrData: EMRData,
+    notes: UnstructuredNote[]
+  ) => Insight[];
+  generateInsights: (response: AIResponse, emrData: EMRData) => Insight[];
+  generateRecommendations: (response: AIResponse) => Recommendation[];
 }
 
 /**
@@ -183,12 +207,12 @@ export interface SuggestedQuestion {
  * Tipos de etapas de la consulta médica
  */
 export type ConsultationStage =
-  'anamnesis' |
-  'examen-fisico' |
-  'diagnostico' |
-  'plan-tratamiento' |
-  'educacion-paciente' |
-  'seguimiento';
+  | 'anamnesis'
+  | 'examen-fisico'
+  | 'diagnostico'
+  | 'plan-tratamiento'
+  | 'educacion-paciente'
+  | 'seguimiento';
 
 /**
  * Ampliar AIResponse para incluir sugerencias de tratamiento y preguntas
@@ -201,7 +225,7 @@ export interface EnhancedAIResponse extends AIResponse {
   educationalContent?: {
     forPatient?: string;
     forProvider?: string;
-    resources?: Array<{title: string, url: string}>;
+    resources?: Array<{ title: string; url: string }>;
   };
 }
 
@@ -297,12 +321,15 @@ export interface PatientData {
     id: string;
     date: string;
     type: string;
-    results: Record<string, {
-      value: string | number;
-      unit?: string;
-      referenceRange?: string;
-      isAbnormal?: boolean;
-    }>;
+    results: Record<
+      string,
+      {
+        value: string | number;
+        unit?: string;
+        referenceRange?: string;
+        isAbnormal?: boolean;
+      }
+    >;
   }>;
   currentTreatments?: Array<{
     name: string;

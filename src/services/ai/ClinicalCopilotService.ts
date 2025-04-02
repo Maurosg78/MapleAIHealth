@@ -6,7 +6,7 @@ import {
   EnhancedAIResponse,
   EvidenceLevel,
   SuggestedQuestion,
-  TreatmentSuggestion
+  TreatmentSuggestion,
 } from './types';
 import { cacheService } from './cacheService';
 import { Logger } from '../../lib/logger';
@@ -21,7 +21,7 @@ export interface ConsultationSuggestion {
   educationalContent?: {
     forPatient?: string;
     forProvider?: string;
-    resources?: Array<{title: string, url: string}>;
+    resources?: Array<{ title: string; url: string }>;
   };
   followUpRecommendation?: string;
 }
@@ -73,7 +73,7 @@ export class ClinicalCopilotService {
       reasonForVisit,
       isFirstVisit,
       stage: 'anamnesis',
-      timeElapsed: 0
+      timeElapsed: 0,
     };
 
     this.activeConsultations.set(consultationId, context);
@@ -108,12 +108,14 @@ export class ClinicalCopilotService {
           reasonForVisit: context.reasonForVisit,
           isFirstVisit: context.isFirstVisit,
           stage: context.stage,
-          timeElapsed: context.timeElapsed
+          timeElapsed: context.timeElapsed,
         },
         requiresQuestionSuggestions: true,
         requiresTreatmentSuggestions: context.stage === 'plan-tratamiento',
-        requiresEducationalContent: context.stage === 'educacion-paciente' || context.stage === 'plan-tratamiento',
-        evidenceLevelThreshold: evidenceLevel
+        requiresEducationalContent:
+          context.stage === 'educacion-paciente' ||
+          context.stage === 'plan-tratamiento',
+        evidenceLevelThreshold: evidenceLevel,
       };
 
       // Obtener cache primero
@@ -126,19 +128,27 @@ export class ClinicalCopilotService {
       }
 
       // Obtener respuesta de IA
-      const response = await this.aiService.query(query) as EnhancedAIResponse;
+      const response = (await this.aiService.query(
+        query
+      )) as EnhancedAIResponse;
 
       // Guardar en caché
       await cacheService.set(cacheKey, response, {
         provider: 'clinical-copilot',
         cost: this.aiService.estimateCost('gpt-4-medical', 1),
-        processingTime: 0
+        processingTime: 0,
       });
 
       return this.formatResponse(response);
     } catch (error) {
-      this.logger.error('Error obteniendo sugerencias', { error, consultationId });
-      throw new AIServiceError('Error al generar sugerencias para la consulta', error as Error);
+      this.logger.error('Error obteniendo sugerencias', {
+        error,
+        consultationId,
+      });
+      throw new AIServiceError(
+        'Error al generar sugerencias para la consulta',
+        error as Error
+      );
     }
   }
 
@@ -161,7 +171,7 @@ export class ClinicalCopilotService {
     this.logger.info('Etapa de consulta actualizada', {
       consultationId,
       previousStage: context.stage,
-      newStage
+      newStage,
     });
 
     return true;
@@ -170,10 +180,7 @@ export class ClinicalCopilotService {
   /**
    * Finaliza la consulta actual
    */
-  public endConsultation(
-    consultationId: string,
-    summary?: string
-  ): boolean {
+  public endConsultation(consultationId: string, summary?: string): boolean {
     const context = this.activeConsultations.get(consultationId);
 
     if (!context) {
@@ -186,7 +193,7 @@ export class ClinicalCopilotService {
       consultationId,
       patientId: context.patientId,
       duration: context.timeElapsed,
-      summary: summary ?? 'No summary provided'
+      summary: summary ?? 'No summary provided',
     });
 
     return true;
@@ -201,7 +208,9 @@ export class ClinicalCopilotService {
       treatments: response.treatmentSuggestions || [],
       nextSteps: response.nextSteps || [],
       educationalContent: response.educationalContent,
-      followUpRecommendation: response.insights?.find(i => i.type === 'missing-follow-up')?.recommendation
+      followUpRecommendation: response.insights?.find(
+        (i) => i.type === 'missing-follow-up'
+      )?.recommendation,
     };
   }
 }

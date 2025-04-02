@@ -1,7 +1,27 @@
 import React, { useState } from 'react';
-import { Box, Button, FormControl, FormLabel, Heading, Input, Stack, Table, Tbody, Td, Text, Th, Thead, Tr, VStack, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Stack,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  VStack,
+  useToast,
+} from '@chakra-ui/react';
 import { EMRConfigService } from '../../services/emr/EMRConfigService';
-import { EMRPatientSearchResult, EMRSearchQuery } from '../../services/emr/EMRAdapter';
+import {
+  EMRPatientSearchResult,
+  EMRSearchQuery,
+} from '../../services/emr/EMRAdapter';
 
 /**
  * Componente de ejemplo para búsqueda de pacientes utilizando el adaptador EMR configurado
@@ -15,11 +35,13 @@ const EMRPatientSearch: React.FC = () => {
     name: '',
     documentId: '',
     email: '',
-    phone: ''
+    phone: '',
   });
 
   // Estado para los resultados de búsqueda
-  const [searchResults, setSearchResults] = useState<EMRPatientSearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<EMRPatientSearchResult[]>(
+    []
+  );
 
   // Estado de carga
   const [isSearching, setIsSearching] = useState(false);
@@ -29,21 +51,25 @@ const EMRPatientSearch: React.FC = () => {
 
   // Actualizar campo de búsqueda
   const handleSearchChange = (field: keyof EMRSearchQuery, value: string) => {
-    setSearchQuery(prev => ({
+    setSearchQuery((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   // Realizar búsqueda de pacientes
   const handleSearch = async () => {
     // Verificar que al menos un campo tenga valor
-    if (!searchQuery.name && !searchQuery.documentId &&
-        !searchQuery.email && !searchQuery.phone) {
+    if (
+      !searchQuery.name &&
+      !searchQuery.documentId &&
+      !searchQuery.email &&
+      !searchQuery.phone
+    ) {
       toast({
-        title: "Búsqueda incompleta",
-        description: "Por favor, introduce al menos un criterio de búsqueda.",
-        status: "warning",
+        title: 'Búsqueda incompleta',
+        description: 'Por favor, introduce al menos un criterio de búsqueda.',
+        status: 'warning',
         duration: 3000,
         isClosable: true,
       });
@@ -66,15 +92,15 @@ const EMRPatientSearch: React.FC = () => {
       toast({
         title: `Búsqueda realizada (${adapterName})`,
         description: `Se encontraron ${results.length} resultados.`,
-        status: "success",
+        status: 'success',
         duration: 3000,
         isClosable: true,
       });
     } catch (error) {
       toast({
-        title: "Error en la búsqueda",
+        title: 'Error en la búsqueda',
         description: `Error: ${(error as Error).message}`,
-        status: "error",
+        status: 'error',
         duration: 5000,
         isClosable: true,
       });
@@ -89,7 +115,7 @@ const EMRPatientSearch: React.FC = () => {
       name: '',
       documentId: '',
       email: '',
-      phone: ''
+      phone: '',
     });
     setSearchResults([]);
     setHasSearched(false);
@@ -100,8 +126,9 @@ const EMRPatientSearch: React.FC = () => {
       <VStack spacing={6} align="stretch">
         <Heading size="md">Búsqueda de Pacientes</Heading>
         <Text fontSize="sm" color="gray.600">
-          Este componente utiliza el adaptador EMR configurado ({emrConfig.getCurrentAdapterName()})
-          para buscar pacientes en el sistema.
+          Este componente utiliza el adaptador EMR configurado (
+          {emrConfig.getCurrentAdapterName()}) para buscar pacientes en el
+          sistema.
         </Text>
 
         <Stack spacing={4}>
@@ -146,10 +173,7 @@ const EMRPatientSearch: React.FC = () => {
         </Stack>
 
         <Stack direction="row" spacing={4} justify="flex-end">
-          <Button
-            variant="outline"
-            onClick={handleClear}
-          >
+          <Button variant="outline" onClick={handleClear}>
             Limpiar
           </Button>
 
@@ -165,10 +189,14 @@ const EMRPatientSearch: React.FC = () => {
 
         {hasSearched && (
           <Box mt={4}>
-            <Heading size="sm" mb={3}>Resultados</Heading>
+            <Heading size="sm" mb={3}>
+              Resultados
+            </Heading>
 
             {searchResults.length === 0 ? (
-              <Text color="gray.500">No se encontraron resultados con los criterios de búsqueda.</Text>
+              <Text color="gray.500">
+                No se encontraron resultados con los criterios de búsqueda.
+              </Text>
             ) : (
               <Box overflowX="auto">
                 <Table variant="simple" size="sm">
@@ -182,7 +210,7 @@ const EMRPatientSearch: React.FC = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {searchResults.map(patient => (
+                    {searchResults.map((patient) => (
                       <Tr key={patient.id}>
                         <Td>{patient.id}</Td>
                         <Td>{patient.name}</Td>

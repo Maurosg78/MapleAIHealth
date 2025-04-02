@@ -24,24 +24,27 @@ const SetupPage: React.FC = () => {
         const config = JSON.parse(savedAdapterConfig);
         setSavedConfig({
           adapterName: savedAdapterName,
-          config
+          config,
         });
 
         toast({
-          title: "Configuración cargada",
+          title: 'Configuración cargada',
           description: `Configuración de ${savedAdapterName} cargada desde almacenamiento local.`,
-          status: "info",
+          status: 'info',
           duration: 3000,
           isClosable: true,
         });
       } catch (error) {
-        console.error("Error al cargar configuración:", error);
+        console.error('Error al cargar configuración:', error);
       }
     }
   }, [toast]);
 
   // Manejar la finalización de la configuración
-  const handleSetupComplete = (adapterName: string, config: EMRAdapterConfig) => {
+  const handleSetupComplete = (
+    adapterName: string,
+    config: EMRAdapterConfig
+  ) => {
     // Guardar configuración
     localStorage.setItem('emrAdapterName', adapterName);
     localStorage.setItem('emrAdapterConfig', JSON.stringify(config));
@@ -49,7 +52,7 @@ const SetupPage: React.FC = () => {
     // Actualizar estado
     setSavedConfig({
       adapterName,
-      config
+      config,
     });
   };
 
@@ -59,7 +62,8 @@ const SetupPage: React.FC = () => {
         <VStack align="start" spacing={2}>
           <Heading as="h1">Configuración de MapleHealth AI</Heading>
           <Text color="gray.600">
-            Configura tu conexión con el sistema de Registro Médico Electrónico (EMR) para empezar a utilizar MapleHealth AI.
+            Configura tu conexión con el sistema de Registro Médico Electrónico
+            (EMR) para empezar a utilizar MapleHealth AI.
           </Text>
         </VStack>
 
@@ -71,7 +75,8 @@ const SetupPage: React.FC = () => {
 
         {savedConfig && (
           <Text color="green.600" fontWeight="medium">
-            Estás utilizando el adaptador {savedConfig.adapterName} con configuración personalizada.
+            Estás utilizando el adaptador {savedConfig.adapterName} con
+            configuración personalizada.
           </Text>
         )}
       </VStack>

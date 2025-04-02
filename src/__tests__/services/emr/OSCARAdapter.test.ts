@@ -4,7 +4,7 @@ import {
   oscarPatientData,
   oscarSearchResults,
   oscarPatientHistory,
-  patientMetrics
+  patientMetrics,
 } from './mocks/MockEMRResponses';
 
 // Creamos un mock de la clase Logger para evitar logs en los tests
@@ -15,9 +15,9 @@ jest.mock('../../../lib/logger', () => {
         info: jest.fn(),
         error: jest.fn(),
         warn: jest.fn(),
-        debug: jest.fn()
+        debug: jest.fn(),
       };
-    })
+    }),
   };
 });
 
@@ -35,7 +35,7 @@ describe('OSCARAdapter', () => {
       baseUrl: 'https://oscar-test.example.ca',
       username: 'testuser',
       password: 'testpass',
-      clinicId: 'clinic123'
+      clinicId: 'clinic123',
     });
 
     // Reemplazamos el método httpService privado con nuestro mock
@@ -52,12 +52,17 @@ describe('OSCARAdapter', () => {
 
       // Verificamos el resultado
       expect(result).toBe(true);
-      expect(mockHttp.authenticateOscar).toHaveBeenCalledWith('testuser', 'testpass');
+      expect(mockHttp.authenticateOscar).toHaveBeenCalledWith(
+        'testuser',
+        'testpass'
+      );
     });
 
     it('debería devolver false cuando falla la autenticación', async () => {
       // Preparamos el mock para simular un fallo en la autenticación
-      spyOn(mockHttp, 'authenticateOscar').and.rejectWith(new Error('Credenciales inválidas'));
+      spyOn(mockHttp, 'authenticateOscar').and.rejectWith(
+        new Error('Credenciales inválidas')
+      );
 
       // Ejecutamos el método a probar
       const result = await adapter.testConnection();
@@ -97,12 +102,12 @@ describe('OSCARAdapter', () => {
             city: 'Toronto',
             state: 'ON',
             postalCode: 'M5V 2N4',
-            country: 'Canada'
-          }
+            country: 'Canada',
+          },
         },
         identifiers: {
-          mrn: 'ONT123456789'
-        }
+          mrn: 'ONT123456789',
+        },
       });
     });
 
@@ -110,7 +115,9 @@ describe('OSCARAdapter', () => {
       // Preparamos el mock para la autenticación
       spyOn(mockHttp, 'authenticateOscar').and.resolveTo('mock-token');
       // Preparamos el mock para simular un error en la API
-      spyOn(mockHttp, 'get').and.rejectWith(new Error('Error al obtener datos'));
+      spyOn(mockHttp, 'get').and.rejectWith(
+        new Error('Error al obtener datos')
+      );
 
       // Ejecutamos el método y verificamos que lance un error
       await expectAsync(adapter.getPatientData('12345')).toBeRejectedWithError(
@@ -127,7 +134,10 @@ describe('OSCARAdapter', () => {
       spyOn(mockHttp, 'get').and.resolveTo(oscarSearchResults);
 
       // Ejecutamos el método a probar
-      const searchResults = await adapter.searchPatients({ name: 'García' }, 10);
+      const searchResults = await adapter.searchPatients(
+        { name: 'García' },
+        10
+      );
 
       // Verificamos que la URL de búsqueda sea correcta
       expect(mockHttp.get).toHaveBeenCalledWith(
@@ -156,7 +166,7 @@ describe('OSCARAdapter', () => {
       // Opciones para el historial
       const options = {
         startDate: new Date('2023-01-01'),
-        endDate: new Date('2023-12-31')
+        endDate: new Date('2023-12-31'),
       };
 
       // Ejecutamos el método a probar
@@ -194,7 +204,10 @@ describe('OSCARAdapter', () => {
       // Preparamos el mock para la autenticación
       spyOn(mockHttp, 'authenticateOscar').and.resolveTo('mock-token');
       // Preparamos el mock para la creación de la consulta
-      spyOn(mockHttp, 'post').and.resolveTo({ id: 'new-consultation-123', status: 'created' });
+      spyOn(mockHttp, 'post').and.resolveTo({
+        id: 'new-consultation-123',
+        status: 'created',
+      });
 
       // Datos de la consulta a guardar
       const consultation = {
@@ -205,9 +218,9 @@ describe('OSCARAdapter', () => {
         diagnoses: [
           {
             code: 'J45.909',
-            description: 'Asma no especificada'
-          }
-        ]
+            description: 'Asma no especificada',
+          },
+        ],
       };
 
       // Ejecutamos el método a probar
@@ -231,7 +244,11 @@ describe('OSCARAdapter', () => {
       spyOn(mockHttp, 'get').and.resolveTo(patientMetrics);
 
       // Ejecutamos el método a probar
-      const metrics = await adapter.getPatientMetrics('12345', ['weight', 'height', 'bloodPressure']);
+      const metrics = await adapter.getPatientMetrics('12345', [
+        'weight',
+        'height',
+        'bloodPressure',
+      ]);
 
       // Verificamos que la URL de obtención sea correcta
       expect(mockHttp.get).toHaveBeenCalledWith(

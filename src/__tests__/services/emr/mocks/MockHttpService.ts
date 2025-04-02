@@ -9,11 +9,16 @@ import {
   epicSearchResults,
   epicPatientHistory,
   patientMetrics,
-  apiErrors
+  apiErrors,
 } from './MockEMRResponses';
 
 // Definir tipos para mejorar la legibilidad y mantenimiento
-type ErrorType = 'unauthorized' | 'notFound' | 'serverError' | 'badRequest' | null;
+type ErrorType =
+  | 'unauthorized'
+  | 'notFound'
+  | 'serverError'
+  | 'badRequest'
+  | null;
 type AdapterType = 'oscar' | 'cliniccloud' | 'epic';
 type ResponseData = Record<string, unknown>;
 
@@ -29,25 +34,28 @@ export class MockHttpService {
   private errorToThrow: ErrorType = null;
 
   // Mapeo de endpoints para respuestas GET
-  private readonly endpointResponses: Record<AdapterType, Record<string, unknown>> = {
+  private readonly endpointResponses: Record<
+    AdapterType,
+    Record<string, unknown>
+  > = {
     oscar: {
-      'demographic': oscarPatientData,
-      'search': oscarSearchResults,
-      'history': oscarPatientHistory,
-      'metrics': patientMetrics
+      demographic: oscarPatientData,
+      search: oscarSearchResults,
+      history: oscarPatientHistory,
+      metrics: patientMetrics,
     },
     cliniccloud: {
-      'paciente': clinicCloudPatientData,
-      'buscar': clinicCloudSearchResults,
-      'historial': clinicCloudPatientHistory,
-      'metricas': patientMetrics
+      paciente: clinicCloudPatientData,
+      buscar: clinicCloudSearchResults,
+      historial: clinicCloudPatientHistory,
+      metricas: patientMetrics,
     },
     epic: {
-      'Patient': epicPatientData,
+      Patient: epicPatientData,
       'Patient?': epicSearchResults,
-      'Bundle': epicPatientHistory,
-      'Observation': patientMetrics
-    }
+      Bundle: epicPatientHistory,
+      Observation: patientMetrics,
+    },
   };
 
   // Mapeo de endpoints para POST
@@ -57,7 +65,7 @@ export class MockHttpService {
     Encounter: true,
     treatment: true,
     tratamiento: true,
-    MedicationRequest: true
+    MedicationRequest: true,
   };
 
   /**
@@ -92,7 +100,10 @@ export class MockHttpService {
    * Simula autenticación para OSCAR
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async authenticateOscar(_username: string, _password: string): Promise<string> {
+  public async authenticateOscar(
+    _username: string,
+    _password: string
+  ): Promise<string> {
     return this.authenticate('oscar');
   }
 
@@ -108,7 +119,10 @@ export class MockHttpService {
    * Simula autenticación OAuth2 para EPIC
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async authenticateEpic(_clientId: string, _clientSecret: string): Promise<string> {
+  public async authenticateEpic(
+    _clientId: string,
+    _clientSecret: string
+  ): Promise<string> {
     return this.authenticate('epic');
   }
 
@@ -131,16 +145,27 @@ export class MockHttpService {
    * Simula una solicitud GET
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async get<T>(url: string, adapter: string, _params?: Record<string, string>): Promise<T> {
+  public async get<T>(
+    url: string,
+    adapter: string,
+    _params?: Record<string, string>
+  ): Promise<T> {
     await this.delay();
     this.checkErrors();
     this.verifyAuthentication(adapter as AdapterType);
 
     // Extraer el endpoint y clave de respuesta
-    const { endpoint, responseKey } = this.extractEndpointInfo(url, adapter as AdapterType);
+    const { endpoint, responseKey } = this.extractEndpointInfo(
+      url,
+      adapter as AdapterType
+    );
 
     // Obtener la respuesta correspondiente
-    const response = this.getResponseForEndpoint(adapter as AdapterType, endpoint, responseKey);
+    const response = this.getResponseForEndpoint(
+      adapter as AdapterType,
+      endpoint,
+      responseKey
+    );
 
     if (response) {
       return response as unknown as T;
@@ -152,7 +177,10 @@ export class MockHttpService {
   /**
    * Extrae información del endpoint y clave de respuesta
    */
-  private extractEndpointInfo(url: string, adapter: AdapterType): { endpoint: string, responseKey: string } {
+  private extractEndpointInfo(
+    url: string,
+    adapter: AdapterType
+  ): { endpoint: string; responseKey: string } {
     const parts = url.split('/');
     const endpoint = parts[parts.length - 1].split('?')[0];
 
@@ -172,7 +200,11 @@ export class MockHttpService {
   /**
    * Obtiene la respuesta adecuada según el adaptador y endpoint
    */
-  private getResponseForEndpoint(adapter: AdapterType, endpoint: string, responseKey: string): unknown {
+  private getResponseForEndpoint(
+    adapter: AdapterType,
+    endpoint: string,
+    responseKey: string
+  ): unknown {
     const adapterResponses = this.endpointResponses[adapter];
     if (!adapterResponses) return null;
 
@@ -183,7 +215,11 @@ export class MockHttpService {
    * Simula una solicitud POST
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async post<T>(url: string, adapter: string, _data: Record<string, unknown>): Promise<T> {
+  public async post<T>(
+    url: string,
+    adapter: string,
+    _data: Record<string, unknown>
+  ): Promise<T> {
     await this.delay();
     this.checkErrors();
     this.verifyAuthentication(adapter as AdapterType);
@@ -204,7 +240,11 @@ export class MockHttpService {
    * Simula una solicitud PUT
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async put<T>(url: string, adapter: string, _data: Record<string, unknown>): Promise<T> {
+  public async put<T>(
+    url: string,
+    adapter: string,
+    _data: Record<string, unknown>
+  ): Promise<T> {
     await this.delay();
     this.checkErrors();
     this.verifyAuthentication(adapter as AdapterType);
@@ -215,7 +255,11 @@ export class MockHttpService {
     const id = parts[parts.length - 1];
 
     // Verificar si es un endpoint válido para PUT (solo consultas por ahora)
-    if (endpoint === 'consultation' || endpoint === 'consulta' || endpoint === 'Encounter') {
+    if (
+      endpoint === 'consultation' ||
+      endpoint === 'consulta' ||
+      endpoint === 'Encounter'
+    ) {
       return { id, status: 'updated' } as unknown as T;
     }
 
@@ -264,7 +308,7 @@ export class MockHttpService {
    */
   private async delay(): Promise<void> {
     if (this.delayMs > 0) {
-      return new Promise(resolve => setTimeout(resolve, this.delayMs));
+      return new Promise((resolve) => setTimeout(resolve, this.delayMs));
     }
   }
 }

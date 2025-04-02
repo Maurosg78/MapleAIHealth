@@ -40,7 +40,7 @@ global.fetch = jest.fn(() =>
     headers: {
       get: jest.fn(),
       forEach: jest.fn(),
-      has: jest.fn()
-    }
+      has: jest.fn(),
+    },
   } as Response)
 ) as jest.Mock;

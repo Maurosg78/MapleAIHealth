@@ -3,14 +3,14 @@ import monitorService, {
   ErrorSeverity,
   ErrorCategory,
   MonitoredError,
-  captureException
+  captureException,
 } from './monitorService';
 
 import lintingErrorService, {
   LintingErrorService,
   LintingErrorType,
   LintingErrorPriority,
-  LintingError
+  LintingError,
 } from './lintingErrorService';
 
 // Exportar funciones y clases
@@ -22,7 +22,7 @@ export {
 
   // Servicio de errores de linting
   lintingErrorService,
-  LintingErrorService
+  LintingErrorService,
 };
 
 // Exportar tipos e interfaces
@@ -30,14 +30,13 @@ export type {
   ErrorSeverity,
   ErrorCategory,
   MonitoredError,
-
   LintingErrorType,
   LintingErrorPriority,
-  LintingError
+  LintingError,
 };
 
 // Exportar instancias por defecto
 export default {
   errorMonitor: monitorService,
-  lintingErrors: lintingErrorService
+  lintingErrors: lintingErrorService,
 };

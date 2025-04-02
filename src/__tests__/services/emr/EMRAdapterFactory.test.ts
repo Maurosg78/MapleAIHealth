@@ -12,9 +12,9 @@ jest.mock('../../../lib/logger', () => {
         info: jest.fn(),
         error: jest.fn(),
         warn: jest.fn(),
-        debug: jest.fn()
+        debug: jest.fn(),
       };
-    })
+    }),
   };
 });
 
@@ -36,7 +36,7 @@ describe('EMRAdapterFactory', () => {
         baseUrl: 'https://oscar-test.example.ca',
         username: 'testuser',
         password: 'testpass',
-        clinicId: 'clinic123'
+        clinicId: 'clinic123',
       });
       expect(adapter).toBeInstanceOf(OSCARAdapter);
     });
@@ -45,7 +45,7 @@ describe('EMRAdapterFactory', () => {
       const adapter = EMRAdapterFactory.getAdapter('CLINICCLOUD', {
         apiUrl: 'https://api.cliniccloud-test.es',
         apiKey: 'test-api-key-123',
-        clinicId: 'clinica456'
+        clinicId: 'clinica456',
       });
       expect(adapter).toBeInstanceOf(ClinicCloudAdapter);
     });
@@ -55,7 +55,7 @@ describe('EMRAdapterFactory', () => {
         baseUrl: 'https://epic-fhir-api.example.org',
         apiKey: 'test-api-key',
         clientId: 'test-client-id',
-        clientSecret: 'test-client-secret'
+        clientSecret: 'test-client-secret',
       });
       expect(adapter).toBeInstanceOf(EPICAdapter);
     });
@@ -85,7 +85,7 @@ describe('EMRAdapterFactory', () => {
         baseUrl: 'https://oscar-test.example.ca',
         username: 'testuser',
         password: 'testpass',
-        clinicId: 'clinic123'
+        clinicId: 'clinic123',
       };
 
       const adapter1 = EMRAdapterFactory.getAdapter('OSCAR', config);
@@ -99,14 +99,14 @@ describe('EMRAdapterFactory', () => {
         baseUrl: 'https://oscar-test1.example.ca',
         username: 'testuser1',
         password: 'testpass1',
-        clinicId: 'clinic123'
+        clinicId: 'clinic123',
       };
 
       const config2 = {
         baseUrl: 'https://oscar-test2.example.ca',
         username: 'testuser2',
         password: 'testpass2',
-        clinicId: 'clinic456'
+        clinicId: 'clinic456',
       };
 
       const adapter1 = EMRAdapterFactory.getAdapter('OSCAR', config1);
@@ -132,17 +132,17 @@ describe('EMRAdapterFactory', () => {
       expect(info.length).toBeGreaterThanOrEqual(4); // Al menos 4 adaptadores
 
       // Verificar que cada adaptador tiene la estructura correcta
-      info.forEach(adapter => {
+      info.forEach((adapter) => {
         expect(adapter).toHaveProperty('id');
         expect(adapter).toHaveProperty('name');
         expect(adapter).toHaveProperty('description');
       });
 
       // Verificar que los adaptadores específicos existen
-      expect(info.find(a => a.id === 'GENERIC')).toBeDefined();
-      expect(info.find(a => a.id === 'OSCAR')).toBeDefined();
-      expect(info.find(a => a.id === 'CLINICCLOUD')).toBeDefined();
-      expect(info.find(a => a.id === 'EPIC')).toBeDefined();
+      expect(info.find((a) => a.id === 'GENERIC')).toBeDefined();
+      expect(info.find((a) => a.id === 'OSCAR')).toBeDefined();
+      expect(info.find((a) => a.id === 'CLINICCLOUD')).toBeDefined();
+      expect(info.find((a) => a.id === 'EPIC')).toBeDefined();
     });
   });
 });

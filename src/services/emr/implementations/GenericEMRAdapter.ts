@@ -7,16 +7,26 @@ import {
   EMRPatientMetrics,
   EMRPatientSearchResult,
   EMRSearchQuery,
-  EMRTreatment
+  EMRTreatment,
 } from '../EMRAdapter';
 import { PatientData } from '../../ai/types';
 import { Logger } from '../../../lib/logger';
 
 // Definir alias de tipos para uniones
-type EMRTreatmentType = 'medication' | 'procedure' | 'therapy' | 'lifestyle' | 'other';
+type EMRTreatmentType =
+  | 'medication'
+  | 'procedure'
+  | 'therapy'
+  | 'lifestyle'
+  | 'other';
 type EMRTreatmentStatus = 'active' | 'completed' | 'cancelled' | 'scheduled';
 type DiagnosisSystem = 'ICD-10' | 'ICD-11' | 'SNOMED-CT' | 'other';
-type DiagnosisStatus = 'active' | 'resolved' | 'recurrent' | 'chronic' | 'suspected';
+type DiagnosisStatus =
+  | 'active'
+  | 'resolved'
+  | 'recurrent'
+  | 'chronic'
+  | 'suspected';
 type GlucoseReadingType = 'fasting' | 'postprandial' | 'random';
 
 // Tipos para datos mock
@@ -116,68 +126,68 @@ export class GenericEMRAdapter implements EMRAdapter {
     // Datos simplificados para pasar la compilación de TypeScript
     // Paciente 1
     mockPatientData.push({
-      id: "PAT-001",
+      id: 'PAT-001',
       personalInfo: {
-        fullName: "Juan Carlos Martínez",
-        firstName: "Juan Carlos",
-        lastName: "Martínez",
-        dateOfBirth: "1975-06-12",
+        fullName: 'Juan Carlos Martínez',
+        firstName: 'Juan Carlos',
+        lastName: 'Martínez',
+        dateOfBirth: '1975-06-12',
         age: 48,
-        gender: "masculino",
-        documentId: "27456789",
+        gender: 'masculino',
+        documentId: '27456789',
         contactInfo: {
-          email: "jcmartinez@example.com",
-          phone: "+34612345678",
-          address: "Calle Libertad 123, Madrid"
-        }
+          email: 'jcmartinez@example.com',
+          phone: '+34612345678',
+          address: 'Calle Libertad 123, Madrid',
+        },
       },
       medicalHistory: {
-        allergies: ["penicilina", "nueces"],
-        chronicConditions: ["hipertensión", "diabetes tipo 2"],
+        allergies: ['penicilina', 'nueces'],
+        chronicConditions: ['hipertensión', 'diabetes tipo 2'],
         familyHistory: {
-          "diabetes": ["padre", "abuela paterna"],
-          "cardiopatías": ["madre"]
-        }
+          diabetes: ['padre', 'abuela paterna'],
+          cardiopatías: ['madre'],
+        },
       },
       vitalSigns: {
         bloodPressure: {
           systolic: 135,
-          diastolic: 85
-        }
-      }
+          diastolic: 85,
+        },
+      },
     });
 
     // Consulta de ejemplo
     mockConsultations.push({
-      id: "CONS-001",
-      patientId: "PAT-001",
-      providerId: "PROV-001",
-      date: "2023-10-15T10:30:00Z",
-      reason: "Control rutinario diabetes",
-      notes: "Paciente estable. Control glucémico mejorado.",
+      id: 'CONS-001',
+      patientId: 'PAT-001',
+      providerId: 'PROV-001',
+      date: '2023-10-15T10:30:00Z',
+      reason: 'Control rutinario diabetes',
+      notes: 'Paciente estable. Control glucémico mejorado.',
       diagnoses: [
         {
-          code: "E11.9",
-          system: "ICD-10",
-          description: "Diabetes mellitus tipo 2 controlada",
-          date: "2023-10-15T10:30:00Z",
-          status: "active"
-        }
-      ]
+          code: 'E11.9',
+          system: 'ICD-10',
+          description: 'Diabetes mellitus tipo 2 controlada',
+          date: '2023-10-15T10:30:00Z',
+          status: 'active',
+        },
+      ],
     });
 
     // Tratamiento de ejemplo
     mockTreatments.push({
-      id: "TREAT-001",
-      patientId: "PAT-001",
-      providerId: "PROV-001",
-      startDate: "2020-03-15T00:00:00Z",
-      name: "Metformina",
-      type: "medication",
-      description: "Tratamiento para control de glucemia en diabetes tipo 2",
-      dosage: "850mg",
-      frequency: "2 veces al día",
-      status: "active"
+      id: 'TREAT-001',
+      patientId: 'PAT-001',
+      providerId: 'PROV-001',
+      startDate: '2020-03-15T00:00:00Z',
+      name: 'Metformina',
+      type: 'medication',
+      description: 'Tratamiento para control de glucemia en diabetes tipo 2',
+      dosage: '850mg',
+      frequency: '2 veces al día',
+      status: 'active',
     });
   }
 
@@ -188,7 +198,7 @@ export class GenericEMRAdapter implements EMRAdapter {
     this.logger.info('Probando conexión');
 
     // Simular latencia de red
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     return true;
   }
@@ -200,10 +210,10 @@ export class GenericEMRAdapter implements EMRAdapter {
     this.logger.info('Obteniendo datos del paciente', { patientId });
 
     // Simular latencia de red
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
     // Buscar paciente en datos de ejemplo
-    const patient = mockPatientData.find(p => p.id === patientId);
+    const patient = mockPatientData.find((p) => p.id === patientId);
 
     if (!patient) {
       this.logger.error('Paciente no encontrado', { patientId });
@@ -217,28 +227,45 @@ export class GenericEMRAdapter implements EMRAdapter {
   /**
    * Busca pacientes en datos de ejemplo
    */
-  public async searchPatients(query: EMRSearchQuery, limit = 10): Promise<EMRPatientSearchResult[]> {
+  public async searchPatients(
+    query: EMRSearchQuery,
+    limit = 10
+  ): Promise<EMRPatientSearchResult[]> {
     this.logger.info('Buscando pacientes', { query, limit });
 
     // Simular latencia de red
-    await new Promise(resolve => setTimeout(resolve, 700));
+    await new Promise((resolve) => setTimeout(resolve, 700));
 
     // Filtrar pacientes basados en criterios de búsqueda
     let results = mockPatientData
-      .filter(patient => {
-        if (query.name && patient.personalInfo.fullName.toLowerCase().includes(query.name.toLowerCase())) {
+      .filter((patient) => {
+        if (
+          query.name &&
+          patient.personalInfo.fullName
+            .toLowerCase()
+            .includes(query.name.toLowerCase())
+        ) {
           return true;
         }
 
-        if (query.documentId && patient.personalInfo.documentId === query.documentId) {
+        if (
+          query.documentId &&
+          patient.personalInfo.documentId === query.documentId
+        ) {
           return true;
         }
 
-        if (query.email && patient.personalInfo.contactInfo?.email === query.email) {
+        if (
+          query.email &&
+          patient.personalInfo.contactInfo?.email === query.email
+        ) {
           return true;
         }
 
-        if (query.phone && patient.personalInfo.contactInfo?.phone === query.phone) {
+        if (
+          query.phone &&
+          patient.personalInfo.contactInfo?.phone === query.phone
+        ) {
           return true;
         }
 
@@ -246,18 +273,24 @@ export class GenericEMRAdapter implements EMRAdapter {
         if (Object.keys(query).length === 1 && query.criteria) {
           // Convertir criteria a string de forma segura
           const searchTermRaw = query.criteria;
-          const searchTerm = typeof searchTermRaw === 'string'
-            ? searchTermRaw.toLowerCase()
-            : String(searchTermRaw).toLowerCase();
+          const searchTerm =
+            typeof searchTermRaw === 'string'
+              ? searchTermRaw.toLowerCase()
+              : String(searchTermRaw).toLowerCase();
 
-          return patient.personalInfo.fullName.toLowerCase().includes(searchTerm) ||
-                (patient.personalInfo.documentId?.toLowerCase()?.includes(searchTerm) ?? false);
+          return (
+            patient.personalInfo.fullName.toLowerCase().includes(searchTerm) ||
+            (patient.personalInfo.documentId
+              ?.toLowerCase()
+              ?.includes(searchTerm) ??
+              false)
+          );
         }
 
         // Si no hay criterios, no incluir en los resultados
         return Object.keys(query).length === 0;
       })
-      .map(patient => {
+      .map((patient) => {
         const lastDate = patient.consultations?.length
           ? patient.consultations[patient.consultations.length - 1].date
           : undefined;
@@ -268,7 +301,7 @@ export class GenericEMRAdapter implements EMRAdapter {
           dateOfBirth: new Date(patient.personalInfo.dateOfBirth),
           documentId: patient.personalInfo.documentId,
           contactInfo: patient.personalInfo.contactInfo,
-          lastVisit: lastDate ? new Date(lastDate) : undefined
+          lastVisit: lastDate ? new Date(lastDate) : undefined,
         };
       });
 
@@ -283,16 +316,22 @@ export class GenericEMRAdapter implements EMRAdapter {
   /**
    * Obtiene historial del paciente
    */
-  public async getPatientHistory(patientId: string, options?: EMRHistoryOptions): Promise<EMRPatientHistory> {
-    this.logger.info('Obteniendo historial del paciente', { patientId, options });
+  public async getPatientHistory(
+    patientId: string,
+    options?: EMRHistoryOptions
+  ): Promise<EMRPatientHistory> {
+    this.logger.info('Obteniendo historial del paciente', {
+      patientId,
+      options,
+    });
 
     // Simular latencia de red
-    await new Promise(resolve => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
 
     // Filtrar consultas por paciente
     const consultations = mockConsultations
-      .filter(c => c.patientId === patientId)
-      .filter(c => {
+      .filter((c) => c.patientId === patientId)
+      .filter((c) => {
         if (!options) return true;
 
         let include = true;
@@ -311,12 +350,12 @@ export class GenericEMRAdapter implements EMRAdapter {
 
         return include;
       })
-      .map(c => this.convertToEMRConsultation(c));
+      .map((c) => this.convertToEMRConsultation(c));
 
     // Filtrar tratamientos por paciente
     const treatments = mockTreatments
-      .filter(t => t.patientId === patientId)
-      .filter(t => {
+      .filter((t) => t.patientId === patientId)
+      .filter((t) => {
         if (!options) return true;
 
         let include = true;
@@ -325,36 +364,42 @@ export class GenericEMRAdapter implements EMRAdapter {
           include = false;
         }
 
-        if (options.endDate && t.endDate && new Date(t.endDate) > options.endDate) {
+        if (
+          options.endDate &&
+          t.endDate &&
+          new Date(t.endDate) > options.endDate
+        ) {
           include = false;
         }
 
         return include;
       })
-      .map(t => this.convertToEMRTreatment(t));
+      .map((t) => this.convertToEMRTreatment(t));
 
     // Extraer diagnósticos de las consultas
     const allDiagnoses = consultations
-      .filter(c => c.diagnoses && c.diagnoses.length > 0)
-      .flatMap(c => c.diagnoses as EMRDiagnosis[]);
+      .filter((c) => c.diagnoses && c.diagnoses.length > 0)
+      .flatMap((c) => c.diagnoses as EMRDiagnosis[]);
 
     return {
       patientId,
       consultations,
       treatments,
       diagnoses: allDiagnoses,
-      allergies: this.getPatientAllergies(patientId)
+      allergies: this.getPatientAllergies(patientId),
     };
   }
 
   /**
    * Guarda una nueva consulta
    */
-  public async saveConsultation(consultation: EMRConsultation): Promise<string> {
+  public async saveConsultation(
+    consultation: EMRConsultation
+  ): Promise<string> {
     this.logger.info('Guardando consulta', { consultation });
 
     // Simular latencia de red
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
     // Generar ID para la consulta
     const consultationId = `consult-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -368,11 +413,14 @@ export class GenericEMRAdapter implements EMRAdapter {
   /**
    * Actualiza una consulta existente
    */
-  public async updateConsultation(consultationId: string, updates: Partial<EMRConsultation>): Promise<boolean> {
+  public async updateConsultation(
+    consultationId: string,
+    updates: Partial<EMRConsultation>
+  ): Promise<boolean> {
     this.logger.info('Actualizando consulta', { consultationId, updates });
 
     // Simular latencia de red
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     // En un caso real, aquí actualizaríamos en la base de datos
     this.logger.info('Consulta actualizada con éxito', { consultationId });
@@ -387,7 +435,7 @@ export class GenericEMRAdapter implements EMRAdapter {
     this.logger.info('Registrando tratamiento', { treatment });
 
     // Simular latencia de red
-    await new Promise(resolve => setTimeout(resolve, 700));
+    await new Promise((resolve) => setTimeout(resolve, 700));
 
     // Generar ID para el tratamiento
     const treatmentId = `treat-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -401,19 +449,25 @@ export class GenericEMRAdapter implements EMRAdapter {
   /**
    * Obtiene métricas de salud del paciente
    */
-  public async getPatientMetrics(patientId: string, metricTypes: string[]): Promise<EMRPatientMetrics> {
-    this.logger.info('Obteniendo métricas del paciente', { patientId, metricTypes });
+  public async getPatientMetrics(
+    patientId: string,
+    metricTypes: string[]
+  ): Promise<EMRPatientMetrics> {
+    this.logger.info('Obteniendo métricas del paciente', {
+      patientId,
+      metricTypes,
+    });
 
     // Simular latencia de red
-    await new Promise(resolve => setTimeout(resolve, 900));
+    await new Promise((resolve) => setTimeout(resolve, 900));
 
     // Generar datos de ejemplo para las métricas solicitadas
     const metrics: EMRPatientMetrics = {
-      patientId
+      patientId,
     };
 
     // Obtener paciente para acceder a datos base
-    const patient = mockPatientData.find(p => p.id === patientId);
+    const patient = mockPatientData.find((p) => p.id === patientId);
 
     if (!patient) {
       throw new Error(`Paciente no encontrado: ${patientId}`);
@@ -441,13 +495,18 @@ export class GenericEMRAdapter implements EMRAdapter {
    * Obtiene las alergias de un paciente de los datos de ejemplo
    */
   private getPatientAllergies(patientId: string): string[] {
-    return mockPatientData.find(p => p.id === patientId)?.medicalHistory?.allergies ?? [];
+    return (
+      mockPatientData.find((p) => p.id === patientId)?.medicalHistory
+        ?.allergies ?? []
+    );
   }
 
   /**
    * Convierte una consulta mock a formato EMRConsultation
    */
-  private convertToEMRConsultation(mockConsultation: MockConsultation): EMRConsultation {
+  private convertToEMRConsultation(
+    mockConsultation: MockConsultation
+  ): EMRConsultation {
     return {
       id: mockConsultation.id,
       patientId: mockConsultation.patientId,
@@ -455,28 +514,34 @@ export class GenericEMRAdapter implements EMRAdapter {
       date: new Date(mockConsultation.date),
       reason: mockConsultation.reason,
       notes: mockConsultation.notes,
-      diagnoses: mockConsultation.diagnoses?.map(d => ({
+      diagnoses: mockConsultation.diagnoses?.map((d) => ({
         code: d.code,
         system: d.system as DiagnosisSystem,
         description: d.description,
         date: new Date(d.date),
         status: d.status as DiagnosisStatus,
       })),
-      vitalSigns: mockConsultation.vitalSigns ? {
-        date: new Date(mockConsultation.vitalSigns.date),
-        temperature: mockConsultation.vitalSigns.temperature,
-        heartRate: mockConsultation.vitalSigns.heartRate,
-        respiratoryRate: mockConsultation.vitalSigns.respiratoryRate,
-        bloodPressureSystolic: mockConsultation.vitalSigns.bloodPressureSystolic,
-        bloodPressureDiastolic: mockConsultation.vitalSigns.bloodPressureDiastolic,
-        oxygenSaturation: mockConsultation.vitalSigns.oxygenSaturation,
-        weight: mockConsultation.vitalSigns.weight,
-        height: mockConsultation.vitalSigns.height,
-        bmi: mockConsultation.vitalSigns.bmi
-      } : undefined,
+      vitalSigns: mockConsultation.vitalSigns
+        ? {
+            date: new Date(mockConsultation.vitalSigns.date),
+            temperature: mockConsultation.vitalSigns.temperature,
+            heartRate: mockConsultation.vitalSigns.heartRate,
+            respiratoryRate: mockConsultation.vitalSigns.respiratoryRate,
+            bloodPressureSystolic:
+              mockConsultation.vitalSigns.bloodPressureSystolic,
+            bloodPressureDiastolic:
+              mockConsultation.vitalSigns.bloodPressureDiastolic,
+            oxygenSaturation: mockConsultation.vitalSigns.oxygenSaturation,
+            weight: mockConsultation.vitalSigns.weight,
+            height: mockConsultation.vitalSigns.height,
+            bmi: mockConsultation.vitalSigns.bmi,
+          }
+        : undefined,
       treatmentPlan: mockConsultation.treatmentPlan,
-      followUpDate: mockConsultation.followUpDate ? new Date(mockConsultation.followUpDate) : undefined,
-      specialty: mockConsultation.specialty
+      followUpDate: mockConsultation.followUpDate
+        ? new Date(mockConsultation.followUpDate)
+        : undefined,
+      specialty: mockConsultation.specialty,
     };
   }
 
@@ -489,7 +554,9 @@ export class GenericEMRAdapter implements EMRAdapter {
       patientId: mockTreatment.patientId,
       providerId: mockTreatment.providerId,
       startDate: new Date(mockTreatment.startDate),
-      endDate: mockTreatment.endDate ? new Date(mockTreatment.endDate) : undefined,
+      endDate: mockTreatment.endDate
+        ? new Date(mockTreatment.endDate)
+        : undefined,
       name: mockTreatment.name,
       type: mockTreatment.type as EMRTreatmentType,
       description: mockTreatment.description,
@@ -497,16 +564,18 @@ export class GenericEMRAdapter implements EMRAdapter {
       frequency: mockTreatment.frequency,
       instructions: mockTreatment.instructions,
       status: mockTreatment.status as EMRTreatmentStatus,
-      consultationId: mockTreatment.consultationId
+      consultationId: mockTreatment.consultationId,
     };
   }
 
   /**
    * Genera un historial de peso de ejemplo
    */
-  private generateWeightHistory(patient: MockPatient): Array<{date: Date, value: number}> {
+  private generateWeightHistory(
+    patient: MockPatient
+  ): Array<{ date: Date; value: number }> {
     const baseWeight = patient.vitalSigns?.weight ?? 70;
-    const history: Array<{date: Date, value: number}> = [];
+    const history: Array<{ date: Date; value: number }> = [];
 
     // Generar datos para los últimos 6 meses
     const now = new Date();
@@ -520,7 +589,7 @@ export class GenericEMRAdapter implements EMRAdapter {
 
       history.push({
         date,
-        value: Number(weight.toFixed(1))
+        value: Number(weight.toFixed(1)),
       });
     }
 
@@ -530,10 +599,13 @@ export class GenericEMRAdapter implements EMRAdapter {
   /**
    * Genera un historial de presión arterial de ejemplo
    */
-  private generateBloodPressureHistory(patient: MockPatient): Array<{date: Date, systolic: number, diastolic: number}> {
+  private generateBloodPressureHistory(
+    patient: MockPatient
+  ): Array<{ date: Date; systolic: number; diastolic: number }> {
     const baseSystolic = patient.vitalSigns?.bloodPressure?.systolic ?? 120;
     const baseDiastolic = patient.vitalSigns?.bloodPressure?.diastolic ?? 80;
-    const history: Array<{date: Date, systolic: number, diastolic: number}> = [];
+    const history: Array<{ date: Date; systolic: number; diastolic: number }> =
+      [];
 
     // Generar datos para los últimos 6 meses
     const now = new Date();
@@ -542,13 +614,13 @@ export class GenericEMRAdapter implements EMRAdapter {
       date.setMonth(now.getMonth() - i);
 
       // Variar la presión ligeramente
-      const systolicVar = (Math.random() * 10 - 5); // Entre -5 y +5
-      const diastolicVar = (Math.random() * 6 - 3); // Entre -3 y +3
+      const systolicVar = Math.random() * 10 - 5; // Entre -5 y +5
+      const diastolicVar = Math.random() * 6 - 3; // Entre -3 y +3
 
       history.push({
         date,
         systolic: Math.round(baseSystolic + systolicVar),
-        diastolic: Math.round(baseDiastolic + diastolicVar)
+        diastolic: Math.round(baseDiastolic + diastolicVar),
       });
     }
 
@@ -558,14 +630,21 @@ export class GenericEMRAdapter implements EMRAdapter {
   /**
    * Genera un historial de glucosa de ejemplo
    */
-  private generateGlucoseHistory(patient: MockPatient): Array<{date: Date, value: number, type: GlucoseReadingType}> {
-    const history: Array<{date: Date, value: number, type: GlucoseReadingType}> = [];
+  private generateGlucoseHistory(
+    patient: MockPatient
+  ): Array<{ date: Date; value: number; type: GlucoseReadingType }> {
+    const history: Array<{
+      date: Date;
+      value: number;
+      type: GlucoseReadingType;
+    }> = [];
     const types: GlucoseReadingType[] = ['fasting', 'postprandial', 'random'];
 
     // Determinar si el paciente tiene diabetes (para ajustar los valores)
-    const hasDiabetes = patient.medicalHistory?.chronicConditions?.some(
-      (c: string) => c.toLowerCase().includes('diabetes')
-    ) ?? false;
+    const hasDiabetes =
+      patient.medicalHistory?.chronicConditions?.some((c: string) =>
+        c.toLowerCase().includes('diabetes')
+      ) ?? false;
 
     // Valores base según condición
     const baseValue = hasDiabetes ? 140 : 90;
@@ -589,12 +668,12 @@ export class GenericEMRAdapter implements EMRAdapter {
       }
 
       // Variar la glucosa
-      const valueVar = (Math.random() * variation * 2 - variation);
+      const valueVar = Math.random() * variation * 2 - variation;
 
       history.push({
         date,
         value: Math.round(typeBaseValue + valueVar),
-        type
+        type,
       });
     }
 
@@ -604,13 +683,10 @@ export class GenericEMRAdapter implements EMRAdapter {
   /**
    * Finaliza la consulta actual
    */
-  public endConsultation(
-    consultationId: string,
-    summary?: string
-  ): boolean {
+  public endConsultation(consultationId: string, summary?: string): boolean {
     this.logger.info('Consulta finalizada', {
       consultationId,
-      summary: summary ?? 'No summary provided'
+      summary: summary ?? 'No summary provided',
     });
     return true;
   }

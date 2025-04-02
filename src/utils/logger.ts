@@ -35,7 +35,7 @@ export class Logger {
       level,
       service: this.serviceName,
       message,
-      data
+      data,
     };
 
     this.logs.push(entry);
@@ -87,7 +87,7 @@ export class Logger {
    */
   getLogs(level?: LogLevel): LogEntry[] {
     if (level) {
-      return this.logs.filter(log => log.level === level);
+      return this.logs.filter((log) => log.level === level);
     }
     return [...this.logs];
   }

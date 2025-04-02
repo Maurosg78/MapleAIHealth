@@ -7,7 +7,7 @@ import {
   EMRPatientMetrics,
   EMRPatientSearchResult,
   EMRSearchQuery,
-  EMRTreatment
+  EMRTreatment,
 } from '../EMRAdapter';
 import { PatientData } from '../../ai/types';
 import { Logger } from '../../../lib/logger';
@@ -32,12 +32,15 @@ interface EMRLabResult {
   date: Date;
   type: string;
   name: string;
-  results: Record<string, {
-    value: string | number;
-    unit?: string;
-    referenceRange?: string;
-    isAbnormal?: boolean;
-  }>;
+  results: Record<
+    string,
+    {
+      value: string | number;
+      unit?: string;
+      referenceRange?: string;
+      isAbnormal?: boolean;
+    }
+  >;
   units?: string;
   range?: string;
   abnormal?: boolean;
@@ -87,7 +90,8 @@ interface FHIREncounterResource extends FHIRResource {
   serviceType?: {
     text?: string;
   };
-  class?: { // Añadir clase como opcional
+  class?: {
+    // Añadir clase como opcional
     system: string;
     code: string;
     display: string;
@@ -206,7 +210,7 @@ export class EPICAdapter implements EMRAdapter {
     this.clientSecret = config.clientSecret ?? '';
 
     this.logger.info('Inicializado adaptador para EPIC EMR', {
-      baseUrl: this.apiBaseUrl
+      baseUrl: this.apiBaseUrl,
     });
   }
 
@@ -231,35 +235,52 @@ export class EPICAdapter implements EMRAdapter {
    */
   public async getPatientData(patientId: string): Promise<PatientData> {
     try {
-      this.logger.info('Obteniendo datos del paciente desde EPIC', { patientId });
+      this.logger.info('Obteniendo datos del paciente desde EPIC', {
+        patientId,
+      });
 
       await this.ensureValidToken();
 
       // Obtener datos básicos del paciente utilizando FHIR
-      const patientResource = await this.fetchFHIRResource<FHIRPatient>(`Patient/${patientId}`);
+      const patientResource = await this.fetchFHIRResource<FHIRPatient>(
+        `Patient/${patientId}`
+      );
 
       // Obtener información adicional como alergias, condiciones, etc.
-      const allergies = await this.fetchFHIRResource<FHIRBundle>(`AllergyIntolerance?patient=${patientId}`);
-      const conditions = await this.fetchFHIRResource<FHIRBundle>(`Condition?patient=${patientId}`);
-      const medications = await this.fetchFHIRResource<FHIRBundle>(`MedicationRequest?patient=${patientId}`);
+      const allergies = await this.fetchFHIRResource<FHIRBundle>(
+        `AllergyIntolerance?patient=${patientId}`
+      );
+      const conditions = await this.fetchFHIRResource<FHIRBundle>(
+        `Condition?patient=${patientId}`
+      );
+      const medications = await this.fetchFHIRResource<FHIRBundle>(
+        `MedicationRequest?patient=${patientId}`
+      );
 
       // Convertir datos FHIR al formato PatientData de la aplicación
       return this.convertFHIRToPatientData(patientResource, {
         allergies,
         conditions,
-        medications
+        medications,
       });
-
     } catch (error) {
-      this.logger.error('Error al obtener datos del paciente desde EPIC', { error, patientId });
-      throw new Error(`Error al obtener datos del paciente: ${(error as Error).message}`);
+      this.logger.error('Error al obtener datos del paciente desde EPIC', {
+        error,
+        patientId,
+      });
+      throw new Error(
+        `Error al obtener datos del paciente: ${(error as Error).message}`
+      );
     }
   }
 
   /**
    * Busca pacientes en EPIC según criterios
    */
-  public async searchPatients(query: EMRSearchQuery, limit = 10): Promise<EMRPatientSearchResult[]> {
+  public async searchPatients(
+    query: EMRSearchQuery,
+    limit = 10
+  ): Promise<EMRPatientSearchResult[]> {
     try {
       this.logger.info('Buscando pacientes en EPIC', { query, limit });
 
@@ -272,11 +293,12 @@ export class EPICAdapter implements EMRAdapter {
       searchParams.append('_count', limit.toString());
 
       // Ejecutar la búsqueda
-      const searchResults = await this.fetchFHIRResource<FHIRBundle>(`Patient?${searchParams.toString()}`);
+      const searchResults = await this.fetchFHIRResource<FHIRBundle>(
+        `Patient?${searchParams.toString()}`
+      );
 
       // Convertir resultados FHIR a formato de la aplicación
       return this.convertFHIRPatientBundle(searchResults);
-
     } catch (error) {
       this.logger.error('Error al buscar pacientes en EPIC', { error, query });
       throw new Error(`Error al buscar pacientes: ${(error as Error).message}`);
@@ -286,9 +308,15 @@ export class EPICAdapter implements EMRAdapter {
   /**
    * Obtiene el historial médico del paciente de EPIC
    */
-  public async getPatientHistory(patientId: string, options?: EMRHistoryOptions): Promise<EMRPatientHistory> {
+  public async getPatientHistory(
+    patientId: string,
+    options?: EMRHistoryOptions
+  ): Promise<EMRPatientHistory> {
     try {
-      this.logger.info('Obteniendo historial médico desde EPIC', { patientId, options });
+      this.logger.info('Obteniendo historial médico desde EPIC', {
+        patientId,
+        options,
+      });
 
       await this.ensureValidToken();
 
@@ -298,50 +326,69 @@ export class EPICAdapter implements EMRAdapter {
         consultations: [],
         treatments: [],
         labResults: [],
-        diagnoses: []
+        diagnoses: [],
       };
 
       // Obtener consultas si se solicitan
       if (!options || options.includeConsultations !== false) {
-        const encounters = await this.fetchFHIRResource<FHIRBundle>(`Encounter?patient=${patientId}`);
+        const encounters = await this.fetchFHIRResource<FHIRBundle>(
+          `Encounter?patient=${patientId}`
+        );
         patientHistory.consultations = this.convertFHIREncounters(encounters);
       }
 
       // Obtener tratamientos si se solicitan
       if (!options || options.includeTreatments !== false) {
-        const medicationRequests = await this.fetchFHIRResource<FHIRBundle>(`MedicationRequest?patient=${patientId}`);
-        const procedures = await this.fetchFHIRResource<FHIRBundle>(`Procedure?patient=${patientId}`);
+        const medicationRequests = await this.fetchFHIRResource<FHIRBundle>(
+          `MedicationRequest?patient=${patientId}`
+        );
+        const procedures = await this.fetchFHIRResource<FHIRBundle>(
+          `Procedure?patient=${patientId}`
+        );
         patientHistory.treatments = [
           ...this.convertFHIRMedicationRequests(medicationRequests),
-          ...this.convertFHIRProcedures(procedures)
+          ...this.convertFHIRProcedures(procedures),
         ];
       }
 
       // Obtener resultados de laboratorio si se solicitan
       if (!options || options.includeLabResults !== false) {
-        const observations = await this.fetchFHIRResource<FHIRBundle>(`Observation?patient=${patientId}&category=laboratory`);
+        const observations = await this.fetchFHIRResource<FHIRBundle>(
+          `Observation?patient=${patientId}&category=laboratory`
+        );
         patientHistory.labResults = this.convertFHIRObservations(observations);
       }
 
       // Obtener diagnósticos si se solicitan
       if (!options || options.includeDiagnoses !== false) {
-        const conditions = await this.fetchFHIRResource<FHIRBundle>(`Condition?patient=${patientId}`);
+        const conditions = await this.fetchFHIRResource<FHIRBundle>(
+          `Condition?patient=${patientId}`
+        );
         patientHistory.diagnoses = this.convertFHIRConditions(conditions);
       }
 
       return patientHistory;
     } catch (error) {
-      this.logger.error('Error al obtener historial médico desde EPIC', { error, patientId });
-      throw new Error(`Error al obtener historial médico: ${(error as Error).message}`);
+      this.logger.error('Error al obtener historial médico desde EPIC', {
+        error,
+        patientId,
+      });
+      throw new Error(
+        `Error al obtener historial médico: ${(error as Error).message}`
+      );
     }
   }
 
   /**
    * Guarda una nueva consulta en EPIC
    */
-  public async saveConsultation(consultation: EMRConsultation): Promise<string> {
+  public async saveConsultation(
+    consultation: EMRConsultation
+  ): Promise<string> {
     try {
-      this.logger.info('Guardando consulta en EPIC', { patientId: consultation.patientId });
+      this.logger.info('Guardando consulta en EPIC', {
+        patientId: consultation.patientId,
+      });
 
       await this.ensureValidToken();
 
@@ -349,16 +396,23 @@ export class EPICAdapter implements EMRAdapter {
       const encounterResource = this.convertToFHIREncounter(consultation);
 
       // Enviar la consulta a EPIC
-      const response = await this.postFHIRResource('Encounter', encounterResource);
+      const response = await this.postFHIRResource(
+        'Encounter',
+        encounterResource
+      );
 
       // Extraer el ID del recurso creado
       const resourceId = this.extractResourceIdFromResponse(response);
 
-      this.logger.info('Consulta guardada exitosamente en EPIC', { resourceId });
+      this.logger.info('Consulta guardada exitosamente en EPIC', {
+        resourceId,
+      });
       return resourceId;
-
     } catch (error) {
-      this.logger.error('Error al guardar consulta en EPIC', { error, consultation });
+      this.logger.error('Error al guardar consulta en EPIC', {
+        error,
+        consultation,
+      });
       throw new Error(`Error al guardar consulta: ${(error as Error).message}`);
     }
   }
@@ -366,27 +420,44 @@ export class EPICAdapter implements EMRAdapter {
   /**
    * Actualiza una consulta existente en EPIC
    */
-  public async updateConsultation(consultationId: string, updates: Partial<EMRConsultation>): Promise<boolean> {
+  public async updateConsultation(
+    consultationId: string,
+    updates: Partial<EMRConsultation>
+  ): Promise<boolean> {
     try {
       this.logger.info('Actualizando consulta en EPIC', { consultationId });
 
       await this.ensureValidToken();
 
       // Obtener consulta existente
-      const existingEncounter = await this.fetchFHIRResource<FHIRResource>(`Encounter/${consultationId}`);
+      const existingEncounter = await this.fetchFHIRResource<FHIRResource>(
+        `Encounter/${consultationId}`
+      );
 
       // Aplicar actualizaciones al recurso FHIR
-      const updatedEncounter = this.applyConsultationUpdates(existingEncounter, updates);
+      const updatedEncounter = this.applyConsultationUpdates(
+        existingEncounter,
+        updates
+      );
 
       // Enviar la consulta actualizada
-      await this.putFHIRResource(`Encounter/${consultationId}`, updatedEncounter);
+      await this.putFHIRResource(
+        `Encounter/${consultationId}`,
+        updatedEncounter
+      );
 
-      this.logger.info('Consulta actualizada exitosamente en EPIC', { consultationId });
+      this.logger.info('Consulta actualizada exitosamente en EPIC', {
+        consultationId,
+      });
       return true;
-
     } catch (error) {
-      this.logger.error('Error al actualizar consulta en EPIC', { error, consultationId });
-      throw new Error(`Error al actualizar consulta: ${(error as Error).message}`);
+      this.logger.error('Error al actualizar consulta en EPIC', {
+        error,
+        consultationId,
+      });
+      throw new Error(
+        `Error al actualizar consulta: ${(error as Error).message}`
+      );
     }
   }
 
@@ -395,7 +466,9 @@ export class EPICAdapter implements EMRAdapter {
    */
   public async registerTreatment(treatment: EMRTreatment): Promise<string> {
     try {
-      this.logger.info('Registrando tratamiento en EPIC', { patientId: treatment.patientId });
+      this.logger.info('Registrando tratamiento en EPIC', {
+        patientId: treatment.patientId,
+      });
 
       await this.ensureValidToken();
 
@@ -420,21 +493,33 @@ export class EPICAdapter implements EMRAdapter {
       // Extraer el ID del recurso creado
       const resourceId = this.extractResourceIdFromResponse(response);
 
-      this.logger.info('Tratamiento registrado exitosamente en EPIC', { resourceId });
+      this.logger.info('Tratamiento registrado exitosamente en EPIC', {
+        resourceId,
+      });
       return resourceId;
-
     } catch (error) {
-      this.logger.error('Error al registrar tratamiento en EPIC', { error, treatment });
-      throw new Error(`Error al registrar tratamiento: ${(error as Error).message}`);
+      this.logger.error('Error al registrar tratamiento en EPIC', {
+        error,
+        treatment,
+      });
+      throw new Error(
+        `Error al registrar tratamiento: ${(error as Error).message}`
+      );
     }
   }
 
   /**
    * Obtiene métricas del paciente de EPIC
    */
-  public async getPatientMetrics(patientId: string, metricTypes: string[]): Promise<EMRPatientMetrics> {
+  public async getPatientMetrics(
+    patientId: string,
+    metricTypes: string[]
+  ): Promise<EMRPatientMetrics> {
     try {
-      this.logger.info('Obteniendo métricas del paciente desde EPIC', { patientId, metricTypes });
+      this.logger.info('Obteniendo métricas del paciente desde EPIC', {
+        patientId,
+        metricTypes,
+      });
 
       await this.ensureValidToken();
 
@@ -444,7 +529,7 @@ export class EPICAdapter implements EMRAdapter {
         height: [],
         bloodPressure: [],
         glucose: [],
-        cholesterol: []
+        cholesterol: [],
       };
 
       // Construir lista de códigos LOINC para las métricas solicitadas
@@ -462,8 +547,13 @@ export class EPICAdapter implements EMRAdapter {
 
       return metrics;
     } catch (error) {
-      this.logger.error('Error al obtener métricas del paciente desde EPIC', { error, patientId });
-      throw new Error(`Error al obtener métricas del paciente: ${(error as Error).message}`);
+      this.logger.error('Error al obtener métricas del paciente desde EPIC', {
+        error,
+        patientId,
+      });
+      throw new Error(
+        `Error al obtener métricas del paciente: ${(error as Error).message}`
+      );
     }
   }
 
@@ -476,20 +566,23 @@ export class EPICAdapter implements EMRAdapter {
 
       // Usar las credenciales en un escenario real
       if (!this.apiKey && !this.clientId && !this.clientSecret) {
-        this.logger.warn('Credenciales no proporcionadas, usando token de prueba');
+        this.logger.warn(
+          'Credenciales no proporcionadas, usando token de prueba'
+        );
         return 'mock-epic-token-12345';
       }
 
       // En un entorno real, usaríamos estas credenciales para autenticar
       const authParams = new URLSearchParams();
       if (this.clientId) authParams.append('client_id', this.clientId);
-      if (this.clientSecret) authParams.append('client_secret', this.clientSecret);
+      if (this.clientSecret)
+        authParams.append('client_secret', this.clientSecret);
       if (this.apiKey) authParams.append('api_key', this.apiKey);
 
       // En este ejemplo simulado, solo registramos que usamos las credenciales
       this.logger.info('Autenticando con credenciales configuradas', {
         hasApiKey: !!this.apiKey,
-        hasClientCredentials: !!this.clientId && !!this.clientSecret
+        hasClientCredentials: !!this.clientId && !!this.clientSecret,
       });
 
       // Por simplicidad, devolvemos un token "simulado"
@@ -505,7 +598,11 @@ export class EPICAdapter implements EMRAdapter {
    */
   private async ensureValidToken(): Promise<void> {
     const now = new Date();
-    if (!this.accessToken || !this.tokenExpiration || now >= this.tokenExpiration) {
+    if (
+      !this.accessToken ||
+      !this.tokenExpiration ||
+      now >= this.tokenExpiration
+    ) {
       try {
         const token = await this.getAccessToken();
         this.accessToken = token;
@@ -525,7 +622,9 @@ export class EPICAdapter implements EMRAdapter {
   /**
    * Recupera un recurso FHIR de la API de EPIC
    */
-  private async fetchFHIRResource<T extends FHIRResource>(path: string): Promise<T> {
+  private async fetchFHIRResource<T extends FHIRResource>(
+    path: string
+  ): Promise<T> {
     try {
       // Asegurar que tenemos un token válido
       await this.ensureValidToken();
@@ -535,16 +634,18 @@ export class EPICAdapter implements EMRAdapter {
 
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
-          'Accept': 'application/fhir+json'
-        }
+          Authorization: `Bearer ${this.accessToken}`,
+          Accept: 'application/fhir+json',
+        },
       });
 
       if (!response.ok) {
-        throw new Error(`Error al obtener recurso FHIR: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Error al obtener recurso FHIR: ${response.status} ${response.statusText}`
+        );
       }
 
-      return await response.json() as T;
+      return (await response.json()) as T;
     } catch (error) {
       this.logger.error('Error al recuperar recurso FHIR', { error, path });
       throw error;
@@ -554,7 +655,10 @@ export class EPICAdapter implements EMRAdapter {
   /**
    * Envía un recurso FHIR a la API de EPIC
    */
-  private async postFHIRResource(resourceType: string, resource: FHIRResource): Promise<FHIRResponse> {
+  private async postFHIRResource(
+    resourceType: string,
+    resource: FHIRResource
+  ): Promise<FHIRResponse> {
     try {
       // Asegurar que tenemos un token válido
       await this.ensureValidToken();
@@ -562,15 +666,17 @@ export class EPICAdapter implements EMRAdapter {
       const response = await fetch(`${this.apiBaseUrl}/${resourceType}`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
+          Authorization: `Bearer ${this.accessToken}`,
           'Content-Type': 'application/fhir+json',
-          'Accept': 'application/fhir+json'
+          Accept: 'application/fhir+json',
         },
-        body: JSON.stringify(resource)
+        body: JSON.stringify(resource),
       });
 
       if (!response.ok) {
-        throw new Error(`Error al crear recurso FHIR: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Error al crear recurso FHIR: ${response.status} ${response.statusText}`
+        );
       }
 
       return await response.json();
@@ -583,7 +689,10 @@ export class EPICAdapter implements EMRAdapter {
   /**
    * Actualiza un recurso FHIR en la API de EPIC
    */
-  private async putFHIRResource(path: string, resource: FHIRResource): Promise<FHIRResponse> {
+  private async putFHIRResource(
+    path: string,
+    resource: FHIRResource
+  ): Promise<FHIRResponse> {
     try {
       // Asegurar que tenemos un token válido
       await this.ensureValidToken();
@@ -591,15 +700,17 @@ export class EPICAdapter implements EMRAdapter {
       const response = await fetch(`${this.apiBaseUrl}/${path}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
+          Authorization: `Bearer ${this.accessToken}`,
           'Content-Type': 'application/fhir+json',
-          'Accept': 'application/fhir+json'
+          Accept: 'application/fhir+json',
         },
-        body: JSON.stringify(resource)
+        body: JSON.stringify(resource),
       });
 
       if (!response.ok) {
-        throw new Error(`Error al actualizar recurso FHIR: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Error al actualizar recurso FHIR: ${response.status} ${response.statusText}`
+        );
       }
 
       return await response.json();
@@ -612,11 +723,15 @@ export class EPICAdapter implements EMRAdapter {
   /**
    * Convierte datos FHIR a formato PatientData de la aplicación
    */
-  private convertFHIRToPatientData(patientResource: FHIRPatient, additionalData: FHIRAdditionalData): PatientData {
+  private convertFHIRToPatientData(
+    patientResource: FHIRPatient,
+    additionalData: FHIRAdditionalData
+  ): PatientData {
     try {
       // Extraer información básica del paciente
       const names = patientResource.name ?? [];
-      const primaryName = names.find(n => !n.use || n.use === 'official') ?? names[0] ?? { given: [], family: '' };
+      const primaryName = names.find((n) => !n.use || n.use === 'official') ??
+        names[0] ?? { given: [], family: '' };
 
       const firstName = primaryName.given?.join(' ') ?? '';
       const lastName = primaryName.family ?? '';
@@ -635,9 +750,9 @@ export class EPICAdapter implements EMRAdapter {
       const patientId = patientResource.id ?? mrn;
 
       // Extraer medicamentos si están disponibles
-      const medications = additionalData.medications ?
-                         this.extractMedicationsFromFHIR(additionalData.medications) :
-                         [];
+      const medications = additionalData.medications
+        ? this.extractMedicationsFromFHIR(additionalData.medications)
+        : [];
 
       // Construir el objeto de datos del paciente
       const patientData: PatientData = {
@@ -653,19 +768,21 @@ export class EPICAdapter implements EMRAdapter {
           contactInfo: {
             email,
             phone,
-            address
-          }
+            address,
+          },
         },
         medicalHistory: {
           ...this.extractMedicalHistoryFromFHIR(additionalData),
-          medications: medications // Añadir medicamentos al historial médico
+          medications: medications, // Añadir medicamentos al historial médico
         },
-        vitalSigns: this.extractVitalSignsFromFHIR(additionalData)
+        vitalSigns: this.extractVitalSignsFromFHIR(additionalData),
       };
 
       return patientData;
     } catch (error) {
-      this.logger.error('Error al convertir recursos FHIR a PatientData', { error });
+      this.logger.error('Error al convertir recursos FHIR a PatientData', {
+        error,
+      });
       throw new Error('Error al procesar datos del paciente');
     }
   }
@@ -688,19 +805,20 @@ export class EPICAdapter implements EMRAdapter {
 
   private extractEmailFromFHIR(patientResource: FHIRPatient): string {
     const telecom = patientResource.telecom ?? [];
-    const emailSystem = telecom.find(t => t.system === 'email');
+    const emailSystem = telecom.find((t) => t.system === 'email');
     return emailSystem?.value ?? '';
   }
 
   private extractPhoneFromFHIR(patientResource: FHIRPatient): string {
     const telecom = patientResource.telecom ?? [];
-    const phoneSystem = telecom.find(t => t.system === 'phone');
+    const phoneSystem = telecom.find((t) => t.system === 'phone');
     return phoneSystem?.value ?? '';
   }
 
   private extractAddressFromFHIR(patientResource: FHIRPatient): string {
     const addresses = patientResource.address ?? [];
-    const primaryAddress = addresses.find(a => !a.use || a.use === 'home') || addresses[0];
+    const primaryAddress =
+      addresses.find((a) => !a.use || a.use === 'home') || addresses[0];
 
     if (!primaryAddress) return '';
 
@@ -709,49 +827,60 @@ export class EPICAdapter implements EMRAdapter {
       primaryAddress.city,
       primaryAddress.state,
       primaryAddress.postalCode,
-      primaryAddress.country
+      primaryAddress.country,
     ].filter(Boolean);
 
     return addressParts.join(', ');
   }
 
-  private extractIdentifierFromFHIR(patientResource: FHIRPatient, type: string): string {
+  private extractIdentifierFromFHIR(
+    patientResource: FHIRPatient,
+    type: string
+  ): string {
     const identifiers = patientResource.identifier ?? [];
-    const identifier = identifiers.find(id =>
-      id.type?.coding?.some(c => c.display === type || c.code === type)
+    const identifier = identifiers.find((id) =>
+      id.type?.coding?.some((c) => c.display === type || c.code === type)
     );
     return identifier?.value ?? '';
   }
 
-  private extractMedicalHistoryFromFHIR(data: FHIRAdditionalData): Record<string, unknown> {
+  private extractMedicalHistoryFromFHIR(
+    data: FHIRAdditionalData
+  ): Record<string, unknown> {
     // Extraer alergias
-    const allergies = data.allergies?.entry ?
-      data.allergies.entry.map((entry) => {
-        const resource = entry.resource as FHIRResource;
-        const resourceWithCode = resource as { code?: { text?: string } };
-        return resourceWithCode.code?.text ?? 'Alergia desconocida';
-      }) : [];
+    const allergies = data.allergies?.entry
+      ? data.allergies.entry.map((entry) => {
+          const resource = entry.resource as FHIRResource;
+          const resourceWithCode = resource as { code?: { text?: string } };
+          return resourceWithCode.code?.text ?? 'Alergia desconocida';
+        })
+      : [];
 
     // Extraer condiciones crónicas
-    const conditions = data.conditions?.entry ?
-      data.conditions.entry
-        .filter((entry) => {
-          const resource = entry.resource as FHIRConditionResource;
-          return resource.clinicalStatus?.coding?.some((c) => c.code === 'active');
-        })
-        .map((entry) => {
-          const resource = entry.resource as FHIRConditionResource;
-          return resource.code?.text ?? 'Condición desconocida';
-        }) : [];
+    const conditions = data.conditions?.entry
+      ? data.conditions.entry
+          .filter((entry) => {
+            const resource = entry.resource as FHIRConditionResource;
+            return resource.clinicalStatus?.coding?.some(
+              (c) => c.code === 'active'
+            );
+          })
+          .map((entry) => {
+            const resource = entry.resource as FHIRConditionResource;
+            return resource.code?.text ?? 'Condición desconocida';
+          })
+      : [];
 
     return {
       allergies,
-      chronicConditions: conditions
+      chronicConditions: conditions,
     };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private extractVitalSignsFromFHIR(_data: FHIRAdditionalData): Record<string, unknown> {
+  private extractVitalSignsFromFHIR(
+    _data: FHIRAdditionalData
+  ): Record<string, unknown> {
     // Implementación simplificada - en un caso real se obtendría de recursos Observation
     return {};
   }
@@ -774,12 +903,13 @@ export class EPICAdapter implements EMRAdapter {
       const resource = entry.resource as FHIRMedicationResource;
 
       const medication = {
-        name: resource.medicationCodeableConcept ?
-              resource.medicationCodeableConcept.text ?? 'Medicamento sin nombre' :
-              'Medicamento sin nombre',
+        name: resource.medicationCodeableConcept
+          ? (resource.medicationCodeableConcept.text ??
+            'Medicamento sin nombre')
+          : 'Medicamento sin nombre',
         dosage: '',
         frequency: '',
-        startDate: resource.authoredOn
+        startDate: resource.authoredOn,
       };
 
       // Extraer información de dosificación con manejo seguro de undefined
@@ -788,8 +918,9 @@ export class EPICAdapter implements EMRAdapter {
 
         if (dosage.doseAndRate && dosage.doseAndRate.length > 0) {
           const dose = dosage.doseAndRate[0];
-          medication.dosage = dose.doseQuantity ?
-            `${dose.doseQuantity.value} ${dose.doseQuantity.unit}` : '';
+          medication.dosage = dose.doseQuantity
+            ? `${dose.doseQuantity.value} ${dose.doseQuantity.unit}`
+            : '';
         }
 
         medication.frequency = dosage.timing?.text ?? '';
@@ -831,17 +962,20 @@ export class EPICAdapter implements EMRAdapter {
   /**
    * Convierte bundle de pacientes FHIR a resultados de búsqueda
    */
-  private convertFHIRPatientBundle(bundle: FHIRBundle): EMRPatientSearchResult[] {
+  private convertFHIRPatientBundle(
+    bundle: FHIRBundle
+  ): EMRPatientSearchResult[] {
     if (!bundle.entry || bundle.entry.length === 0) {
       return [];
     }
 
     return bundle.entry
-      .filter(entry => entry.resource?.resourceType === 'Patient')
-      .map(entry => {
+      .filter((entry) => entry.resource?.resourceType === 'Patient')
+      .map((entry) => {
         const resource = entry.resource as FHIRPatient;
         const names = resource.name ?? [];
-        const primaryName = names.find(n => !n.use || n.use === 'official') ?? names[0] ?? { given: [], family: '' };
+        const primaryName = names.find((n) => !n.use || n.use === 'official') ??
+          names[0] ?? { given: [], family: '' };
 
         const firstName = primaryName.given?.join(' ') ?? '';
         const lastName = primaryName.family ?? '';
@@ -850,12 +984,14 @@ export class EPICAdapter implements EMRAdapter {
         return {
           id: resource.id ?? '',
           fullName,
-          dateOfBirth: resource.birthDate ? new Date(resource.birthDate) : undefined,
+          dateOfBirth: resource.birthDate
+            ? new Date(resource.birthDate)
+            : undefined,
           documentId: this.extractIdentifierFromFHIR(resource, 'MR'),
           contactInfo: {
             email: this.extractEmailFromFHIR(resource),
-            phone: this.extractPhoneFromFHIR(resource)
-          }
+            phone: this.extractPhoneFromFHIR(resource),
+          },
         };
       });
   }
@@ -869,16 +1005,19 @@ export class EPICAdapter implements EMRAdapter {
       return {
         id: resource.id,
         patientId: resource.subject?.reference.split('/')[1] ?? '',
-        providerId: resource.participant?.[0]?.individual?.reference.split('/')[1] ?? '',
+        providerId:
+          resource.participant?.[0]?.individual?.reference.split('/')[1] ?? '',
         date: new Date(resource.period?.start ?? Date.now()),
         reason: resource.reasonCode?.[0]?.text ?? 'No especificado',
         notes: resource.note?.[0]?.text ?? '',
-        specialty: resource.serviceType?.text ?? ''
+        specialty: resource.serviceType?.text ?? '',
       } as EMRConsultation;
     });
   }
 
-  private convertToFHIREncounter(consultation: EMRConsultation): FHIREncounterResource {
+  private convertToFHIREncounter(
+    consultation: EMRConsultation
+  ): FHIREncounterResource {
     const fhirEncounter: FHIREncounterResource = {
       resourceType: 'Encounter',
       id: consultation.id ?? '',
@@ -886,30 +1025,36 @@ export class EPICAdapter implements EMRAdapter {
       class: {
         system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode',
         code: 'AMB',
-        display: 'ambulatory'
+        display: 'ambulatory',
       },
       subject: {
-        reference: `Patient/${consultation.patientId}`
+        reference: `Patient/${consultation.patientId}`,
       },
-      participant: [{
-        individual: {
-          reference: `Practitioner/${consultation.providerId}`
-        }
-      }],
+      participant: [
+        {
+          individual: {
+            reference: `Practitioner/${consultation.providerId}`,
+          },
+        },
+      ],
       period: {
-        start: consultation.date.toISOString()
+        start: consultation.date.toISOString(),
       },
-      reasonCode: [{
-        text: consultation.reason
-      }],
-      note: [{
-        text: consultation.notes
-      }]
+      reasonCode: [
+        {
+          text: consultation.reason,
+        },
+      ],
+      note: [
+        {
+          text: consultation.notes,
+        },
+      ],
     };
 
     if (consultation.specialty) {
       fhirEncounter.serviceType = {
-        text: consultation.specialty
+        text: consultation.specialty,
       };
     }
 
@@ -918,16 +1063,16 @@ export class EPICAdapter implements EMRAdapter {
 
   private getLoincCodesForMetrics(metricTypes: string[]): string[] {
     const metricToLoinc: Record<string, string> = {
-      'weight': '29463-7',
-      'height': '8302-2',
-      'bloodPressure': '85354-9',
-      'glucose': '2339-0',
-      'cholesterol': '2093-3'
+      weight: '29463-7',
+      height: '8302-2',
+      bloodPressure: '85354-9',
+      glucose: '2339-0',
+      cholesterol: '2093-3',
     };
 
     return metricTypes
-      .filter(type => metricToLoinc[type])
-      .map(type => metricToLoinc[type]);
+      .filter((type) => metricToLoinc[type])
+      .map((type) => metricToLoinc[type]);
   }
 
   // Otros métodos de conversión FHIR omitidos por brevedad
@@ -942,7 +1087,7 @@ export class EPICAdapter implements EMRAdapter {
         type: 'medication',
         name: 'Medication',
         startDate: new Date(),
-        status: 'active'
+        status: 'active',
       } as EMRTreatment;
     });
   }
@@ -957,7 +1102,7 @@ export class EPICAdapter implements EMRAdapter {
         type: 'procedure',
         name: 'Procedure',
         startDate: new Date(),
-        status: 'scheduled'
+        status: 'scheduled',
       } as EMRTreatment;
     });
   }
@@ -965,7 +1110,7 @@ export class EPICAdapter implements EMRAdapter {
   private convertFHIRObservations(bundle: FHIRBundle): EMRLabResult[] {
     if (!bundle?.entry) return [];
 
-    return bundle.entry.map(entry => {
+    return bundle.entry.map((entry) => {
       const resource = entry.resource as FHIRResource;
       // Crear objeto que cumpla con la interfaz EMRLabResult
       return {
@@ -976,18 +1121,18 @@ export class EPICAdapter implements EMRAdapter {
         name: 'Lab Test', // Extraer nombre real del recurso
         results: {
           // Proporcionar un objeto de resultados en el formato requerido
-          'general': {
+          general: {
             value: 'Normal',
             unit: '',
             referenceRange: '',
-            isAbnormal: false
-          }
+            isAbnormal: false,
+          },
         },
         units: '',
         range: '',
         abnormal: false,
         notes: '',
-        orderedBy: '' // Añadir el valor para la propiedad obligatoria
+        orderedBy: '', // Añadir el valor para la propiedad obligatoria
       };
     });
   }
@@ -999,17 +1144,25 @@ export class EPICAdapter implements EMRAdapter {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private processFHIRObservationsToMetrics(_observations: FHIRBundle, _metrics: EMRPatientMetrics): void {
+  private processFHIRObservationsToMetrics(
+    _observations: FHIRBundle,
+    _metrics: EMRPatientMetrics
+  ): void {
     // Implementación simplificada
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private applyConsultationUpdates(existingEncounter: FHIRResource, _updates: Partial<EMRConsultation>): FHIRResource {
+  private applyConsultationUpdates(
+    existingEncounter: FHIRResource,
+    _updates: Partial<EMRConsultation>
+  ): FHIRResource {
     return existingEncounter; // Implementación simplificada
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private createTreatmentConverter(_type: string): (treatment: EMRTreatment) => FHIRResource {
+  private createTreatmentConverter(
+    _type: string
+  ): (treatment: EMRTreatment) => FHIRResource {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return (_treatment: EMRTreatment): FHIRResource => {
       // Implementación base para todos los convertidores
@@ -1017,9 +1170,12 @@ export class EPICAdapter implements EMRAdapter {
     };
   }
 
-  private readonly convertToFHIRMedicationRequest = this.createTreatmentConverter('medication');
-  private readonly convertToFHIRProcedure = this.createTreatmentConverter('procedure');
-  private readonly convertToFHIRCarePlan = this.createTreatmentConverter('careplan');
+  private readonly convertToFHIRMedicationRequest =
+    this.createTreatmentConverter('medication');
+  private readonly convertToFHIRProcedure =
+    this.createTreatmentConverter('procedure');
+  private readonly convertToFHIRCarePlan =
+    this.createTreatmentConverter('careplan');
 
   /**
    * Mapea el género del formato FHIR al formato de la aplicación
@@ -1035,10 +1191,13 @@ export class EPICAdapter implements EMRAdapter {
     }
   }
 
-  private commonFHIRConverter<T>(bundle: FHIRBundle, mapFunction: (resource: FHIRResource) => T): T[] {
+  private commonFHIRConverter<T>(
+    bundle: FHIRBundle,
+    mapFunction: (resource: FHIRResource) => T
+  ): T[] {
     if (!bundle?.entry) return [];
     return bundle.entry
-      .filter(entry => entry.resource)
-      .map(entry => mapFunction(entry.resource as FHIRResource));
+      .filter((entry) => entry.resource)
+      .map((entry) => mapFunction(entry.resource as FHIRResource));
   }
 }

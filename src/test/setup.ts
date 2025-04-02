@@ -8,5 +8,5 @@ expect.extend(matchers);
 
 // Limpiar después de cada test
 afterEach(() => {
-    cleanup();
+  cleanup();
 });

@@ -88,11 +88,17 @@ export class Logger {
    * @param message Mensaje a registrar
    * @param context Contexto adicional opcional
    */
-  private log(level: LogLevel, message: string, context?: Record<string, unknown>): void {
+  private log(
+    level: LogLevel,
+    message: string,
+    context?: Record<string, unknown>
+  ): void {
     const timestamp = new Date().toISOString();
     const formattedMessage = `[${timestamp}] [${level.toUpperCase()}] [${this.moduleName}] ${message}`;
 
-    const logData = context ? { message: formattedMessage, ...context } : formattedMessage;
+    const logData = context
+      ? { message: formattedMessage, ...context }
+      : formattedMessage;
 
     switch (level) {
       case 'debug':
