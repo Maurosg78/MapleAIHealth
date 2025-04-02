@@ -129,10 +129,13 @@ interface ClinicCloudLabResult {
 // Tipo para métricas en ClinicCloud
 interface ClinicCloudMetrica {
   id: string;
-  tipo: string;
+  pacienteId: string;
   fecha: string;
+  tipo: string;
   valor: string | number;
   unidad?: string;
+  sistolica?: number;
+  diastolica?: number;
 }
 
 // Tipo para respuesta de métricas
@@ -269,13 +272,6 @@ interface ClinicCloudMetrica {
  * Interfaz para resultado de métricas de ClinicCloud
  */
 interface ClinicCloudMetricaResult {
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
-  metricas: ClinicCloudMetrica[];
   metricas: ClinicCloudMetrica[];
 }
 
