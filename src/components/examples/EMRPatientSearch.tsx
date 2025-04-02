@@ -1,22 +1,8 @@
 import React, { useState } from 'react';
 import {
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
   Box,
   Button,
+  Container,
   FormControl,
   FormLabel,
   Heading,
@@ -25,49 +11,70 @@ import {
   Table,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
   Tr,
-  VStack,
-  useToast,
+  useToast
 } from '@chakra-ui/react';
-import {
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  EMRConfigService,
-} from '../../services/emr/EMRConfigService';
-import {
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  EMRPatientSearchResult,
-  EMRSearchQuery,
+import { EMRService } from '../../services/emr/EMRService';
+import { EMRAdapter, EMRPatientSearchResult } from '../../services/emr/EMRAdapter';
+import { EMRConfigService } from '../../services/emr/EMRConfigService';
+
+// Definir la interfaz correcta para los resultados de búsqueda
+interface ExtendedEMRPatientSearchResult extends EMRPatientSearchResult {
+  fullName: string;
+  name: string;
+  birthDate: string;
+  gender: string;
+  mrn: string;
+}
+
+// Componente para buscar pacientes en EMR
+const EMRPatientSearch: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchResults, setSearchResults] = useState<ExtendedEMRPatientSearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const toast = useToast();
+
+  // Función para buscar pacientes
+  const searchPatients = async () => {
+    if (!searchTerm) {
+      toast({
+        title: 'Error',
+        description: 'Introduce un término de búsqueda',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const emrService = new EMRService();
+      const emrConfig = EMRConfigService.getActiveEMR();
+
+      if (!emrConfig) {
+        throw new Error('No hay EMR configurado');
+      }
+
+      const adapter = EMRAdapter.create(emrConfig.type, emrConfig.config);
+      const results = await adapter.searchPatients(searchTerm);
+
+      setSearchResults(results as ExtendedEMRPatientSearchResult[]);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Error al buscar pacientes',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 } from '../../services/emr/EMRAdapter';
 
 /**

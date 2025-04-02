@@ -21,7 +21,7 @@ interface OSCARDemographic {
   firstName: string;
   lastName: string;
   gender: string;
-  dateOfBirth: string;
+  birthDate: string;
   email?: string;
   phone?: string;
   address?: string;
@@ -192,7 +192,7 @@ interface LabResultData {
  * Interfaz para notas de OSCAR
  */
 interface OSCARNote {
-  demographicNo: string;
+  id: string;
   providerNo: string;
   note: string;
   encounter: string;
@@ -208,7 +208,7 @@ interface OSCARNote {
  * Interfaz para un procedimiento de OSCAR
  */
 interface OSCARProcedurePayload {
-  demographicNo: string;
+  id: string;
   preventionType: string;
   preventionDate: string;
   providerNo: string;
@@ -289,18 +289,18 @@ export class OSCARAdapter implements EMRAdapter {
 
       // Obtener datos demográficos del paciente
       const demographic = await this.fetchData(
-        `/demographicData?demographicNo=${patientId}`
+        `/demographicData?id=${patientId}`
       );
 
       // Obtener historial médico, alergias, condiciones, etc.
       const allergies = await this.fetchData(
-        `/allergies?demographicNo=${patientId}`
+        `/allergies?id=${patientId}`
       );
       const medications = await this.fetchData(
-        `/prescriptions?demographicNo=${patientId}`
+        `/prescriptions?id=${patientId}`
       );
       const problems = await this.fetchData(
-        `/diseaseRegistry?demographicNo=${patientId}`
+        `/diseaseRegistry?id=${patientId}`
       );
 
       // Convertir datos de OSCAR al formato PatientData de la aplicación
@@ -382,7 +382,7 @@ export class OSCARAdapter implements EMRAdapter {
       // Obtener consultas si se solicitan
       if (!options || options.includeConsultations !== false) {
         const encounters = await this.fetchData(
-          `/casemgmt/note?demographicNo=${patientId}${dateFilter}`
+          `/casemgmt/note?id=${patientId}${dateFilter}`
         );
         patientHistory.consultations = this.convertOscarEncounters(encounters);
       }
@@ -390,7 +390,7 @@ export class OSCARAdapter implements EMRAdapter {
       // Obtener tratamientos si se solicitan
       if (!options || options.includeTreatments !== false) {
         const prescriptions = await this.fetchData(
-          `/prescriptions?demographicNo=${patientId}${dateFilter}`
+          `/prescriptions?id=${patientId}${dateFilter}`
         );
         patientHistory.treatments =
           this.convertOscarPrescriptions(prescriptions);
@@ -399,7 +399,7 @@ export class OSCARAdapter implements EMRAdapter {
       // Obtener resultados de laboratorio si se solicitan
       if (!options || options.includeLabResults !== false) {
         const labs = await this.fetchData(
-          `/lab/reports?demographicNo=${patientId}${dateFilter}`
+          `/lab/reports?id=${patientId}${dateFilter}`
         );
         patientHistory.labResults = this.convertOscarLabResults(labs);
       }
@@ -407,7 +407,7 @@ export class OSCARAdapter implements EMRAdapter {
       // Obtener diagnósticos si se solicitan
       if (!options || options.includeDiagnoses !== false) {
         const problems = await this.fetchData(
-          `/diseaseRegistry?demographicNo=${patientId}`
+          `/diseaseRegistry?id=${patientId}`
         );
         patientHistory.diagnoses = this.convertOscarProblems(problems);
       }
@@ -567,7 +567,7 @@ export class OSCARAdapter implements EMRAdapter {
 
       // Obtener las mediciones disponibles
       const measurements = await this.fetchData(
-        `/measurements?demographicNo=${patientId}`
+        `/measurements?id=${patientId}`
       );
 
       // Procesar las mediciones según los tipos solicitados
@@ -765,7 +765,7 @@ export class OSCARAdapter implements EMRAdapter {
         `${demographic.firstName ?? ''} ${demographic.lastName ?? ''}`.trim();
       const firstName = demographic.firstName ?? '';
       const lastName = demographic.lastName ?? '';
-      const dob = demographic.dateOfBirth;
+      const dob = demographic.birthDate;
       const age = this.calculateAge(dob);
 
       // Obtener información de contacto
@@ -780,7 +780,7 @@ export class OSCARAdapter implements EMRAdapter {
           fullName,
           firstName,
           lastName,
-          dateOfBirth: dob,
+          birthDate: dob,
           age,
           gender: demographic.gender,
           documentId: demographic.healthCardNumber ?? '', // Health Insurance Number en Canadá
@@ -806,11 +806,11 @@ export class OSCARAdapter implements EMRAdapter {
   /**
    * Calcula la edad a partir de la fecha de nacimiento
    */
-  private calculateAge(dateOfBirth: string): number {
-    if (!dateOfBirth) return 0;
+  private calculateAge(birthDate: string): number {
+    if (!birthDate) return 0;
 
     const today = new Date();
-    const birthDate = new Date(dateOfBirth);
+    const birthDate = new Date(birthDate);
     let age = today.getFullYear() - birthDate.getFullYear();
     const m = today.getMonth() - birthDate.getMonth();
 
@@ -914,7 +914,7 @@ export class OSCARAdapter implements EMRAdapter {
     return results.demographics.map((demo: OSCARDemographic) => ({
       id: demo.id,
       name: `${demo.firstName ?? ''} ${demo.lastName ?? ''}`.trim(),
-      birthDate: demo.dateOfBirth,
+      birthDate: demo.birthDate,
       gender: demo.gender,
       mrn: demo.healthCardNumber ?? '',
     }));
@@ -927,7 +927,7 @@ export class OSCARAdapter implements EMRAdapter {
 
     return encounters.notes.map((note: OSCAREncounter) => ({
       id: note.id,
-      patientId: note.demographicNo,
+      patientId: note.id,
       providerId: note.providerName,
       date: new Date(note.date),
       reason: note.reason,
@@ -943,7 +943,7 @@ export class OSCARAdapter implements EMRAdapter {
 
     return prescriptions.prescriptions.map((rx: OSCARPrescription) => ({
       id: rx.id,
-      patientId: rx.demographicNo,
+      patientId: rx.id,
       providerId: rx.prescribedBy,
       startDate: new Date(rx.startDate),
       endDate: rx.endDate ? new Date(rx.endDate) : undefined,
@@ -962,7 +962,7 @@ export class OSCARAdapter implements EMRAdapter {
 
     return labs.labs.map((lab) => ({
       id: lab.id,
-      patientId: lab.demographicNo,
+      patientId: lab.id,
       date: new Date(lab.date),
       category: 'laboratory',
       name: lab.type,
@@ -979,7 +979,7 @@ export class OSCARAdapter implements EMRAdapter {
 
     return problems.problems.map((problem: OSCARProblem) => ({
       id: problem.id,
-      patientId: problem.demographicNo,
+      patientId: problem.id,
       date: new Date(problem.dateRecorded),
       code: problem.code,
       system: problem.codeSystem,
@@ -996,7 +996,7 @@ export class OSCARAdapter implements EMRAdapter {
     consultation: EMRConsultation
   ): Record<string, string | number | boolean> {
     return {
-      demographicNo: consultation.patientId,
+      id: consultation.patientId,
       providerNo: consultation.providerId,
       note: consultation.notes,
       encounter: consultation.reason,
@@ -1038,7 +1038,7 @@ export class OSCARAdapter implements EMRAdapter {
     treatment: EMRTreatment
   ): Record<string, string | number | boolean | null> {
     return {
-      demographicNo: treatment.patientId,
+      id: treatment.patientId,
       providerNo: treatment.providerId,
       rxDate: treatment.startDate.toISOString().split('T')[0],
       endDate: treatment.endDate
@@ -1060,7 +1060,7 @@ export class OSCARAdapter implements EMRAdapter {
     treatment: EMRTreatment
   ): OSCARProcedurePayload {
     return {
-      demographicNo: treatment.patientId,
+      id: treatment.patientId,
       preventionType: treatment.type === 'procedure' ? 'Procedure' : 'Other',
       preventionDate: treatment.startDate.toISOString().split('T')[0],
       providerNo: treatment.providerId,

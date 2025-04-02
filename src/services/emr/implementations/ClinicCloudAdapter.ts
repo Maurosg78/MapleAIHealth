@@ -35,6 +35,8 @@ interface ClinicCloudPaciente {
 interface ClinicCloudSearchResult {
   pacientes: ClinicCloudPaciente[];
   totalResultados: number;
+  pacientes: ClinicCloudPaciente[];
+  totalResultados: number;
 }
 
 // Tipo para consulta médica en ClinicCloud
@@ -45,7 +47,7 @@ interface ClinicCloudConsulta {
   profesional: string;
   motivo: string;
   contenido: string;
-  diagnosticos: ClinicCloudDiagnostico[];
+  diagnosticos?: ClinicCloudDiagnostico[];
   proximaCita?: string;
   especialidad?: string;
   signosVitales?: {
@@ -62,6 +64,7 @@ interface ClinicCloudConsulta {
 
 // Tipo para respuesta de consultas
 interface ClinicCloudConsultaResult {
+  consultas: ClinicCloudConsulta[];
   consultas: ClinicCloudConsulta[];
 }
 
@@ -85,6 +88,7 @@ interface ClinicCloudTratamiento {
 // Tipo para respuesta de tratamientos
 interface ClinicCloudTratamientoResult {
   tratamientos: ClinicCloudTratamiento[];
+  tratamientos: ClinicCloudTratamiento[];
 }
 
 // Tipo para diagnósticos en ClinicCloud
@@ -92,7 +96,7 @@ interface ClinicCloudDiagnostico {
   id: string;
   codigo: string;
   sistema: string;
-  descripcion: string;
+  descripcion?: string;
   fecha: string;
   estado: string;
   cronica: boolean;
@@ -102,6 +106,7 @@ interface ClinicCloudDiagnostico {
 // Tipo para respuesta de diagnósticos
 interface ClinicCloudDiagnosticoResult {
   diagnosticos: ClinicCloudDiagnostico[];
+  diagnosticos?: ClinicCloudDiagnostico[];
 }
 
 // Tipo para resultados de laboratorio en ClinicCloud
@@ -124,6 +129,7 @@ interface ClinicCloudResultadoLab {
 // Tipo para respuesta de laboratorio
 interface ClinicCloudLabResult {
   resultados: ClinicCloudResultadoLab[];
+  resultados: ClinicCloudResultadoLab[];
 }
 
 // Tipo para métricas en ClinicCloud
@@ -138,13 +144,14 @@ interface ClinicCloudMetrica {
 // Tipo para respuesta de métricas
 interface ClinicCloudMetricaResult {
   metricas: ClinicCloudMetrica[];
+  metricas: ClinicCloudMetrica[];
 }
 
 // Tipo para datos adicionales en ClinicCloud
 interface ClinicCloudAdditionalData {
   alergias: {
     id: string;
-    descripcion: string;
+    descripcion?: string;
     reaccion?: string;
     gravedad?: string;
   }[];
@@ -164,7 +171,7 @@ interface ClinicCloudAdditionalData {
 interface MedicalHistoryResult {
   alergias: Array<{
     id: string;
-    descripcion: string;
+    descripcion?: string;
     reaccion?: string;
     gravedad?: string;
   }>;
@@ -172,7 +179,7 @@ interface MedicalHistoryResult {
     id: string;
     codigo: string;
     sistema: string;
-    descripcion: string;
+    descripcion?: string;
     fecha: string;
     estado: string;
     cronica: boolean;
@@ -219,7 +226,7 @@ interface ClinicCloudConsulta {
   diagnosticos?: Array<{
     codigo: string;
     sistema: string;
-    descripcion: string;
+    descripcion?: string;
   }>;
   signosVitales?: {
     temperatura?: number;
@@ -240,15 +247,15 @@ interface ClinicCloudTratamiento {
   pacienteId: string;
   medicoId: string;
   fechaInicio: string;
-  fechaFin: string | null;
+  fechaFin?: string | null;
   nombre: string;
   tipo: string;
-  descripcion: string;
+  descripcion?: string;
   dosis: string | null;
   frecuencia: string | null;
-  instrucciones: string | null;
+  instrucciones?: string | null;
   estado: string;
-  consultaId: string | null;
+  consultaId?: string | null;
 }
 
 /**
@@ -259,7 +266,7 @@ interface ClinicCloudMetrica {
   pacienteId: string;
   fecha: string;
   tipo: string;
-  valor: number;
+  valor: string | number;
   unidad?: string;
   sistolica?: number;
   diastolica?: number;
@@ -269,6 +276,7 @@ interface ClinicCloudMetrica {
  * Interfaz para resultado de métricas de ClinicCloud
  */
 interface ClinicCloudMetricaResult {
+  metricas: ClinicCloudMetrica[];
   metricas: ClinicCloudMetrica[];
 }
 
@@ -926,7 +934,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     // Extraer alergias
     const alergias = data.alergias.map((alergia) => ({
       id: alergia.id,
-      descripcion: alergia.descripcion,
+      descripcion?: alergia.descripcion,
       reaccion: alergia.reaccion,
       gravedad: alergia.gravedad,
     }));
@@ -938,7 +946,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
         id: condicion.id,
         codigo: condicion.codigo,
         sistema: condicion.sistema,
-        descripcion: condicion.descripcion,
+        descripcion?: condicion.descripcion,
         fecha: condicion.fecha,
         estado: condicion.estado,
         cronica: condicion.cronica,
@@ -1145,7 +1153,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
    * Convierte diagnósticos de ClinicCloud al formato de la aplicación
    */
   private convertDiagnosticos(
-    diagnosticos: ClinicCloudDiagnosticoResult
+    diagnosticos?: ClinicCloudDiagnosticoResult
   ): EMRDiagnosis[] {
     if (!diagnosticos?.diagnosticos) return [];
 
@@ -1188,7 +1196,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
       consulta.diagnosticos = consultation.diagnoses.map((diag) => ({
         codigo: diag.code,
         sistema: diag.system,
-        descripcion: diag.description,
+        descripcion?: diag.description,
       }));
     }
 
@@ -1247,15 +1255,15 @@ export class ClinicCloudAdapter implements EMRAdapter {
       pacienteId: treatment.patientId,
       medicoId: treatment.providerId,
       fechaInicio: this.formatDate(treatment.startDate),
-      fechaFin: treatment.endDate ? this.formatDate(treatment.endDate) : null,
+      fechaFin?: treatment.endDate ? this.formatDate(treatment.endDate) : null,
       nombre: treatment.name,
       tipo: this.reverseMapTreatmentType(treatment.type),
-      descripcion: treatment.description,
+      descripcion?: treatment.description,
       dosis: treatment.dosage ?? null,
       frecuencia: treatment.frequency ?? null,
-      instrucciones: treatment.instructions ?? null,
+      instrucciones?: treatment.instructions ?? null,
       estado: this.reverseMapTreatmentStatus(treatment.status),
-      consultaId: treatment.consultationId ?? null,
+      consultaId?: treatment.consultationId ?? null,
     };
   }
 
