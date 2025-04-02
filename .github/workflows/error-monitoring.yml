@@ -13,149 +13,151 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Checkout target branch (for reference comparisons)
         run: |
-          git clone https://github.com/${{ github.repository }}.git .
-          git checkout ${{ github.ref }}
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
+          else
+            git fetch origin develop:develop || git fetch origin main:main || true
+          fi
 
       - name: Set up Node.js
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y nodejs npm
-          node --version
-          npm --version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run ESLint
-        run: npx eslint src/ --format json > eslint-report.json || true
+      - name: Run ESLint on current branch
+        run: npx eslint src/ --format json > eslint-report-current.json || true
 
-      - name: Run TypeScript check
-        run: npx tsc --noEmit --pretty false > ts-errors.txt || true
+      - name: Run TypeScript check on current branch
+        run: npx tsc --noEmit --pretty false > ts-errors-current.txt || true
+
+      - name: Run ESLint on reference branch (for comparison)
+        run: |
+          REFERENCE_BRANCH=""
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            REFERENCE_BRANCH="${{ github.base_ref }}"
+          elif git rev-parse --verify develop >/dev/null 2>&1; then
+            REFERENCE_BRANCH="develop"
+          elif git rev-parse --verify main >/dev/null 2>&1; then
+            REFERENCE_BRANCH="main"
+          fi
+
+          if [[ ! -z "$REFERENCE_BRANCH" ]]; then
+            echo "Comparando con rama de referencia: $REFERENCE_BRANCH"
+            git checkout $REFERENCE_BRANCH
+            npx eslint src/ --format json > eslint-report-reference.json || true
+            npx tsc --noEmit --pretty false > ts-errors-reference.txt || true
+            git checkout -
+          else
+            echo "No se pudo determinar una rama de referencia para comparación"
+            touch eslint-report-reference.json
+            touch ts-errors-reference.txt
+          fi
 
       - name: Generate error report
         run: |
           # Crear directorio para reportes
           mkdir -p reports
 
-          # Generar reporte de ESLint
-          echo "## ESLint Error Report" > error-report.md
-          echo "" >> error-report.md
-
-          # Contar errores críticos
-          CRITICAL=$(grep -c '"severity":2' eslint-report.json || echo 0)
-          echo "### 🔴 Errores Críticos: $CRITICAL" >> error-report.md
-
-          # Contar errores importantes
-          IMPORTANT=$(grep -c '"severity":1' eslint-report.json || echo 0)
-          echo "### 🟠 Errores Importantes: $IMPORTANT" >> error-report.md
-
-          # Mostrar errores más comunes
-          if [ "$CRITICAL" -gt 0 ]; then
-            echo "" >> error-report.md
-            echo "#### Top Errores Críticos:" >> error-report.md
-            grep '"severity":2' eslint-report.json | grep -o '"ruleId":"[^"]*"' | sort | uniq -c | sort -nr | head -10 | awk '{print "- " $2 ": " $1 " ocurrencias"}' >> error-report.md
-          fi
-
-          # Generar reporte de TypeScript
-          echo "" >> error-report.md
-          echo "## TypeScript Error Report" >> error-report.md
-          echo "" >> error-report.md
+          # Generar reporte de ESLint actual
+          CRITICAL_CURRENT=$(grep -c '"severity":2' eslint-report-current.json || echo 0)
+          # Generar reporte de ESLint referencia
+          CRITICAL_REFERENCE=$(grep -c '"severity":2' eslint-report-reference.json || echo 0)
 
           # Contar errores TypeScript
-          TS_ERRORS=$(grep -c "error TS" ts-errors.txt || echo 0)
-          echo "### ⚠️ Errores TypeScript totales: $TS_ERRORS" >> error-report.md
+          TS_ERRORS_CURRENT=$(grep -c "error TS" ts-errors-current.txt || echo 0)
+          TS_ERRORS_REFERENCE=$(grep -c "error TS" ts-errors-reference.txt || echo 0)
 
-          # Categorizar errores
-          ANY_ERRORS=$(grep -c "TS7016\|TS7005\|TS7006" ts-errors.txt || echo 0)
-          NULL_ERRORS=$(grep -c "TS2531\|TS2532\|TS2533" ts-errors.txt || echo 0)
-          TYPE_ERRORS=$(grep -c "TS2322\|TS2345\|TS2339" ts-errors.txt || echo 0)
+          # Calcular diferencias
+          ESLINT_DIFF=$((CRITICAL_CURRENT - CRITICAL_REFERENCE))
+          TS_DIFF=$((TS_ERRORS_CURRENT - TS_ERRORS_REFERENCE))
+          TOTAL_DIFF=$((ESLINT_DIFF + TS_DIFF))
 
-          echo "" >> error-report.md
-          echo "- 🔴 Errores de tipo 'any': $ANY_ERRORS" >> error-report.md
-          echo "- 🟠 Errores de null/undefined: $NULL_ERRORS" >> error-report.md
-          echo "- 🟡 Errores de tipo incorrectos: $TYPE_ERRORS" >> error-report.md
-
-          # Generar resumen
-          echo "" >> error-report.md
+          # Generar reporte resumido
           echo "# 📊 Reporte de Supervisión de Errores" > error-summary.md
           echo "" >> error-summary.md
           echo "Fecha: $(date)" >> error-summary.md
           echo "Rama: ${{ github.ref }}" >> error-summary.md
           echo "" >> error-summary.md
 
-          # Contar errores
-          ESLINT_CRITICAL=$CRITICAL
-          ESLINT_IMPORTANT=$IMPORTANT
-
           echo "## Resumen" >> error-summary.md
           echo "" >> error-summary.md
-          echo "| Categoría | Cantidad | Prioridad |" >> error-summary.md
-          echo "|-----------|----------|-----------|" >> error-summary.md
-          echo "| ESLint Errores | $ESLINT_CRITICAL | 🔴 Crítico |" >> error-summary.md
-          echo "| ESLint Warnings | $ESLINT_IMPORTANT | 🟠 Importante |" >> error-summary.md
-          echo "| TypeScript Errores | $TS_ERRORS | 🔴 Crítico |" >> error-summary.md
+          echo "| Categoría | Actuales | Referencia | Diferencia | Prioridad |" >> error-summary.md
+          echo "|-----------|----------|------------|------------|-----------|" >> error-summary.md
+          echo "| ESLint Errores | $CRITICAL_CURRENT | $CRITICAL_REFERENCE | $ESLINT_DIFF | 🔴 Crítico |" >> error-summary.md
+          echo "| TypeScript Errores | $TS_ERRORS_CURRENT | $TS_ERRORS_REFERENCE | $TS_DIFF | 🔴 Crítico |" >> error-summary.md
+          echo "| **Total** | $((CRITICAL_CURRENT + TS_ERRORS_CURRENT)) | $((CRITICAL_REFERENCE + TS_ERRORS_REFERENCE)) | $TOTAL_DIFF | |" >> error-summary.md
 
           # Evaluar estado general
-          TOTAL_CRITICAL=$((ESLINT_CRITICAL + TS_ERRORS))
+          TOTAL_CRITICAL=$((CRITICAL_CURRENT + TS_ERRORS_CURRENT))
           echo "TOTAL_CRITICAL=$TOTAL_CRITICAL" >> $GITHUB_ENV
+          echo "TOTAL_DIFF=$TOTAL_DIFF" >> $GITHUB_ENV
 
           echo "" >> error-summary.md
-          if [ "$TOTAL_CRITICAL" -gt 50 ]; then
+          if [ "$TOTAL_DIFF" -gt 10 ]; then
             echo "## ❌ Estado: Crítico" >> error-summary.md
-            echo "El proyecto tiene un número elevado de errores críticos que deben ser corregidos inmediatamente." >> error-summary.md
-          elif [ "$TOTAL_CRITICAL" -gt 10 ]; then
+            echo "Has añadido $TOTAL_DIFF nuevos errores críticos que deben ser corregidos inmediatamente." >> error-summary.md
+            echo "ESTADO=CRITICO" >> $GITHUB_ENV
+          elif [ "$TOTAL_DIFF" -gt 0 ]; then
             echo "## ⚠️ Estado: Atención Necesaria" >> error-summary.md
-            echo "El proyecto tiene errores críticos que deben ser priorizados." >> error-summary.md
-          elif [ "$TOTAL_CRITICAL" -gt 0 ]; then
-            echo "## 🟡 Estado: Vigilancia" >> error-summary.md
-            echo "El proyecto tiene algunos errores críticos que deben ser resueltos pronto." >> error-summary.md
+            echo "Has añadido $TOTAL_DIFF nuevos errores críticos que deben ser atendidos." >> error-summary.md
+            echo "ESTADO=ATENCION" >> $GITHUB_ENV
+          elif [ "$TOTAL_DIFF" -lt 0 ]; then
+            echo "## ✅ Estado: Mejora" >> error-summary.md
+            echo "¡Enhorabuena! Has reducido el número de errores críticos en $((TOTAL_DIFF * -1))." >> error-summary.md
+            echo "ESTADO=MEJORA" >> $GITHUB_ENV
           else
-            echo "## ✅ Estado: Saludable" >> error-summary.md
-            echo "El proyecto no tiene errores críticos." >> error-summary.md
+            echo "## 🟡 Estado: Sin Cambios" >> error-summary.md
+            echo "No has introducido nuevos errores críticos, pero tampoco has reducido los existentes." >> error-summary.md
+            echo "ESTADO=SINCAMBIOS" >> $GITHUB_ENV
           fi
 
           # Copiar los archivos de reporte
-          cp eslint-report.json reports/
-          cp ts-errors.txt reports/
+          cp eslint-report-current.json reports/eslint-report.json
+          cp ts-errors-current.txt reports/typescript-errors.txt
           cp error-summary.md reports/
-          cp error-report.md reports/
 
           # Mostrar resumen en la consola
           echo "=======================================";
           echo "          RESUMEN DE ERRORES            ";
           echo "=======================================";
-          echo "ESLint Errores Críticos: $ESLINT_CRITICAL";
-          echo "ESLint Warnings: $ESLINT_IMPORTANT";
-          echo "TypeScript Errores: $TS_ERRORS";
-          echo "Total Errores Críticos: $TOTAL_CRITICAL";
+          echo "ESLint Errores Críticos: $CRITICAL_CURRENT (Diferencia: $ESLINT_DIFF)";
+          echo "TypeScript Errores: $TS_ERRORS_CURRENT (Diferencia: $TS_DIFF)";
+          echo "Total Errores Críticos: $TOTAL_CRITICAL (Diferencia: $TOTAL_DIFF)";
           echo "=======================================";
 
-      - name: Create PR comment with error summary
-        if: github.event_name == 'pull_request' && env.TOTAL_CRITICAL > 0
+      - name: Determinar si el workflow debe fallar
         run: |
-          SUMMARY=$(cat reports/error-summary.md)
-          cat << EOF > pr_comment.md
-          ## 🚨 Error Monitoring Alert
-
-          Se encontraron $TOTAL_CRITICAL errores críticos en este PR.
-
-          $SUMMARY
-          EOF
-
-          # Instalar CLI de GitHub si no está instalada
-          if ! command -v gh &> /dev/null; then
-            echo "Instalando GitHub CLI..."
-            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-            sudo apt update
-            sudo apt install gh
+          if [ "$ESTADO" = "CRITICO" ]; then
+            echo "❌ El workflow falla porque has introducido muchos errores nuevos ($TOTAL_DIFF)."
+            exit 1
+          elif [ "$ESTADO" = "ATENCION" ]; then
+            echo "⚠️ El workflow continúa con advertencia por nuevos errores ($TOTAL_DIFF)."
+          else
+            echo "✅ El workflow continúa normalmente. Estado: $ESTADO"
           fi
 
-          # Autenticar con GitHub CLI
-          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+      - name: Create PR comment with error summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('error-summary.md', 'utf8');
 
-          # Comentar en el PR
-          gh pr comment ${{ github.event.pull_request.number }} -F pr_comment.md
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🔍 Error Monitoring Report\n\n${summary}`
+            });
