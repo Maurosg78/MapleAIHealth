@@ -12,7 +12,7 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     try {
       await login({ email, password });
-    } catch (_) {
+    } catch {
       // El error ya está manejado en el hook useAuth
     }
   };
