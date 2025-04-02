@@ -43,6 +43,8 @@ interface ClinicCloudSearchResult {
   totalResultados: number;
   pacientes: ClinicCloudPaciente[];
   totalResultados: number;
+  pacientes: ClinicCloudPaciente[];
+  totalResultados: number;
 }
 
 // Tipo para consulta médica en ClinicCloud
@@ -75,6 +77,7 @@ interface ClinicCloudConsultaResult {
   consultas: ClinicCloudConsulta[];
   consultas: ClinicCloudConsulta[];
   consultas: ClinicCloudConsulta[];
+  consultas: ClinicCloudConsulta[];
 }
 
 // Tipo para tratamientos en ClinicCloud
@@ -101,6 +104,7 @@ interface ClinicCloudTratamientoResult {
   tratamientos: ClinicCloudTratamiento[];
   tratamientos: ClinicCloudTratamiento[];
   tratamientos: ClinicCloudTratamiento[];
+  tratamientos: ClinicCloudTratamiento[];
 }
 
 // Tipo para diagnósticos en ClinicCloud
@@ -118,6 +122,7 @@ interface ClinicCloudDiagnostico {
 // Tipo para respuesta de diagnósticos
 interface ClinicCloudDiagnosticoResult {
   diagnosticos: ClinicCloudDiagnostico[];
+  diagnosticos?: ClinicCloudDiagnostico[];
   diagnosticos?: ClinicCloudDiagnostico[];
   diagnosticos?: ClinicCloudDiagnostico[];
   diagnosticos?: ClinicCloudDiagnostico[];
@@ -148,6 +153,7 @@ interface ClinicCloudLabResult {
   resultados: ClinicCloudResultadoLab[];
   resultados: ClinicCloudResultadoLab[];
   resultados: ClinicCloudResultadoLab[];
+  resultados: ClinicCloudResultadoLab[];
 }
 
 // Tipo para métricas en ClinicCloud
@@ -161,6 +167,7 @@ interface ClinicCloudMetrica {
 
 // Tipo para respuesta de métricas
 interface ClinicCloudMetricaResult {
+  metricas: ClinicCloudMetrica[];
   metricas: ClinicCloudMetrica[];
   metricas: ClinicCloudMetrica[];
   metricas: ClinicCloudMetrica[];
@@ -297,6 +304,7 @@ interface ClinicCloudMetrica {
  * Interfaz para resultado de métricas de ClinicCloud
  */
 interface ClinicCloudMetricaResult {
+  metricas: ClinicCloudMetrica[];
   metricas: ClinicCloudMetrica[];
   metricas: ClinicCloudMetrica[];
   metricas: ClinicCloudMetrica[];

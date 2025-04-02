@@ -2,72 +2,79 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
+  Container,
+  FormControl,
+  FormLabel,
   Heading,
   Input,
-  Text,
-  VStack
+  Stack,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  useToast
 } from '@chakra-ui/react';
+import { EMRService } from '../../services/emr/EMRService';
+import { EMRAdapter, EMRPatientSearchResult } from '../../services/emr/EMRAdapter';
+import { EMRConfigService } from '../../services/emr/EMRConfigService';
 
-// Definir la interfaz para la consulta de búsqueda
-interface EMRSearchQuery {
-  name: string;
-  documentId: string;
-  email: string;
-  phone: string;
-}
-
-// Definir la interfaz para los resultados de búsqueda
-interface EMRPatientSearchResult {
-  id: string;
+// Definir la interfaz correcta para los resultados de búsqueda
+interface ExtendedEMRPatientSearchResult extends EMRPatientSearchResult {
   fullName: string;
+  name: string;
   birthDate: string;
   gender: string;
   mrn: string;
 }
 
-/**
- * Componente de ejemplo para búsqueda de pacientes
- */
+// Componente para buscar pacientes en EMR
 const EMRPatientSearch: React.FC = () => {
-  // Estado para el formulario de búsqueda
-  const [searchQuery, setSearchQuery] = useState<EMRSearchQuery>({
-    name: '',
-    documentId: '',
-    email: '',
-    phone: '',
-  });
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchResults, setSearchResults] = useState<ExtendedEMRPatientSearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const toast = useToast();
 
-  // Estado para los resultados de búsqueda
-  const [searchResults, setSearchResults] = useState<EMRPatientSearchResult[]>([]);
+  // Función para buscar pacientes
+  const searchPatients = async () => {
+    if (!searchTerm) {
+      toast({
+        title: 'Error',
+        description: 'Introduce un término de búsqueda',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+      return;
+    }
 
-  // Estado de carga
-  const [isSearching, setIsSearching] = useState(false);
+    setIsLoading(true);
 
-  // Estado para indicar si se ha realizado una búsqueda
-  const [hasSearched, setHasSearched] = useState(false);
+    try {
+      const emrService = new EMRService();
+      const emrConfig = EMRConfigService.getActiveEMR();
 
-  // Actualizar campo de búsqueda
-  const handleSearchChange = (field: keyof EMRSearchQuery, value: string) => {
-    setSearchQuery((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+      if (!emrConfig) {
+        throw new Error('No hay EMR configurado');
+      }
+
+      const adapter = EMRAdapter.create(emrConfig.type, emrConfig.config);
+      const results = await adapter.searchPatients(searchTerm);
+
+      setSearchResults(results as ExtendedEMRPatientSearchResult[]);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Error al buscar pacientes',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  // Realizar búsqueda de pacientes
-  const handleSearch = async () => {
-    // Simulamos búsqueda para evitar dependencias externas
-    setIsSearching(true);
-
-    // Simulación de tiempo de carga
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Resultado de ejemplo
-    const mockResults: EMRPatientSearchResult[] = [
-      {
-        id: '1',
-        fullName: 'Juan García',
-        birthDate: '1980-05-15',
         gender: 'M',
         mrn: 'MRN12345'
       },
