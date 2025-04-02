@@ -1,6 +1,6 @@
-import { EMRAdapterConfig, EMRAdapterFactory } from './EMRAdapterFactory';
-import { EMRAdapter } from './EMRAdapter';
-import { Logger } from '../../lib/logger';
+import { Logger } from "../../lib/logger";
+import { EMRAdapterFactory } from "./EMRAdapterFactory";
+import { EMRAdapter, EMRAdapterConfig } from "./types";
 
 /**
  * Servicio para gestionar la configuración de adaptadores EMR
@@ -36,7 +36,7 @@ export class EMRConfigService {
       this.logger.info(
         'No hay adaptador configurado, usando adaptador genérico'
       );
-      this.currentAdapter = EMRAdapterFactory.getAdapter('GENERIC');
+      this.currentAdapter = EMRAdapterFactory.getInstance().getAdapter('GENERIC');
       this.currentAdapterName = 'GENERIC';
     }
     return this.currentAdapter;
@@ -69,7 +69,7 @@ export class EMRConfigService {
       this.logger.info(`Configurando adaptador EMR: ${adapterName}`);
 
       // Obtener una instancia del adaptador con la configuración proporcionada
-      const adapter = EMRAdapterFactory.getAdapter(adapterName, config);
+      const adapter = EMRAdapterFactory.getInstance().getAdapter(adapterName, config);
 
       // Probar la conexión
       const isConnected = await adapter.testConnection();
@@ -106,24 +106,22 @@ export class EMRConfigService {
    */
   private loadSavedConfig(): void {
     try {
-      // En una aplicación real, podríamos cargar esto desde una API o base de datos
       const savedAdapterName = localStorage.getItem('emrAdapterName');
-      const savedConfig = localStorage.getItem('emrAdapterConfig');
+      const savedConfigStr = localStorage.getItem('emrAdapterConfig');
+      const savedConfig = savedConfigStr ? JSON.parse(savedConfigStr) : null;
 
       if (savedAdapterName && savedConfig) {
-        const config = JSON.parse(savedConfig);
-
         this.logger.info(
           `Cargando configuración guardada para: ${savedAdapterName}`
         );
 
         // Obtener adaptador con la configuración guardada
-        this.currentAdapter = EMRAdapterFactory.getAdapter(
+        this.currentAdapter = EMRAdapterFactory.getInstance().getAdapter(
           savedAdapterName,
-          config
+          savedConfig
         );
         this.currentAdapterName = savedAdapterName;
-        this.currentConfig = config;
+        this.currentConfig = savedConfig;
       } else {
         this.logger.info('No hay configuración guardada');
       }

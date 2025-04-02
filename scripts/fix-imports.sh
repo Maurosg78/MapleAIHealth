@@ -1,103 +1,55 @@
 #!/bin/bash
 
-# Corrige problemas de importación duplicada en componentes
-TARGET_FILE="src/components/examples/EMRPatientSearch.tsx"
+# Colores para la salida
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
-if [ ! -f "$TARGET_FILE" ]; then
-  echo "Archivo no encontrado: $TARGET_FILE"
-  exit 1
-fi
+echo -e "${YELLOW}Iniciando corrección de imports...${NC}"
 
-# Crear backup
-BACKUP_DIR="reports/backups-imports-$(date +%Y%m%d-%H%M%S)"
+# Crear directorio de backups con timestamp
+BACKUP_DIR="backups/$(date +%Y%m%d_%H%M%S)_imports"
 mkdir -p "$BACKUP_DIR"
-cp "$TARGET_FILE" "$BACKUP_DIR/$(basename $TARGET_FILE)"
 
-echo "Creado backup en $BACKUP_DIR/$(basename $TARGET_FILE)"
+# Función para procesar cada archivo
+process_file() {
+    local file="$1"
+    echo -e "${YELLOW}Procesando: $file${NC}"
 
-# Eliminar imports duplicados y corregir importación de Chakra UI
-cat > "$TARGET_FILE" << 'END'
-import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Container,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  Stack,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  useToast
-} from '@chakra-ui/react';
-import { EMRService } from '../../services/emr/EMRService';
-import { EMRAdapter, EMRPatientSearchResult } from '../../services/emr/EMRAdapter';
-import { EMRConfigService } from '../../services/emr/EMRConfigService';
+    # Crear backup
+    local backup_path="$BACKUP_DIR/$(basename "$file")"
+    cp "$file" "$backup_path"
+    echo -e "${GREEN}Backup creado: $backup_path${NC}"
 
-// Definir la interfaz correcta para los resultados de búsqueda
-interface ExtendedEMRPatientSearchResult extends EMRPatientSearchResult {
-  fullName: string;
-  name: string;
-  birthDate: string;
-  gender: string;
-  mrn: string;
+    # Leer el contenido del archivo
+    content=$(cat "$file")
+
+    # Corregir los imports concatenados
+    corrected_content=$(echo "$content" | sed -E '
+        # Eliminar "import" duplicados
+        s/import.*import/import/g
+
+        # Separar imports en líneas diferentes
+        s/;import/;\
+import/g
+
+        # Corregir imports con llaves
+        s/import \{([^}]*)\}/import {\
+  \1\
+}/g
+    ')
+
+    # Guardar el contenido corregido
+    echo "$corrected_content" > "$file"
+
+    echo -e "${GREEN}Imports corregidos en: $file${NC}"
 }
 
-// Componente para buscar pacientes en EMR
-const EMRPatientSearch: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<ExtendedEMRPatientSearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const toast = useToast();
+# Encontrar todos los archivos TypeScript/JavaScript
+find src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) | while read -r file; do
+    process_file "$file"
+done
 
-  // Función para buscar pacientes
-  const searchPatients = async () => {
-    if (!searchTerm) {
-      toast({
-        title: 'Error',
-        description: 'Introduce un término de búsqueda',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      });
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const emrService = new EMRService();
-      const emrConfig = EMRConfigService.getActiveEMR();
-
-      if (!emrConfig) {
-        throw new Error('No hay EMR configurado');
-      }
-
-      const adapter = EMRAdapter.create(emrConfig.type, emrConfig.config);
-      const results = await adapter.searchPatients(searchTerm);
-
-      setSearchResults(results as ExtendedEMRPatientSearchResult[]);
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al buscar pacientes',
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-END
-
-# Obtener el resto del contenido del archivo original a partir de la línea 70
-# Usamos awk para evitar problemas con la cantidad exacta de líneas del encabezado
-awk 'NR > 70' "$BACKUP_DIR/$(basename $TARGET_FILE)" >> "$TARGET_FILE"
-
-echo "Corregidos problemas de importación en $TARGET_FILE"
+echo -e "${GREEN}Corrección de imports completada${NC}"
+echo -e "${YELLOW}Los backups se encuentran en: $BACKUP_DIR${NC}"

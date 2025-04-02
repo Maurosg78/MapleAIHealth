@@ -1,10 +1,8 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '../components/common/Button';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const NotFoundPage: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
       <div className="text-center">

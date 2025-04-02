@@ -1,8 +1,8 @@
-import { api } from '../lib/api';
-import { Patient, PatientFilters, PatientListResponse } from '../types/patient';
-
+   HttpService 
+ } from "../../../lib/api"
+  private static instance: PatientService
+import { 
 class PatientService {
-  private static instance: PatientService;
   private readonly baseUrl = '/patients';
 
   private constructor() {}
@@ -36,7 +36,7 @@ class PatientService {
 
   async getPatient(id: string): Promise<Patient> {
     try {
-      const response = await api.get(`${this.baseUrl}/${id}`);
+
       return response.data;
     } catch (error) {
       console.error('Error fetching patient:', error);
@@ -48,7 +48,7 @@ class PatientService {
     patient: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>
   ): Promise<Patient> {
     try {
-      const response = await api.post(this.baseUrl, patient);
+
       return response.data;
     } catch (error) {
       console.error('Error creating patient:', error);
@@ -58,7 +58,7 @@ class PatientService {
 
   async updatePatient(id: string, patient: Partial<Patient>): Promise<Patient> {
     try {
-      const response = await api.put(`${this.baseUrl}/${id}`, patient);
+
       return response.data;
     } catch (error) {
       console.error('Error updating patient:', error);
@@ -88,4 +88,4 @@ class PatientService {
   }
 }
 
-export const patientService = PatientService.getInstance();
+export

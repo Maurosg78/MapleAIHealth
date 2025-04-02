@@ -1,8 +1,12 @@
-import React from 'react';
-import { cn } from '../../lib/utils';
-
+import { 
+   useState, useEffect 
+ } from "react"
 interface SkeletonProps {
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   /**
+import React from "react"
    * La variante del skeleton
    */
   variant?: 'circular' | 'rectangular' | 'rounded' | 'text';
@@ -77,8 +81,8 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   className,
   children,
 }) => {
-  const widthClass = getWidthClass(width);
-  const heightClass = height ? getHeightClass(height) : sizeStyles[size];
+
+
 
   return (
     <output

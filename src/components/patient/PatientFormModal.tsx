@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Modal } from '../common/Modal';
-import { Input } from '../common/Input';
-import { Button } from '../common/Button';
-import { Patient } from '../../types/patient';
-import PatientService from '../../services/patient';
-
+import { 
+   useState, useEffect 
+ } from "react"
 interface PatientFormModalProps {
-  isOpen: boolean;
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
+  isOpen: boolean
+import React from "react"
   onClose: () => void;
   patient?: Patient;
   onSuccess: () => void;
@@ -48,8 +48,8 @@ export const PatientFormModal: React.FC<PatientFormModalProps> = ({
       medications: [],
     },
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+
 
   useEffect(() => {
     if (patient) {
@@ -113,9 +113,9 @@ export const PatientFormModal: React.FC<PatientFormModalProps> = ({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
+
     if (name.includes('.')) {
-      const [parent, child] = name.split('.');
+
       setFormData((prev) => ({
         ...prev,
         [parent]: {

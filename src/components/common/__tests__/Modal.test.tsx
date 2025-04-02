@@ -1,10 +1,14 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Modal } from '../Modal';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Modal', () => {
-  const mockOnClose = vi.fn();
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
 
   beforeEach(() => {
     mockOnClose.mockClear();
@@ -107,7 +111,6 @@ describe('Modal', () => {
       </Modal>
     );
 
-    const dialog = screen.getByRole('dialog', { hidden: true });
     expect(dialog).toHaveClass('custom-class');
   });
 

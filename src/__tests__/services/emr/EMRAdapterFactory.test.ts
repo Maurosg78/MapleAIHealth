@@ -1,8 +1,16 @@
-import { EMRAdapterFactory } from '../../../services/emr/EMRAdapterFactory';
-import { OSCARAdapter } from '../../../services/emr/implementations/OSCARAdapter';
-import { ClinicCloudAdapter } from '../../../services/emr/implementations/ClinicCloudAdapter';
-import { EPICAdapter } from '../../../services/emr/implementations/EPICAdapter';
-import { GenericEMRAdapter } from '../../../services/emr/implementations/GenericEMRAdapter';
+import {
+  EMRAdapterFactory,
+  GenericEMRAdapter,
+  OSCARAdapter,
+  ClinicCloudAdapter,
+  EPICAdapter
+} from '../../../services/emr';
+
+// Mock de los adaptadores para pruebas
+jest.mock('../../../services/emr/implementations/GenericEMRAdapter');
+jest.mock('../../../services/emr/implementations/OSCARAdapter');
+jest.mock('../../../services/emr/implementations/ClinicCloudAdapter');
+jest.mock('../../../services/emr/implementations/EPICAdapter');
 
 // Creamos un mock de la clase Logger para evitar logs en los tests
 jest.mock('../../../lib/logger', () => {
@@ -19,63 +27,68 @@ jest.mock('../../../lib/logger', () => {
 });
 
 describe('EMRAdapterFactory', () => {
+  let factory: EMRAdapterFactory;
+
   beforeEach(() => {
-    // Reseteamos el estado de la fábrica antes de cada test
-    // Accedemos a un método protegido para tests
-    (EMRAdapterFactory as any).resetForTests();
+    factory = EMRAdapterFactory.getInstance();
+    EMRAdapterFactory.resetForTests();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('getAdapter', () => {
-    it('debería devolver un GenericEMRAdapter cuando se solicita GENERIC', () => {
-      const adapter = EMRAdapterFactory.getAdapter('GENERIC');
+    it('debería devolver el adaptador genérico por defecto', () => {
+      const adapter = factory.getAdapter('GENERIC');
       expect(adapter).toBeInstanceOf(GenericEMRAdapter);
     });
 
     it('debería devolver un OSCARAdapter cuando se solicita OSCAR', () => {
-      const adapter = EMRAdapterFactory.getAdapter('OSCAR', {
+      const adapter = factory.getAdapter('OSCAR', {
         baseUrl: 'https://oscar-test.example.ca',
         username: 'testuser',
         password: 'testpass',
-        clinicId: 'clinic123',
+        clinicId: 'clinic123'
       });
       expect(adapter).toBeInstanceOf(OSCARAdapter);
     });
 
     it('debería devolver un ClinicCloudAdapter cuando se solicita CLINICCLOUD', () => {
-      const adapter = EMRAdapterFactory.getAdapter('CLINICCLOUD', {
+      const adapter = factory.getAdapter('CLINICCLOUD', {
         apiUrl: 'https://api.cliniccloud-test.es',
         apiKey: 'test-api-key-123',
-        clinicId: 'clinica456',
+        clinicId: 'clinica456'
       });
       expect(adapter).toBeInstanceOf(ClinicCloudAdapter);
     });
 
     it('debería devolver un EPICAdapter cuando se solicita EPIC', () => {
-      const adapter = EMRAdapterFactory.getAdapter('EPIC', {
+      const adapter = factory.getAdapter('EPIC', {
         baseUrl: 'https://epic-fhir-api.example.org',
         apiKey: 'test-api-key',
         clientId: 'test-client-id',
-        clientSecret: 'test-client-secret',
+        clientSecret: 'test-client-secret'
       });
       expect(adapter).toBeInstanceOf(EPICAdapter);
     });
 
-    it('debería lanzar un error cuando se solicita un adaptador desconocido', () => {
-      expect(() => EMRAdapterFactory.getAdapter('UNKNOWN' as any)).toThrow(
-        'Adaptador EMR no soportado: UNKNOWN'
-      );
+    it('debería lanzar un error para un adaptador desconocido', () => {
+      expect(() => {
+        factory.getAdapter('UNKNOWN' as string);
+      }).toThrow('Adaptador EMR no soportado: UNKNOWN');
     });
 
     it('debería lanzar un error cuando faltan parámetros requeridos', () => {
-      expect(() => EMRAdapterFactory.getAdapter('OSCAR', {})).toThrow(
+      expect(() => factory.getAdapter('OSCAR', {})).toThrow(
         'Se requiere baseUrl para el adaptador OSCAR'
       );
 
-      expect(() => EMRAdapterFactory.getAdapter('CLINICCLOUD', {})).toThrow(
+      expect(() => factory.getAdapter('CLINICCLOUD', {})).toThrow(
         'Se requiere apiUrl y apiKey para el adaptador CLINICCLOUD'
       );
 
-      expect(() => EMRAdapterFactory.getAdapter('EPIC', {})).toThrow(
+      expect(() => factory.getAdapter('EPIC', {})).toThrow(
         'Se requiere baseUrl para el adaptador EPIC'
       );
     });
@@ -85,11 +98,11 @@ describe('EMRAdapterFactory', () => {
         baseUrl: 'https://oscar-test.example.ca',
         username: 'testuser',
         password: 'testpass',
-        clinicId: 'clinic123',
+        clinicId: 'clinic123'
       };
 
-      const adapter1 = EMRAdapterFactory.getAdapter('OSCAR', config);
-      const adapter2 = EMRAdapterFactory.getAdapter('OSCAR', config);
+      const adapter1 = factory.getAdapter('OSCAR', config);
+      const adapter2 = factory.getAdapter('OSCAR', config);
 
       expect(adapter1).toBe(adapter2); // Misma instancia
     });
@@ -99,26 +112,26 @@ describe('EMRAdapterFactory', () => {
         baseUrl: 'https://oscar-test1.example.ca',
         username: 'testuser1',
         password: 'testpass1',
-        clinicId: 'clinic123',
+        clinicId: 'clinic123'
       };
 
       const config2 = {
         baseUrl: 'https://oscar-test2.example.ca',
         username: 'testuser2',
         password: 'testpass2',
-        clinicId: 'clinic456',
+        clinicId: 'clinic456'
       };
 
-      const adapter1 = EMRAdapterFactory.getAdapter('OSCAR', config1);
-      const adapter2 = EMRAdapterFactory.getAdapter('OSCAR', config2);
+      const adapter1 = factory.getAdapter('OSCAR', config1);
+      const adapter2 = factory.getAdapter('OSCAR', config2);
 
       expect(adapter1).not.toBe(adapter2); // Diferentes instancias
     });
   });
 
   describe('getAvailableAdapters', () => {
-    it('debería devolver un array con los IDs de los adaptadores disponibles', () => {
-      const adapters = EMRAdapterFactory.getAvailableAdapters();
+    it('debería devolver una lista de adaptadores disponibles', () => {
+      const adapters = factory.getAvailableAdapters();
       expect(adapters).toContain('GENERIC');
       expect(adapters).toContain('OSCAR');
       expect(adapters).toContain('CLINICCLOUD');
@@ -127,22 +140,32 @@ describe('EMRAdapterFactory', () => {
   });
 
   describe('getAdaptersInfo', () => {
-    it('debería devolver información detallada de los adaptadores disponibles', () => {
-      const info = EMRAdapterFactory.getAdaptersInfo();
-      expect(info.length).toBeGreaterThanOrEqual(4); // Al menos 4 adaptadores
-
-      // Verificar que cada adaptador tiene la estructura correcta
-      info.forEach((adapter) => {
-        expect(adapter).toHaveProperty('id');
-        expect(adapter).toHaveProperty('name');
-        expect(adapter).toHaveProperty('description');
-      });
-
-      // Verificar que los adaptadores específicos existen
-      expect(info.find((a) => a.id === 'GENERIC')).toBeDefined();
-      expect(info.find((a) => a.id === 'OSCAR')).toBeDefined();
-      expect(info.find((a) => a.id === 'CLINICCLOUD')).toBeDefined();
-      expect(info.find((a) => a.id === 'EPIC')).toBeDefined();
+    it('debería devolver información sobre los adaptadores disponibles', () => {
+      const info = factory.getAdaptersInfo();
+      expect(info).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: 'GENERIC',
+            name: expect.any(String),
+            description: expect.any(String)
+          }),
+          expect.objectContaining({
+            id: 'OSCAR',
+            name: expect.any(String),
+            description: expect.any(String)
+          }),
+          expect.objectContaining({
+            id: 'CLINICCLOUD',
+            name: expect.any(String),
+            description: expect.any(String)
+          }),
+          expect.objectContaining({
+            id: 'EPIC',
+            name: expect.any(String),
+            description: expect.any(String)
+          })
+        ])
+      );
     });
   });
 });

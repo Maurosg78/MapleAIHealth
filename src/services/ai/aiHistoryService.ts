@@ -1,8 +1,8 @@
-import { api } from '../../lib/api';
-import { AIQuery, AIResponse } from './aiService';
-
+   HttpService 
+ } from "../../../lib/api"
+  id: string
+import { 
 export interface AIHistoryEntry {
-  id: string;
   query: AIQuery;
   response: AIResponse;
   timestamp: string;
@@ -16,7 +16,7 @@ export interface AIHistoryEntry {
 class AIHistoryService {
   async getHistory(userId: string): Promise<AIHistoryEntry[]> {
     try {
-      const response = await api.get(`/ai/history/${userId}`);
+
       return response.data;
     } catch (error) {
       console.error('Error fetching AI history:', error);
@@ -26,7 +26,7 @@ class AIHistoryService {
 
   async addEntry(entry: Omit<AIHistoryEntry, 'id'>): Promise<AIHistoryEntry> {
     try {
-      const response = await api.post('/ai/history', entry);
+
       return response.data;
     } catch (error) {
       console.error('Error adding AI history entry:', error);
@@ -47,4 +47,4 @@ class AIHistoryService {
   }
 }
 
-export const aiHistoryService = new AIHistoryService();
+export

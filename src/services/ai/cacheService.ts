@@ -1,8 +1,8 @@
-import { CachedResponse, AIResponse } from './types';
-import { createHash } from 'crypto';
-
+   HttpService 
+ } from "../../../lib/api"
+  maxSize: number
+import { 
 export interface CacheConfig {
-  maxSize: number;
   ttl: number;
   cleanupInterval: number;
 }
@@ -54,8 +54,8 @@ export class CacheService {
   }
 
   public async get(query: string): Promise<AIResponse | null> {
-    const queryHash = this.generateQueryHash(query);
-    const cached = this.cache.get(queryHash);
+
+
 
     if (!cached) {
       this.stats.misses++;
@@ -64,8 +64,8 @@ export class CacheService {
     }
 
     // Verificar TTL
-    const now = new Date().getTime();
-    const cachedTime = new Date(cached.timestamp).getTime();
+
+
     if (now - cachedTime > this.config.ttl) {
       this.cache.delete(queryHash);
       this.stats.misses++;
@@ -87,7 +87,7 @@ export class CacheService {
     response: AIResponse,
     metadata?: CachedResponse['metadata']
   ): Promise<void> {
-    const queryHash = this.generateQueryHash(query);
+
 
     // Limpiar caché si está lleno
     if (this.cache.size >= this.config.maxSize) {
@@ -110,9 +110,9 @@ export class CacheService {
 
   private cleanup(): void {
     // Eliminar entradas expiradas
-    const now = new Date().getTime();
+
     for (const [key, value] of this.cache.entries()) {
-      const cachedTime = new Date(value.timestamp).getTime();
+
       if (now - cachedTime > this.config.ttl) {
         this.cache.delete(key);
       }
@@ -120,18 +120,18 @@ export class CacheService {
 
     // Si aún está lleno, eliminar las entradas menos accedidas
     if (this.cache.size >= this.config.maxSize) {
-      const entries = Array.from(this.cache.entries());
+
       entries.sort((a, b) => {
         // Priorizar por frecuencia de acceso y tiempo desde último acceso
-        const accessScore = b[1].accessCount - a[1].accessCount;
+
         if (accessScore !== 0) return accessScore;
 
-        const lastAccessA = new Date(a[1].lastAccessed).getTime();
-        const lastAccessB = new Date(b[1].lastAccessed).getTime();
+
+
         return lastAccessB - lastAccessA;
       });
 
-      const toRemove = entries.slice(Math.floor(this.config.maxSize * 0.8));
+
       toRemove.forEach(([key]) => this.cache.delete(key));
     }
   }
@@ -152,16 +152,16 @@ export class CacheService {
   }
 
   public getStats(): CacheStats {
-    const totalQueries = this.stats.totalQueries;
-    const hitRate = totalQueries > 0 ? this.stats.hits / totalQueries : 0;
-    const missRate = totalQueries > 0 ? this.stats.misses / totalQueries : 0;
+
+
+
 
     let oldestEntry: Date | null = null;
     let newestEntry: Date | null = null;
     let totalAccessCount = 0;
 
     for (const entry of this.cache.values()) {
-      const entryDate = new Date(entry.timestamp);
+
       if (!oldestEntry || entryDate < oldestEntry) {
         oldestEntry = entryDate;
       }
@@ -190,4 +190,4 @@ export class CacheService {
 }
 
 // Exportar una instancia por defecto
-export const cacheService = CacheService.getInstance();
+export

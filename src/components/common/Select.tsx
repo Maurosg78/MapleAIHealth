@@ -1,8 +1,12 @@
-import React, { forwardRef } from 'react';
-import { twMerge } from 'tailwind-merge';
-
+import { 
+   useState, useEffect 
+ } from "react"
 export interface SelectProps
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   extends React.SelectHTMLAttributes<HTMLSelectElement> {
+import React from "react"
   label?: string;
   error?: string;
   helperText?: string;
@@ -33,14 +37,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       id ?? `select-${Math.random().toString(36).substring(2, 11)}`;
     const baseStyles =
       'px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 transition-colors appearance-none bg-white';
-    const widthStyles = fullWidth ? 'w-full' : 'w-auto';
+
     const errorStyles = error
       ? 'border-red-500 focus:ring-red-200'
       : 'border-gray-300 focus:ring-primary-200 focus:border-primary-500';
-    const disabledStyles = disabled ? 'bg-gray-100 cursor-not-allowed' : '';
 
-    const helperTextContent = error ?? helperText;
-    const helperTextColor = error ? 'text-red-500' : 'text-gray-500';
+
+
+
 
     return (
       <div className={twMerge('flex flex-col gap-1', widthStyles)}>

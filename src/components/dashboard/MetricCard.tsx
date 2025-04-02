@@ -1,6 +1,13 @@
 interface MetricCardProps {
-  title: string;
-  value: number;
+import { 
+   useState, useEffect 
+ } from "react"
+  title: string
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
+  value: number
+import React from "react"
   icon: React.ReactNode;
   description?: string;
 }

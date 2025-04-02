@@ -1,19 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from '../components/common/Card';
-import { Spinner } from '../components/common/Spinner';
-import { dashboardService } from '../services/dashboardService';
-import { AIMedicalWidget } from '../components/dashboard/AIMedicalWidget';
-import { DashboardMetrics } from '../types/dashboard';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const DashboardPage: React.FC = () => {
-  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const data = await dashboardService.getMetrics();
         setMetrics(data);
       } catch (err) {
         setError('Error al cargar las métricas');

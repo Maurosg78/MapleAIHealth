@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
   headers: {
     'Content-Type': 'application/json',
   },
-});
+})
+import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+const api = axios.create({
 
 // Interceptor para manejar errores
 api.interceptors.response.use(
@@ -23,7 +21,7 @@ api.interceptors.response.use(
 // Interceptor para agregar token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

@@ -1,9 +1,8 @@
-import { AIProviderClient } from './AIProviderClient';
-import { AIQuery, AIResponse, InsightType } from '../types';
-import { Logger } from '../../../utils/logger';
-
-/**
+   HttpService 
+ } from "../../../lib/api"
  * Interfaz para la respuesta de la API de Google MedPaLM
+import { 
+/**
  */
 interface MedPaLMResponse {
   predictions: Array<{
@@ -63,7 +62,7 @@ export class MedPaLMProvider implements AIProviderClient {
 
   estimateQueryCost(query: AIQuery): number {
     // Estimación básica basada en la longitud de la consulta
-    const baseLength = query.query.length;
+
     const notesLength =
       query.unstructuredNotes?.reduce(
         (acc, note) => acc + note.content.length,
@@ -73,12 +72,11 @@ export class MedPaLMProvider implements AIProviderClient {
       ? JSON.stringify(query.context.data).length
       : 0;
 
-    const totalLength = baseLength + notesLength + contextLength;
-    const estimatedTokens = totalLength / 4; // Aproximación: 4 caracteres = 1 token
+    // Aproximación: 4 caracteres = 1 token
 
     // Precios aproximados: $0.01 por 1K tokens de entrada, $0.04 por 1K tokens de salida
-    const inputCost = (estimatedTokens / 1000) * 0.01;
-    const outputCost = (estimatedTokens / 3000) * 0.04; // Asumiendo que la salida es 1/3 de la entrada
+
+    // Asumiendo que la salida es 1/3 de la entrada
 
     return inputCost + outputCost;
   }
@@ -94,10 +92,8 @@ export class MedPaLMProvider implements AIProviderClient {
       });
 
       // Preparar el prompt
-      const prompt = this.buildPrompt(query);
 
       // Realizar la llamada a la API de Google
-      const response = await this.callMedPaLM(prompt);
 
       // Procesar la respuesta
       return this.processResponse(response);
@@ -144,8 +140,6 @@ Consulta del usuario: ${query.query}
   }
 
   private async callMedPaLM(prompt: string): Promise<MedPaLMResponse> {
-    const url = `https://${this.location}-aiplatform.googleapis.com/v1/projects/${this.projectId}/locations/${this.location}/publishers/google/models/${this.modelId}:predict`;
-
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -177,14 +171,13 @@ Consulta del usuario: ${query.query}
   private processResponse(medpalmResponse: MedPaLMResponse): AIResponse {
     try {
       // Extraer el contenido de la respuesta
-      const content = medpalmResponse.predictions[0]?.content;
+
       if (!content) {
         throw new Error('No content in MedPaLM response');
       }
 
       // Encontrar y parsear el JSON dentro del texto
-      const jsonRegex = /\{[\s\S]*\}/;
-      const jsonMatch = jsonRegex.exec(content);
+
       if (!jsonMatch) {
         throw new Error('No JSON found in MedPaLM response');
       }

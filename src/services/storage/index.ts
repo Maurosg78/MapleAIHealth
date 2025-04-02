@@ -1,6 +1,9 @@
+   HttpService 
+ } from "../../../lib/api"
+  set<T>(key: string, value: T): void
+import { 
 interface StorageService {
   get<T>(key: string): T | null;
-  set<T>(key: string, value: T): void;
   remove(key: string): void;
   clear(): void;
 }
@@ -8,7 +11,7 @@ interface StorageService {
 class LocalStorageService implements StorageService {
   get<T>(key: string): T | null {
     try {
-      const item = localStorage.getItem(key);
+
       return item ? JSON.parse(item) : null;
     } catch (error) {
       console.error('Error reading from localStorage:', error);
@@ -41,4 +44,4 @@ class LocalStorageService implements StorageService {
   }
 }
 
-export const storage = new LocalStorageService();
+export

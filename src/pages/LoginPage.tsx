@@ -1,13 +1,8 @@
-import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { Input } from '../components/common/Input';
-import { Button } from '../components/common/Button';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const LoginPage: React.FC = () => {
-  const { login, loading, error } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {

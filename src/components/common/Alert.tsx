@@ -1,8 +1,12 @@
-import React from 'react';
-import { cn } from '../../lib/utils';
-import {
+import { 
+   useState, useEffect 
+ } from "react"
   CheckCircleIcon,
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   XCircleIcon,
+import { 
   ExclamationCircleIcon,
   InformationCircleIcon,
 } from '@heroicons/react/24/outline';
@@ -57,9 +61,9 @@ export const Alert: React.FC<AlertProps> = ({
   variant = 'solid',
   icon,
 }) => {
-  const Icon = icons[type];
 
-  const baseStyles = 'p-4 rounded-lg shadow-sm flex items-start gap-3';
+
+
   const variantStyles = {
     solid: {
       success: 'bg-green-50 text-green-800 border border-green-200',

@@ -1,22 +1,24 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, Spinner } from '../common';
-import {
+import { 
+   useState, useEffect 
+ } from "react"
   aiService,
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   UnstructuredNote,
+import { 
   AIResponse,
 } from '../../services/ai/aiService';
-import { NoteInput } from './NoteInput';
-import AnalysisResults from './AnalysisResults';
 
 interface AIAssistantProps {
   patientId: string;
 }
 
 export const AIAssistant: React.FC<AIAssistantProps> = ({ patientId }) => {
-  const [notes, setNotes] = useState<UnstructuredNote[]>([]);
-  const [analysis, setAnalysis] = useState<AIResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+
+
+
 
   const analyzeNotes = useCallback(
     async (notesToAnalyze: UnstructuredNote[]) => {
@@ -132,7 +134,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ patientId }) => {
   }, [analyzeNotes]);
 
   const handleNoteSubmit = async (note: UnstructuredNote) => {
-    const updatedNotes = [...notes, note];
+
     setNotes(updatedNotes);
     await analyzeNotes(updatedNotes);
   };

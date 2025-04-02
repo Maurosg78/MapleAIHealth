@@ -1,7 +1,18 @@
-import React from 'react';
-import {
+import { 
+   useState, useEffect 
+ } from "react"
   Card,
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   CardContent,
+import { 
+  AIResponse,
+  TimelineEvent,
+  Insight,
+  Recommendation,
+ } from '../../services/ai/types'
+import { 
   Typography,
   List,
   ListItem,
@@ -9,12 +20,6 @@ import {
   Divider,
   Box,
 } from '@mui/material';
-import {
-  AIResponse,
-  TimelineEvent,
-  Insight,
-  Recommendation,
-} from '../../services/ai/types';
 
 interface AnalysisResultsProps {
   response: AIResponse;

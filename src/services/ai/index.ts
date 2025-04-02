@@ -1,17 +1,20 @@
-import monitorService, {
   ErrorMonitorService,
+import { 
+   HttpService 
+ } from "../../../lib/api"
   ErrorSeverity,
-  ErrorCategory,
-  MonitoredError,
-  captureException,
-} from './monitorService';
-
 import lintingErrorService, {
   LintingErrorService,
   LintingErrorType,
   LintingErrorPriority,
   LintingError,
-} from './lintingErrorService';
+ } from './lintingErrorService'
+import monitorService, {
+  ErrorCategory,
+  MonitoredError,
+  captureException,
+} from './monitorService';
+
 
 // Exportar funciones y clases
 export {

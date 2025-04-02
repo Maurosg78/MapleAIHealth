@@ -1,196 +1,175 @@
-import { EMRAdapter } from './EMRAdapter';
-import { GenericEMRAdapter } from './implementations/GenericEMRAdapter';
-import { EPICAdapter } from './implementations/EPICAdapter';
-import { OSCARAdapter } from './implementations/OSCARAdapter';
-import { ClinicCloudAdapter } from './implementations/ClinicCloudAdapter';
-import { Logger } from '../../lib/logger';
+import { Logger } from '../../lib/logger'
+import { EMRAdapter } from './interfaces/EMRAdapter'
+import { GenericEMRAdapter } from './implementations/GenericEMRAdapter'
+import { EPICAdapter } from './implementations/EPICAdapter'
+import { OSCARAdapter } from './implementations/OSCARAdapter'
+import { ClinicCloudAdapter } from './implementations/ClinicCloudAdapter'
 
 /**
  * Tipo para las opciones de configuración de adaptadores EMR
  */
-export type EMRAdapterConfig = {
+export interface EMRAdapterConfig {
   apiKey?: string;
   baseUrl?: string;
   apiUrl?: string;
   username?: string;
   password?: string;
+  timeout?: number;
   clientId?: string;
   clientSecret?: string;
   clinicId?: string;
-  timeout?: number;
-  [key: string]: unknown;
-};
+}
+
+/**
+ * Configuración específica para el adaptador OSCAR
+ */
+export interface OSCARAdapterConfig {
+  baseUrl: string;
+  username: string;
+  password: string;
+  clinicId: string;
+}
+
+/**
+ * Configuración específica para el adaptador ClinicCloud
+ */
+export interface ClinicCloudAdapterConfig {
+  apiUrl: string;
+  apiKey: string;
+  clinicId: string;
+}
+
+/**
+ * Configuración específica para el adaptador EPIC
+ */
+export interface EPICAdapterConfig {
+  apiBaseUrl: string;
+  apiKey?: string;
+  clientId?: string;
+  clientSecret?: string;
+}
 
 /**
  * Fábrica para crear y gestionar adaptadores EMR
  */
 export class EMRAdapterFactory {
-  private static readonly adapters: Map<string, EMRAdapter> = new Map();
-  private static readonly logger: Logger = new Logger('EMRAdapterFactory');
-  private static initialized = false;
+  private static instance: EMRAdapterFactory;
+  private adapters: Map<string, EMRAdapter> = new Map();
+  private readonly logger: Logger;
 
-  /**
-   * Inicializa la fábrica con los adaptadores por defecto
-   */
-  private static initializeDefaultAdapters(): void {
-    if (EMRAdapterFactory.initialized) {
-      return;
+  private constructor() {
+    this.logger = new Logger('EMRAdapterFactory');
+    this.initializeDefaultAdapters();
+  }
+
+  public static getInstance(): EMRAdapterFactory {
+    if (!EMRAdapterFactory.instance) {
+      EMRAdapterFactory.instance = new EMRAdapterFactory();
     }
+    return EMRAdapterFactory.instance;
+  }
 
-    // Registrar adaptador genérico
-    EMRAdapterFactory.registerAdapter('GENERIC', new GenericEMRAdapter());
+  // Método para pruebas
+  public static resetForTests(): void {
+    EMRAdapterFactory.instance = new EMRAdapterFactory();
+  }
 
-    // Indicar que ya hemos inicializado
-    EMRAdapterFactory.initialized = true;
-    EMRAdapterFactory.logger.info(
-      'Fábrica de adaptadores EMR inicializada con adaptadores por defecto'
-    );
+  private initializeDefaultAdapters(): void {
+    this.logger.info('Inicializando adaptadores EMR por defecto');
+    this.registerAdapter('GENERIC', new GenericEMRAdapter());
   }
 
   /**
    * Registra un adaptador EMR en la fábrica
    */
-  public static registerAdapter(name: string, adapter: EMRAdapter): void {
-    EMRAdapterFactory.adapters.set(name.toUpperCase(), adapter);
-    EMRAdapterFactory.logger.info(`Adaptador EMR registrado: ${name}`);
+  public registerAdapter(name: string, adapter: EMRAdapter): void {
+    const normalizedName = name.toUpperCase();
+    this.adapters.set(normalizedName, adapter);
+    this.logger.info(`Adaptador EMR registrado: ${normalizedName}`);
   }
 
   /**
    * Obtiene un adaptador EMR por su nombre
    * Si se proporcionan opciones de configuración, crea una nueva instancia
    */
-  public static getAdapter(
-    name: string,
-    config?: EMRAdapterConfig
-  ): EMRAdapter {
-    EMRAdapterFactory.initializeDefaultAdapters();
+  public getAdapter(name: string, config?: EMRAdapterConfig): EMRAdapter {
+    const normalizedName = name.toUpperCase();
 
-    const adapterName = name.toUpperCase();
-
-    // Si hay configuración, crear una nueva instancia
-    if (config) {
-      return EMRAdapterFactory.createAdapter(adapterName, config);
+    // Verificar si el adaptador existe
+    if (!this.adapters.has(normalizedName)) {
+      this.logger.error(`Adaptador EMR no encontrado: ${normalizedName}`);
+      throw new Error(`Adaptador EMR no soportado: ${normalizedName}`);
     }
 
-    // Si no, obtener la instancia existente
-    const adapter = EMRAdapterFactory.adapters.get(adapterName);
+    // Obtener el adaptador base
+    const adapter = this.adapters.get(normalizedName)!;
 
-    if (!adapter) {
-      EMRAdapterFactory.logger.error(`Adaptador EMR no encontrado: ${name}`);
-      throw new Error(`No se encontró un adaptador EMR para: ${name}`);
+    // Si no hay configuración, devolver el adaptador base
+    if (!config) {
+      return adapter;
     }
 
-    return adapter;
-  }
+    // Crear una nueva instancia con la configuración proporcionada
+    switch (normalizedName) {
+      case 'OSCAR': {
+        if (!config.baseUrl) {
+          throw new Error('Se requiere baseUrl para el adaptador OSCAR');
+        }
+        const oscarConfig: OSCARAdapterConfig = {
+          baseUrl: config.baseUrl,
+          username: config.username || '',
+          password: config.password || '',
+          clinicId: config.clinicId || ''
+        };
+        return new OSCARAdapter(oscarConfig);
+      }
 
-  /**
-   * Crea una nueva instancia de un adaptador EMR con la configuración proporcionada
-   */
-  private static createAdapter(
-    name: string,
-    config: EMRAdapterConfig
-  ): EMRAdapter {
-    EMRAdapterFactory.logger.info(`Creando adaptador EMR: ${name}`);
+      case 'CLINICCLOUD': {
+        if (!config.apiUrl || !config.apiKey) {
+          throw new Error('Se requiere apiUrl y apiKey para el adaptador CLINICCLOUD');
+        }
+        const clinicCloudConfig: ClinicCloudAdapterConfig = {
+          apiUrl: config.apiUrl,
+          apiKey: config.apiKey,
+          clinicId: config.clinicId || ''
+        };
+        return new ClinicCloudAdapter(clinicCloudConfig);
+      }
 
-    switch (name) {
-      case 'EPIC':
+      case 'EPIC': {
         if (!config.baseUrl) {
           throw new Error('Se requiere baseUrl para el adaptador EPIC');
         }
-        return new EPICAdapter({
+        const epicConfig: EPICAdapterConfig = {
           apiBaseUrl: config.baseUrl,
           apiKey: config.apiKey,
           clientId: config.clientId,
-          clientSecret: config.clientSecret,
-        });
-
-      case 'OSCAR':
-        if (
-          !config.baseUrl ||
-          !config.username ||
-          !config.password ||
-          !config.clinicId
-        ) {
-          throw new Error(
-            'Se requiere baseUrl, username, password y clinicId para el adaptador OSCAR'
-          );
-        }
-        return new OSCARAdapter({
-          baseUrl: config.baseUrl,
-          username: config.username,
-          password: config.password,
-          clinicId: config.clinicId,
-        });
-
-      case 'CLINICCLOUD':
-        if (!config.apiUrl || !config.apiKey || !config.clinicId) {
-          throw new Error(
-            'Se requiere apiUrl, apiKey y clinicId para el adaptador ClinicCloud'
-          );
-        }
-        return new ClinicCloudAdapter({
-          apiUrl: config.apiUrl,
-          apiKey: config.apiKey,
-          clinicId: config.clinicId,
-          clientId: config.clientId,
-          clientSecret: config.clientSecret,
-        });
+          clientSecret: config.clientSecret
+        };
+        return new EPICAdapter(epicConfig);
+      }
 
       case 'GENERIC':
-        return new GenericEMRAdapter();
-
       default:
-        EMRAdapterFactory.logger.error(
-          `Adaptador EMR no implementado: ${name}`
-        );
-        throw new Error(
-          `No existe implementación para el adaptador EMR: ${name}`
-        );
+        return adapter;
     }
   }
 
   /**
    * Obtiene una lista de los nombres de adaptadores disponibles
    */
-  public static getAvailableAdapters(): string[] {
-    EMRAdapterFactory.initializeDefaultAdapters();
-    return Array.from(EMRAdapterFactory.adapters.keys());
+  public getAvailableAdapters(): string[] {
+    return Array.from(this.adapters.keys());
   }
 
   /**
    * Obtiene un mapa con información sobre los adaptadores disponibles
    */
-  public static getAdaptersInfo(): Array<{
-    id: string;
-    name: string;
-    description: string;
-  }> {
-    EMRAdapterFactory.initializeDefaultAdapters();
-
-    return [
-      {
-        id: 'GENERIC',
-        name: 'Adaptador Genérico',
-        description: 'Adaptador de demostración para pruebas y desarrollo',
-      },
-      {
-        id: 'EPIC',
-        name: 'EPIC EMR',
-        description:
-          'Adaptador para EPIC, uno de los sistemas EMR más utilizados en EE.UU. y Canadá',
-      },
-      {
-        id: 'OSCAR',
-        name: 'OSCAR EMR',
-        description:
-          'Adaptador para OSCAR, sistema EMR de código abierto popular en Canadá',
-      },
-      {
-        id: 'CLINICCLOUD',
-        name: 'ClinicCloud',
-        description:
-          'Adaptador para ClinicCloud, uno de los sistemas EMR más utilizados en España',
-      },
-    ];
+  public getAdaptersInfo(): Array<{ id: string; name: string; description: string }> {
+    return Array.from(this.adapters.entries()).map(([id, adapter]) => ({
+      id,
+      name: adapter.name,
+      description: adapter.description || ''
+    }));
   }
 }

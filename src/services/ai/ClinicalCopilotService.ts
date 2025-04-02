@@ -1,15 +1,15 @@
-import { AIService, AIServiceError } from './aiService';
-import {
   ConsultationContext,
+import { 
+   HttpService 
+ } from "../../../lib/api"
   ConsultationStage,
+import { 
   EnhancedAIQuery,
   EnhancedAIResponse,
   EvidenceLevel,
   SuggestedQuestion,
   TreatmentSuggestion,
 } from './types';
-import { cacheService } from './cacheService';
-import { Logger } from '../../lib/logger';
 
 /**
  * Respuesta de sugerencias de consulta
@@ -64,7 +64,7 @@ export class ClinicalCopilotService {
     reasonForVisit: string,
     isFirstVisit: boolean
   ): string {
-    const consultationId = `${patientId}-${providerId}-${Date.now()}`;
+
 
     const context: ConsultationContext = {
       patientId,
@@ -90,7 +90,7 @@ export class ClinicalCopilotService {
     currentInput: string,
     evidenceLevel: EvidenceLevel = 'alto'
   ): Promise<ConsultationSuggestion> {
-    const context = this.activeConsultations.get(consultationId);
+
 
     if (!context) {
       throw new Error(`Consulta no encontrada: ${consultationId}`);
@@ -119,8 +119,8 @@ export class ClinicalCopilotService {
       };
 
       // Obtener cache primero
-      const cacheKey = `copilot-${consultationId}-${context.stage}-${currentInput.substring(0, 50)}`;
-      const cachedResponse = await cacheService.get(cacheKey);
+
+
 
       if (cachedResponse) {
         this.logger.debug('Respuesta encontrada en caché', { consultationId });
@@ -159,7 +159,7 @@ export class ClinicalCopilotService {
     consultationId: string,
     newStage: ConsultationStage
   ): boolean {
-    const context = this.activeConsultations.get(consultationId);
+
 
     if (!context) {
       throw new Error(`Consulta no encontrada: ${consultationId}`);
@@ -181,7 +181,7 @@ export class ClinicalCopilotService {
    * Finaliza la consulta actual
    */
   public endConsultation(consultationId: string, summary?: string): boolean {
-    const context = this.activeConsultations.get(consultationId);
+
 
     if (!context) {
       return false;

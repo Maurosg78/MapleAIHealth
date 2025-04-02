@@ -1,6 +1,5 @@
-import { OpenAIProvider } from './OpenAIProvider';
-import { MedPaLMProvider } from './MedPaLMProvider';
-import type { AIProviderClient } from './AIProviderClient';
-
+   HttpService 
+ } from '../../../lib/api'
+import { 
 export { OpenAIProvider, MedPaLMProvider };
 export type { AIProviderClient };

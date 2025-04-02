@@ -1,17 +1,22 @@
-import { render, screen } from '@testing-library/react';
-import { Spinner } from '../Spinner';
-import { describe, it, expect } from 'vitest';
-
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Spinner', () => {
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   it('renderiza correctamente', () => {
     render(<Spinner />);
-    const spinner = screen.getByRole('status');
+
     expect(spinner).toBeInTheDocument();
     expect(spinner).toHaveAttribute('aria-label', 'Cargando');
   });
 
   it('aplica los estilos correctos según el tipo', () => {
-    const { rerender } = render(<Spinner type="success" />);
     expect(screen.getByRole('status').querySelector('svg')).toHaveClass(
       'text-green-600'
     );
@@ -33,7 +38,6 @@ describe('Spinner', () => {
   });
 
   it('aplica los tamaños correctamente', () => {
-    const { rerender } = render(<Spinner size="sm" />);
     expect(screen.getByRole('status').querySelector('svg')).toHaveClass(
       'w-4',
       'h-4'
@@ -64,7 +68,7 @@ describe('Spinner', () => {
 
   it('tiene la estructura SVG correcta', () => {
     render(<Spinner />);
-    const svg = screen.getByRole('status').querySelector('svg');
+
     expect(svg).toHaveAttribute('xmlns', 'http://www.w3.org/2000/svg');
     expect(svg).toHaveAttribute('fill', 'none');
     expect(svg).toHaveAttribute('viewBox', '0 0 24 24');

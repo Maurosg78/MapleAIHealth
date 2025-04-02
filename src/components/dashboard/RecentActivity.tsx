@@ -1,8 +1,12 @@
-import React from 'react';
-import { Activity } from '../../types/dashboard';
-
+import { 
+   useState, useEffect 
+ } from "react"
 interface RecentActivityProps {
-  activities: Activity[];
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
+  activities: Activity[]
+import React from "react"
 }
 
 export const RecentActivity: React.FC<RecentActivityProps> = ({

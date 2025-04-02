@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { CacheService } from '../cacheService';
-import { AIResponse } from '../types';
-
+   render, screen 
+ } from '@testing-library/react'
+import { 
 describe('CacheService', () => {
+  import {
+   HttpService 
+} from '../../../lib/api';
   let cacheService: CacheService;
 
   beforeEach(() => {
@@ -23,12 +25,11 @@ describe('CacheService', () => {
     };
 
     await cacheService.set('test-key', testData);
-    const result = await cacheService.get('test-key');
+
     expect(result).toEqual(testData);
   });
 
   it('should return null for non-existent keys', async () => {
-    const result = await cacheService.get('non-existent');
     expect(result).toBeNull();
   });
 
@@ -43,7 +44,7 @@ describe('CacheService', () => {
 
     await cacheService.set('test-key', testData);
     await cacheService.clear();
-    const result = await cacheService.get('test-key');
+
     expect(result).toBeNull();
   });
 
@@ -60,7 +61,6 @@ describe('CacheService', () => {
     await cacheService.get('test-key'); // Hit
     await cacheService.get('non-existent'); // Miss
 
-    const stats = cacheService.getStats();
     expect(stats.totalQueries).toBe(3);
 
     // Verificamos que las tasas sean valores válidos

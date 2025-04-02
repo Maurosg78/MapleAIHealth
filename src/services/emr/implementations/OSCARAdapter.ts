@@ -1,6 +1,9 @@
-import {
   EMRAdapter,
+import { 
+   HttpService 
+ } from "../../../lib/api"
   EMRConsultation,
+import { 
   EMRDiagnosis,
   EMRHistoryOptions,
   EMRPatientHistory,
@@ -9,14 +12,48 @@ import {
   EMRSearchQuery,
   EMRTreatment,
 } from '../EMRAdapter';
-import { PatientData } from '../../ai/types';
-import { Logger } from '../../../lib/logger';
 
 /**
  * Tipos específicos para OSCAR EMR
  */
 // Tipo para la respuesta de datos demográficos de OSCAR
 interface OSCARDemographic {
+  id: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  birthDate: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  healthCardNumber?: string;
+  id: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  birthDate: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  healthCardNumber?: string;
+  id: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  birthDate: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  healthCardNumber?: string;
   id: string;
   firstName: string;
   lastName: string;
@@ -293,15 +330,11 @@ export class OSCARAdapter implements EMRAdapter {
       );
 
       // Obtener historial médico, alergias, condiciones, etc.
-      const allergies = await this.fetchData(
-        `/allergies?id=${patientId}`
-      );
+
       const medications = await this.fetchData(
         `/prescriptions?id=${patientId}`
       );
-      const problems = await this.fetchData(
-        `/diseaseRegistry?id=${patientId}`
-      );
+
 
       // Convertir datos de OSCAR al formato PatientData de la aplicación
       return this.convertOscarToPatientData(demographic, {
@@ -325,78 +358,51 @@ export class OSCARAdapter implements EMRAdapter {
    */
   public async searchPatients(
     query: EMRSearchQuery,
-    limit = 10
+    limit: number = 20
   ): Promise<EMRPatientSearchResult[]> {
+    this.logger.info(`[OSCARAdapter] Buscando pacientes con: ${JSON.stringify(query)}`);
+
     try {
-      this.logger.info('Buscando pacientes en OSCAR', { query, limit });
-      await this.ensureAuthenticated();
+      // Simulamos una búsqueda de pacientes en OSCAR
+      // En una implementación real, aquí llamaríamos a las API de OSCAR
 
-      // Aquí iría la implementación real que busca en el API de OSCAR
-      // Para este ejemplo, simulamos una respuesta con datos de prueba
-
-      // Simulación de resultados de búsqueda
-      const mockResults: EMRPatientSearchResult[] = [
+      // Para efectos de demostración, devolvemos datos mockeados
+      // que cumplen con la interfaz EMRPatientSearchResult
+      return [
         {
-          id: '1',
-          fullName: 'Juan García',
-          name: 'Juan García',
-          birthDate: '1980-05-15',
-          gender: 'M',
-          mrn: 'MRN12345',
-          birthDate: new Date('1980-05-15'),
-          documentId: 'MRN12345',
+          id: '12345',
+          fullName: 'Juan Pérez García',
+          name: 'Juan Pérez García', // Propiedad requerida
+          birthDate: '1980-05-15', // Propiedad requerida
+          gender: 'M', // Propiedad requerida
+          mrn: 'OSC-12345', // Propiedad requerida
+          documentId: '12345678A',
           contactInfo: {
-            email: 'juan@example.com',
-            phone: '123-456-7890'
-          }
+            email: 'juan.perez@example.com',
+            phone: '555-123-4567',
+            address: 'Calle Ejemplo 123, Madrid'
+          },
+          lastVisit: new Date('2023-03-10')
         },
         {
-          id: '2',
-          fullName: 'María López',
-          name: 'María López',
-          birthDate: '1975-08-22',
-          gender: 'F',
-          mrn: 'MRN67890',
-          birthDate: new Date('1975-08-22'),
-          documentId: 'MRN67890',
+          id: '67890',
+          fullName: 'María López Sánchez',
+          name: 'María López Sánchez', // Propiedad requerida
+          birthDate: '1975-11-23', // Propiedad requerida
+          gender: 'F', // Propiedad requerida
+          mrn: 'OSC-67890', // Propiedad requerida
+          documentId: '87654321B',
           contactInfo: {
-            email: 'maria@example.com',
-            phone: '098-765-4321'
-          }
+            email: 'maria.lopez@example.com',
+            phone: '555-765-4321',
+            address: 'Avenida Principal 456, Barcelona'
+          },
+          lastVisit: new Date('2023-04-05')
         }
-      ];
-
-      // Filtrar resultados según los criterios de búsqueda
-      let filteredResults = [...mockResults];
-
-      if (query.name) {
-        filteredResults = filteredResults.filter(patient =>
-          patient.name.toLowerCase().includes(query.name?.toLowerCase() || ''));
-      }
-
-      if (query.documentId) {
-        filteredResults = filteredResults.filter(patient =>
-          patient.documentId?.includes(query.documentId || ''));
-      }
-
-      if (query.email) {
-        filteredResults = filteredResults.filter(patient =>
-          patient.contactInfo?.email?.toLowerCase().includes(query.email?.toLowerCase() || ''));
-      }
-
-      if (query.phone) {
-        filteredResults = filteredResults.filter(patient =>
-          patient.contactInfo?.phone?.includes(query.phone || ''));
-      }
-
-      // Limitar resultados
-      const results = filteredResults.slice(0, limit);
-
-      this.logger.info(`Se encontraron ${results.length} pacientes`);
-      return results;
+      ].slice(0, limit);
     } catch (error) {
-      this.logger.error('Error al buscar pacientes en OSCAR', { error, query });
-      throw new Error(`Error al buscar pacientes: ${(error as Error).message}`);
+      this.logger.error(`[OSCARAdapter] Error al buscar pacientes: ${error}`);
+      throw new Error(`Error al buscar pacientes en OSCAR: ${error}`);
     }
   }
 
@@ -426,8 +432,8 @@ export class OSCARAdapter implements EMRAdapter {
       // Construir filtro de fechas si se proporcionan opciones
       let dateFilter = '';
       if (options?.startDate && options?.endDate) {
-        const startDate = options.startDate.toISOString().split('T')[0];
-        const endDate = options.endDate.toISOString().split('T')[0];
+
+
         dateFilter = `&startDate=${startDate}&endDate=${endDate}`;
       }
 
@@ -489,13 +495,13 @@ export class OSCARAdapter implements EMRAdapter {
       await this.ensureAuthenticated();
 
       // Convertir consulta al formato de OSCAR
-      const oscarNote = this.convertToOscarNote(consultation);
+
 
       // Enviar la consulta a OSCAR
-      const response = await this.postData('/casemgmt/note', oscarNote);
+
 
       // Extraer el ID de la consulta creada
-      const noteId = response.noteId;
+
       if (!noteId) {
         throw new Error('No se recibió un ID de nota válido');
       }
@@ -528,7 +534,7 @@ export class OSCARAdapter implements EMRAdapter {
       );
 
       // Aplicar actualizaciones a la nota
-      const updatedNote = this.applyConsultationUpdates(existingNote, updates);
+
 
       // Enviar la consulta actualizada
       await this.putData(`/casemgmt/note/${consultationId}`, updatedNote);
@@ -571,10 +577,10 @@ export class OSCARAdapter implements EMRAdapter {
       }
 
       // Enviar el tratamiento a OSCAR
-      const response = await this.postData(endpoint, payload);
+
 
       // Extraer el ID del tratamiento creado
-      const treatmentId = response.id;
+
       if (!treatmentId) {
         throw new Error('No se recibió un ID de tratamiento válido');
       }
@@ -669,7 +675,7 @@ export class OSCARAdapter implements EMRAdapter {
         );
       }
 
-      const data = await response.json();
+
 
       if (!data.success || !data.token) {
         throw new Error('Autenticación fallida');
@@ -708,7 +714,7 @@ export class OSCARAdapter implements EMRAdapter {
     | OSCARMeasurementResult
   > {
     try {
-      const token = await this.authenticate();
+
 
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         headers: {
@@ -741,7 +747,7 @@ export class OSCARAdapter implements EMRAdapter {
     data: Record<string, string | number | boolean | object>
   ): Promise<{ id: string; success: boolean; message?: string }> {
     try {
-      const token = await this.authenticate();
+
 
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         method: 'POST',
@@ -774,7 +780,7 @@ export class OSCARAdapter implements EMRAdapter {
     data: Record<string, string | number | boolean | object>
   ): Promise<{ success: boolean; message?: string }> {
     try {
-      const token = await this.authenticate();
+
 
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         method: 'PUT',
@@ -815,15 +821,15 @@ export class OSCARAdapter implements EMRAdapter {
       // Extraer información básica
       const fullName =
         `${demographic.firstName ?? ''} ${demographic.lastName ?? ''}`.trim();
-      const firstName = demographic.firstName ?? '';
-      const lastName = demographic.lastName ?? '';
-      const dob = demographic.birthDate;
-      const age = this.calculateAge(dob);
+
+
+
+
 
       // Obtener información de contacto
-      const email = demographic.email ?? '';
-      const phone = demographic.phone ?? '';
-      const address = this.formatAddress(demographic);
+
+
+
 
       // Construir objeto de datos del paciente
       const patientData: PatientData = {
@@ -861,10 +867,10 @@ export class OSCARAdapter implements EMRAdapter {
   private calculateAge(birthDate: string): number {
     if (!birthDate) return 0;
 
-    const today = new Date();
-    const birthDate = new Date(birthDate);
+
+
     let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
+
 
     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
       age--;
@@ -925,11 +931,11 @@ export class OSCARAdapter implements EMRAdapter {
    * Construye parámetros de búsqueda para OSCAR
    */
   private buildSearchParams(query: EMRSearchQuery): URLSearchParams {
-    const params = new URLSearchParams();
+
 
     if (query.name) {
       if (query.name.includes(' ')) {
-        const [firstName, ...lastNames] = query.name.split(' ');
+
         params.append('firstName', firstName);
         params.append('lastName', lastNames.join(' '));
       } else {
@@ -1065,7 +1071,7 @@ export class OSCARAdapter implements EMRAdapter {
     existingNote: OSCARNote,
     updates: Partial<EMRConsultation>
   ): Record<string, string | number | boolean> {
-    const updatedNote = { ...existingNote };
+
 
     if (updates.notes) {
       updatedNote.note = updates.notes;
@@ -1141,7 +1147,7 @@ export class OSCARAdapter implements EMRAdapter {
     };
 
     measurements.measurements.forEach((measurement: OSCARMeasurement) => {
-      const metricType = oscarTypeMap[measurement.type];
+
 
       // Verificar si este tipo de métrica fue solicitado
       if (metricType && metricTypes.includes(metricType)) {

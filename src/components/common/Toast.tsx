@@ -1,9 +1,12 @@
-import React, { useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { cn } from '../../lib/utils';
-import {
+import { 
+   useState, useEffect 
+ } from "react"
   CheckCircleIcon,
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   XCircleIcon,
+import { 
   ExclamationCircleIcon,
   InformationCircleIcon,
 } from '@heroicons/react/24/outline';
@@ -62,12 +65,12 @@ export const Toast: React.FC<ToastProps> = ({
 }) => {
   useEffect(() => {
     if (duration && onClose) {
-      const timer = setTimeout(onClose, duration);
+
       return () => clearTimeout(timer);
     }
   }, [duration, onClose]);
 
-  const Icon = icons[type];
+
 
   const baseStyles =
     'fixed p-4 rounded-lg shadow-lg max-w-sm flex items-center gap-3';

@@ -1,20 +1,17 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Card } from '../components/common/Card';
-import { Button } from '../components/common/Button';
-import { Spinner } from '../components/common/Spinner';
-import { appointmentService } from '../services/appointmentService';
-import { AppointmentFormModal } from '../components/appointment/AppointmentFormModal';
-import {
+import { 
+   useState, useEffect 
+ } from "react"
   Appointment,
+import { 
   AppointmentFilters,
   AppointmentStatus,
 } from '../types/appointment';
 
 export const AppointmentsPage: React.FC = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+
+
   const [selectedAppointment, setSelectedAppointment] = useState<
     Appointment | undefined
   >();
@@ -27,7 +24,7 @@ export const AppointmentsPage: React.FC = () => {
   const fetchAppointments = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await appointmentService.getAppointments(filters);
+
       setAppointments(response.appointments);
     } catch (err) {
       setError('Error al cargar las citas');
@@ -127,7 +124,7 @@ export const AppointmentsPage: React.FC = () => {
             'cancelled',
           ] as AppointmentStatus[]
         ).map((status) => {
-          const count = appointments.filter((a) => a.status === status).length;
+
           return (
             <Card key={status} className="p-4">
               <div className="flex items-center justify-between">

@@ -1,9 +1,12 @@
-import React, { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { cn } from '../../lib/utils';
-
+import { 
+   useState, useEffect 
+ } from "react"
 interface ModalProps {
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   /**
+import React from "react"
    * El contenido del modal
    */
   children: React.ReactNode;
@@ -32,10 +35,10 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   className,
 }) => {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+
 
   useEffect(() => {
-    const dialog = dialogRef.current;
+
     if (!dialog) return;
 
     if (isOpen) {

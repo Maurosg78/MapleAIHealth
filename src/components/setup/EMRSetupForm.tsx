@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { EMRAdapterFactory } from '../../services/emr/EMRAdapterFactory';
-
-// Definir interfaz para la configuración de EMR
+import { 
+   useState, useEffect 
+ } from 'react'
+ // Definir interfaz para la configuración de EMR
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from '@chakra-ui/react'
+import React from 'react'
 interface EMRAdapterConfig {
   baseUrl?: string;
   username?: string;
@@ -43,10 +47,8 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
   >([]);
 
   // Estado para guardar la configuración del adaptador
-  const [config, setConfig] = useState<EMRAdapterConfig>(initialConfig ?? {});
 
   // Estado para indicar si estamos probando la conexión
-  const [isTesting, setIsTesting] = useState(false);
 
   // Estado para mensajes
   const [message, setMessage] = useState<{
@@ -56,7 +58,6 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
 
   // Cargar los adaptadores disponibles al montar el componente
   useEffect(() => {
-    const adapters = EMRAdapterFactory.getAdaptersInfo();
     setAvailableAdapters(adapters);
 
     // Si no hay adaptador inicial seleccionado y tenemos adaptadores disponibles
@@ -316,10 +317,8 @@ export const EMRSetupForm: React.FC<EMRSetupFormProps> = ({
       setIsTesting(true);
 
       // Obtener una instancia del adaptador seleccionado con la configuración actual
-      const adapter = EMRAdapterFactory.getAdapter(selectedAdapter, config);
 
       // Probar la conexión
-      const result = await adapter.testConnection();
 
       if (result) {
         setMessage({

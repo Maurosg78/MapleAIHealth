@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Heading,
-  Input,
-  Text,
-  VStack
-} from '@chakra-ui/react';
-
-// Definir la interfaz para la consulta de búsqueda
+import { 
+   useState, useEffect 
+ } from 'react'
+ // Definir la interfaz para la consulta de búsqueda
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from '@chakra-ui/react'
+import React from 'react'
 interface EMRSearchQuery {
   name: string;
   documentId: string;
@@ -45,13 +42,10 @@ const EMRPatientSearch: React.FC = () => {
   });
 
   // Estado para los resultados de búsqueda
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
   // Estado de carga
-  const [isSearching, setIsSearching] = useState(false);
 
   // Estado para indicar si se ha realizado una búsqueda
-  const [hasSearched, setHasSearched] = useState(false);
 
   // Actualizar campo de búsqueda
   const handleSearchChange = (field: keyof EMRSearchQuery, value: string) => {
@@ -64,8 +58,13 @@ const EMRPatientSearch: React.FC = () => {
   // Realizar búsqueda de pacientes
   const handleSearch = async () => {
     // Validar que al menos un campo tenga valor
-    if (!searchQuery.name && !searchQuery.documentId && !searchQuery.email && !searchQuery.phone) {
-      console.error("Error: Introduce al menos un criterio de búsqueda");
+    if (
+      !searchQuery.name &&
+      !searchQuery.documentId &&
+      !searchQuery.email &&
+      !searchQuery.phone
+    ) {
+      console.error('Error: Introduce al menos un criterio de búsqueda');
       return;
     }
 
@@ -73,7 +72,7 @@ const EMRPatientSearch: React.FC = () => {
     setIsSearching(true);
 
     // Simulación de tiempo de carga
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Resultado de ejemplo
     const mockResults: SearchResult[] = [
@@ -88,8 +87,8 @@ const EMRPatientSearch: React.FC = () => {
         documentId: 'MRN12345',
         contactInfo: {
           email: 'juan@example.com',
-          phone: '123-456-7890'
-        }
+          phone: '123-456-7890',
+        },
       },
       {
         id: '2',
@@ -102,24 +101,30 @@ const EMRPatientSearch: React.FC = () => {
         documentId: 'MRN67890',
         contactInfo: {
           email: 'maria@example.com',
-          phone: '098-765-4321'
-        }
-      }
+          phone: '098-765-4321',
+        },
+      },
     ];
 
     // Aplicar filtros según los criterios de búsqueda
-    const filteredResults = mockResults.filter(patient => {
-      const nameMatch = searchQuery.name ?
-        patient.name.toLowerCase().includes(searchQuery.name.toLowerCase()) : true;
+    const filteredResults = mockResults.filter((patient) => {
+      const nameMatch = searchQuery.name
+        ? patient.name.toLowerCase().includes(searchQuery.name.toLowerCase())
+        : true;
 
-      const docMatch = searchQuery.documentId ?
-        patient.documentId?.includes(searchQuery.documentId) : true;
+      const docMatch = searchQuery.documentId
+        ? patient.documentId?.includes(searchQuery.documentId)
+        : true;
 
-      const emailMatch = searchQuery.email ?
-        patient.contactInfo?.email?.toLowerCase().includes(searchQuery.email.toLowerCase()) : true;
+      const emailMatch = searchQuery.email
+        ? patient.contactInfo?.email
+            ?.toLowerCase()
+            .includes(searchQuery.email.toLowerCase())
+        : true;
 
-      const phoneMatch = searchQuery.phone ?
-        patient.contactInfo?.phone?.includes(searchQuery.phone) : true;
+      const phoneMatch = searchQuery.phone
+        ? patient.contactInfo?.phone?.includes(searchQuery.phone)
+        : true;
 
       return nameMatch && docMatch && emailMatch && phoneMatch;
     });
@@ -151,7 +156,9 @@ const EMRPatientSearch: React.FC = () => {
 
         <Box>
           <Box mb={4}>
-            <Text fontWeight="bold" mb={2}>Nombre</Text>
+            <Text fontWeight="bold" mb={2}>
+              Nombre
+            </Text>
             <Input
               placeholder="Ej. Juan García"
               value={searchQuery.name}
@@ -160,7 +167,9 @@ const EMRPatientSearch: React.FC = () => {
           </Box>
 
           <Box mb={4}>
-            <Text fontWeight="bold" mb={2}>Documento de Identidad</Text>
+            <Text fontWeight="bold" mb={2}>
+              Documento de Identidad
+            </Text>
             <Input
               placeholder="Ej. 12345678X"
               value={searchQuery.documentId}
@@ -169,7 +178,9 @@ const EMRPatientSearch: React.FC = () => {
           </Box>
 
           <Box mb={4}>
-            <Text fontWeight="bold" mb={2}>Email</Text>
+            <Text fontWeight="bold" mb={2}>
+              Email
+            </Text>
             <Input
               placeholder="Ej. paciente@correo.com"
               value={searchQuery.email}
@@ -179,7 +190,9 @@ const EMRPatientSearch: React.FC = () => {
           </Box>
 
           <Box mb={4}>
-            <Text fontWeight="bold" mb={2}>Teléfono</Text>
+            <Text fontWeight="bold" mb={2}>
+              Teléfono
+            </Text>
             <Input
               placeholder="Ej. 612345678"
               value={searchQuery.phone}
@@ -189,11 +202,7 @@ const EMRPatientSearch: React.FC = () => {
         </Box>
 
         <Box>
-          <Button
-            variant="outline"
-            onClick={handleClear}
-            mr={3}
-          >
+          <Button variant="outline" onClick={handleClear} mr={3}>
             Limpiar
           </Button>
 
@@ -226,11 +235,21 @@ const EMRPatientSearch: React.FC = () => {
                     borderRadius="md"
                     mb={2}
                   >
-                    <Text><strong>Nombre:</strong> {patient.fullName}</Text>
-                    <Text><strong>ID:</strong> {patient.id}</Text>
-                    <Text><strong>Fecha Nacimiento:</strong> {patient.birthDate}</Text>
-                    <Text><strong>Género:</strong> {patient.gender}</Text>
-                    <Text><strong>MRN:</strong> {patient.mrn}</Text>
+                    <Text>
+                      <strong>Nombre:</strong> {patient.fullName}
+                    </Text>
+                    <Text>
+                      <strong>ID:</strong> {patient.id}
+                    </Text>
+                    <Text>
+                      <strong>Fecha Nacimiento:</strong> {patient.birthDate}
+                    </Text>
+                    <Text>
+                      <strong>Género:</strong> {patient.gender}
+                    </Text>
+                    <Text>
+                      <strong>MRN:</strong> {patient.mrn}
+                    </Text>
                   </Box>
                 ))}
               </Box>

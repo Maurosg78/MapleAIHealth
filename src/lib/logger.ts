@@ -9,6 +9,12 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 export class Logger {
   private readonly moduleName: string;
   private static logLevel: LogLevel = 'info';
+  private static readonly LOG_LEVELS: Record<LogLevel, number> = {
+    debug: 0,
+    info: 1,
+    warn: 2,
+    error: 3
+  };
 
   /**
    * Crea una nueva instancia de Logger
@@ -76,9 +82,8 @@ export class Logger {
    * @returns true si el nivel debe ser registrado
    */
   private shouldLog(level: LogLevel): boolean {
-    const levels: LogLevel[] = ['debug', 'info', 'warn', 'error'];
-    const currentLevelIndex = levels.indexOf(Logger.logLevel);
-    const targetLevelIndex = levels.indexOf(level);
+    const currentLevelIndex = Logger.LOG_LEVELS[Logger.logLevel];
+    const targetLevelIndex = Logger.LOG_LEVELS[level];
     return targetLevelIndex >= currentLevelIndex;
   }
 
@@ -95,7 +100,6 @@ export class Logger {
   ): void {
     const timestamp = new Date().toISOString();
     const formattedMessage = `[${timestamp}] [${level.toUpperCase()}] [${this.moduleName}] ${message}`;
-
     const logData = context
       ? { message: formattedMessage, ...context }
       : formattedMessage;

@@ -1,10 +1,10 @@
-import { api } from './api';
-import type { DashboardMetrics } from '../types/dashboard';
-
-export const dashboardService = {
+   HttpService 
+ } from "../../../lib/api"
   async getMetrics(): Promise<DashboardMetrics> {
+import { 
+export const dashboardService = {
     try {
-      const response = await api.get<DashboardMetrics>('/dashboard/metrics');
+
       return response.data;
     } catch (error) {
       console.error('Error fetching dashboard metrics:', error);
@@ -26,7 +26,7 @@ export const dashboardService = {
 
   async getActivityHistory(): Promise<Array<{ date: string; value: number }>> {
     try {
-      const response = await api.get<Array<{ date: string; value: number }>>(
+       value: number }>>(
         '/dashboard/activity-history'
       );
       return response.data;

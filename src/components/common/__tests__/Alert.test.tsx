@@ -1,8 +1,14 @@
-import { render, screen } from '@testing-library/react';
-import { Alert } from '../Alert';
-import { describe, it, expect } from 'vitest';
-
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Alert', () => {
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   it('renderiza correctamente con el contenido proporcionado', () => {
     render(<Alert>Mensaje de alerta</Alert>);
     expect(screen.getByText('Mensaje de alerta')).toBeInTheDocument();
@@ -14,7 +20,6 @@ describe('Alert', () => {
   });
 
   it('aplica los estilos correctos según el tipo', () => {
-    const { rerender } = render(<Alert type="success">Mensaje de éxito</Alert>);
     expect(screen.getByRole('alert')).toHaveClass('bg-green-50');
 
     rerender(<Alert type="error">Mensaje de error</Alert>);
@@ -28,7 +33,6 @@ describe('Alert', () => {
   });
 
   it('aplica las variantes correctamente', () => {
-    const { rerender } = render(<Alert variant="solid">Mensaje sólido</Alert>);
     expect(screen.getByRole('alert')).toHaveClass('bg-blue-50');
 
     rerender(<Alert variant="outlined">Mensaje outline</Alert>);
@@ -39,7 +43,6 @@ describe('Alert', () => {
   });
 
   it('muestra el icono correcto según el tipo', () => {
-    const { rerender } = render(<Alert type="success">Mensaje</Alert>);
     expect(
       screen.getByRole('alert').querySelector('.text-green-400')
     ).toBeInTheDocument();
@@ -61,7 +64,6 @@ describe('Alert', () => {
   });
 
   it('permite personalizar el icono', () => {
-    const customIcon = <span data-testid="custom-icon">🔔</span>;
     render(<Alert icon={customIcon}>Mensaje</Alert>);
     expect(screen.getByTestId('custom-icon')).toBeInTheDocument();
   });

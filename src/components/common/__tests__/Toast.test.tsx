@@ -1,8 +1,14 @@
-import { render, screen } from '@testing-library/react';
-import { Toast } from '../Toast';
-import { describe, it, expect, vi } from 'vitest';
-
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Toast', () => {
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -43,7 +49,6 @@ describe('Toast', () => {
   });
 
   it('llama a onClose después del tiempo especificado', () => {
-    const onClose = vi.fn();
     render(<Toast message="Mensaje" duration={1000} onClose={onClose} />);
 
     vi.advanceTimersByTime(1000);
@@ -53,7 +58,7 @@ describe('Toast', () => {
 
   it('tiene los atributos ARIA correctos', () => {
     render(<Toast message="Mensaje" />);
-    const alert = screen.getByRole('alert');
+
     expect(alert).toHaveAttribute('aria-live', 'polite');
   });
 
@@ -63,7 +68,6 @@ describe('Toast', () => {
   });
 
   it('muestra el icono correcto según el tipo', () => {
-    const { rerender } = render(<Toast message="Mensaje" type="success" />);
     expect(
       screen.getByRole('alert').querySelector('.text-green-400')
     ).toBeInTheDocument();

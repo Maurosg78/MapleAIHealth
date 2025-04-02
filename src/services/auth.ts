@@ -1,7 +1,8 @@
-import { api } from './api';
-
+   HttpService 
+ } from "../../../lib/api"
+  email: string
+import { 
 export interface LoginCredentials {
-  email: string;
   password: string;
 }
 
@@ -23,7 +24,7 @@ class AuthService {
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      const response = await api.post<AuthResponse>('/auth/login', credentials);
+
       this.setToken(response.data.token);
       this.setUser(response.data.user);
       return response.data;
@@ -42,7 +43,7 @@ class AuthService {
   }
 
   getUser(): User | null {
-    const userStr = localStorage.getItem(AuthService.USER_KEY);
+
     return userStr ? JSON.parse(userStr) : null;
   }
 
@@ -59,4 +60,4 @@ class AuthService {
   }
 }
 
-export const authService = new AuthService();
+export

@@ -1,0 +1,436 @@
+[
+  {
+    "id": "PAT-001",
+    "personalInfo": {
+      "fullName": "Juan Carlos Martínez",
+      "firstName": "Juan Carlos",
+      "lastName": "Martínez",
+      "dateOfBirth": "1975-06-12",
+      "age": 48,
+      "gender": "masculino",
+      "documentId": "27456789",
+      "contactInfo": {
+        "email": "jcmartinez@example.com",
+        "phone": "+34612345678",
+        "address": "Calle Libertad 123, Madrid"
+      }
+    },
+    "medicalHistory": {
+      "allergies": ["penicilina", "nueces"],
+      "chronicConditions": ["hipertensión", "diabetes tipo 2"],
+      "medications": [
+        {
+          "name": "Metformina",
+          "dosage": "850mg",
+          "frequency": "2 veces al día",
+          "startDate": "2020-03-15"
+        },
+        {
+          "name": "Losartán",
+          "dosage": "50mg",
+          "frequency": "1 vez al día",
+          "startDate": "2019-07-22"
+        }
+      ],
+      "surgeries": [
+        {
+          "procedure": "Apendicectomía",
+          "date": "2010-11-03",
+          "notes": "Sin complicaciones"
+        }
+      ],
+      "familyHistory": {
+        "diabetes": ["padre", "abuela paterna"],
+        "cardiopatías": ["madre"]
+      }
+    },
+    "vitalSigns": {
+      "height": 175,
+      "weight": 82,
+      "bmi": 26.8,
+      "bloodPressure": {
+        "systolic": 135,
+        "diastolic": 85
+      },
+      "heartRate": 76,
+      "respiratoryRate": 16,
+      "temperature": 36.5,
+      "oxygenSaturation": 98,
+      "lastUpdated": "2023-10-15"
+    },
+    "consultations": [
+      {
+        "id": "CONS-001",
+        "date": "2023-10-15",
+        "provider": "Dra. Ana López",
+        "specialty": "Medicina Interna",
+        "reason": "Control rutinario diabetes",
+        "diagnosis": ["diabetes tipo 2 controlada", "hipertensión leve"],
+        "notes": "Paciente estable. Control glucémico mejorado con adherencia a tratamiento y cambios en dieta.",
+        "treatmentPlan": "Continuar con medicación actual. Revisión de dieta.",
+        "followUp": "3 meses"
+      },
+      {
+        "id": "CONS-002",
+        "date": "2023-07-20",
+        "provider": "Dr. Miguel Sánchez",
+        "specialty": "Endocrinología",
+        "reason": "Ajuste medicación diabetes",
+        "diagnosis": ["diabetes tipo 2 descontrolada"],
+        "notes": "Hemoglobina glicosilada elevada (7.8%). Se ajusta tratamiento.",
+        "treatmentPlan": "Aumentar dosis de Metformina a 850mg 2 veces al día.",
+        "followUp": "3 meses"
+      }
+    ],
+    "labResults": [
+      {
+        "id": "LAB-001",
+        "date": "2023-10-10",
+        "type": "Analítica general",
+        "results": {
+          "glucosa": {
+            "value": 126,
+            "unit": "mg/dL",
+            "referenceRange": "70-100",
+            "isAbnormal": true
+          },
+          "hemoglobina_glicosilada": {
+            "value": 6.8,
+            "unit": "%",
+            "referenceRange": "<6.5",
+            "isAbnormal": true
+          },
+          "colesterol_total": {
+            "value": 185,
+            "unit": "mg/dL",
+            "referenceRange": "<200",
+            "isAbnormal": false
+          }
+        }
+      }
+    ],
+    "currentTreatments": [
+      {
+        "name": "Metformina",
+        "type": "medicamento",
+        "startDate": "2020-03-15",
+        "status": "active",
+        "notes": "Control glucémico"
+      },
+      {
+        "name": "Losartán",
+        "type": "medicamento",
+        "startDate": "2019-07-22",
+        "status": "active",
+        "notes": "Control hipertensión"
+      },
+      {
+        "name": "Programa de ejercicio físico",
+        "type": "cambio estilo de vida",
+        "startDate": "2023-07-20",
+        "status": "active",
+        "notes": "Caminar 30 minutos diarios"
+      }
+    ]
+  },
+  {
+    "id": "PAT-002",
+    "personalInfo": {
+      "fullName": "María Carmen García",
+      "firstName": "María Carmen",
+      "lastName": "García",
+      "dateOfBirth": "1982-04-23",
+      "age": 41,
+      "gender": "femenino",
+      "documentId": "34567890",
+      "contactInfo": {
+        "email": "mcgarcia@example.com",
+        "phone": "+34623456789",
+        "address": "Avenida del Sol 45, Barcelona"
+      }
+    },
+    "medicalHistory": {
+      "allergies": ["sulfamidas"],
+      "chronicConditions": ["asma", "migraña"],
+      "medications": [
+        {
+          "name": "Salbutamol",
+          "dosage": "inhalador 100mcg",
+          "frequency": "según necesidad",
+          "startDate": "2018-05-10"
+        },
+        {
+          "name": "Sumatriptán",
+          "dosage": "50mg",
+          "frequency": "según necesidad",
+          "startDate": "2019-02-14"
+        }
+      ],
+      "surgeries": [
+        {
+          "procedure": "Extracción de vesícula",
+          "date": "2015-08-22",
+          "notes": "Colecistectomía laparoscópica"
+        }
+      ],
+      "familyHistory": {
+        "asma": ["madre", "hermana"],
+        "cáncer de mama": ["abuela materna"]
+      }
+    },
+    "vitalSigns": {
+      "height": 165,
+      "weight": 62,
+      "bmi": 22.8,
+      "bloodPressure": {
+        "systolic": 120,
+        "diastolic": 75
+      },
+      "heartRate": 68,
+      "respiratoryRate": 14,
+      "temperature": 36.7,
+      "oxygenSaturation": 99,
+      "lastUpdated": "2023-09-05"
+    },
+    "consultations": [
+      {
+        "id": "CONS-003",
+        "date": "2023-09-05",
+        "provider": "Dra. Laura Fernández",
+        "specialty": "Neumología",
+        "reason": "Control asma",
+        "diagnosis": ["asma controlada"],
+        "notes": "Función pulmonar estable. Sin crisis en los últimos 3 meses.",
+        "treatmentPlan": "Mantener tratamiento actual. Evitar desencadenantes.",
+        "followUp": "6 meses"
+      },
+      {
+        "id": "CONS-004",
+        "date": "2023-06-12",
+        "provider": "Dr. Carlos Ruiz",
+        "specialty": "Neurología",
+        "reason": "Migraña recurrente",
+        "diagnosis": ["migraña sin aura"],
+        "notes": "Aumento de frecuencia de episodios. Asociados a estrés laboral.",
+        "treatmentPlan": "Ajustar medicación de rescate. Técnicas de manejo del estrés.",
+        "followUp": "3 meses"
+      }
+    ],
+    "labResults": [
+      {
+        "id": "LAB-002",
+        "date": "2023-09-01",
+        "type": "Analítica general",
+        "results": {
+          "hemoglobina": {
+            "value": 13.2,
+            "unit": "g/dL",
+            "referenceRange": "12.0-15.5",
+            "isAbnormal": false
+          },
+          "leucocitos": {
+            "value": 6.5,
+            "unit": "x10^9/L",
+            "referenceRange": "4.5-11.0",
+            "isAbnormal": false
+          }
+        }
+      }
+    ],
+    "currentTreatments": [
+      {
+        "name": "Salbutamol",
+        "type": "medicamento",
+        "startDate": "2018-05-10",
+        "status": "active",
+        "notes": "Uso según necesidad para crisis asmáticas"
+      },
+      {
+        "name": "Sumatriptán",
+        "type": "medicamento",
+        "startDate": "2019-02-14",
+        "status": "active",
+        "notes": "Para episodios agudos de migraña"
+      },
+      {
+        "name": "Técnicas de relajación",
+        "type": "terapia",
+        "startDate": "2023-06-15",
+        "status": "active",
+        "notes": "Manejo del estrés"
+      }
+    ]
+  },
+  {
+    "id": "PAT-003",
+    "personalInfo": {
+      "fullName": "Roberto Fernández Pérez",
+      "firstName": "Roberto",
+      "lastName": "Fernández Pérez",
+      "dateOfBirth": "1965-11-30",
+      "age": 57,
+      "gender": "masculino",
+      "documentId": "12345678",
+      "contactInfo": {
+        "email": "rfernandez@example.com",
+        "phone": "+34634567890",
+        "address": "Calle Mayor 67, Valencia"
+      }
+    },
+    "medicalHistory": {
+      "allergies": [],
+      "chronicConditions": ["insuficiencia cardíaca", "fibrilación auricular", "hipercolesterolemia"],
+      "medications": [
+        {
+          "name": "Atorvastatina",
+          "dosage": "20mg",
+          "frequency": "1 vez al día",
+          "startDate": "2018-10-05"
+        },
+        {
+          "name": "Bisoprolol",
+          "dosage": "5mg",
+          "frequency": "1 vez al día",
+          "startDate": "2020-06-18"
+        },
+        {
+          "name": "Apixaban",
+          "dosage": "5mg",
+          "frequency": "2 veces al día",
+          "startDate": "2020-06-18"
+        },
+        {
+          "name": "Furosemida",
+          "dosage": "40mg",
+          "frequency": "1 vez al día",
+          "startDate": "2020-06-18"
+        }
+      ],
+      "surgeries": [
+        {
+          "procedure": "Cateterismo cardíaco",
+          "date": "2020-05-15",
+          "notes": "Diagnóstico"
+        }
+      ],
+      "familyHistory": {
+        "cardiopatías": ["padre", "hermano"],
+        "hipertensión": ["padre", "madre"]
+      }
+    },
+    "vitalSigns": {
+      "height": 178,
+      "weight": 86,
+      "bmi": 27.1,
+      "bloodPressure": {
+        "systolic": 130,
+        "diastolic": 80
+      },
+      "heartRate": 65,
+      "respiratoryRate": 16,
+      "temperature": 36.4,
+      "oxygenSaturation": 96,
+      "lastUpdated": "2023-11-10"
+    },
+    "consultations": [
+      {
+        "id": "CONS-005",
+        "date": "2023-11-10",
+        "provider": "Dr. Javier López",
+        "specialty": "Cardiología",
+        "reason": "Control insuficiencia cardíaca",
+        "diagnosis": ["insuficiencia cardíaca clase II", "fibrilación auricular controlada"],
+        "notes": "Mejoría clínica. Sin edemas. Buena tolerancia a la medicación.",
+        "treatmentPlan": "Mantener tratamiento. Aumentar ejercicio físico progresivamente.",
+        "followUp": "3 meses"
+      },
+      {
+        "id": "CONS-006",
+        "date": "2023-08-05",
+        "provider": "Dr. Javier López",
+        "specialty": "Cardiología",
+        "reason": "Seguimiento rutinario",
+        "diagnosis": ["insuficiencia cardíaca clase II-III", "fibrilación auricular controlada"],
+        "notes": "Episodio de descompensación leve hace 2 semanas. Ajuste de diuréticos.",
+        "treatmentPlan": "Ajustar dosis de Furosemida. Control estricto de ingesta de líquidos y sal.",
+        "followUp": "3 meses"
+      }
+    ],
+    "labResults": [
+      {
+        "id": "LAB-003",
+        "date": "2023-11-05",
+        "type": "Analítica general",
+        "results": {
+          "creatinina": {
+            "value": 1.1,
+            "unit": "mg/dL",
+            "referenceRange": "0.7-1.3",
+            "isAbnormal": false
+          },
+          "sodio": {
+            "value": 139,
+            "unit": "mEq/L",
+            "referenceRange": "135-145",
+            "isAbnormal": false
+          },
+          "potasio": {
+            "value": 4.2,
+            "unit": "mEq/L",
+            "referenceRange": "3.5-5.0",
+            "isAbnormal": false
+          },
+          "colesterol_total": {
+            "value": 175,
+            "unit": "mg/dL",
+            "referenceRange": "<200",
+            "isAbnormal": false
+          },
+          "colesterol_ldl": {
+            "value": 95,
+            "unit": "mg/dL",
+            "referenceRange": "<100",
+            "isAbnormal": false
+          }
+        }
+      }
+    ],
+    "currentTreatments": [
+      {
+        "name": "Atorvastatina",
+        "type": "medicamento",
+        "startDate": "2018-10-05",
+        "status": "active",
+        "notes": "Control colesterol"
+      },
+      {
+        "name": "Bisoprolol",
+        "type": "medicamento",
+        "startDate": "2020-06-18",
+        "status": "active",
+        "notes": "Control frecuencia cardíaca"
+      },
+      {
+        "name": "Apixaban",
+        "type": "medicamento",
+        "startDate": "2020-06-18",
+        "status": "active",
+        "notes": "Anticoagulación por fibrilación auricular"
+      },
+      {
+        "name": "Furosemida",
+        "type": "medicamento",
+        "startDate": "2020-06-18",
+        "status": "active",
+        "notes": "Control de retención de líquidos"
+      },
+      {
+        "name": "Dieta hiposódica",
+        "type": "cambio estilo de vida",
+        "startDate": "2020-06-20",
+        "status": "active",
+        "notes": "Restricción de sal"
+      }
+    ]
+  }
+]

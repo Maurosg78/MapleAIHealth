@@ -1,11 +1,17 @@
-import { render, screen } from '@testing-library/react';
-import { Progress } from '../Progress';
-import { describe, it, expect } from 'vitest';
-
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Progress', () => {
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   it('renderiza correctamente con el valor proporcionado', () => {
     render(<Progress value={75} />);
-    const progress = screen.getByRole('progressbar');
+
     expect(progress).toBeInTheDocument();
     expect(progress).toHaveAttribute('value', '75');
     expect(progress).toHaveAttribute('max', '100');
@@ -33,7 +39,7 @@ describe('Progress', () => {
 
   it('renderiza en estado indeterminado cuando isIndeterminate es true', () => {
     render(<Progress value={50} isIndeterminate />);
-    const progress = screen.getByRole('progressbar');
+
     expect(progress).toBeInTheDocument();
     expect(progress).toHaveClass('animate-progress-indeterminate');
     expect(progress).not.toHaveAttribute('value');
@@ -41,19 +47,19 @@ describe('Progress', () => {
 
   it('aplica clases personalizadas a través de className', () => {
     render(<Progress value={50} className="custom-class" />);
-    const progress = screen.getByRole('progressbar');
+
     expect(progress).toHaveClass('custom-class');
   });
 
   it('aplica el aria-label correcto', () => {
     render(<Progress value={50} label="Progreso de carga" />);
-    const progress = screen.getByRole('progressbar');
+
     expect(progress).toHaveAttribute('aria-label', 'Progreso de carga');
   });
 
   it('aplica los estilos correctos al elemento progress', () => {
     render(<Progress value={50} />);
-    const progress = screen.getByRole('progressbar');
+
     expect(progress).toHaveClass(
       'w-full',
       'h-2',

@@ -1,8 +1,12 @@
-import React, { useState, ChangeEvent } from 'react';
-import { Button, Select, TextArea } from '../common';
-
+import { 
+   useState, useEffect 
+ } from "react"
 interface NoteInputProps {
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   onSubmit: (note: {
+import React from "react"
     content: string;
     type:
       | 'consultation'
@@ -17,7 +21,7 @@ interface NoteInputProps {
 }
 
 export const NoteInput: React.FC<NoteInputProps> = ({ onSubmit }) => {
-  const [content, setContent] = useState('');
+
   const [type, setType] = useState<
     | 'consultation'
     | 'emergency'

@@ -1,0 +1,237 @@
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(171,31): error TS2339: Property 'name' does not exist on type 'EMRPatientSearchResult'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(172,31): error TS2339: Property 'birthDate' does not exist on type 'EMRPatientSearchResult'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(173,31): error TS2339: Property 'gender' does not exist on type 'EMRPatientSearchResult'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(174,31): error TS2339: Property 'mrn' does not exist on type 'EMRPatientSearchResult'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(219,14): error TS2532: Object is possibly 'undefined'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(220,14): error TS2532: Object is possibly 'undefined'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(223,14): error TS18048: 'history.medications' is possibly 'undefined'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(224,14): error TS18048: 'history.medications' is possibly 'undefined'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(225,14): error TS18048: 'history.medications' is possibly 'undefined'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(225,37): error TS2339: Property 'dose' does not exist on type 'EMRMedication'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(255,53): error TS2345: Argument of type '{ patientId: string; date: Date; reason: string; notes: string; diagnoses: { code: string; description: string; }[]; }' is not assignable to parameter of type 'EMRConsultation'.
+  Property 'providerId' is missing in type '{ patientId: string; date: Date; reason: string; notes: string; diagnoses: { code: string; description: string; }[]; }' but required in type 'EMRConsultation'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(303,14): error TS18046: 'metrics.weight' is of type 'unknown'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(304,14): error TS18046: 'metrics.weight' is of type 'unknown'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(305,14): error TS18046: 'metrics.height' is of type 'unknown'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(306,14): error TS18046: 'metrics.height' is of type 'unknown'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(307,14): error TS18046: 'metrics.bloodPressure' is of type 'unknown'.
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts(308,14): error TS18046: 'metrics.bloodPressure' is of type 'unknown'.
+src/__tests__/services/emr/mocks/MockHttpService.ts(205,5): error TS6133: 'endpoint' is declared but its value is never read.
+src/__tests__/services/emr/OSCARAdapter.test.ts(48,48): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(63,48): error TS2339: Property 'rejectWith' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(78,48): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(80,34): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(116,48): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(118,34): error TS2339: Property 'rejectWith' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(123,13): error TS2304: Cannot find name 'expectAsync'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(132,48): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(134,34): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(152,31): error TS2339: Property 'name' does not exist on type 'EMRPatientSearchResult'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(153,31): error TS2339: Property 'birthDate' does not exist on type 'EMRPatientSearchResult'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(154,31): error TS2339: Property 'gender' does not exist on type 'EMRPatientSearchResult'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(155,31): error TS2339: Property 'mrn' does not exist on type 'EMRPatientSearchResult'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(162,48): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(164,34): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(192,14): error TS2532: Object is possibly 'undefined'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(193,14): error TS2532: Object is possibly 'undefined'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(196,14): error TS18048: 'history.medications' is possibly 'undefined'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(197,14): error TS18048: 'history.medications' is possibly 'undefined'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(198,14): error TS18048: 'history.medications' is possibly 'undefined'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(198,37): error TS2339: Property 'dose' does not exist on type 'EMRMedication'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(205,48): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(207,35): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(227,53): error TS2345: Argument of type '{ patientId: string; date: Date; reason: string; notes: string; diagnoses: { code: string; description: string; }[]; }' is not assignable to parameter of type 'EMRConsultation'.
+  Property 'providerId' is missing in type '{ patientId: string; date: Date; reason: string; notes: string; diagnoses: { code: string; description: string; }[]; }' but required in type 'EMRConsultation'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(242,48): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(244,34): error TS2339: Property 'resolveTo' does not exist on type 'SpyAnd'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(265,14): error TS18046: 'metrics.weight' is of type 'unknown'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(266,14): error TS18046: 'metrics.weight' is of type 'unknown'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(267,14): error TS18046: 'metrics.height' is of type 'unknown'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(268,14): error TS18046: 'metrics.height' is of type 'unknown'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(269,14): error TS18046: 'metrics.bloodPressure' is of type 'unknown'.
+src/__tests__/services/emr/OSCARAdapter.test.ts(270,14): error TS18046: 'metrics.bloodPressure' is of type 'unknown'.
+src/__tests__/setup.ts(34,19): error TS2352: Conversion of type '{ json: () => Promise<{}>; text: () => Promise<string>; ok: true; status: number; statusText: string; headers: { get: jest.Mock<any, any, any>; forEach: jest.Mock<any, any, any>; has: jest.Mock<...>; }; }' to type 'Response' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ json: () => Promise<{}>; text: () => Promise<string>; ok: true; status: number; statusText: string; headers: { get: Mock<any, any, any>; forEach: Mock<any, any, any>; has: Mock<...>; }; }' is missing the following properties from type 'Response': redirected, type, url, clone, and 6 more.
+src/App.tsx(3,10): error TS2724: '"./routes"' has no exported member named 'AppRouter'. Did you mean 'AppRoutes'?
+src/components/common/__tests__/Avatar.test.tsx(65,12): error TS18047: 'container' is possibly 'null'.
+src/components/common/__tests__/Modal.test.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/dashboard/AIMedicalWidget.tsx(25,9): error TS1345: An expression of type 'void' cannot be tested for truthiness.
+src/components/dashboard/AIMedicalWidget.tsx(57,44): error TS2339: Property 'response' does not exist on type 'AIResponse'.
+src/components/dashboard/AIMedicalWidget.tsx(59,31): error TS2339: Property 'provider' does not exist on type 'AIResponse'.
+src/components/examples/EMRPatientSearch.tsx(5,3): error TS2305: Module '"@chakra-ui/react"' has no exported member 'FormControl'.
+src/components/examples/EMRPatientSearch.tsx(6,3): error TS2305: Module '"@chakra-ui/react"' has no exported member 'FormLabel'.
+src/components/examples/EMRPatientSearch.tsx(11,3): error TS2305: Module '"@chakra-ui/react"' has no exported member 'Tbody'.
+src/components/examples/EMRPatientSearch.tsx(12,3): error TS2305: Module '"@chakra-ui/react"' has no exported member 'Td'.
+src/components/examples/EMRPatientSearch.tsx(14,3): error TS2305: Module '"@chakra-ui/react"' has no exported member 'Th'.
+src/components/examples/EMRPatientSearch.tsx(15,3): error TS2305: Module '"@chakra-ui/react"' has no exported member 'Thead'.
+src/components/examples/EMRPatientSearch.tsx(16,3): error TS2305: Module '"@chakra-ui/react"' has no exported member 'Tr'.
+src/components/examples/EMRPatientSearch.tsx(18,3): error TS2724: '"@chakra-ui/react"' has no exported member named 'useToast'. Did you mean 'useTabs'?
+src/components/examples/EMRPatientSearch.tsx(126,15): error TS2322: Type '{ children: (false | Element)[]; spacing: number; align: "stretch"; }' is not assignable to type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+  Property 'spacing' does not exist on type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+src/components/examples/EMRPatientSearch.tsx(134,16): error TS2322: Type '{ children: Element[]; spacing: number; }' is not assignable to type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+  Property 'spacing' does not exist on type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+src/components/examples/EMRPatientSearch.tsx(153,60): error TS2322: Type '{ children: Element[]; direction: { base: "column"; md: "row"; }; spacing: number; }' is not assignable to type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+  Property 'spacing' does not exist on type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+src/components/examples/EMRPatientSearch.tsx(175,32): error TS2322: Type '{ children: Element[]; direction: "row"; spacing: number; justify: "flex-end"; }' is not assignable to type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+  Property 'spacing' does not exist on type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+src/components/examples/EMRPatientSearch.tsx(183,13): error TS2322: Type '{ children: string; colorScheme: "blue"; onClick: () => Promise<void>; isLoading: boolean; loadingText: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'. Did you mean 'loading'?
+src/components/examples/EMRPatientSearch.tsx(202,18): error TS2604: JSX element type 'Table' does not have any construct or call signatures.
+src/components/examples/EMRPatientSearch.tsx(202,18): error TS2786: 'Table' cannot be used as a JSX component.
+  Its type 'typeof import("/Users/mauriciosobarzo/Desktop/MapleAIHealth/node_modules/@chakra-ui/react/dist/types/components/table/namespace")' is not a valid JSX element type.
+src/components/examples/EMRPatientSearch.tsx(216,38): error TS2339: Property 'name' does not exist on type 'EMRPatientSearchResult'.
+src/components/examples/EMRPatientSearch.tsx(217,38): error TS2339: Property 'birthDate' does not exist on type 'EMRPatientSearchResult'.
+src/components/examples/EMRPatientSearch.tsx(218,38): error TS2339: Property 'gender' does not exist on type 'EMRPatientSearchResult'.
+src/components/examples/EMRPatientSearch.tsx(219,38): error TS2339: Property 'mrn' does not exist on type 'EMRPatientSearchResult'.
+src/hooks/useAIQuery.ts(2,21): error TS2459: Module '"../services/ai/aiService"' declares 'AIQuery' locally, but it is not exported.
+src/hooks/useDashboard.ts(3,10): error TS2305: Module '"@/services/dashboard"' has no exported member 'getDashboardMetrics'.
+src/pages/AIHistoryPage.tsx(71,37): error TS2339: Property 'response' does not exist on type 'AIResponse'.
+src/pages/AIHistoryPage.tsx(74,45): error TS2339: Property 'provider' does not exist on type 'AIResponse'.
+src/pages/PatientsPage.tsx(17,5): error TS2353: Object literal may only specify known properties, and 'status' does not exist in type 'PatientFilters | (() => PatientFilters)'.
+src/pages/PatientsPage.tsx(113,26): error TS2339: Property 'status' does not exist on type 'PatientFilters'.
+src/pages/PatientsPage.tsx(157,30): error TS2339: Property 'name' does not exist on type 'Patient'.
+src/pages/PatientsPage.tsx(173,31): error TS2339: Property 'status' does not exist on type 'Patient'.
+src/pages/PatientsPage.tsx(178,30): error TS2339: Property 'status' does not exist on type 'Patient'.
+src/pages/setup.tsx(2,44): error TS2724: '"@chakra-ui/react"' has no exported member named 'useToast'. Did you mean 'useTabs'?
+src/pages/setup.tsx(61,15): error TS2322: Type '{ children: (Element | null)[]; spacing: number; align: "stretch"; }' is not assignable to type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+  Property 'spacing' does not exist on type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+src/pages/setup.tsx(62,31): error TS2322: Type '{ children: Element[]; align: "start"; spacing: number; }' is not assignable to type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+  Property 'spacing' does not exist on type 'IntrinsicAttributes & StackProps & RefAttributes<HTMLDivElement>'.
+src/pages/setup.tsx(73,11): error TS2322: Type 'import("/Users/mauriciosobarzo/Desktop/MapleAIHealth/src/services/emr/EMRAdapterFactory").EMRAdapterConfig | undefined' is not assignable to type 'EMRAdapterConfig | undefined'.
+  Type 'import("/Users/mauriciosobarzo/Desktop/MapleAIHealth/src/services/emr/EMRAdapterFactory").EMRAdapterConfig' is not assignable to type 'EMRAdapterConfig'.
+    'string' index signatures are incompatible.
+      Type 'unknown' is not assignable to type 'string | undefined'.
+src/pages/TestAIPage.tsx(3,10): error TS2614: Module '"../components/emr/AnalysisResults"' has no exported member 'AnalysisResults'. Did you mean to use 'import AnalysisResults from "../components/emr/AnalysisResults"' instead?
+src/services/ai/__tests__/aiService.test.ts(64,40): error TS2554: Expected 0 arguments, but got 1.
+src/services/ai/aiHistoryService.ts(2,10): error TS2459: Module '"./aiService"' declares 'AIQuery' locally, but it is not exported.
+src/services/emr/implementations/ClinicCloudAdapter.ts(48,3): error TS2687: All declarations of 'diagnosticos' must have identical modifiers.
+src/services/emr/implementations/ClinicCloudAdapter.ts(76,3): error TS2687: All declarations of 'fechaFin' must have identical modifiers.
+src/services/emr/implementations/ClinicCloudAdapter.ts(78,3): error TS2687: All declarations of 'instrucciones' must have identical modifiers.
+src/services/emr/implementations/ClinicCloudAdapter.ts(81,3): error TS2687: All declarations of 'descripcion' must have identical modifiers.
+src/services/emr/implementations/ClinicCloudAdapter.ts(82,3): error TS2687: All declarations of 'consultaId' must have identical modifiers.
+src/services/emr/implementations/ClinicCloudAdapter.ts(219,3): error TS2687: All declarations of 'diagnosticos' must have identical modifiers.
+src/services/emr/implementations/ClinicCloudAdapter.ts(219,3): error TS2717: Subsequent property declarations must have the same type.  Property 'diagnosticos' must be of type 'ClinicCloudDiagnostico[]', but here has type '{ codigo: string; sistema: string; descripcion: string; }[] | undefined'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(243,3): error TS2687: All declarations of 'fechaFin' must have identical modifiers.
+src/services/emr/implementations/ClinicCloudAdapter.ts(243,3): error TS2717: Subsequent property declarations must have the same type.  Property 'fechaFin' must be of type 'string | undefined', but here has type 'string | null'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(246,3): error TS2687: All declarations of 'descripcion' must have identical modifiers.
+src/services/emr/implementations/ClinicCloudAdapter.ts(246,3): error TS2717: Subsequent property declarations must have the same type.  Property 'descripcion' must be of type 'string | undefined', but here has type 'string'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(247,3): error TS2717: Subsequent property declarations must have the same type.  Property 'dosis' must be of type 'string', but here has type 'string | null'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(248,3): error TS2717: Subsequent property declarations must have the same type.  Property 'frecuencia' must be of type 'string', but here has type 'string | null'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(249,3): error TS2687: All declarations of 'instrucciones' must have identical modifiers.
+src/services/emr/implementations/ClinicCloudAdapter.ts(249,3): error TS2717: Subsequent property declarations must have the same type.  Property 'instrucciones' must be of type 'string | undefined', but here has type 'string | null'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(251,3): error TS2687: All declarations of 'consultaId' must have identical modifiers.
+src/services/emr/implementations/ClinicCloudAdapter.ts(251,3): error TS2717: Subsequent property declarations must have the same type.  Property 'consultaId' must be of type 'string | undefined', but here has type 'string | null'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(262,3): error TS2717: Subsequent property declarations must have the same type.  Property 'valor' must be of type 'string | number', but here has type 'number'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(350,38): error TS2345: Argument of type 'ClinicCloudSearchResult | ClinicCloudConsultaResult | ClinicCloudTratamientoResult | ClinicCloudDiagnosticoResult | ClinicCloudLabResult | ClinicCloudMetricaResult' is not assignable to parameter of type 'ClinicCloudPaciente'.
+  Type 'ClinicCloudSearchResult' is missing the following properties from type 'ClinicCloudPaciente': id, nombre, apellidos, genero, fechaNacimiento
+src/services/emr/implementations/ClinicCloudAdapter.ts(385,40): error TS2345: Argument of type 'ClinicCloudSearchResult | ClinicCloudConsultaResult | ClinicCloudTratamientoResult | ClinicCloudDiagnosticoResult | ClinicCloudLabResult | ClinicCloudMetricaResult' is not assignable to parameter of type 'ClinicCloudSearchResult'.
+  Type 'ClinicCloudConsultaResult' is missing the following properties from type 'ClinicCloudSearchResult': pacientes, totalResultados
+src/services/emr/implementations/ClinicCloudAdapter.ts(430,62): error TS2345: Argument of type 'ClinicCloudSearchResult | ClinicCloudConsultaResult | ClinicCloudTratamientoResult | ClinicCloudDiagnosticoResult | ClinicCloudLabResult | ClinicCloudMetricaResult' is not assignable to parameter of type 'ClinicCloudConsultaResult'.
+  Property 'consultas' is missing in type 'ClinicCloudSearchResult' but required in type 'ClinicCloudConsultaResult'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(438,62): error TS2345: Argument of type 'ClinicCloudSearchResult | ClinicCloudConsultaResult | ClinicCloudTratamientoResult | ClinicCloudDiagnosticoResult | ClinicCloudLabResult | ClinicCloudMetricaResult' is not assignable to parameter of type 'ClinicCloudTratamientoResult'.
+  Property 'tratamientos' is missing in type 'ClinicCloudSearchResult' but required in type 'ClinicCloudTratamientoResult'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(446,9): error TS2322: Type 'LabResultData[]' is not assignable to type 'EMRLabResult[]'.
+  Type 'LabResultData' is missing the following properties from type 'EMRLabResult': type, orderedBy
+src/services/emr/implementations/ClinicCloudAdapter.ts(446,61): error TS2345: Argument of type 'ClinicCloudSearchResult | ClinicCloudConsultaResult | ClinicCloudTratamientoResult | ClinicCloudDiagnosticoResult | ClinicCloudLabResult | ClinicCloudMetricaResult' is not assignable to parameter of type 'ClinicCloudLabResult'.
+  Property 'resultados' is missing in type 'ClinicCloudSearchResult' but required in type 'ClinicCloudLabResult'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(454,61): error TS2345: Argument of type 'ClinicCloudSearchResult | ClinicCloudConsultaResult | ClinicCloudTratamientoResult | ClinicCloudDiagnosticoResult | ClinicCloudLabResult | ClinicCloudMetricaResult' is not assignable to parameter of type 'ClinicCloudDiagnosticoResult'.
+  Property 'diagnosticos' is missing in type 'ClinicCloudSearchResult' but required in type 'ClinicCloudDiagnosticoResult'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(484,58): error TS2345: Argument of type 'ClinicCloudConsulta' is not assignable to parameter of type 'Record<string, string | number | boolean | object>'.
+  Index signature for type 'string' is missing in type 'ClinicCloudConsulta'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(524,9): error TS2345: Argument of type 'ClinicCloudSearchResult | ClinicCloudConsultaResult | ClinicCloudTratamientoResult | ClinicCloudDiagnosticoResult | ClinicCloudLabResult | ClinicCloudMetricaResult' is not assignable to parameter of type 'ClinicCloudConsulta'.
+  Type 'ClinicCloudSearchResult' is missing the following properties from type 'ClinicCloudConsulta': id, pacienteId, fecha, profesional, and 4 more.
+src/services/emr/implementations/ClinicCloudAdapter.ts(529,58): error TS2345: Argument of type 'ClinicCloudConsulta' is not assignable to parameter of type 'Record<string, string | number | boolean | object>'.
+  Index signature for type 'string' is missing in type 'ClinicCloudConsulta'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(568,54): error TS2345: Argument of type 'ClinicCloudTratamiento' is not assignable to parameter of type 'Record<string, string | number | boolean | object>'.
+  Index signature for type 'string' is missing in type 'ClinicCloudTratamiento'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(635,30): error TS2345: Argument of type 'ClinicCloudSearchResult | ClinicCloudConsultaResult | ClinicCloudTratamientoResult | ClinicCloudDiagnosticoResult | ClinicCloudLabResult | ClinicCloudMetricaResult' is not assignable to parameter of type 'ClinicCloudMetricaResult'.
+  Property 'metricas' is missing in type 'ClinicCloudSearchResult' but required in type 'ClinicCloudMetricaResult'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(852,28): error TS2339: Property 'formatAddress' does not exist on type 'ClinicCloudAdapter'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(871,9): error TS2559: Type 'MedicalHistoryResult' has no properties in common with type '{ allergies?: string[] | undefined; chronicConditions?: string[] | undefined; medications?: { name: string; dosage: string; frequency: string; startDate?: string | undefined; endDate?: string | undefined; }[] | undefined; surgeries?: { ...; }[] | undefined; familyHistory?: Record<...> | undefined; }'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1130,5): error TS2322: Type '{ id: string; patientId: any; date: Date; category: string; name: string; results: { [key: string]: { valor: string | number; unidad?: string | undefined; rangoNormal?: string | undefined; anormal?: boolean | undefined; }; }; units: any; range: any; abnormal: any; notes: string; }[]' is not assignable to type 'LabResultData[]'.
+  Type '{ id: string; patientId: any; date: Date; category: string; name: string; results: { [key: string]: { valor: string | number; unidad?: string; rangoNormal?: string; anormal?: boolean; }; }; units: any; range: any; abnormal: any; notes: string; }' is not assignable to type 'LabResultData'.
+    Types of property 'results' are incompatible.
+      Type '{ [key: string]: { valor: string | number; unidad?: string | undefined; rangoNormal?: string | undefined; anormal?: boolean | undefined; }; }' is not assignable to type 'Record<string, { value: string | number; unit?: string | undefined; normalRange?: string | undefined; isAbnormal?: boolean | undefined; }>'.
+        'string' index signatures are incompatible.
+          Property 'value' is missing in type '{ valor: string | number; unidad?: string | undefined; rangoNormal?: string | undefined; anormal?: boolean | undefined; }' but required in type '{ value: string | number; unit?: string | undefined; normalRange?: string | undefined; isAbnormal?: boolean | undefined; }'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1132,28): error TS2339: Property 'pacienteId' does not exist on type 'ClinicCloudResultadoLab'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1137,24): error TS2339: Property 'unidad' does not exist on type 'ClinicCloudResultadoLab'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1138,24): error TS2339: Property 'rangoNormal' does not exist on type 'ClinicCloudResultadoLab'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1139,27): error TS2339: Property 'anormal' does not exist on type 'ClinicCloudResultadoLab'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1152,5): error TS2322: Type '{ id: string; patientId: any; date: Date; code: string; system: string; description: string; status: "active" | "resolved"; type: string; notes: string; }[]' is not assignable to type 'EMRDiagnosis[]'.
+  Type '{ id: string; patientId: any; date: Date; code: string; system: string; description: string; status: "active" | "resolved"; type: string; notes: string; }' is not assignable to type 'EMRDiagnosis'.
+    Types of property 'system' are incompatible.
+      Type 'string' is not assignable to type '"other" | "ICD-10" | "ICD-11" | "SNOMED-CT"'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1154,30): error TS2339: Property 'pacienteId' does not exist on type 'ClinicCloudDiagnostico'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1172,7): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1187,9): error TS18048: 'consultation.diagnoses.length' is possibly 'undefined'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1188,7): error TS2322: Type '{ codigo: string; sistema: "other" | "ICD-10" | "ICD-11" | "SNOMED-CT"; descripcion: string; }[]' is not assignable to type 'ClinicCloudDiagnostico[]'.
+  Type '{ codigo: string; sistema: "other" | "ICD-10" | "ICD-11" | "SNOMED-CT"; descripcion: string; }' is missing the following properties from type 'ClinicCloudDiagnostico': id, fecha, estado, cronica
+src/services/emr/implementations/ClinicCloudAdapter.ts(1188,31): error TS18048: 'consultation.diagnoses' is possibly 'undefined'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1250,7): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1254,7): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1255,7): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1256,7): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1258,7): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1312,11): error TS18046: 'metrics.weight' is of type 'unknown'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1319,11): error TS18046: 'metrics.height' is of type 'unknown'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1327,13): error TS18046: 'metrics.bloodPressure' is of type 'unknown'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1336,11): error TS18046: 'metrics.glucose' is of type 'unknown'.
+src/services/emr/implementations/ClinicCloudAdapter.ts(1343,11): error TS18046: 'metrics.cholesterol' is of type 'unknown'.
+src/services/emr/implementations/OSCARAdapter.ts(307,45): error TS2345: Argument of type 'OSCARSearchResult | OSCAREncounterResult | OSCARPrescriptionResult | OSCARProblemResult | OSCARLabResult | OSCARMeasurementResult' is not assignable to parameter of type 'OSCARDemographic'.
+  Type 'OSCARSearchResult' is missing the following properties from type 'OSCARDemographic': id, firstName, lastName, gender, dateOfBirth
+src/services/emr/implementations/OSCARAdapter.ts(344,46): error TS2345: Argument of type 'OSCARSearchResult | OSCAREncounterResult | OSCARPrescriptionResult | OSCARProblemResult | OSCARLabResult | OSCARMeasurementResult' is not assignable to parameter of type 'OSCARSearchResult'.
+  Type 'OSCAREncounterResult' is missing the following properties from type 'OSCARSearchResult': demographics, totalResults
+src/services/emr/implementations/OSCARAdapter.ts(387,68): error TS2345: Argument of type 'OSCARSearchResult | OSCAREncounterResult | OSCARPrescriptionResult | OSCARProblemResult | OSCARLabResult | OSCARMeasurementResult' is not assignable to parameter of type 'OSCAREncounterResult'.
+  Property 'notes' is missing in type 'OSCARSearchResult' but required in type 'OSCAREncounterResult'.
+src/services/emr/implementations/OSCARAdapter.ts(396,42): error TS2345: Argument of type 'OSCARSearchResult | OSCAREncounterResult | OSCARPrescriptionResult | OSCARProblemResult | OSCARLabResult | OSCARMeasurementResult' is not assignable to parameter of type 'OSCARPrescriptionResult'.
+  Property 'prescriptions' is missing in type 'OSCARSearchResult' but required in type 'OSCARPrescriptionResult'.
+src/services/emr/implementations/OSCARAdapter.ts(404,9): error TS2322: Type 'LabResultData[]' is not assignable to type 'EMRLabResult[]'.
+  Type 'LabResultData' is missing the following properties from type 'EMRLabResult': type, orderedBy
+src/services/emr/implementations/OSCARAdapter.ts(404,65): error TS2345: Argument of type 'OSCARSearchResult | OSCAREncounterResult | OSCARPrescriptionResult | OSCARProblemResult | OSCARLabResult | OSCARMeasurementResult' is not assignable to parameter of type 'OSCARLabResult'.
+  Property 'labs' is missing in type 'OSCARSearchResult' but required in type 'OSCARLabResult'.
+src/services/emr/implementations/OSCARAdapter.ts(412,62): error TS2345: Argument of type 'OSCARSearchResult | OSCAREncounterResult | OSCARPrescriptionResult | OSCARProblemResult | OSCARLabResult | OSCARMeasurementResult' is not assignable to parameter of type 'OSCARProblemResult'.
+  Property 'problems' is missing in type 'OSCARSearchResult' but required in type 'OSCARProblemResult'.
+src/services/emr/implementations/OSCARAdapter.ts(446,31): error TS2339: Property 'noteId' does not exist on type '{ id: string; success: boolean; message?: string | undefined; }'.
+src/services/emr/implementations/OSCARAdapter.ts(479,57): error TS2345: Argument of type 'OSCARSearchResult | OSCAREncounterResult | OSCARPrescriptionResult | OSCARProblemResult | OSCARLabResult | OSCARMeasurementResult' is not assignable to parameter of type 'OSCARNote'.
+  Type 'OSCARSearchResult' is missing the following properties from type 'OSCARNote': demographicNo, providerNo, note, encounter, and 6 more.
+src/services/emr/implementations/OSCARAdapter.ts(515,9): error TS2322: Type 'Record<string, string | number | boolean | null>' is not assignable to type 'Record<string, string | number | boolean | object>'.
+  'string' index signatures are incompatible.
+    Type 'string | number | boolean | null' is not assignable to type 'string | number | boolean | object'.
+      Type 'null' is not assignable to type 'string | number | boolean | object'.
+src/services/emr/implementations/OSCARAdapter.ts(518,9): error TS2322: Type 'OSCARProcedurePayload' is not assignable to type 'Record<string, string | number | boolean | object>'.
+  Index signature for type 'string' is missing in type 'OSCARProcedurePayload'.
+src/services/emr/implementations/OSCARAdapter.ts(574,37): error TS2345: Argument of type 'OSCARSearchResult | OSCAREncounterResult | OSCARPrescriptionResult | OSCARProblemResult | OSCARLabResult | OSCARMeasurementResult' is not assignable to parameter of type 'OSCARMeasurementResult'.
+  Property 'measurements' is missing in type 'OSCARSearchResult' but required in type 'OSCARMeasurementResult'.
+src/services/emr/implementations/OSCARAdapter.ts(631,7): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/services/emr/implementations/OSCARAdapter.ts(793,9): error TS2322: Type 'MedicalHistoryResult' is not assignable to type '{ allergies?: string[] | undefined; chronicConditions?: string[] | undefined; medications?: { name: string; dosage: string; frequency: string; startDate?: string | undefined; endDate?: string | undefined; }[] | undefined; surgeries?: { ...; }[] | undefined; familyHistory?: Record<...> | undefined; }'.
+  Types of property 'allergies' are incompatible.
+    Type '{ id: string; description: string; reaction?: string | undefined; severity?: string | undefined; }[]' is not assignable to type 'string[]'.
+      Type '{ id: string; description: string; reaction?: string | undefined; severity?: string | undefined; }' is not assignable to type 'string'.
+src/services/emr/implementations/OSCARAdapter.ts(914,5): error TS2322: Type '{ id: string; name: string; birthDate: string; gender: string; mrn: string; }[]' is not assignable to type 'EMRPatientSearchResult[]'.
+  Property 'fullName' is missing in type '{ id: string; name: string; birthDate: string; gender: string; mrn: string; }' but required in type 'EMRPatientSearchResult'.
+src/services/emr/implementations/OSCARAdapter.ts(930,23): error TS2339: Property 'demographicNo' does not exist on type 'OSCAREncounter'.
+src/services/emr/implementations/OSCARAdapter.ts(946,21): error TS2339: Property 'demographicNo' does not exist on type 'OSCARPrescription'.
+src/services/emr/implementations/OSCARAdapter.ts(952,23): error TS2339: Property 'special' does not exist on type 'OSCARPrescription'.
+src/services/emr/implementations/OSCARAdapter.ts(965,22): error TS2339: Property 'demographicNo' does not exist on type 'OSCARLab'.
+src/services/emr/implementations/OSCARAdapter.ts(971,18): error TS2339: Property 'normalRange' does not exist on type 'OSCARLab'.
+src/services/emr/implementations/OSCARAdapter.ts(972,21): error TS2339: Property 'isAbnormal' does not exist on type 'OSCARLab'.
+src/services/emr/implementations/OSCARAdapter.ts(980,5): error TS2322: Type '{ id: string; patientId: any; date: Date; code: string; system: string; description: string; status: "active" | "resolved"; type: string; notes: string; }[]' is not assignable to type 'EMRDiagnosis[]'.
+  Type '{ id: string; patientId: any; date: Date; code: string; system: string; description: string; status: "active" | "resolved"; type: string; notes: string; }' is not assignable to type 'EMRDiagnosis'.
+    Types of property 'system' are incompatible.
+      Type 'string' is not assignable to type '"other" | "ICD-10" | "ICD-11" | "SNOMED-CT"'.
+src/services/emr/implementations/OSCARAdapter.ts(982,26): error TS2339: Property 'demographicNo' does not exist on type 'OSCARProblem'.
+src/services/emr/implementations/OSCARAdapter.ts(1098,29): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'string'.
+  Type 'number' is not assignable to type 'string'.
+src/services/emr/implementations/OSCARAdapter.ts(1103,65): error TS2339: Property 'includes' does not exist on type 'string | number'.
+  Property 'includes' does not exist on type 'number'.
+src/services/emr/implementations/OSCARAdapter.ts(1105,14): error TS2339: Property 'split' does not exist on type 'string | number'.
+  Property 'split' does not exist on type 'number'.
+src/services/emr/implementations/OSCARAdapter.ts(1107,11): error TS18046: 'metrics.bloodPressure' is of type 'unknown'.

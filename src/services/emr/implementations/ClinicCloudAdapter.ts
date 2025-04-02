@@ -1,6 +1,9 @@
-import {
   EMRAdapter,
+import { 
+   HttpService 
+ } from "../../../lib/api"
   EMRConsultation,
+import { 
   EMRDiagnosis,
   EMRHistoryOptions,
   EMRPatientHistory,
@@ -9,8 +12,6 @@ import {
   EMRSearchQuery,
   EMRTreatment,
 } from '../EMRAdapter';
-import { PatientData } from '../../ai/types';
-import { Logger } from '../../../lib/logger';
 
 /**
  * Tipos específicos para ClinicCloud EMR
@@ -275,6 +276,37 @@ interface ClinicCloudMetricaResult {
   metricas: ClinicCloudMetrica[];
 }
 
+interface ClinicCloudConfig {
+  apiUrl: string;
+  apiKey: string;
+  clinicId: string;
+}
+
+interface ClinicCloudPatient {
+  id: string;
+  nombre: string;
+  apellido: string;
+  fechaNacimiento: string;
+  genero: string;
+  documento: string;
+  email?: string;
+  telefono?: string;
+  direccion?: string;
+  ultimaVisita?: string;
+}
+
+interface ClinicCloudDiagnostico {
+  id: string;
+  pacienteId: string;
+  fecha: string;
+  codigo: string;
+  sistema: "ICD-10" | "ICD-11" | "SNOMED-CT" | "other";
+  descripcion: string;
+  estado: "active" | "resolved" | "recurrent" | "chronic" | "suspected";
+  tipo: string;
+  notas?: string;
+}
+
 /**
  * Adaptador para integración con ClinicCloud
  * ClinicCloud es uno de los sistemas EMR más utilizados en España
@@ -290,20 +322,18 @@ export class ClinicCloudAdapter implements EMRAdapter {
   private readonly clientSecret: string;
   private accessToken: string | null = null;
   private tokenExpiration: Date | null = null;
+  private config: ClinicCloudConfig;
+  private httpService: HttpService;
 
-  constructor(config: {
-    apiUrl: string;
-    apiKey: string;
-    clinicId: string;
-    clientId?: string;
-    clientSecret?: string;
-  }) {
+  constructor(config: ClinicCloudConfig, httpService: HttpService) {
     this.logger = new Logger('ClinicCloudAdapter');
     this.apiUrl = config.apiUrl;
     this.apiKey = config.apiKey;
     this.clinicId = config.clinicId;
     this.clientId = config.clientId ?? '';
     this.clientSecret = config.clientSecret ?? '';
+    this.config = config;
+    this.httpService = httpService;
 
     this.logger.info('Inicializado adaptador para ClinicCloud', {
       apiUrl: this.apiUrl,
@@ -341,10 +371,10 @@ export class ClinicCloudAdapter implements EMRAdapter {
       });
 
       // Obtener datos básicos del paciente
-      const pacientData = await this.fetchData(`/pacientes/${patientId}`);
+
 
       // Obtener información de historial médico
-      const alergias = await this.fetchData(`/pacientes/${patientId}/alergias`);
+
       const condiciones = await this.fetchData(
         `/pacientes/${patientId}/condiciones`
       );
@@ -368,104 +398,79 @@ export class ClinicCloudAdapter implements EMRAdapter {
   /**
    * Busca pacientes en ClinicCloud según criterios
    */
-  public async searchPatients(
-    query: EMRSearchQuery,
-    limit = 10
-  ): Promise<EMRPatientSearchResult[]> {
+  public async searchPatients(query: string): Promise<EMRPatientSearchResult[]> {
     try {
-      this.logger.info('Buscando pacientes en ClinicCloud', { query, limit });
-
-      // Construir parámetros de búsqueda
-      const searchParams = this.buildSearchParams(query);
-      searchParams.append('limit', limit.toString());
-
-      // Ejecutar la búsqueda
-      const results = await this.fetchData(
-        `/pacientes/buscar?${searchParams.toString()}`
+      const response = await this.httpService.get<ClinicCloudPatient[]>(
+        `${this.apiUrl}/pacientes/buscar`,
+        {
+          params: { q: query },
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`,
+            'X-Clinic-ID': this.clinicId
+          }
+        }
       );
 
-      // Convertir resultados al formato de la aplicación
-      return this.convertSearchResults(results);
+      return response.map(patient => ({
+        id: patient.id,
+        fullName: `${patient.nombre} ${patient.apellido}`,
+        name: `${patient.nombre} ${patient.apellido}`,
+        birthDate: patient.fechaNacimiento,
+        gender: patient.genero,
+        mrn: patient.id,
+        documentId: patient.documento,
+        contactInfo: {
+          email: patient.email,
+          phone: patient.telefono,
+          address: patient.direccion
+        },
+        lastVisit: patient.ultimaVisita ? new Date(patient.ultimaVisita) : undefined
+      }));
     } catch (error) {
-      this.logger.error('Error al buscar pacientes en ClinicCloud', {
-        error,
-        query,
-      });
-      throw new Error(`Error al buscar pacientes: ${(error as Error).message}`);
+      console.error('Error buscando pacientes en ClinicCloud:', error);
+      throw error;
     }
   }
 
   /**
    * Obtiene el historial médico del paciente de ClinicCloud
    */
-  public async getPatientHistory(
-    patientId: string,
-    options?: EMRHistoryOptions
-  ): Promise<EMRPatientHistory> {
+  public async getPatientHistory(patientId: string): Promise<EMRConsultation[]> {
     try {
-      this.logger.info('Obteniendo historial médico desde ClinicCloud', {
-        patientId,
-        options,
-      });
-
-      // Construir objeto base del historial
-      const patientHistory: EMRPatientHistory = {
-        patientId,
-        consultations: [],
-        treatments: [],
-        labResults: [],
-        diagnoses: [],
-      };
-
-      // Construir filtro de fechas si se proporcionan opciones
-      let fechaParams = '';
-      if (options?.startDate && options?.endDate) {
-        const fechaInicio = this.formatDate(options.startDate);
-        const fechaFin = this.formatDate(options.endDate);
-        fechaParams = `&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
-      }
-
-      // Obtener consultas si se solicitan
-      if (!options || options.includeConsultations !== false) {
-        const consultas = await this.fetchData(
-          `/pacientes/${patientId}/consultas?${fechaParams}`
-        );
-        patientHistory.consultations = this.convertConsultas(consultas);
-      }
-
-      // Obtener tratamientos si se solicitan
-      if (!options || options.includeTreatments !== false) {
-        const tratamientos = await this.fetchData(
-          `/pacientes/${patientId}/tratamientos?${fechaParams}`
-        );
-        patientHistory.treatments = this.convertTratamientos(tratamientos);
-      }
-
-      // Obtener resultados de laboratorio si se solicitan
-      if (!options || options.includeLabResults !== false) {
-        const laboratorio = await this.fetchData(
-          `/pacientes/${patientId}/laboratorio?${fechaParams}`
-        );
-        patientHistory.labResults = this.convertLaboratorio(laboratorio);
-      }
-
-      // Obtener diagnósticos si se solicitan
-      if (!options || options.includeDiagnoses !== false) {
-        const diagnosticos = await this.fetchData(
-          `/pacientes/${patientId}/diagnosticos?${fechaParams}`
-        );
-        patientHistory.diagnoses = this.convertDiagnosticos(diagnosticos);
-      }
-
-      return patientHistory;
-    } catch (error) {
-      this.logger.error('Error al obtener historial médico desde ClinicCloud', {
-        error,
-        patientId,
-      });
-      throw new Error(
-        `Error al obtener historial médico: ${(error as Error).message}`
+      const response = await this.httpService.get<ClinicCloudConsulta[]>(
+        `${this.apiUrl}/pacientes/${patientId}/historial`,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`,
+            'X-Clinic-ID': this.clinicId
+          }
+        }
       );
+
+      return response.map(consulta => ({
+        id: consulta.id,
+        patientId: consulta.pacienteId,
+        providerId: consulta.medicoId,
+        date: new Date(consulta.fecha),
+        reason: consulta.motivo,
+        notes: consulta.notas,
+        specialty: consulta.especialidad,
+        diagnoses: consulta.diagnosticos?.map(d => ({
+          id: d.id,
+          patientId: d.pacienteId,
+          date: new Date(d.fecha),
+          code: d.codigo,
+          system: d.sistema,
+          description: d.descripcion,
+          status: d.estado,
+          type: d.tipo,
+          notes: d.notas
+        })),
+        followUpDate: consulta.citaProxima ? new Date(consulta.citaProxima) : undefined
+      }));
+    } catch (error) {
+      console.error('Error obteniendo historial del paciente en ClinicCloud:', error);
+      throw error;
     }
   }
 
@@ -481,13 +486,13 @@ export class ClinicCloudAdapter implements EMRAdapter {
       });
 
       // Convertir consulta al formato de ClinicCloud
-      const consultaData = this.convertToClinicCloudConsulta(consultation);
+
 
       // Enviar la consulta a ClinicCloud
-      const response = await this.postData('/consultas', consultaData);
+
 
       // Extraer el ID de la consulta creada
-      const consultaId = response.id;
+
       if (!consultaId) {
         throw new Error('No se recibió un ID de consulta válido');
       }
@@ -556,7 +561,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
       });
 
       // Convertir tratamiento al formato de ClinicCloud
-      const tratamientoData = this.convertToClinicCloudTratamiento(treatment);
+
 
       // Enviar el tratamiento a ClinicCloud
       let endpoint;
@@ -568,10 +573,10 @@ export class ClinicCloudAdapter implements EMRAdapter {
         endpoint = '/tratamientos/otros';
       }
 
-      const response = await this.postData(endpoint, tratamientoData);
+
 
       // Extraer el ID del tratamiento creado
-      const tratamientoId = response.id;
+
       if (!tratamientoId) {
         throw new Error('No se recibió un ID de tratamiento válido');
       }
@@ -629,7 +634,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
 
       if (metricTypesToQuery.length > 0) {
         // Obtener todas las métricas en una sola petición
-        const tiposParam = metricTypesToQuery.join(',');
+
         const metricas = await this.fetchData(
           `/pacientes/${patientId}/metricas?tipos=${tiposParam}`
         );
@@ -692,7 +697,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
           );
         }
 
-        const data = await response.json();
+
         token = data.access_token;
 
         // Guardar token y calcular expiración (típicamente 1 hora)
@@ -733,7 +738,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     | ClinicCloudMetricaResult
   > {
     try {
-      const token = await this.getAccessToken();
+
 
       const response = await fetch(`${this.apiUrl}${endpoint}`, {
         headers: {
@@ -767,7 +772,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     data: Record<string, string | number | boolean | object>
   ): Promise<{ id: string; exito: boolean; mensaje?: string }> {
     try {
-      const token = await this.getAccessToken();
+
 
       const response = await fetch(`${this.apiUrl}${endpoint}`, {
         method: 'POST',
@@ -804,7 +809,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     data: Record<string, string | number | boolean | object>
   ): Promise<{ exito: boolean; mensaje?: string }> {
     try {
-      const token = await this.getAccessToken();
+
 
       const response = await fetch(`${this.apiUrl}${endpoint}`, {
         method: 'PUT',
@@ -844,15 +849,15 @@ export class ClinicCloudAdapter implements EMRAdapter {
       // Extraer información básica
       const fullName =
         `${pacienteData.nombre ?? ''} ${pacienteData.apellidos ?? ''}`.trim();
-      const firstName = pacienteData.nombre ?? '';
-      const lastName = pacienteData.apellidos ?? '';
-      const dob = pacienteData.fechaNacimiento;
-      const age = this.calculateAge(dob);
+
+
+
+
 
       // Obtener información de contacto
-      const email = pacienteData.email ?? '';
-      const phone = pacienteData.telefono ?? '';
-      const address = this.formatAddress(pacienteData);
+
+
+
 
       // Construir el objeto PatientData
       const patientData: PatientData = {
@@ -908,10 +913,10 @@ export class ClinicCloudAdapter implements EMRAdapter {
   private calculateAge(dateOfBirth: string): number {
     if (!dateOfBirth) return 0;
 
-    const today = new Date();
-    const birthDate = new Date(dateOfBirth);
+
+
     let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
+
 
     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
       age--;
@@ -965,11 +970,11 @@ export class ClinicCloudAdapter implements EMRAdapter {
    * Construye parámetros de búsqueda para ClinicCloud
    */
   private buildSearchParams(query: EMRSearchQuery): URLSearchParams {
-    const params = new URLSearchParams();
+
 
     if (query.name) {
       if (query.name.includes(' ')) {
-        const nameParts = query.name.split(' ');
+
         params.append('nombre', nameParts[0]);
         params.append('apellidos', nameParts.slice(1).join(' '));
       } else {
@@ -1005,7 +1010,8 @@ export class ClinicCloudAdapter implements EMRAdapter {
     if (!results || !results.pacientes) return [];
 
     return results.pacientes.map((paciente) => {
-      const fullName = `${paciente.nombre ?? ''} ${paciente.apellidos ?? ''}`.trim();
+      const fullName =
+        `${paciente.nombre ?? ''} ${paciente.apellidos ?? ''}`.trim();
       return {
         id: paciente.id,
         fullName: fullName,
@@ -1226,7 +1232,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     consultaExistente: ClinicCloudConsulta,
     updates: Partial<EMRConsultation>
   ): ClinicCloudConsulta {
-    const updatedConsulta = { ...consultaExistente };
+
 
     if (updates.reason) {
       updatedConsulta.motivo = updates.reason;
@@ -1315,7 +1321,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     if (!metricas?.metricas) return;
 
     metricas.metricas.forEach((metrica: ClinicCloudMetrica) => {
-      const fecha = new Date(metrica.fecha);
+
 
       switch (metrica.tipo.toLowerCase()) {
         case 'peso':

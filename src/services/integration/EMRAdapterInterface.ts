@@ -1,7 +1,8 @@
-import { EMRData, UnstructuredNote } from '../ai/types';
-
-/**
+   HttpService 
+ } from "../../../lib/api"
  * Interfaz para adaptadores de sistemas EMR
+import { 
+/**
  * Permite la integración con diferentes sistemas de historial médico electrónico
  */
 export interface EMRAdapterInterface {

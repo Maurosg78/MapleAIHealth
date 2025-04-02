@@ -1,13 +1,11 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { Patient } from '../../types/patient';
-import { Button } from '../common/Button';
-import { Input } from '../common/Input';
-import { Select } from '../common/Select';
-import { Spinner } from '../common/Spinner';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from '@chakra-ui/react'
+import React from 'react'
 type PatientFormData = Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>;
-
 interface PatientFormProps {
   patient?: Patient;
   onSubmit: (data: PatientFormData) => Promise<void>;

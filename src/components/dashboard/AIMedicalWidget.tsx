@@ -1,16 +1,11 @@
-import React, { useState } from 'react';
-import { Card } from '../common/Card';
-import { Button } from '../common/Button';
-import { Input } from '../common/Input';
-import { Spinner } from '../common/Spinner';
-import { useAIQuery } from '../../hooks/useAIQuery';
-import { ResponseFeedback } from '../ai/ResponseFeedback';
-import { AIHistoryEntry } from '../../services/ai/aiHistoryService';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const AIMedicalWidget: React.FC = () => {
-  const [query, setQuery] = useState('');
-  const [currentEntry, setCurrentEntry] = useState<AIHistoryEntry | null>(null);
-  const { query: aiQuery, loading, error, response } = useAIQuery();
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

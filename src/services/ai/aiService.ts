@@ -1,7 +1,9 @@
-import { api } from '../../lib/api';
-import {
   AIProvider,
+import { 
+   HttpService 
+ } from "../../../lib/api"
   EMRData,
+import { 
   UnstructuredNote,
   AIQuery,
   AIResponse,
@@ -11,10 +13,6 @@ import {
   TimelineEvent,
   InsightType,
 } from './types';
-import { cacheService } from './cacheService';
-import { Logger } from '../../utils/logger';
-import type { AIProviderClient } from './providers';
-import { OpenAIProvider, MedPaLMProvider } from './providers';
 
 /**
  * Interfaz para el servicio de caché
@@ -106,8 +104,8 @@ export class AIService {
 
   private setupProviders(): void {
     // Verificar si tenemos claves de API configuradas
-    const openaiApiKey = this.config.apiKey;
-    const googleProjectId = this.config.googleProjectId;
+
+
 
     // Limpiar proveedores anteriores
     this.aiProviders.length = 0;
@@ -169,7 +167,7 @@ export class AIService {
 
     try {
       // Obtener datos del EMR existente
-      const emrData = await this.getEMRData(patientId);
+
       this.logger.debug('Retrieved EMR data', { patientId });
 
       // Preparar contexto para la IA
@@ -179,7 +177,7 @@ export class AIService {
       };
 
       // Realizar consulta a la IA
-      const startTime = Date.now();
+
       const aiResponse = await this.query({
         query:
           'Analiza y organiza las siguientes notas médicas, identifica puntos ciegos y genera recomendaciones',
@@ -187,15 +185,15 @@ export class AIService {
         context,
         unstructuredNotes: notes,
       });
-      const processingTime = Date.now() - startTime;
+
       this.logger.debug('AI query processed', { processingTime });
 
       // Analizar la respuesta para generar insights y recomendaciones
-      const insights = this.generateInsights(aiResponse, emrData);
-      const recommendations = this.generateRecommendations(aiResponse);
+
+
 
       // Detectar contradicciones
-      const contradictions = this.detectContradictions(emrData, notes);
+
       if (contradictions.length > 0) {
         this.logger.warn('Contradictions detected', {
           count: contradictions.length,
@@ -287,7 +285,7 @@ export class AIService {
       emrDataAvailable: !!emrData,
       notesCount: notes.length,
     });
-    const contradictions: Insight[] = [];
+
 
     // Contradicciones en medicamentos
     const emrMedications = new Set(
@@ -295,7 +293,7 @@ export class AIService {
     );
 
     // Medicamentos mencionados en las notas
-    const noteMedications = new Set<string>();
+
     notes.forEach((note) => {
       note.medications?.forEach((med) =>
         noteMedications.add(med.toLowerCase())
@@ -323,12 +321,12 @@ export class AIService {
     }
 
     // Contradicciones en diagnósticos
-    const diagnosisSet = new Set<string>();
-    const contradictoryDiagnosis = new Set<string>();
+
+
 
     notes.forEach((note) => {
       if (note.diagnosis) {
-        const diagnosis = note.diagnosis.toLowerCase();
+
         if (diagnosisSet.has(diagnosis)) {
           contradictoryDiagnosis.add(diagnosis);
         } else {
@@ -357,11 +355,11 @@ export class AIService {
 
   private generateInsights(response: AIResponse, emrData: EMRData): Insight[] {
     this.logger.debug('Generating insights');
-    const insights: Insight[] = [];
+
 
     // Analizar gaps en la línea de tiempo
     if (response.timeline) {
-      const timelineGaps = this.analyzeTimelineGaps(response.timeline);
+
       if (timelineGaps.length > 0) {
         insights.push(...timelineGaps);
         this.logger.debug('Timeline gaps detected', {
@@ -371,7 +369,7 @@ export class AIService {
     }
 
     // Analizar factores de riesgo
-    const riskFactors = this.analyzeRiskFactors(emrData);
+
     if (riskFactors.length > 0) {
       insights.push(...riskFactors);
       this.logger.debug('Risk factors detected', { count: riskFactors.length });
@@ -383,7 +381,7 @@ export class AIService {
   private analyzeTimelineGaps(
     timeline: { date: string; events: TimelineEvent[] }[]
   ): Insight[] {
-    const insights: Insight[] = [];
+
     const sortedTimeline = [...timeline].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
@@ -411,7 +409,7 @@ export class AIService {
   }
 
   private analyzeRiskFactors(emrData: EMRData): Insight[] {
-    const insights: Insight[] = [];
+
 
     // Analizar factores de riesgo en notas y EMR
     const riskKeywords = [
@@ -454,7 +452,7 @@ export class AIService {
 
   private generateRecommendations(response: AIResponse): Recommendation[] {
     this.logger.debug('Generating recommendations');
-    const recommendations: Recommendation[] = [];
+
 
     if (response.insights) {
       for (const insight of response.insights) {
@@ -496,8 +494,8 @@ export class AIService {
 
     try {
       // Intentar obtener del caché
-      const cacheKey = this.generateCacheKey(query);
-      const cachedResponse = await this.cacheService.get(cacheKey);
+
+
 
       if (cachedResponse) {
         this.logger.info('Cache hit', { cacheKey });
@@ -508,14 +506,14 @@ export class AIService {
       // Determinar el proveedor a usar
       const providerId =
         query.providerId ?? this.config.defaultProvider ?? 'gpt-4-medical';
-      const startTime = Date.now();
+
 
       // Procesar la consulta con el proveedor adecuado
       const response = await this.executeWithRetry(() =>
         this.processWithProvider(providerId, query)
       );
 
-      const processingTime = Date.now() - startTime;
+
       this.logger.debug('AI processing complete', {
         processingTime,
         providerId,
@@ -550,7 +548,7 @@ export class AIService {
     }
 
     // Obtener el proveedor solicitado
-    const provider = this.aiProviders.find((p) => p.id === providerId);
+
 
     // Si no se encuentra, intentar con el proveedor por defecto
     if (!provider) {
@@ -590,7 +588,7 @@ export class AIService {
 
   estimateCost(providerId: string, queryCount: number): number {
     // Si tenemos un proveedor real, usar su estimación
-    const provider = this.aiProviders.find((p) => p.id === providerId);
+
     if (provider) {
       // Crear una consulta de ejemplo para estimar
       const exampleQuery: AIQuery = {
@@ -600,7 +598,7 @@ export class AIService {
     }
 
     // Si no hay proveedor real, usar la estimación básica
-    const providerInfo = this.providers.find((p) => p.id === providerId);
+
     return providerInfo ? providerInfo.costPerQuery * queryCount : 0;
   }
 
@@ -782,4 +780,4 @@ export class AIServiceError extends Error {
 }
 
 // Exportar una instancia por defecto
-export const aiService = AIService.getInstance();
+export

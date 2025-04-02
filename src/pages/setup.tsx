@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Heading, Text, VStack, useToast } from '@chakra-ui/react';
-import EMRSetupForm from '../components/setup/EMRSetupForm';
-import { EMRAdapterConfig } from '../services/emr/EMRAdapterFactory';
-
-/**
+import { 
+   useState, useEffect 
+ } from 'react'
+ /**
+import React from 'react'
  * Página de configuración inicial de la aplicación
  */
 const SetupPage: React.FC = () => {
-  const toast = useToast();
   const [savedConfig, setSavedConfig] = useState<{
     adapterName: string;
     config: EMRAdapterConfig;
@@ -16,12 +14,9 @@ const SetupPage: React.FC = () => {
   // Cargar configuración guardada al iniciar
   useEffect(() => {
     // En una aplicación real, cargaríamos desde localStorage o una API
-    const savedAdapterName = localStorage.getItem('emrAdapterName');
-    const savedAdapterConfig = localStorage.getItem('emrAdapterConfig');
 
     if (savedAdapterName && savedAdapterConfig) {
       try {
-        const config = JSON.parse(savedAdapterConfig);
         setSavedConfig({
           adapterName: savedAdapterName,
           config,

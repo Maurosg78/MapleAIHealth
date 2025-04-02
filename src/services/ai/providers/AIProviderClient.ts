@@ -1,7 +1,8 @@
-import { AIQuery, AIResponse } from '../types';
-
-/**
+   HttpService 
+ } from "../../../lib/api"
  * Interfaz base para los clientes de proveedores de IA
+import { 
+/**
  * Permite implementar diferentes proveedores manteniendo una interfaz común
  */
 export interface AIProviderClient {

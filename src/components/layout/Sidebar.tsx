@@ -1,18 +1,20 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from '../common/Button';
-import { useAuth } from '../../hooks/useAuth';
-
+import { 
+   useState, useEffect 
+ } from "react"
 const navigation = [
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   { name: 'Dashboard', href: '/', icon: '📊' },
+import React from "react"
   { name: 'Pacientes', href: '/patients', icon: '👥' },
   { name: 'Citas', href: '/appointments', icon: '📅' },
   { name: 'Historial IA', href: '/ai-history', icon: '🤖' },
 ];
 
 export const Sidebar: React.FC = () => {
-  const location = useLocation();
-  const { logout } = useAuth();
+
+
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
@@ -24,7 +26,7 @@ export const Sidebar: React.FC = () => {
         </div>
         <nav className="mt-5 flex-1 px-2 space-y-1">
           {navigation.map((item) => {
-            const isActive = location.pathname === item.href;
+
             return (
               <Link
                 key={item.name}

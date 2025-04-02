@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
-import { Card } from '../components/common/Card';
-import { Button } from '../components/common/Button';
-import { Input } from '../components/common/Input';
-import { Select } from '../components/common/Select';
-import { AIAssistant } from '../components/emr/AIAssistant';
-import { useParams } from 'react-router-dom';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 interface PatientInfo {
   id: string;
   name: string;
@@ -35,7 +31,6 @@ interface LabResult {
 }
 
 export const EMRPage: React.FC = () => {
-  const { patientId } = useParams<{ patientId: string }>();
   const [activeTab, setActiveTab] = useState<
     'info' | 'history' | 'labs' | 'ai'
   >('info');

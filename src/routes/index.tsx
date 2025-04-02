@@ -1,16 +1,7 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Layout } from '../components/layout/Layout';
-import { LoginPage } from '../pages/LoginPage';
-import { DashboardPage } from '../pages/DashboardPage';
-import { PatientsPage } from '../pages/PatientsPage';
-import { AppointmentsPage } from '../pages/AppointmentsPage';
-import { AIHistoryPage } from '../pages/AIHistoryPage';
-import { EMRPage } from '../pages/EMRPage';
-import { TestAIPage } from '../pages/TestAIPage';
-import { NotFoundPage } from '../pages/NotFoundPage';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const AppRoutes: React.FC = () => {
   return (
     <BrowserRouter>

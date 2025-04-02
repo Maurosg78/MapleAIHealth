@@ -1,3 +1,6 @@
+   Button, Input, Select, Modal, Spinner 
+ } from '@chakra-ui/react'
+import { 
 export { Card } from './Card';
 export { Spinner } from './Spinner';
 export { Button } from './Button';

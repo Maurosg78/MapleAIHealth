@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { NoteInput } from '../components/emr/NoteInput';
-import { AnalysisResults } from '../components/emr/AnalysisResults';
-import {
+import { 
+   useState, useEffect 
+ } from "react"
   UnstructuredNote,
+import { 
   AIResponse,
   aiService,
 } from '../services/ai/aiService';
@@ -12,10 +12,10 @@ interface NoteWithId extends UnstructuredNote {
 }
 
 export const TestAIPage: React.FC = () => {
-  const [notes, setNotes] = useState<NoteWithId[]>([]);
-  const [analysis, setAnalysis] = useState<AIResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+
+
+
 
   const handleNoteSubmit = async (note: UnstructuredNote) => {
     try {
@@ -27,11 +27,11 @@ export const TestAIPage: React.FC = () => {
         ...note,
         id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       };
-      const updatedNotes = [...notes, noteWithId];
+
       setNotes(updatedNotes);
 
       // Analizar todas las notas (enviando solo la parte UnstructuredNote)
-      const notesForAnalysis = updatedNotes.map(({ ...rest }) => rest);
+
       const results = await aiService.analyzeUnstructuredNotes(
         'test-patient',
         notesForAnalysis

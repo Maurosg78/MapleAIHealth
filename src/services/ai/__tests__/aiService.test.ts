@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AIService, AIServiceError } from '../aiService';
-import { cacheService } from '../cacheService';
-import { EMRData, UnstructuredNote, AIServiceInternals } from '../types';
-
-// Mock del cacheService
+   render, screen 
+ } from '@testing-library/react'
+ // Mock del cacheService
+import { 
+   HttpService 
+ } from '../../../lib/api'
+import { 
 vi.mock('../cacheService', () => ({
   cacheService: {
     get: vi.fn(),
@@ -30,19 +31,15 @@ describe('AIService', () => {
   });
 
   it('should be a singleton', () => {
-    const instance1 = AIService.getInstance();
-    const instance2 = AIService.getInstance();
     expect(instance1).toBe(instance2);
   });
 
   it('should have providers configured', () => {
-    const providers = aiService.getAvailableProviders();
     expect(providers).toBeDefined();
     expect(providers.length).toBeGreaterThan(0);
   });
 
   it('should estimate cost correctly', () => {
-    const cost = aiService.estimateCost('gpt-4-medical', 2);
     expect(cost).toBe(0.06); // 0.03 * 2
   });
 
@@ -57,11 +54,11 @@ describe('AIService', () => {
     });
 
     // Verificar logs
-    const logs = aiService.getLogs();
+
     expect(logs.length).toBeGreaterThan(0);
 
     // Verificar logs de info
-    const infoLogs = aiService.getLogs('info');
+
     expect(infoLogs.length).toBeGreaterThan(0);
     expect(infoLogs[0].level).toBe('info');
   });
@@ -109,7 +106,6 @@ describe('AIService', () => {
     });
 
     // Ejecutar
-    const result = await aiService.analyzeUnstructuredNotes('test123', notes);
 
     // Verificar
     expect(result).toBeDefined();

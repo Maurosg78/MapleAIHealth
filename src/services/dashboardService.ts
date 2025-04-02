@@ -1,10 +1,10 @@
-import { api } from '../lib/api';
-import { DashboardMetrics } from '../types/dashboard';
-
-class DashboardService {
+   HttpService 
+ } from "../../../lib/api"
   async getMetrics(): Promise<DashboardMetrics> {
+import { 
+class DashboardService {
     try {
-      const response = await api.get('/dashboard/metrics');
+
       return response.data;
     } catch (error) {
       console.error('Error fetching dashboard metrics:', error);
@@ -14,7 +14,7 @@ class DashboardService {
 
   async getRecentActivities() {
     try {
-      const response = await api.get('/dashboard/activities');
+
       return response.data;
     } catch (error) {
       console.error('Error fetching recent activities:', error);
@@ -23,4 +23,4 @@ class DashboardService {
   }
 }
 
-export const dashboardService = new DashboardService();
+export

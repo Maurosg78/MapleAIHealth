@@ -1,17 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Patient, PatientFilters } from '../types/patient';
-import PatientService from '../services/patient';
-import { Input } from '../components/common/Input';
-import { Button } from '../components/common/Button';
-import { Spinner } from '../components/common/Spinner';
-import { PatientFormModal } from '../components/patient/PatientFormModal';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const PatientsPage: React.FC = () => {
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>();
   const [filters, setFilters] = useState<PatientFilters>({
     search: '',
     status: 'active',
@@ -27,7 +18,7 @@ export const PatientsPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await PatientService.getPatients(filters);
+
       setPatients(response.patients);
     } catch (err) {
       setError('Error al cargar los pacientes');

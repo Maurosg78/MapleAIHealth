@@ -1,7 +1,8 @@
-import { Logger } from '../../lib/logger';
-
-/**
+   HttpService 
+ } from "../../../lib/api"
  * Tipos de severidad para los errores monitoreados
+import { 
+/**
  */
 export enum ErrorSeverity {
   /** Error crítico que bloquea funcionalidad principal y debe ser atendido inmediatamente */
@@ -136,8 +137,6 @@ export class ErrorMonitorService {
       'id' | 'timestamp' | 'acknowledged' | 'resolved'
     >
   ): string {
-    const errorId = this.generateErrorId();
-
     const monitoredError: MonitoredError = {
       id: errorId,
       timestamp: new Date(),
@@ -166,10 +165,6 @@ export class ErrorMonitorService {
    * Evalúa si un error debería enviarse como notificación
    */
   private maybeNotify(error: MonitoredError): void {
-    const severityLevels = Object.values(ErrorSeverity);
-    const errorSeverityIndex = severityLevels.indexOf(error.severity);
-    const thresholdIndex = severityLevels.indexOf(this.notificationThreshold);
-
     // Si la severidad del error es mayor o igual que el umbral, notificar
     if (errorSeverityIndex <= thresholdIndex && this.webhookUrl) {
       this.sendNotification(error);
@@ -217,7 +212,6 @@ export class ErrorMonitorService {
    * @returns true si el error fue encontrado y actualizado
    */
   public acknowledgeError(errorId: string, userId: string): boolean {
-    const error = this.errors.find((e) => e.id === errorId);
     if (!error) return false;
 
     error.acknowledged = true;
@@ -246,7 +240,6 @@ export class ErrorMonitorService {
       notes?: string;
     }
   ): boolean {
-    const error = this.errors.find((e) => e.id === errorId);
     if (!error) return false;
 
     error.resolved = true;
@@ -391,14 +384,11 @@ export class ErrorMonitorService {
    * @returns Número de errores purgados
    */
   public purgeOldResolvedErrors(olderThan: Date): number {
-    const initialCount = this.errors.length;
-
     this.errors = this.errors.filter(
       (error) =>
         !error.resolved || (error.resolvedAt && error.resolvedAt > olderThan)
     );
 
-    const purgedCount = initialCount - this.errors.length;
     if (purgedCount > 0) {
       this.logger.info(`Purgados ${purgedCount} errores resueltos antiguos`);
     }
@@ -420,8 +410,6 @@ export const captureException = (
     metadata?: Record<string, unknown>;
   }
 ): string => {
-  const service = ErrorMonitorService.getInstance();
-
   return service.captureError({
     message: error.message,
     details: error.stack,

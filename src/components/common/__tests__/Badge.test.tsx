@@ -1,16 +1,20 @@
-import { render, screen } from '@testing-library/react';
-import { Badge } from '../Badge';
-import { describe, it, expect } from 'vitest';
-
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Badge', () => {
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   it('renderiza correctamente con el contenido proporcionado', () => {
     render(<Badge>Test Badge</Badge>);
     expect(screen.getByText('Test Badge')).toBeInTheDocument();
   });
 
   it('aplica los estilos correctos según el tipo', () => {
-    const { rerender } = render(<Badge type="success">Success</Badge>);
-    const badge = screen.getByText('Success').closest('div');
     expect(badge).toHaveClass('bg-green-100', 'text-green-800');
 
     rerender(<Badge type="error">Error</Badge>);
@@ -24,8 +28,6 @@ describe('Badge', () => {
   });
 
   it('aplica las variantes correctamente', () => {
-    const { rerender } = render(<Badge variant="solid">Solid</Badge>);
-    const badge = screen.getByText('Solid').closest('div');
     expect(badge).toHaveClass('bg-blue-100', 'text-blue-800');
 
     rerender(<Badge variant="outlined">Outlined</Badge>);
@@ -36,8 +38,6 @@ describe('Badge', () => {
   });
 
   it('aplica los tamaños correctamente', () => {
-    const { rerender } = render(<Badge size="sm">Small</Badge>);
-    const badge = screen.getByText('Small').closest('div');
     expect(badge).toHaveClass('text-xs', 'px-2', 'py-0.5');
 
     rerender(<Badge size="md">Medium</Badge>);
@@ -49,7 +49,7 @@ describe('Badge', () => {
 
   it('muestra el icono cuando se proporciona', () => {
     render(<Badge icon="https://example.com/icon.svg">With Icon</Badge>);
-    const icon = screen.getByAltText('');
+
     expect(icon).toBeInTheDocument();
     expect(icon).toHaveAttribute('src', 'https://example.com/icon.svg');
     expect(icon).toHaveAttribute('alt', '');
@@ -57,7 +57,7 @@ describe('Badge', () => {
 
   it('aplica clases personalizadas a través de className', () => {
     render(<Badge className="custom-class">Custom</Badge>);
-    const badge = screen.getByText('Custom').closest('div');
+
     expect(badge).toHaveClass('custom-class');
   });
 
@@ -67,7 +67,7 @@ describe('Badge', () => {
         Small
       </Badge>
     );
-    const icon = screen.getByAltText('');
+
     expect(icon).toHaveClass('w-3', 'h-3');
 
     rerender(

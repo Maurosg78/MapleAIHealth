@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Modal } from '../common/Modal';
-import { Button } from '../common/Button';
-import { Input } from '../common/Input';
-import { Select } from '../common/Select';
-import { Spinner } from '../common/Spinner';
-import { appointmentService } from '../../services/appointmentService';
-import {
+import { 
+   useState, useEffect 
+ } from "react"
   Appointment,
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   AppointmentStatus,
+import { 
   AppointmentType,
 } from '../../types/appointment';
 
@@ -24,8 +23,8 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
   appointment,
   onSuccess,
 }) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+
   const [formData, setFormData] = useState<Partial<Appointment>>({
     patientId: '',
     doctorId: '',

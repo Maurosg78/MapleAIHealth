@@ -1,9 +1,8 @@
-import { AIProviderClient } from './AIProviderClient';
-import { AIQuery, AIResponse, InsightType } from '../types';
-import { Logger } from '../../../utils/logger';
-
-/**
+   HttpService 
+ } from "../../../lib/api"
  * Interfaz para la respuesta de la API de OpenAI
+import { 
+/**
  */
 interface OpenAIResponse {
   id: string;
@@ -64,7 +63,7 @@ export class OpenAIProvider implements AIProviderClient {
   estimateQueryCost(query: AIQuery): number {
     // Estimación básica basada en la longitud de la consulta
     // En una implementación real, se calcularía basado en tokens
-    const baseLength = query.query.length;
+
     const notesLength =
       query.unstructuredNotes?.reduce(
         (acc, note) => acc + note.content.length,
@@ -74,12 +73,11 @@ export class OpenAIProvider implements AIProviderClient {
       ? JSON.stringify(query.context.data).length
       : 0;
 
-    const totalLength = baseLength + notesLength + contextLength;
-    const estimatedTokens = totalLength / 4; // Aproximación: 4 caracteres = 1 token
+    // Aproximación: 4 caracteres = 1 token
 
     // Precios aproximados: $0.01 por 1K tokens de entrada, $0.03 por 1K tokens de salida
-    const inputCost = (estimatedTokens / 1000) * 0.01;
-    const outputCost = (estimatedTokens / 3000) * 0.03; // Asumiendo que la salida es 1/3 de la entrada
+
+    // Asumiendo que la salida es 1/3 de la entrada
 
     return inputCost + outputCost;
   }
@@ -95,10 +93,8 @@ export class OpenAIProvider implements AIProviderClient {
       });
 
       // Construir el prompt basado en el tipo de consulta
-      const messages = this.buildMessages(query);
 
       // Realizar la llamada a la API de OpenAI
-      const response = await this.callOpenAI(messages);
 
       // Procesar la respuesta
       return this.processResponse(response);
@@ -113,8 +109,6 @@ export class OpenAIProvider implements AIProviderClient {
   private buildMessages(
     query: AIQuery
   ): Array<{ role: string; content: string }> {
-    const messages: Array<{ role: string; content: string }> = [];
-
     // Mensaje del sistema con instrucciones
     messages.push({
       role: 'system',
@@ -205,7 +199,7 @@ Para la clave "insights", cada elemento debe incluir "type", "description", "sev
   private processResponse(openAIResponse: OpenAIResponse): AIResponse {
     try {
       // Extraer el contenido de la respuesta
-      const content = openAIResponse.choices[0]?.message?.content;
+
       if (!content) {
         throw new Error('No content in OpenAI response');
       }

@@ -1,12 +1,8 @@
-import { useDashboard } from '@/hooks/useDashboard';
-import { MetricCard } from '@/components/dashboard/MetricCard';
-import { RecentActivities } from '@/components/dashboard/RecentActivities';
-import { Button } from '@/components/common/Button';
-import { Link } from 'react-router-dom';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const DashboardPage = () => {
-  const { metrics, isLoading, error } = useDashboard();
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">

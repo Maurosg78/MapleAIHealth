@@ -1,7 +1,9 @@
-import { api } from '../lib/api';
-import {
   Appointment,
+import { 
+   HttpService 
+ } from "../../../lib/api"
   AppointmentFilters,
+import { 
   AppointmentListResponse,
 } from '../types/appointment';
 
@@ -10,7 +12,7 @@ class AppointmentService {
     filters: AppointmentFilters = {}
   ): Promise<AppointmentListResponse> {
     try {
-      const response = await api.get('/appointments', { params: filters });
+
       return response.data;
     } catch (error) {
       console.error('Error fetching appointments:', error);
@@ -20,7 +22,7 @@ class AppointmentService {
 
   async getAppointment(id: string): Promise<Appointment> {
     try {
-      const response = await api.get(`/appointments/${id}`);
+
       return response.data;
     } catch (error) {
       console.error('Error fetching appointment:', error);
@@ -32,7 +34,7 @@ class AppointmentService {
     appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>
   ): Promise<Appointment> {
     try {
-      const response = await api.post('/appointments', appointment);
+
       return response.data;
     } catch (error) {
       console.error('Error creating appointment:', error);
@@ -45,7 +47,7 @@ class AppointmentService {
     appointment: Partial<Appointment>
   ): Promise<Appointment> {
     try {
-      const response = await api.put(`/appointments/${id}`, appointment);
+
       return response.data;
     } catch (error) {
       console.error('Error updating appointment:', error);
@@ -78,4 +80,4 @@ class AppointmentService {
   }
 }
 
-export const appointmentService = new AppointmentService();
+export

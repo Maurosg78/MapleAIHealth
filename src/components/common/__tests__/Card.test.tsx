@@ -1,8 +1,14 @@
-import { render, screen } from '@testing-library/react';
-import { Card, CardHeader, CardBody, CardFooter } from '../Card';
-import { describe, it, expect } from 'vitest';
-
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Card', () => {
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   it('renderiza correctamente con contenido básico', () => {
     render(
       <Card>
@@ -18,7 +24,7 @@ describe('Card', () => {
         <div>Contenido elevado</div>
       </Card>
     );
-    const card = screen.getByText('Contenido elevado').parentElement;
+
     expect(card).toHaveClass('shadow-md');
   });
 
@@ -28,7 +34,7 @@ describe('Card', () => {
         <div>Contenido con borde</div>
       </Card>
     );
-    const card = screen.getByText('Contenido con borde').parentElement;
+
     expect(card).toHaveClass('border-2');
   });
 
@@ -38,7 +44,7 @@ describe('Card', () => {
         <div>Contenido con padding grande</div>
       </Card>
     );
-    const card = screen.getByText('Contenido con padding grande').parentElement;
+
     expect(card).toHaveClass('p-8');
   });
 
@@ -62,7 +68,7 @@ describe('Card', () => {
         <div>Contenido personalizado</div>
       </Card>
     );
-    const card = screen.getByText('Contenido personalizado').parentElement;
+
     expect(card).toHaveClass('bg-blue-100');
   });
 
@@ -74,10 +80,6 @@ describe('Card', () => {
         <CardFooter>Footer</CardFooter>
       </Card>
     );
-
-    const header = container.querySelector('[class*="border-b"]');
-    const body = container.querySelector('[class*="px-6 py-4"]');
-    const footer = container.querySelector('[class*="border-t"]');
 
     expect(header).toBeInTheDocument();
     expect(body).toBeInTheDocument();

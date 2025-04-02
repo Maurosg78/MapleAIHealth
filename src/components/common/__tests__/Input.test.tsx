@@ -1,8 +1,14 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Input } from '../Input';
-import { describe, it, expect, vi } from 'vitest';
-
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Input', () => {
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   it('renderiza correctamente con el label proporcionado', () => {
     render(<Input label="Nombre" />);
     expect(screen.getByLabelText('Nombre')).toBeInTheDocument();
@@ -20,9 +26,6 @@ describe('Input', () => {
   });
 
   it('muestra los iconos izquierdo y derecho cuando se proporcionan', () => {
-    const leftIcon = <span data-testid="left-icon">🔍</span>;
-    const rightIcon = <span data-testid="right-icon">✓</span>;
-
     render(<Input leftIcon={leftIcon} rightIcon={rightIcon} />);
 
     expect(screen.getByTestId('left-icon')).toBeInTheDocument();
@@ -30,7 +33,6 @@ describe('Input', () => {
   });
 
   it('llama a onChange cuando se cambia el valor', () => {
-    const handleChange = vi.fn();
     render(<Input onChange={handleChange} />);
 
     fireEvent.change(screen.getByRole('textbox'), {

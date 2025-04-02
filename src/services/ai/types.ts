@@ -1,6 +1,9 @@
+   HttpService 
+ } from "../../../lib/api"
+ */
+import { 
 /**
  * Tipos e interfaces comunes para el sistema de IA
- */
 
 export type NoteType =
   | 'consultation'

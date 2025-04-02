@@ -1,8 +1,12 @@
-import React from 'react';
-import { twMerge } from 'tailwind-merge';
-
+import { 
+   useState, useEffect 
+ } from "react"
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'elevated' | 'outlined';
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
+  variant?: 'default' | 'elevated' | 'outlined'
+import React from "react"
   padding?: 'none' | 'sm' | 'md' | 'lg';
   children: React.ReactNode;
 }
@@ -24,7 +28,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     { className, variant = 'default', padding = 'md', children, ...props },
     ref
   ) => {
-    const baseStyles = 'rounded-lg bg-white';
+
     const variantStyles = {
       default: 'border border-gray-200',
       elevated: 'shadow-md hover:shadow-lg transition-shadow',

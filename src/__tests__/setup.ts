@@ -1,5 +1,8 @@
-/**
+   render, screen 
+ } from "@testing-library/react"
  * Configuración global para los tests con Jest
+import { 
+/**
  */
 
 // Aumentamos el timeout para pruebas asíncronas

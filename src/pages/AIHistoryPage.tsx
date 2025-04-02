@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from '../components/common/Card';
-import { Spinner } from '../components/common/Spinner';
-import {
+import { 
+   useState, useEffect 
+ } from "react"
   aiHistoryService,
+import { 
   AIHistoryEntry,
 } from '../services/ai/aiHistoryService';
-import { useAuth } from '../hooks/useAuth';
-import { ResponseFeedback } from '../components/ai/ResponseFeedback';
 
 export const AIHistoryPage: React.FC = () => {
-  const [history, setHistory] = useState<AIHistoryEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+
+
+
+
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -20,7 +18,7 @@ export const AIHistoryPage: React.FC = () => {
 
       try {
         setLoading(true);
-        const data = await aiHistoryService.getHistory(user.id);
+
         setHistory(data);
       } catch (err) {
         setError('Error al cargar el historial');

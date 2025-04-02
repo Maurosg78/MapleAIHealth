@@ -1,8 +1,8 @@
-import { api } from './api';
-import { Patient, PatientFilters, PatientListResponse } from '../types/patient';
-
-class PatientService {
+   HttpService 
+ } from "../../../lib/api"
   static async getPatients(
+import { 
+class PatientService {
     filters: PatientFilters = {}
   ): Promise<PatientListResponse> {
     try {
@@ -17,7 +17,7 @@ class PatientService {
 
   static async getPatient(id: string): Promise<Patient> {
     try {
-      const response = await api.get<Patient>(`/patients/${id}`);
+
       return response.data;
     } catch {
       throw new Error('Error al obtener los detalles del paciente');
@@ -28,7 +28,7 @@ class PatientService {
     patient: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>
   ): Promise<Patient> {
     try {
-      const response = await api.post<Patient>('/patients', patient);
+
       return response.data;
     } catch {
       throw new Error('Error al crear el paciente');
@@ -40,7 +40,7 @@ class PatientService {
     patient: Partial<Patient>
   ): Promise<Patient> {
     try {
-      const response = await api.put<Patient>(`/patients/${id}`, patient);
+
       return response.data;
     } catch {
       throw new Error('Error al actualizar el paciente');

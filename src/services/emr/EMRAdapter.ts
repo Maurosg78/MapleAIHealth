@@ -1,7 +1,8 @@
-import { PatientData } from '../ai/types';
-
-/**
+   HttpService 
+ } from "../../../lib/api"
  * Interfaz base para adaptadores de EMR
+import { 
+/**
  * Define las operaciones comunes para interactuar con sistemas de Registros Médicos Electrónicos (EMR)
  */
 export interface EMRAdapter {
@@ -104,12 +105,11 @@ export interface EMRSearchQuery {
   documentId?: string;
   email?: string;
   phone?: string;
-  dateOfBirth?: Date;
-  criteria?: string | number | boolean;
+  criteria?: string | Record<string, unknown>;
 }
 
 /**
- * Resultado de búsqueda de paciente
+ * Resultado de búsqueda de pacientes
  */
 export interface EMRPatientSearchResult {
   id: string;
@@ -118,11 +118,11 @@ export interface EMRPatientSearchResult {
   birthDate: string;
   gender: string;
   mrn: string;
-  dateOfBirth?: Date;
   documentId?: string;
   contactInfo?: {
     email?: string;
     phone?: string;
+    address?: string;
   };
   lastVisit?: Date;
 }
@@ -145,17 +145,15 @@ export interface EMRPatientHistory {
  * Consulta médica
  */
 export interface EMRConsultation {
-  id?: string;
+  id: string;
   patientId: string;
-  providerId?: string;
+  providerId: string;
   date: Date;
   reason: string;
   notes: string;
-  diagnoses?: EMRDiagnosis[];
-  vitalSigns?: EMRVitalSigns;
-  treatmentPlan?: string;
-  followUpDate?: Date;
   specialty?: string;
+  diagnoses?: EMRDiagnosis[];
+  followUpDate?: Date;
 }
 
 /**
@@ -203,17 +201,19 @@ export interface EMRPatientMetrics {
  * Signos vitales
  */
 export interface EMRVitalSigns {
+  id: string;
+  patientId: string;
   date: Date;
   temperature?: number;
   heartRate?: number;
+  bloodPressure?: {
+    systolic: number;
+    diastolic: number;
+    unit: string;
+  };
   respiratoryRate?: number;
-  bloodPressureSystolic?: number;
-  bloodPressureDiastolic?: number;
   oxygenSaturation?: number;
-  weight?: number;
-  height?: number;
-  bmi?: number;
-  pain?: number;
+  notes?: string;
 }
 
 /**
@@ -224,16 +224,16 @@ export interface EMRLabResult {
   patientId: string;
   date: Date;
   type: string;
+  orderedBy: string;
   results: Record<
     string,
     {
       value: string | number;
       unit?: string;
-      referenceRange?: string;
+      normalRange?: string;
       isAbnormal?: boolean;
     }
   >;
-  orderedBy: string;
   notes?: string;
 }
 
@@ -256,27 +256,89 @@ export interface EMRImagingResult {
  * Diagnóstico médico
  */
 export interface EMRDiagnosis {
-  id?: string;
-  patientId?: string;
+  id: string;
+  patientId: string;
+  date: Date;
   code: string;
-  system: 'ICD-10' | 'ICD-11' | 'SNOMED-CT' | 'other' | string;
+  system: 'ICD-10' | 'ICD-11' | 'SNOMED-CT' | 'other';
   description: string;
-  date?: Date;
   status: 'active' | 'resolved' | 'recurrent' | 'chronic' | 'suspected';
+  type: string;
   notes?: string;
-  type?: string;
 }
 
 /**
  * Medicación
  */
 export interface EMRMedication {
+  id: string;
+  patientId: string;
   name: string;
   dosage: string;
   frequency: string;
   startDate: Date;
   endDate?: Date;
-  status: 'active' | 'completed' | 'cancelled' | 'on-hold';
-  prescribedBy: string;
-  reason?: string;
+  prescriber: string;
+  pharmacy?: string;
+  status: 'active' | 'discontinued' | 'completed';
+  notes?: string;
+}
+
+/**
+ * Alergia
+ */
+export interface EMRAllergy {
+  id: string;
+  patientId: string;
+  allergen: string;
+  reaction?: string;
+  severity: 'mild' | 'moderate' | 'severe';
+  status: 'active' | 'resolved' | 'refuted';
+  onsetDate?: Date;
+  notes?: string;
+}
+
+/**
+ * Vacuna
+ */
+export interface EMRImmunization {
+  id: string;
+  patientId: string;
+  vaccine: string;
+  date: Date;
+  provider: string;
+  lotNumber?: string;
+  manufacturer?: string;
+  location?: string;
+  notes?: string;
+}
+
+/**
+ * Procedimiento
+ */
+export interface EMRProcedure {
+  id: string;
+  patientId: string;
+  name: string;
+  date: Date;
+  provider: string;
+  location?: string;
+  status: 'scheduled' | 'completed' | 'cancelled';
+  notes?: string;
+  results?: string;
+}
+
+/**
+ * Documento
+ */
+export interface EMRDocument {
+  id: string;
+  patientId: string;
+  type: string;
+  date: Date;
+  author: string;
+  title: string;
+  content: string;
+  status: 'draft' | 'final' | 'amended';
+  notes?: string;
 }

@@ -1,17 +1,22 @@
-import { render, screen } from '@testing-library/react';
-import { Skeleton } from '../Skeleton';
-import { describe, it, expect } from 'vitest';
-
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Skeleton', () => {
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   it('renderiza correctamente', () => {
     render(<Skeleton />);
-    const skeleton = screen.getByRole('status');
+
     expect(skeleton).toBeInTheDocument();
     expect(skeleton).toHaveAttribute('aria-label', 'Cargando');
   });
 
   it('aplica las variantes correctamente', () => {
-    const { rerender } = render(<Skeleton variant="circular" />);
     expect(screen.getByRole('status')).toHaveClass('rounded-full');
 
     rerender(<Skeleton variant="rectangular" />);
@@ -22,7 +27,6 @@ describe('Skeleton', () => {
   });
 
   it('aplica los tamaños correctamente', () => {
-    const { rerender } = render(<Skeleton size="sm" />);
     expect(screen.getByRole('status')).toHaveClass('h-3');
 
     rerender(<Skeleton size="md" />);
@@ -33,7 +37,6 @@ describe('Skeleton', () => {
   });
 
   it('aplica la animación correctamente', () => {
-    const { rerender } = render(<Skeleton animated />);
     expect(screen.getByRole('status')).toHaveClass('animate-pulse');
 
     rerender(<Skeleton animated={false} />);

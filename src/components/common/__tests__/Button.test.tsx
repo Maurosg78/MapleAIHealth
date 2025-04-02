@@ -1,8 +1,14 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Button } from '../Button';
-import { describe, it, expect, vi } from 'vitest';
-
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Button', () => {
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   it('renderiza correctamente con el texto proporcionado', () => {
     render(<Button>Click me</Button>);
     expect(screen.getByText('Click me')).toBeInTheDocument();
@@ -10,32 +16,30 @@ describe('Button', () => {
 
   it('aplica la variante primary por defecto', () => {
     render(<Button>Click me</Button>);
-    const button = screen.getByRole('button');
+
     expect(button).toHaveClass('bg-primary-600');
   });
 
   it('aplica la variante secondary cuando se especifica', () => {
     render(<Button variant="secondary">Click me</Button>);
-    const button = screen.getByRole('button');
+
     expect(button).toHaveClass('bg-secondary-600');
   });
 
   it('muestra el estado de carga cuando isLoading es true', () => {
     render(<Button isLoading>Click me</Button>);
-    const button = screen.getByRole('button');
+
     expect(button).toHaveClass('disabled:opacity-50');
     expect(button).toBeDisabled();
   });
 
   it('llama a onClick cuando se hace clic', () => {
-    const handleClick = vi.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
     fireEvent.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
   it('no llama a onClick cuando está deshabilitado', () => {
-    const handleClick = vi.fn();
     render(
       <Button onClick={handleClick} disabled>
         Click me

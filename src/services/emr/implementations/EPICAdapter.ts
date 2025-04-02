@@ -1,16 +1,6 @@
-import {
-  EMRAdapter,
-  EMRConsultation,
-  EMRDiagnosis,
-  EMRHistoryOptions,
-  EMRPatientHistory,
-  EMRPatientMetrics,
-  EMRPatientSearchResult,
-  EMRSearchQuery,
-  EMRTreatment,
-} from '../EMRAdapter';
-import { PatientData } from '../../ai/types';
+import { EMRAdapter, EMRConsultation, EMRPatientHistory, EMRPatientMetrics, EMRPatientSearchResult, EMRSearchQuery, EMRTreatment, LabResult, EMRAllergy, EMREncounter } from '../types';
 import { Logger } from '../../../lib/logger';
+import { PatientData } from '../types';
 
 /**
  * Tipos específicos para EPIC usando FHIR
@@ -23,29 +13,9 @@ interface FHIRResource {
     versionId?: string;
     lastUpdated?: string;
   };
-}
-
-// Definir interfaz para EMRLabResult con la propiedad requerida orderedBy
-interface EMRLabResult {
-  id: string;
-  patientId: string;
-  date: Date;
-  type: string;
-  name: string;
-  results: Record<
-    string,
-    {
-      value: string | number;
-      unit?: string;
-      referenceRange?: string;
-      isAbnormal?: boolean;
-    }
-  >;
-  units?: string;
-  range?: string;
-  abnormal?: boolean;
-  notes?: string;
-  orderedBy: string;
+  subject?: {
+    reference?: string;
+  };
 }
 
 // Interfaces adicionales para reducir el uso de 'any'
@@ -65,36 +35,51 @@ interface FHIRMedicationResource extends FHIRResource {
     };
   }>;
   authoredOn?: string;
+  subject?: {
+    reference?: string;
+  };
+  requester?: {
+    reference?: string;
+  };
+  status?: string;
 }
 
 interface FHIREncounterResource extends FHIRResource {
-  id: string;
-  status?: string; // Añadir la propiedad status que faltaba
+  resourceType: 'Encounter';
   subject?: {
-    reference: string;
+    reference?: string;
   };
   participant?: Array<{
     individual?: {
-      reference: string;
+      reference?: string;
     };
   }>;
   period?: {
     start?: string;
+    end?: string;
   };
   reasonCode?: Array<{
     text?: string;
   }>;
-  note?: Array<{
-    text?: string;
-  }>;
-  serviceType?: {
-    text?: string;
+  text?: {
+    div?: string;
   };
+  type?: Array<{
+    coding?: Array<{
+      code?: string;
+    }>;
+  }>;
+  diagnosis?: Array<{
+    condition?: {
+      reference?: string;
+      display?: string;
+    };
+  }>;
+  status?: string;
   class?: {
-    // Añadir clase como opcional
-    system: string;
-    code: string;
-    display: string;
+    system?: string;
+    code?: string;
+    display?: string;
   };
 }
 
@@ -117,7 +102,7 @@ interface FHIRPatient extends FHIRResource {
     given?: string[];
     use?: string;
     prefix?: string[];
-    suffix?: string[];
+    suffix?: string;
   }>;
   gender?: string;
   birthDate?: string;
@@ -181,6 +166,114 @@ interface FHIRAdditionalData {
   medications?: FHIRBundle;
 }
 
+interface FHIRCoding {
+  system?: string;
+  code?: string;
+  display?: string;
+}
+
+interface FHIRCodeableConcept {
+  coding?: FHIRCoding[];
+  text?: string;
+}
+
+interface FHIRAllergyIntolerance extends FHIRResource {
+  patient: {
+    reference: string;
+  };
+  code?: FHIRCodeableConcept;
+  type?: string;
+  clinicalStatus?: {
+    coding?: Array<{
+      code?: string;
+    }>;
+  };
+  criticality?: string;
+  onsetDateTime?: string;
+  recordedDate?: string;
+  note?: Array<{
+    text?: string;
+  }>;
+  reaction?: Array<{
+    manifestation?: Array<{
+      coding?: Array<{
+        code?: string;
+        display?: string;
+      }>;
+    }>;
+    severity?: string;
+  }>;
+}
+
+interface FHIRObservation extends FHIRResource {
+  resourceType: 'Observation';
+  subject: {
+    reference: string;
+  };
+  category?: Array<{
+    coding?: Array<{
+      code?: string;
+    }>;
+  }>;
+  code?: FHIRCodeableConcept;
+  valueQuantity?: {
+    value?: number;
+    unit?: string;
+  };
+  effectiveDateTime?: string;
+  status?: string;
+  referenceRange?: Array<{
+    text?: string;
+  }>;
+  interpretation?: Array<{
+    coding?: Array<{
+      code?: string;
+    }>;
+  }>;
+  note?: Array<{
+    text?: string;
+  }>;
+  performer?: Array<{
+    reference?: string;
+  }>;
+}
+
+interface FHIRMedicationRequest extends FHIRResource {
+  requester?: {
+    reference?: string;
+  };
+  medicationCodeableConcept?: {
+    text?: string;
+  };
+  authoredOn?: string;
+  status?: string;
+}
+
+interface FHIRProcedure extends FHIRResource {
+  performer?: Array<{
+    actor?: {
+      reference?: string;
+    };
+  }>;
+  code?: {
+    text?: string;
+  };
+  performedDateTime?: string;
+  status?: string;
+}
+
+interface FHIRCarePlan extends FHIRResource {
+  activity?: Array<{
+    detail?: {
+      code?: {
+        text?: string;
+      };
+      scheduledString?: string;
+      status?: string;
+    };
+  }>;
+}
+
 /**
  * Adaptador para integración con EPIC EMR
  * EPIC es uno de los sistemas EMR más utilizados en hospitales y clínicas grandes
@@ -205,9 +298,9 @@ export class EPICAdapter implements EMRAdapter {
   }) {
     this.logger = new Logger('EPICAdapter');
     this.apiBaseUrl = config.apiBaseUrl;
-    this.apiKey = config.apiKey ?? '';
-    this.clientId = config.clientId ?? '';
-    this.clientSecret = config.clientSecret ?? '';
+    this.apiKey = config.apiKey;
+    this.clientId = config.clientId;
+    this.clientSecret = config.clientSecret;
 
     this.logger.info('Inicializado adaptador para EPIC EMR', {
       baseUrl: this.apiBaseUrl,
@@ -287,9 +380,7 @@ export class EPICAdapter implements EMRAdapter {
       await this.ensureValidToken();
 
       // Construir parámetros de búsqueda FHIR
-      const searchParams = this.buildFHIRSearchParams(query);
-
-      // Añadir el límite de resultados
+      const searchParams = new URLSearchParams();
       searchParams.append('_count', limit.toString());
 
       // Ejecutar la búsqueda
@@ -298,7 +389,7 @@ export class EPICAdapter implements EMRAdapter {
       );
 
       // Convertir resultados FHIR a formato de la aplicación
-      return this.convertFHIRPatientBundle(searchResults);
+      return this.mapSearchResults(searchResults);
     } catch (error) {
       this.logger.error('Error al buscar pacientes en EPIC', { error, query });
       throw new Error(`Error al buscar pacientes: ${(error as Error).message}`);
@@ -308,74 +399,32 @@ export class EPICAdapter implements EMRAdapter {
   /**
    * Obtiene el historial médico del paciente de EPIC
    */
-  public async getPatientHistory(
-    patientId: string,
-    options?: EMRHistoryOptions
-  ): Promise<EMRPatientHistory> {
+  public async getPatientHistory(patientId: string): Promise<EMRPatientHistory> {
     try {
-      this.logger.info('Obteniendo historial médico desde EPIC', {
-        patientId,
-        options,
-      });
+      console.log('Obteniendo historial del paciente desde EPIC');
 
-      await this.ensureValidToken();
+      const [encounters, medications, allergies, labResults] = await Promise.all([
+        this.fetchFHIRResource<FHIRBundle>(`Encounter?patient=${patientId}`),
+        this.fetchFHIRResource<FHIRBundle>(`MedicationRequest?patient=${patientId}`),
+        this.fetchFHIRResource<FHIRBundle>(`AllergyIntolerance?patient=${patientId}`),
+        this.fetchFHIRResource<FHIRBundle>(`Observation?patient=${patientId}&category=laboratory`)
+      ]);
 
-      // Construir objeto base del historial
       const patientHistory: EMRPatientHistory = {
         patientId,
-        consultations: [],
-        treatments: [],
-        labResults: [],
+        encounters: this.convertFHIREncounters(encounters),
+        medications: this.convertFHIRMedicationRequests(medications),
+        allergies: this.convertFHIRAllergyIntolerances(allergies),
+        labResults: this.convertFHIRObservations(labResults),
         diagnoses: [],
+        consultations: [],
+        treatments: []
       };
-
-      // Obtener consultas si se solicitan
-      if (!options || options.includeConsultations !== false) {
-        const encounters = await this.fetchFHIRResource<FHIRBundle>(
-          `Encounter?patient=${patientId}`
-        );
-        patientHistory.consultations = this.convertFHIREncounters(encounters);
-      }
-
-      // Obtener tratamientos si se solicitan
-      if (!options || options.includeTreatments !== false) {
-        const medicationRequests = await this.fetchFHIRResource<FHIRBundle>(
-          `MedicationRequest?patient=${patientId}`
-        );
-        const procedures = await this.fetchFHIRResource<FHIRBundle>(
-          `Procedure?patient=${patientId}`
-        );
-        patientHistory.treatments = [
-          ...this.convertFHIRMedicationRequests(medicationRequests),
-          ...this.convertFHIRProcedures(procedures),
-        ];
-      }
-
-      // Obtener resultados de laboratorio si se solicitan
-      if (!options || options.includeLabResults !== false) {
-        const observations = await this.fetchFHIRResource<FHIRBundle>(
-          `Observation?patient=${patientId}&category=laboratory`
-        );
-        patientHistory.labResults = this.convertFHIRObservations(observations);
-      }
-
-      // Obtener diagnósticos si se solicitan
-      if (!options || options.includeDiagnoses !== false) {
-        const conditions = await this.fetchFHIRResource<FHIRBundle>(
-          `Condition?patient=${patientId}`
-        );
-        patientHistory.diagnoses = this.convertFHIRConditions(conditions);
-      }
 
       return patientHistory;
     } catch (error) {
-      this.logger.error('Error al obtener historial médico desde EPIC', {
-        error,
-        patientId,
-      });
-      throw new Error(
-        `Error al obtener historial médico: ${(error as Error).message}`
-      );
+      console.error('Error al obtener historial del paciente:', error);
+      throw new Error('Error al obtener historial del paciente');
     }
   }
 
@@ -488,7 +537,10 @@ export class EPICAdapter implements EMRAdapter {
       }
 
       // Enviar el tratamiento a EPIC
-      const response = await this.postFHIRResource(resourceType, fhirResource);
+      const response = await this.postFHIRResource(
+        resourceType,
+        fhirResource
+      );
 
       // Extraer el ID del recurso creado
       const resourceId = this.extractResourceIdFromResponse(response);
@@ -597,17 +649,16 @@ export class EPICAdapter implements EMRAdapter {
    * Asegura que el token de acceso sea válido
    */
   private async ensureValidToken(): Promise<void> {
-    const now = new Date();
     if (
       !this.accessToken ||
       !this.tokenExpiration ||
-      now >= this.tokenExpiration
+      new Date() >= this.tokenExpiration
     ) {
       try {
         const token = await this.getAccessToken();
         this.accessToken = token;
         // Establece la expiración a 55 minutos para renovar antes de que expire
-        const expiration = new Date();
+        const expiration = new Date(this.tokenExpiration || Date.now());
         expiration.setMinutes(expiration.getMinutes() + 55);
         this.tokenExpiration = expiration;
       } catch (error) {
@@ -727,98 +778,59 @@ export class EPICAdapter implements EMRAdapter {
     patientResource: FHIRPatient,
     additionalData: FHIRAdditionalData
   ): PatientData {
-    try {
-      // Extraer información básica del paciente
-      const names = patientResource.name ?? [];
-      const primaryName = names.find((n) => !n.use || n.use === 'official') ??
-        names[0] ?? { given: [], family: '' };
+    const primaryName = patientResource.name?.[0];
+    const givenNames = primaryName?.given || [];
+    const familyName = primaryName?.family || '';
+    const fullName = `${givenNames.join(' ')} ${familyName}`.trim();
 
-      const firstName = primaryName.given?.join(' ') ?? '';
-      const lastName = primaryName.family ?? '';
-      const fullName = `${firstName} ${lastName}`.trim();
-
-      const birthDate = patientResource.birthDate ?? '';
-      const gender = patientResource.gender ?? 'unknown';
-
-      // Obtener información de contacto
-      const email = this.extractEmailFromFHIR(patientResource);
-      const phone = this.extractPhoneFromFHIR(patientResource);
-      const address = this.extractAddressFromFHIR(patientResource);
-
-      // Extraer identificadores relevantes
-      const mrn = this.extractIdentifierFromFHIR(patientResource, 'MR');
-      const patientId = patientResource.id ?? mrn;
-
-      // Extraer medicamentos si están disponibles
-      const medications = additionalData.medications
-        ? this.extractMedicationsFromFHIR(additionalData.medications)
-        : [];
-
-      // Construir el objeto de datos del paciente
-      const patientData: PatientData = {
-        id: patientId,
-        personalInfo: {
-          fullName,
-          firstName,
-          lastName,
-          dateOfBirth: birthDate,
-          age: this.calculateAge(birthDate),
-          gender: this.mapGender(gender),
-          documentId: mrn,
-          contactInfo: {
-            email,
-            phone,
-            address,
-          },
-        },
-        medicalHistory: {
-          ...this.extractMedicalHistoryFromFHIR(additionalData),
-          medications: medications, // Añadir medicamentos al historial médico
-        },
-        vitalSigns: this.extractVitalSignsFromFHIR(additionalData),
-      };
-
-      return patientData;
-    } catch (error) {
-      this.logger.error('Error al convertir recursos FHIR a PatientData', {
-        error,
-      });
-      throw new Error('Error al procesar datos del paciente');
-    }
+    return {
+      id: patientResource.id || '',
+      fullName,
+      birthDate: patientResource.birthDate || '',
+      gender: this.mapGender(patientResource.gender || ''),
+      mrn: this.extractIdentifierFromFHIR(patientResource, 'MRN'),
+      documentId: this.extractIdentifierFromFHIR(patientResource, 'SSN'),
+      contactInfo: {
+        email: this.extractEmailFromFHIR(patientResource),
+        phone: this.extractPhoneFromFHIR(patientResource),
+        address: this.extractAddressFromFHIR(patientResource),
+      },
+      lastVisit: undefined,
+      vitalSigns: [],
+      labResults: this.convertFHIRObservations(additionalData.observations || { resourceType: 'Bundle', type: 'searchset' }),
+      medications: [],
+      allergies: [],
+      diagnoses: [],
+    };
   }
 
   // Métodos auxiliares para conversión de FHIR a formatos internos
   private calculateAge(dateOfBirth: string): number {
     if (!dateOfBirth) return 0;
 
-    const today = new Date();
     const birthDate = new Date(dateOfBirth);
+    const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const m = today.getMonth() - birthDate.getMonth();
-
     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-
     return age;
   }
 
   private extractEmailFromFHIR(patientResource: FHIRPatient): string {
-    const telecom = patientResource.telecom ?? [];
-    const emailSystem = telecom.find((t) => t.system === 'email');
-    return emailSystem?.value ?? '';
+    const email = patientResource.telecom?.find((t) => t.system === 'email');
+    return email?.value ?? '';
   }
 
   private extractPhoneFromFHIR(patientResource: FHIRPatient): string {
-    const telecom = patientResource.telecom ?? [];
-    const phoneSystem = telecom.find((t) => t.system === 'phone');
-    return phoneSystem?.value ?? '';
+    const phone = patientResource.telecom?.find((t) => t.system === 'phone');
+    return phone?.value ?? '';
   }
 
   private extractAddressFromFHIR(patientResource: FHIRPatient): string {
-    const addresses = patientResource.address ?? [];
     const primaryAddress =
-      addresses.find((a) => !a.use || a.use === 'home') || addresses[0];
+      patientResource.address?.find((a) => !a.use || a.use === 'home') || patientResource.address?.[0];
 
     if (!primaryAddress) return '';
 
@@ -837,11 +849,10 @@ export class EPICAdapter implements EMRAdapter {
     patientResource: FHIRPatient,
     type: string
   ): string {
-    const identifiers = patientResource.identifier ?? [];
-    const identifier = identifiers.find((id) =>
-      id.type?.coding?.some((c) => c.display === type || c.code === type)
+    const identifier = patientResource.identifier?.find(
+      (id) => id.type?.coding?.[0]?.code === type
     );
-    return identifier?.value ?? '';
+    return identifier?.value || '';
   }
 
   private extractMedicalHistoryFromFHIR(
@@ -850,9 +861,8 @@ export class EPICAdapter implements EMRAdapter {
     // Extraer alergias
     const allergies = data.allergies?.entry
       ? data.allergies.entry.map((entry) => {
-          const resource = entry.resource as FHIRResource;
-          const resourceWithCode = resource as { code?: { text?: string } };
-          return resourceWithCode.code?.text ?? 'Alergia desconocida';
+          const resource = entry.resource as FHIRConditionResource;
+          return resource.code?.text ?? 'Alergia desconocida';
         })
       : [];
 
@@ -902,7 +912,6 @@ export class EPICAdapter implements EMRAdapter {
 
     return medicationRequests.entry.map((entry) => {
       const resource = entry.resource as FHIRMedicationResource;
-
       const medication = {
         name: resource.medicationCodeableConcept
           ? (resource.medicationCodeableConcept.text ??
@@ -916,7 +925,6 @@ export class EPICAdapter implements EMRAdapter {
       // Extraer información de dosificación con manejo seguro de undefined
       if (resource.dosageInstruction && resource.dosageInstruction.length > 0) {
         const dosage = resource.dosageInstruction[0];
-
         if (dosage.doseAndRate && dosage.doseAndRate.length > 0) {
           const dose = dosage.doseAndRate[0];
           medication.dosage = dose.doseQuantity
@@ -931,26 +939,23 @@ export class EPICAdapter implements EMRAdapter {
     });
   }
 
-  private buildFHIRSearchParams(query: EMRSearchQuery): URLSearchParams {
+  private buildSearchUrl(query: EMRSearchQuery): string {
     const params = new URLSearchParams();
 
     if (query.name) {
       params.append('name', query.name);
     }
-
     if (query.documentId) {
       params.append('identifier', query.documentId);
     }
-
     if (query.email) {
-      params.append('email:exact', query.email);
+      params.append('email', query.email);
+    }
+    if (query.phone) {
+      params.append('phone', query.phone);
     }
 
-    if (query.criteria && typeof query.criteria === 'string') {
-      params.append('_content', query.criteria);
-    }
-
-    return params;
+    return `${this.apiBaseUrl}/Patient?${params.toString()}`;
   }
 
   private extractResourceIdFromResponse(response: FHIRResponse): string {
@@ -963,116 +968,239 @@ export class EPICAdapter implements EMRAdapter {
   /**
    * Convierte bundle de pacientes FHIR a resultados de búsqueda
    */
-  private convertFHIRPatientBundle(
-    bundle: FHIRBundle
-  ): EMRPatientSearchResult[] {
-    if (!bundle.entry || bundle.entry.length === 0) {
-      return [];
-    }
+  private mapSearchResults(bundle: FHIRBundle): EMRPatientSearchResult[] {
+    if (!bundle.entry) return [];
 
     return bundle.entry
       .filter((entry) => entry.resource?.resourceType === 'Patient')
       .map((entry) => {
         const resource = entry.resource as FHIRPatient;
-        const names = resource.name ?? [];
-        const primaryName = names.find((n) => !n.use || n.use === 'official') ??
-          names[0] ?? { given: [], family: '' };
+        const primaryName = resource.name?.find((n) => !n.use || n.use === 'official') ??
+          resource.name?.[0] ?? { given: [], family: '' };
 
-        const firstName = primaryName.given?.join(' ') ?? '';
-        const lastName = primaryName.family ?? '';
-        const fullName = `${firstName} ${lastName}`.trim();
-
-        // Extraer género del recurso FHIR
-        const gender = resource.gender || 'unknown';
-
-        // Extraer MRN del recurso FHIR
-        const mrn = this.extractIdentifierFromFHIR(resource, 'MR') || '';
-
-        // Convertir fecha de nacimiento a formato string para la interfaz
-        const birthDateStr = resource.birthDate || '';
+        const givenNames = primaryName.given || [];
+        const fullName = primaryName.family
+          ? `${givenNames.join(' ')} ${primaryName.family}`
+          : givenNames.join(' ');
 
         return {
           id: resource.id ?? '',
           fullName,
-          name: fullName, // Usar mismo valor que fullName
-          birthDate: birthDateStr, // Fecha en formato string
-          gender: gender, // Género extraído del recurso
-          mrn: mrn, // MRN extraído del recurso
-          dateOfBirth: resource.birthDate
-            ? new Date(resource.birthDate)
-            : undefined,
+          name: fullName,
+          birthDate: resource.birthDate ?? '',
+          gender: resource.gender ?? '',
+          mrn: this.extractIdentifierFromFHIR(resource, 'MR'),
           documentId: this.extractIdentifierFromFHIR(resource, 'MR'),
           contactInfo: {
             email: this.extractEmailFromFHIR(resource),
             phone: this.extractPhoneFromFHIR(resource),
-          },
+            address: this.extractAddressFromFHIR(resource)
+          }
         };
       });
   }
 
-  private convertFHIREncounters(bundle: FHIRBundle): EMRConsultation[] {
-    if (!bundle?.entry) return [];
+  private convertFHIREncounters(bundle: FHIRBundle): EMREncounter[] {
+    if (!bundle.entry) return [];
 
-    return bundle.entry.map((entry) => {
-      const resource = entry.resource as FHIREncounterResource;
-
+    return bundle.entry.map(entry => {
+      const encounter = entry.resource as FHIREncounterResource;
+      const id = encounter.id || crypto.randomUUID();
       return {
-        id: resource.id,
-        patientId: resource.subject?.reference.split('/')[1] ?? '',
-        providerId:
-          resource.participant?.[0]?.individual?.reference.split('/')[1] ?? '',
-        date: new Date(resource.period?.start ?? Date.now()),
-        reason: resource.reasonCode?.[0]?.text ?? 'No especificado',
-        notes: resource.note?.[0]?.text ?? '',
-        specialty: resource.serviceType?.text ?? '',
-      } as EMRConsultation;
+        id,
+        patientId: encounter.subject?.reference?.split('/')[1] || '',
+        date: new Date(encounter.period?.start || new Date()),
+        type: encounter.class?.code || 'unknown',
+        status: this.mapEncounterStatus(encounter.status || 'unknown'),
+        providerId: encounter.participant?.[0]?.individual?.reference?.split('/')[1],
+        notes: encounter.text?.div,
+        reason: encounter.reasonCode?.[0]?.text,
+        diagnoses: encounter.diagnosis?.map(diagnosis => ({
+          id: diagnosis.condition?.reference?.split('/')[1] || crypto.randomUUID(),
+          patientId: encounter.subject?.reference?.split('/')[1] || '',
+          date: new Date(encounter.period?.start || new Date()),
+          code: diagnosis.condition?.reference?.split('/')[1] || '',
+          system: 'http://snomed.info/sct',
+          description: diagnosis.condition?.display || 'Unknown diagnosis',
+          status: 'active',
+          type: 'encounter-diagnosis',
+          recordedDate: new Date(encounter.period?.start || new Date())
+        }))
+      };
     });
   }
 
-  private convertToFHIREncounter(
-    consultation: EMRConsultation
-  ): FHIREncounterResource {
-    const fhirEncounter: FHIREncounterResource = {
+  private mapEncounterStatus(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'planned':
+        return 'planned';
+      case 'arrived':
+        return 'arrived';
+      case 'triaged':
+        return 'triaged';
+      case 'in-progress':
+        return 'in-progress';
+      case 'onleave':
+        return 'onleave';
+      case 'finished':
+        return 'finished';
+      case 'cancelled':
+        return 'cancelled';
+      default:
+        return 'unknown';
+    }
+  }
+
+  private mapAllergyStatus(status?: string): 'active' | 'inactive' | 'resolved' {
+    switch (status?.toLowerCase()) {
+      case 'active':
+        return 'active';
+      case 'resolved':
+        return 'resolved';
+      default:
+        return 'inactive';
+    }
+  }
+
+  private mapAllergySeverity(severity?: string): 'mild' | 'moderate' | 'severe' {
+    switch (severity?.toLowerCase()) {
+      case 'high':
+        return 'severe';
+      case 'low':
+        return 'mild';
+      default:
+        return 'moderate';
+    }
+  }
+
+  private convertFHIRAllergyIntolerances(bundle: FHIRBundle): EMRAllergy[] {
+    if (!bundle.entry) return [];
+
+    return bundle.entry.map(entry => {
+      const allergy = entry.resource as FHIRAllergyIntolerance;
+      const id = allergy.id || crypto.randomUUID();
+      return {
+        id,
+        patientId: allergy.patient.reference.split('/')[1],
+        name: allergy.code?.text || allergy.code?.coding?.[0]?.display || 'Unknown',
+        type: allergy.type || 'allergy',
+        status: this.mapAllergyStatus(allergy.clinicalStatus?.coding?.[0]?.code),
+        severity: this.mapAllergySeverity(allergy.criticality),
+        onsetDate: allergy.onsetDateTime ? new Date(allergy.onsetDateTime) : undefined,
+        endDate: allergy.recordedDate ? new Date(allergy.recordedDate) : undefined,
+        notes: allergy.note?.[0]?.text,
+        reactions: allergy.reaction?.map(reaction => ({
+          manifestation: reaction.manifestation?.[0]?.coding?.[0]?.display || 'Unknown',
+          severity: this.mapAllergySeverity(reaction.severity)
+        }))
+      };
+    });
+  }
+
+  private convertFHIRObservations(bundle: FHIRBundle): LabResult[] {
+    if (!bundle.entry) return [];
+
+    return bundle.entry.map(entry => {
+      const observation = entry.resource as FHIRObservation;
+      const id = observation.id || crypto.randomUUID();
+      const resultValue = observation.valueQuantity?.value?.toString() || '';
+      const resultUnit = observation.valueQuantity?.unit || '';
+      const resultRange = observation.referenceRange?.[0]?.text || '';
+      const isAbnormal = observation.interpretation?.[0]?.coding?.[0]?.code === 'H' || false;
+      const observationCode = observation.code?.coding?.[0]?.code || 'unknown';
+
+      return {
+        id,
+        patientId: observation.subject?.reference?.split('/')[1] || '',
+        date: new Date(observation.effectiveDateTime || new Date()),
+        type: observationCode,
+        name: observation.code?.text || observation.code?.coding?.[0]?.display || '',
+        results: {
+          [observationCode]: {
+            value: resultValue,
+            unit: resultUnit,
+            referenceRange: resultRange,
+            isAbnormal
+          }
+        },
+        status: this.mapObservationStatus(observation.status || 'final'),
+        performingLab: observation.performer?.[0]?.reference?.split('/')[1],
+        notes: observation.note?.[0]?.text
+      } as LabResult;
+    });
+  }
+
+  private mapObservationStatus(status: string): 'final' | 'preliminary' | 'amended' | 'corrected' {
+    switch (status.toLowerCase()) {
+      case 'preliminary':
+        return 'preliminary';
+      case 'amended':
+        return 'amended';
+      case 'corrected':
+        return 'corrected';
+      default:
+        return 'final';
+    }
+  }
+
+  private convertToFHIREncounter(consultation: EMRConsultation): FHIREncounterResource {
+    return {
       resourceType: 'Encounter',
-      id: consultation.id ?? '',
-      status: 'finished',
+      id: consultation.id,
+      status: consultation.status || 'planned',
       class: {
         system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode',
-        code: 'AMB',
-        display: 'ambulatory',
+        code: consultation.type || 'AMB',
+        display: consultation.type || 'ambulatory'
       },
       subject: {
-        reference: `Patient/${consultation.patientId}`,
+        reference: `Patient/${consultation.patientId}`
       },
-      participant: [
-        {
-          individual: {
-            reference: `Practitioner/${consultation.providerId}`,
-          },
-        },
-      ],
+      participant: consultation.providerId ? [{
+        individual: {
+          reference: `Practitioner/${consultation.providerId}`
+        }
+      }] : undefined,
       period: {
-        start: consultation.date.toISOString(),
+        start: consultation.date.toISOString()
       },
-      reasonCode: [
-        {
-          text: consultation.reason,
-        },
-      ],
-      note: [
-        {
-          text: consultation.notes,
-        },
-      ],
+      reasonCode: consultation.reason ? [{
+        text: consultation.reason
+      }] : undefined,
+      text: consultation.notes ? {
+        div: consultation.notes
+      } : undefined
     };
+  }
 
-    if (consultation.specialty) {
-      fhirEncounter.serviceType = {
-        text: consultation.specialty,
+  private applyConsultationUpdates(existingEncounter: FHIRResource, updates: Partial<EMRConsultation>): FHIRResource {
+    const encounter = existingEncounter as FHIREncounterResource;
+
+    if (updates.status) {
+      encounter.status = updates.status;
+    }
+
+    if (updates.type) {
+      encounter.class = {
+        ...encounter.class,
+        code: updates.type,
+        display: updates.type
       };
     }
 
-    return fhirEncounter;
+    if (updates.reason) {
+      encounter.reasonCode = [{
+        text: updates.reason
+      }];
+    }
+
+    if (updates.notes) {
+      encounter.text = {
+        div: updates.notes
+      };
+    }
+
+    return encounter;
   }
 
   private getLoincCodesForMetrics(metricTypes: string[]): string[] {
@@ -1080,138 +1208,153 @@ export class EPICAdapter implements EMRAdapter {
       weight: '29463-7',
       height: '8302-2',
       bloodPressure: '85354-9',
-      glucose: '2339-0',
-      cholesterol: '2093-3',
+      glucose: '2339-0'
     };
 
     return metricTypes
-      .filter((type) => metricToLoinc[type])
-      .map((type) => metricToLoinc[type]);
+      .filter(type => metricToLoinc[type])
+      .map(type => metricToLoinc[type]);
   }
 
-  // Otros métodos de conversión FHIR omitidos por brevedad
+  private processFHIRObservationsToMetrics(observations: FHIRBundle, metrics: EMRPatientMetrics): void {
+    if (!observations.entry) return;
+
+    observations.entry.forEach(entry => {
+      const observation = entry.resource as FHIRObservation;
+      const code = observation.code?.coding?.[0]?.code;
+      const value = observation.valueQuantity?.value;
+      const unit = observation.valueQuantity?.unit;
+      const date = observation.effectiveDateTime ? new Date(observation.effectiveDateTime) : new Date();
+
+      if (!code || value === undefined) return;
+
+      switch (code) {
+        case '29463-7': // weight
+          metrics.weight?.push({ date, value, unit: unit || 'kg' });
+          break;
+        case '8302-2': // height
+          metrics.height?.push({ date, value, unit: unit || 'cm' });
+          break;
+        case '85354-9': // blood pressure
+          metrics.bloodPressure?.push({
+            date,
+            systolic: value,
+            diastolic: value,
+            unit: unit || 'mmHg'
+          });
+          break;
+        case '2339-0': // glucose
+          metrics.glucose?.push({
+            date,
+            value,
+            unit: unit || 'mg/dL',
+            type: 'random'
+          });
+          break;
+      }
+    });
+  }
+
+  private mapGender(gender: string): string {
+    switch (gender.toLowerCase()) {
+      case 'male':
+        return 'M';
+      case 'female':
+        return 'F';
+      case 'other':
+        return 'O';
+      default:
+        return 'U';
+    }
+  }
+
   private convertFHIRMedicationRequests(bundle: FHIRBundle): EMRTreatment[] {
-    return this.commonFHIRConverter<EMRTreatment>(bundle, (resource) => {
-      // Implementación específica para convertir medicamentos
-      // Esto es un placeholder, la implementación real dependería de los campos específicos
+    if (!bundle.entry) return [];
+
+    return bundle.entry.map(entry => {
+      const medication = entry.resource as FHIRMedicationResource;
+      const id = medication.id || crypto.randomUUID();
       return {
-        id: resource.id ?? '',
-        patientId: '',
-        providerId: '',
+        id,
+        patientId: medication.subject?.reference?.split('/')[1] || '',
         type: 'medication',
-        name: 'Medication',
-        startDate: new Date(),
-        status: 'active',
-      } as EMRTreatment;
-    });
-  }
-
-  private convertFHIRProcedures(bundle: FHIRBundle): EMRTreatment[] {
-    return this.commonFHIRConverter<EMRTreatment>(bundle, (resource) => {
-      // Implementación específica para convertir procedimientos
-      return {
-        id: resource.id ?? '',
-        patientId: '',
-        providerId: '',
-        type: 'procedure',
-        name: 'Procedure',
-        startDate: new Date(),
-        status: 'scheduled',
-      } as EMRTreatment;
-    });
-  }
-
-  private convertFHIRObservations(bundle: FHIRBundle): EMRLabResult[] {
-    if (!bundle?.entry) return [];
-
-    return bundle.entry.map((entry) => {
-      const resource = entry.resource as FHIRResource;
-      // Crear objeto que cumpla con la interfaz EMRLabResult
-      return {
-        id: resource.id ?? '',
-        patientId: '', // Extraer del recurso si está disponible
-        date: new Date(), // Extraer fecha real del recurso
-        type: 'laboratory',
-        name: 'Lab Test', // Extraer nombre real del recurso
-        results: {
-          // Proporcionar un objeto de resultados en el formato requerido
-          general: {
-            value: 'Normal',
-            unit: '',
-            referenceRange: '',
-            isAbnormal: false,
-          },
-        },
-        units: '',
-        range: '',
-        abnormal: false,
-        notes: '',
-        orderedBy: '', // Añadir el valor para la propiedad obligatoria
+        status: this.mapMedicationStatus(medication.status || 'active'),
+        startDate: new Date(medication.authoredOn || new Date()),
+        providerId: medication.requester?.reference?.split('/')[1],
+        details: {
+          name: medication.medicationCodeableConcept?.text || 'Unknown medication'
+        }
       };
     });
   }
 
-  private convertFHIRConditions(bundle: FHIRBundle): EMRDiagnosis[] {
-    if (!bundle?.entry) return [];
-    // ... rest of the method implementation ...
-    return [];
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private processFHIRObservationsToMetrics(
-    _observations: FHIRBundle,
-    _metrics: EMRPatientMetrics
-  ): void {
-    // Implementación simplificada
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private applyConsultationUpdates(
-    existingEncounter: FHIRResource,
-    _updates: Partial<EMRConsultation>
-  ): FHIRResource {
-    return existingEncounter; // Implementación simplificada
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private createTreatmentConverter(
-    _type: string
-  ): (treatment: EMRTreatment) => FHIRResource {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return (_treatment: EMRTreatment): FHIRResource => {
-      // Implementación base para todos los convertidores
-      return { resourceType: 'Resource' }; // Implementación simplificada
-    };
-  }
-
-  private readonly convertToFHIRMedicationRequest =
-    this.createTreatmentConverter('medication');
-  private readonly convertToFHIRProcedure =
-    this.createTreatmentConverter('procedure');
-  private readonly convertToFHIRCarePlan =
-    this.createTreatmentConverter('careplan');
-
-  /**
-   * Mapea el género del formato FHIR al formato de la aplicación
-   */
-  private mapGender(gender: string): string {
-    switch (gender.toLowerCase()) {
-      case 'male':
-        return 'masculino';
-      case 'female':
-        return 'femenino';
+  private mapMedicationStatus(status: string): 'active' | 'completed' | 'cancelled' | 'scheduled' {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'active';
+      case 'completed':
+        return 'completed';
+      case 'cancelled':
+        return 'cancelled';
       default:
-        return 'otro';
+        return 'scheduled';
     }
   }
 
-  private commonFHIRConverter<T>(
-    bundle: FHIRBundle,
-    mapFunction: (resource: FHIRResource) => T
-  ): T[] {
-    if (!bundle?.entry) return [];
-    return bundle.entry
-      .filter((entry) => entry.resource)
-      .map((entry) => mapFunction(entry.resource as FHIRResource));
+  private convertToFHIRMedicationRequest(treatment: EMRTreatment): FHIRMedicationRequest {
+    return {
+      resourceType: 'MedicationRequest',
+      id: treatment.id,
+      subject: {
+        reference: `Patient/${treatment.patientId}`
+      },
+      requester: treatment.providerId ? {
+        reference: `Practitioner/${treatment.providerId}`
+      } : undefined,
+      medicationCodeableConcept: {
+        text: (treatment.details as { name?: string })?.name || 'Unknown medication'
+      },
+      authoredOn: treatment.startDate.toISOString(),
+      status: treatment.status
+    };
+  }
+
+  private convertToFHIRProcedure(treatment: EMRTreatment): FHIRProcedure {
+    return {
+      resourceType: 'Procedure',
+      id: treatment.id,
+      subject: {
+        reference: `Patient/${treatment.patientId}`
+      },
+      performer: treatment.providerId ? [{
+        actor: {
+          reference: `Practitioner/${treatment.providerId}`
+        }
+      }] : undefined,
+      code: {
+        text: (treatment.details as { name?: string })?.name || 'Unknown procedure'
+      },
+      performedDateTime: treatment.startDate.toISOString(),
+      status: treatment.status
+    };
+  }
+
+  private convertToFHIRCarePlan(treatment: EMRTreatment): FHIRCarePlan {
+    return {
+      resourceType: 'CarePlan',
+      id: treatment.id,
+      subject: {
+        reference: `Patient/${treatment.patientId}`
+      },
+      activity: [{
+        detail: {
+          code: {
+            text: (treatment.details as { name?: string })?.name || 'Unknown care plan'
+          },
+          scheduledString: treatment.startDate.toISOString(),
+          status: treatment.status
+        }
+      }]
+    };
   }
 }

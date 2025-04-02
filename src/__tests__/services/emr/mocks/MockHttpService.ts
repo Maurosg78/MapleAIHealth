@@ -1,6 +1,12 @@
-import {
+import { 
+   render, screen 
+ } from "@testing-library/react"
   oscarPatientData,
+import { 
+   HttpService 
+ } from "../../../lib/api"
   oscarSearchResults,
+import { 
   oscarPatientHistory,
   clinicCloudPatientData,
   clinicCloudSearchResults,
@@ -101,7 +107,9 @@ export class MockHttpService {
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async authenticateOscar(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _username: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _password: string
   ): Promise<string> {
     return this.authenticate('oscar');
@@ -120,7 +128,9 @@ export class MockHttpService {
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async authenticateEpic(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _clientId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _clientSecret: string
   ): Promise<string> {
     return this.authenticate('epic');
@@ -136,7 +146,7 @@ export class MockHttpService {
       throw new Error(apiErrors.unauthorized.message);
     }
 
-    const token = `${adapter}-token-${Date.now()}`;
+
     this.authTokens[adapter] = token;
     return token;
   }
@@ -148,6 +158,7 @@ export class MockHttpService {
   public async get<T>(
     url: string,
     adapter: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _params?: Record<string, string>
   ): Promise<T> {
     await this.delay();
@@ -181,8 +192,8 @@ export class MockHttpService {
     url: string,
     adapter: AdapterType
   ): { endpoint: string; responseKey: string } {
-    const parts = url.split('/');
-    const endpoint = parts[parts.length - 1].split('?')[0];
+
+
 
     // Para EPIC, tenemos algunos casos especiales
     let responseKey = endpoint;
@@ -205,7 +216,7 @@ export class MockHttpService {
     endpoint: string,
     responseKey: string
   ): unknown {
-    const adapterResponses = this.endpointResponses[adapter];
+
     if (!adapterResponses) return null;
 
     return adapterResponses[responseKey] || null;
@@ -218,6 +229,7 @@ export class MockHttpService {
   public async post<T>(
     url: string,
     adapter: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _data: Record<string, unknown>
   ): Promise<T> {
     await this.delay();
@@ -225,8 +237,8 @@ export class MockHttpService {
     this.verifyAuthentication(adapter as AdapterType);
 
     // Extraer el endpoint
-    const parts = url.split('/');
-    const endpoint = parts[parts.length - 1];
+
+
 
     // Verificar si es un endpoint válido para POST
     if (this.isValidPostEndpoint(endpoint)) {
@@ -243,6 +255,7 @@ export class MockHttpService {
   public async put<T>(
     url: string,
     adapter: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _data: Record<string, unknown>
   ): Promise<T> {
     await this.delay();
@@ -250,9 +263,9 @@ export class MockHttpService {
     this.verifyAuthentication(adapter as AdapterType);
 
     // Extraer el endpoint e ID
-    const parts = url.split('/');
-    const endpoint = parts[parts.length - 2];
-    const id = parts[parts.length - 1];
+
+
+
 
     // Verificar si es un endpoint válido para PUT (solo consultas por ahora)
     if (
@@ -298,7 +311,7 @@ export class MockHttpService {
     }
 
     if (this.errorToThrow) {
-      const error = apiErrors[this.errorToThrow];
+
       throw new Error(error.message);
     }
   }

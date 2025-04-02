@@ -1,9 +1,11 @@
-import React from 'react';
-import { useAuth } from '../../hooks/useAuth';
-import { Button } from '../common/Button';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const Header: React.FC = () => {
-  const { user, logout } = useAuth();
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
 
   return (
     <header className="bg-white dark:bg-gray-800 shadow">

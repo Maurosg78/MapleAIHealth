@@ -1,8 +1,8 @@
-import { Logger } from '../../lib/logger';
-import monitorService, { ErrorCategory, ErrorSeverity } from './monitorService';
-
-/**
+   HttpService 
+ } from "../../../lib/api"
  * Tipo de error de linting
+import { 
+/**
  */
 export enum LintingErrorType {
   /** Errores de TypeScript */
@@ -200,7 +200,6 @@ export class LintingErrorService {
     isStyleOnly: boolean;
   } {
     // Buscar configuración específica para esta regla
-    const ruleConfig = rulesPriorityMap[rule];
 
     if (ruleConfig) {
       return ruleConfig;
@@ -283,7 +282,6 @@ export class LintingErrorService {
     suggestion?: string;
   }): string {
     // Generar ID único para el error
-    const errorId = `lint_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     // Determinar prioridad y características
     const { priority, blocksCompilation, isStyleOnly } = this.determinePriority(
@@ -319,8 +317,6 @@ export class LintingErrorService {
       priority === LintingErrorPriority.CRITICAL ||
       blocksCompilation
     ) {
-      const severity = this.mapPriorityToSeverity(priority);
-
       const monitorErrorId = monitorService.captureError({
         message: `Error de linting: ${error.message}`,
         details: `Archivo: ${error.file}${error.line ? `, Línea: ${error.line}` : ''}
@@ -352,7 +348,6 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
    * Marca un error de linting como resuelto
    */
   public resolveError(errorId: string, userId: string): boolean {
-    const error = this.lintingErrors.find((e) => e.id === errorId);
     if (!error) return false;
 
     error.resolved = true;
@@ -463,8 +458,6 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
     blocksCompilation: number;
     styleOnly: number;
   } {
-    const activeErrors = this.getActiveErrors();
-
     const stats = {
       total: this.lintingErrors.length,
       active: activeErrors.length,
@@ -510,7 +503,6 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
 
     for (const issue of issues) {
       // Extraer el nombre de archivo de la ruta completa
-      const file = issue.resource.split('/').pop() || issue.resource;
 
       // Capturar el error
       this.captureError({
@@ -540,8 +532,6 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
     normalPriority: LintingError[];
     lowPriority: LintingError[];
   } {
-    const activeErrors = this.getActiveErrors();
-
     return {
       // Errores que bloquean la compilación o son BLOCKER
       immediateAttention: activeErrors.filter(
@@ -574,14 +564,11 @@ ${error.suggestion ? `Sugerencia: ${error.suggestion}` : ''}`,
    * Purga errores resueltos antiguos
    */
   public purgeOldResolvedErrors(olderThan: Date): number {
-    const initialCount = this.lintingErrors.length;
-
     this.lintingErrors = this.lintingErrors.filter(
       (error) =>
         !error.resolved || (error.resolvedAt && error.resolvedAt > olderThan)
     );
 
-    const purgedCount = initialCount - this.lintingErrors.length;
     if (purgedCount > 0) {
       this.logger.info(
         `Purgados ${purgedCount} errores de linting resueltos antiguos`

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-
-import { Button } from '../common/Button';
-import { Input } from '../common/Input';
-import { aiHistoryService } from '../../services/ai/aiHistoryService';
-
+import { 
+   useState, useEffect 
+ } from 'react'
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from '@chakra-ui/react'
+import React from 'react'
 interface ResponseFeedbackProps {
   entryId: string;
   onFeedbackSubmitted?: () => void;
@@ -13,10 +14,6 @@ export const ResponseFeedback: React.FC<ResponseFeedbackProps> = ({
   entryId,
   onFeedbackSubmitted,
 }) => {
-  const [helpful, setHelpful] = useState<boolean | null>(null);
-  const [comment, setComment] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
   const handleSubmit = async () => {
     if (helpful === null) return;
 

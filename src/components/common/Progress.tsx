@@ -1,8 +1,12 @@
-import React from 'react';
-import { twMerge } from 'tailwind-merge';
-
+import { 
+   useState, useEffect 
+ } from "react"
 interface ProgressProps {
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from "@chakra-ui/react"
   /**
+import React from "react"
    * Valor del progreso (0-100)
    */
   value: number;
