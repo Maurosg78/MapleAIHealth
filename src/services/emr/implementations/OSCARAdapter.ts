@@ -191,6 +191,30 @@ interface OSCARNote {
 }
 
 /**
+ * Interfaz para un procedimiento de OSCAR
+ */
+interface OSCARProcedurePayload {
+  demographicNo: string;
+  preventionType: string;
+  preventionDate: string;
+  providerNo: string;
+  status: string;
+  refused: number;
+  creationDate: string;
+  name: string;
+  description?: string;
+}
+
+/**
+ * Interfaz para métricas de paciente
+ */
+interface PatientMetricEntry {
+  date: Date;
+  value: number;
+  units: string;
+}
+
+/**
  * Adaptador para integración con OSCAR EMR
  * OSCAR (Open Source Clinical Application Resource) es uno de los sistemas EMR más utilizados en Ontario, Canadá
  * Es un sistema de código abierto diseñado específicamente para el sistema de salud canadiense
@@ -860,7 +884,7 @@ export class OSCARAdapter implements EMRAdapter {
     return updatedNote;
   }
 
-  private convertToOscarPrescription(treatment: EMRTreatment): Record<string, string | number | boolean | object> {
+  private convertToOscarPrescription(treatment: EMRTreatment): Record<string, string | number | boolean | null> {
     return {
       demographicNo: treatment.patientId,
       providerNo: treatment.providerId,
@@ -876,7 +900,7 @@ export class OSCARAdapter implements EMRAdapter {
     };
   }
 
-  private convertToOscarProcedure(treatment: EMRTreatment): Record<string, string | number | boolean | object> {
+  private convertToOscarProcedure(treatment: EMRTreatment): OSCARProcedurePayload {
     return {
       demographicNo: treatment.patientId,
       preventionType: treatment.type === 'procedure' ? 'Procedure' : 'Other',
@@ -923,7 +947,7 @@ export class OSCARAdapter implements EMRAdapter {
             units: entry.units
           });
         } else {
-          (metrics[metricType as keyof EMRPatientMetrics] as Array<{date: Date, value: number, units: string}>).push(entry);
+          (metrics[metricType as keyof EMRPatientMetrics] as PatientMetricEntry[]).push(entry);
         }
       }
     });
