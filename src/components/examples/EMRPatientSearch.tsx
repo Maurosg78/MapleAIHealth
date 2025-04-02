@@ -75,6 +75,13 @@ const EMRPatientSearch: React.FC = () => {
       setIsLoading(false);
     }
   };
+        duration: 5000,
+        isClosable: true
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 } from '../../services/emr/EMRAdapter';
 
 /**
