@@ -1,0 +1,352 @@
+/* Estilos para el componente EvidenceViewer */
+
+.evidence-viewer {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.evidence-viewer-empty {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+}
+
+.evidence-viewer-no-data {
+  font-style: italic;
+}
+
+.evidence-viewer-main {
+  padding: 1.5rem;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.evidence-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.evidence-viewer-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.evidence-viewer-view-controls {
+  display: flex;
+  background-color: #f1f5f9;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.evidence-viewer-view-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.evidence-viewer-view-button.active {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 500;
+}
+
+.evidence-viewer-view-button:hover:not(.active) {
+  background-color: #e2e8f0;
+}
+
+.evidence-viewer-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.evidence-viewer-badge-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.evidence-viewer-confidence {
+  margin-left: 1rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 0.25rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.evidence-viewer-confidence-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.evidence-viewer-confidence-label {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.evidence-viewer-description {
+  font-size: 1rem;
+  color: #475569;
+  line-height: 1.5;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.evidence-viewer-detail {
+  margin-top: 1rem;
+}
+
+.evidence-viewer-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #334155;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.evidence-viewer-limitations,
+.evidence-viewer-alternatives {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.evidence-viewer-limitations p {
+  color: #64748b;
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.evidence-viewer-alternatives-list {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  color: #475569;
+}
+
+.evidence-viewer-alternative-item {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+/* Recomendaciones */
+.evidence-viewer-recommendations {
+  padding: 1.5rem;
+}
+
+.evidence-viewer-recommendations-list {
+  margin-top: 1rem;
+}
+
+.evidence-viewer-recommendation {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.evidence-viewer-recommendation.expanded {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.evidence-viewer-recommendation-header {
+  padding: 1rem;
+  background-color: #f8fafc;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.evidence-viewer-recommendation-header:hover {
+  background-color: #f1f5f9;
+}
+
+.evidence-viewer-recommendation-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.evidence-viewer-recommendation-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0;
+  padding-right: 0.5rem;
+  flex: 1;
+}
+
+.evidence-viewer-recommendation-meta {
+  display: flex;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.evidence-viewer-recommendation-type {
+  text-transform: capitalize;
+  color: #64748b;
+  padding: 0.2rem 0.5rem;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+.evidence-viewer-recommendation-priority {
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.evidence-viewer-priority-high {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.evidence-viewer-priority-medium {
+  background-color: #fef9c3;
+  color: #ca8a04;
+}
+
+.evidence-viewer-priority-low {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.evidence-viewer-recommendation-details {
+  padding: 1.25rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.evidence-viewer-recommendation-description {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.5;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.evidence-viewer-recommendation-rationale,
+.evidence-viewer-recommendation-evidence,
+.evidence-viewer-recommendation-timeframe {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.evidence-viewer-recommendation-rationale h5,
+.evidence-viewer-recommendation-evidence h5,
+.evidence-viewer-recommendation-timeframe h5 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.evidence-viewer-recommendation-timeframe p {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* Estilos para modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .evidence-viewer {
+    background-color: #1e293b;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .evidence-viewer-empty {
+    color: #94a3b8;
+  }
+
+  .evidence-viewer-main,
+  .evidence-viewer-recommendation {
+    border-color: #334155;
+  }
+
+  .evidence-viewer-title,
+  .evidence-viewer-recommendation-title {
+    color: #e2e8f0;
+  }
+
+  .evidence-viewer-view-controls {
+    background-color: #334155;
+  }
+
+  .evidence-viewer-view-button {
+    color: #e2e8f0;
+  }
+
+  .evidence-viewer-view-button:hover:not(.active) {
+    background-color: #475569;
+  }
+
+  .evidence-viewer-confidence {
+    background-color: #2c3e50;
+    border-color: #475569;
+  }
+
+  .evidence-viewer-confidence-value {
+    color: #f1f5f9;
+  }
+
+  .evidence-viewer-confidence-label {
+    color: #94a3b8;
+  }
+
+  .evidence-viewer-description,
+  .evidence-viewer-alternatives-list {
+    color: #cbd5e1;
+  }
+
+  .evidence-viewer-section-title {
+    color: #f1f5f9;
+  }
+
+  .evidence-viewer-limitations,
+  .evidence-viewer-alternatives,
+  .evidence-viewer-recommendation-rationale,
+  .evidence-viewer-recommendation-evidence,
+  .evidence-viewer-recommendation-timeframe {
+    border-color: #475569;
+  }
+
+  .evidence-viewer-limitations p,
+  .evidence-viewer-recommendation-timeframe p {
+    color: #94a3b8;
+  }
+
+  .evidence-viewer-recommendation-header {
+    background-color: #334155;
+  }
+
+  .evidence-viewer-recommendation-header:hover {
+    background-color: #3e4c61;
+  }
+
+  .evidence-viewer-recommendation-description {
+    color: #cbd5e1;
+  }
+
+  .evidence-viewer-recommendation-type {
+    background-color: #475569;
+    color: #e2e8f0;
+  }
+}
