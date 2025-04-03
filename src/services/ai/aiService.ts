@@ -436,8 +436,8 @@ export class AIService {
         severity: 'medium',
         sourcesReferences: [
           {
-            noteId: notes[0]?.id,
-            date: notes[0]?.date,
+            noteId: notes[0]?.id || 'unknown',
+            date: notes[0]?.date || 'unknown',
             excerpt: 'Paciente reporta fatiga ocasional'
           }
         ]
@@ -449,6 +449,17 @@ export class AIService {
         severity: 'medium'
       }
     ];
+
+    // Uso de emrData para simular acceso a datos del historial
+    const hasVitalSigns = !!emrData?.vitalSigns?.length;
+    if (hasVitalSigns) {
+      insights.push({
+        type: 'trend' as InsightType,
+        title: 'Tendencia de valores de presión arterial',
+        description: 'Los valores de presión arterial muestran una tendencia a la baja en los últimos 3 meses',
+        severity: 'low'
+      });
+    }
 
     return insights;
   }
@@ -474,24 +485,45 @@ export class AIService {
         priority: 'high',
         timeframe: '2 semanas',
         evidenceLevel: 'high'
-      },
-      {
+      }
+    ];
+
+    // Usar contenido de las notas para personalizar recomendaciones
+    const notesContent = notes.map(n => n.content).join(' ').toLowerCase();
+    if (notesContent.includes('dolor')) {
+      recommendations.push({
+        type: 'medication' as RecommendationType,
+        title: 'Evaluación de dolor',
+        description: 'Evaluar eficacia del manejo actual del dolor',
+        priority: 'high',
+        timeframe: 'inmediato',
+        evidenceLevel: 'moderate'
+      });
+    }
+
+    // Usar insights para generar recomendaciones adicionales
+    if (insights.some(i => i.type === 'missing-information')) {
+      recommendations.push({
         type: 'follow-up' as RecommendationType,
-        title: 'Evaluación nutricional',
-        description: 'Derivar a nutricionista para plan alimentario adaptado a diabetes e hipertensión',
+        title: 'Completar información faltante',
+        description: 'Solicitar información adicional sobre estilo de vida y hábitos',
         priority: 'medium',
         timeframe: '1 mes',
         evidenceLevel: 'moderate'
-      },
-      {
+      });
+    }
+
+    // Usar datos del EMR para personalizar recomendaciones
+    if (emrData.medicalHistory.conditions.some(condition => condition.includes('diabetes'))) {
+      recommendations.push({
         type: 'lifestyle' as RecommendationType,
         title: 'Plan de actividad física',
         description: 'Recomendar programa de ejercicio moderado adaptado a condición actual',
         priority: 'medium',
         rationale: 'La actividad física regular mejora el control glucémico y la presión arterial',
         evidenceLevel: 'high'
-      }
-    ];
+      });
+    }
 
     return recommendations;
   }
@@ -520,18 +552,37 @@ export class AIService {
         severity: 'high',
         sourcesReferences: [
           {
-            noteId: notes[0]?.id,
-            date: notes[0]?.date,
+            noteId: notes[0]?.id || 'unknown',
+            date: notes[0]?.date || 'unknown',
             excerpt: 'Paciente reporta tomar medicación regularmente'
           },
           {
-            noteId: notes[notes.length-1]?.id,
-            date: notes[notes.length-1]?.date,
+            noteId: notes[notes.length-1]?.id || 'unknown',
+            date: notes[notes.length-1]?.date || 'unknown',
             excerpt: 'Paciente admite omisión frecuente de dosis de Metformina'
           }
         ]
       }
     ];
+
+    // Comprobar si hay medicamentos en el historial médico del paciente
+    const hasMedications = !!emrData.medicalHistory.medications.length;
+    if (hasMedications) {
+      // Buscar información específica en las notas relacionada con medicamentos
+      const medicationMentioned = notes.some(note =>
+        note.content.toLowerCase().includes('medicación') ||
+        note.content.toLowerCase().includes('medicamento')
+      );
+
+      if (!medicationMentioned) {
+        contradictions.push({
+          type: 'missing-information' as InsightType,
+          title: 'Falta de información sobre adherencia a medicación',
+          description: 'El paciente toma medicamentos según EMR pero no hay mención en las notas recientes',
+          severity: 'medium'
+        });
+      }
+    }
 
     return contradictions;
   }
