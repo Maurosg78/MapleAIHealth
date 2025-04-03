@@ -1,50 +1,58 @@
-# Directrices para Corrección de Errores - MapleAIHealth
+# Guía de Corrección de Errores - MapleAIHealth
 
-## Principios para la Corrección de Errores
+## Estrategia implementada el 3 de abril de 2025
 
-1. **Trabajar por paquetes funcionales**:
-   - Servicios EMR
-   - Servicios AI
-   - Componentes UI
-   - Servicios de Pacientes
+1. **Restauración selectiva**: Se restauraron componentes clave desde la rama estable `fix/error-correction-20250402`
+2. **Correcciones de tipos en EPICAdapter.ts**: 
+   - Manejo de IDs indefinidos con `crypto.randomUUID()`
+   - Tipos específicos para valores de retorno
+   - Aserciones de tipo para literales de cadena
+3. **Reconstrucción de archivos con errores de sintaxis**:
+   - Servicios AI: Reconstruidos con implementaciones mínimas funcionales
+   - Interfaces EMR: Simplificadas para mantener compatibilidad
 
-2. **Crear respaldos antes de modificar**:
+## Problemas comunes y soluciones
+
+### 1. Importaciones incorrectas
+```typescript
+// Incorrecto
+import { 
+} from "../lib/api"
+id: string
+
+// Correcto
+import { HttpService } from "../lib/api";
+
+export interface MyType {
+  id: string;
+}
+```
+
+### 2. IDs indefinidos
+```typescript
+// Correcto
+id: patient.id || crypto.randomUUID()
+```
+
+### 3. Tipos específicos
+```typescript
+// Correcto
+return "active" as const;
+```
+
+## Procedimiento para macOS M1
+
+1. **Aumentar límites de sistema**:
    ```bash
-   mkdir -p backups/fix-YYYYMMDD
-   rsync -a src/ backups/fix-YYYYMMDD/
+   ulimit -n 4096  # Aumentar límite de archivos
    ```
 
-3. **Correcciones comunes**:
-
-   **IDs indefinidos**:
-   ```typescript
-   // Correcto
-   id: objeto.id || crypto.randomUUID()
-   ```
-
-   **Importaciones React**:
-   ```typescript
-   // Al inicio de archivos TSX
-   import React from "react";
-   ```
-
-   **Interfaces exportadas**:
-   ```typescript
-   export interface ComponentProps { ... }
-   ```
-
-## Procedimiento de Emergencia
-
-Si hay demasiados errores:
-
-1. Volver a la rama estable:
+2. **Restaurar desde rama estable**:
    ```bash
-   git checkout fix/error-correction-20250402
+   git checkout rama-estable -- src/components/
    ```
 
-2. Crear nueva rama:
+3. **Aplicar correcciones incrementales**:
    ```bash
-   git checkout -b fix/nuevas-correcciones
+   ./scripts/fix-specific-issues.sh
    ```
-
-3. Corregir archivos por categorías
