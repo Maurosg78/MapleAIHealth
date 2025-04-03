@@ -1,0 +1,218 @@
+.evidence-details-container {
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.evidence-details-compact {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.evidence-details-minimal {
+  display: inline-block;
+  padding: 0.5rem;
+}
+
+.evidence-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.evidence-confidence {
+  background-color: #f0f0f0;
+  border-radius: 1rem;
+  padding: 0.25rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.evidence-confidence-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.evidence-confidence-label {
+  font-size: 0.7rem;
+  color: #7f8c8d;
+  text-transform: uppercase;
+}
+
+.evidence-description {
+  color: #2c3e50;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.evidence-criteria {
+  font-size: 0.9rem;
+  color: #34495e;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.evidence-sources-container {
+  margin-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+}
+
+.evidence-sources-title {
+  font-size: 1rem;
+  margin: 0 0 0.75rem 0;
+  color: #34495e;
+}
+
+.evidence-sources-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.evidence-source-item {
+  margin-bottom: 0.75rem;
+}
+
+.evidence-show-more-button {
+  background: none;
+  border: none;
+  color: #3498db;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  text-decoration: underline;
+}
+
+.evidence-show-more-button:hover {
+  color: #2980b9;
+}
+
+/* Estilos de fuentes */
+.source-item {
+  padding: 0.75rem;
+  border-radius: 6px;
+  background-color: #ffffff;
+  border-left: 4px solid #e0e0e0;
+}
+
+.source-reliability-high {
+  border-left-color: #2ecc71;
+}
+
+.source-reliability-moderate {
+  border-left-color: #3498db;
+}
+
+.source-reliability-low {
+  border-left-color: #f39c12;
+}
+
+.source-reliability-unknown {
+  border-left-color: #bdc3c7;
+}
+
+.source-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.source-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #2c3e50;
+  text-decoration: none;
+}
+
+a.source-title:hover {
+  text-decoration: underline;
+  color: #3498db;
+}
+
+.source-verified-badge {
+  background-color: #2ecc71;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 50%;
+  margin-left: 0.5rem;
+}
+
+.source-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: #7f8c8d;
+}
+
+.source-authors {
+  font-style: italic;
+}
+
+.source-publication {
+  font-weight: 500;
+}
+
+.source-year, .source-doi {
+  white-space: nowrap;
+}
+
+/* Estilos para modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .evidence-details-container {
+    background-color: #1a1a1a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .evidence-confidence {
+    background-color: #2c2c2c;
+  }
+
+  .evidence-confidence-value {
+    color: #ecf0f1;
+  }
+
+  .evidence-description, .evidence-criteria, .evidence-sources-title {
+    color: #ecf0f1;
+  }
+
+  .evidence-sources-container {
+    border-top-color: #3d3d3d;
+  }
+
+  .source-item {
+    background-color: #2c2c2c;
+    border-left-color: #3d3d3d;
+  }
+
+  .source-title {
+    color: #ecf0f1;
+  }
+
+  a.source-title:hover {
+    color: #3498db;
+  }
+
+  .evidence-show-more-button {
+    color: #3498db;
+  }
+
+  .evidence-show-more-button:hover {
+    color: #2980b9;
+  }
+
+  .source-meta {
+    color: #bdc3c7;
+  }
+}

@@ -1,10 +1,22 @@
 // Exportar todos los servicios, tipos y clases del módulo IA
 
 // Servicios principales
-export { aiService, AIService, AIServiceError } from './aiService';
-export { cacheService, CacheService } from './cacheService';
-export { monitorService, MonitorService } from './monitorService';
-export { Logger } from './logger';
+import { aiService } from './aiService';
+import { cacheService } from './cacheService';
+import { AIService, AIServiceError } from './aiService';
+import { Logger } from './logger';
+import { evidenceEvaluationService, medicalSourceVerifier } from './evidence';
 
-// Tipos
+// Exportar todo lo necesario
+export {
+  aiService,
+  cacheService,
+  AIService,
+  AIServiceError,
+  Logger,
+  evidenceEvaluationService,
+  medicalSourceVerifier
+};
+
+// Exportar tipos
 export * from './types';

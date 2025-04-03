@@ -5,6 +5,38 @@ export const types = {
 
 // Define tipos para el servicio de IA
 
+// Tipos para evaluación de evidencia clínica
+export type EvidenceLevel = 'A' | 'B' | 'C' | 'D';
+
+export interface EvidenceDetails {
+  level: EvidenceLevel;
+  description: string;
+  criteria: string;
+  reliability: 'high' | 'moderate' | 'low' | 'very-low';
+  sources: EvidenceSource[];
+}
+
+export interface EvidenceSource {
+  id: string;
+  title: string;
+  authors?: string[];
+  publication?: string;
+  year?: number;
+  doi?: string;
+  url?: string;
+  verified: boolean;
+  verificationSource?: string;
+  reliability: 'high' | 'moderate' | 'low' | 'unknown';
+}
+
+export interface EvidenceEvaluationResult {
+  evidenceLevel: EvidenceLevel;
+  details: EvidenceDetails;
+  confidenceScore: number; // 0-100
+  limitationsNotes?: string;
+  suggestedAlternatives?: string[];
+}
+
 // Tipos de datos médicos
 export interface EMRData {
   patientId: string;
@@ -113,7 +145,8 @@ export interface Recommendation {
   priority: 'low' | 'medium' | 'high';
   timeframe?: string;
   rationale?: string;
-  evidenceLevel?: 'low' | 'moderate' | 'high';
+  evidenceLevel?: EvidenceLevel;
+  evidenceDetails?: EvidenceDetails;
 }
 
 export interface TimelineEvent {

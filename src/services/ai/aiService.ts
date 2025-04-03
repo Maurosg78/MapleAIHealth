@@ -129,8 +129,11 @@ export class AIService {
 
     try {
       // Verificar caché primero
-      const cacheKey = JSON.stringify({ patientId, noteIds: notes.map(n => n.id) });
-      const cachedResponse = await cacheService.get(cacheKey);
+      const cachedResponse = await cacheService.get({
+        query: `Analyze patient notes ${patientId}`,
+        patientId,
+        options: { maxTokens: notes.length * 100 }
+      });
 
       if (cachedResponse) {
         this.logger.info('Retrieved response from cache', { patientId });
@@ -185,17 +188,15 @@ export class AIService {
         processingTime
       };
 
-      // Cachear la respuesta con metadata
-      const metadata = {
-        provider: this.config.defaultProvider ?? 'gpt-4-medical',
-        cost: this.estimateCost(
-          this.config.defaultProvider ?? 'gpt-4-medical',
-          notes.length
-        ),
-        processingTime,
-      };
-
-      await cacheService.set(cacheKey, response, metadata);
+      // Cachear la respuesta
+      await cacheService.set({
+        query: `Analyze patient notes ${patientId}`,
+        patientId,
+        options: {
+          maxTokens: notes.length * 100,
+          provider: this.config.defaultProvider ?? 'gpt-4-medical'
+        }
+      }, response);
       this.logger.info('Response cached successfully', { patientId });
 
       return response;
@@ -224,8 +225,7 @@ export class AIService {
 
     try {
       // Verificar caché primero
-      const cacheKey = JSON.stringify(query);
-      const cachedResponse = await cacheService.get(cacheKey);
+      const cachedResponse = await cacheService.get(query);
 
       if (cachedResponse) {
         this.logger.info('Retrieved response from cache', {
@@ -239,7 +239,7 @@ export class AIService {
       const response = await this.simulateProviderCall(query);
 
       // Cachear respuesta
-      await cacheService.set(cacheKey, response);
+      await cacheService.set(query, response);
 
       return response;
     } catch (error) {
@@ -484,7 +484,7 @@ export class AIService {
         description: 'Programar prueba de hemoglobina glicosilada para evaluar control glucémico en los últimos 3 meses',
         priority: 'high',
         timeframe: '2 semanas',
-        evidenceLevel: 'high'
+        evidenceLevel: 'A'
       }
     ];
 
@@ -497,7 +497,7 @@ export class AIService {
         description: 'Evaluar eficacia del manejo actual del dolor',
         priority: 'high',
         timeframe: 'inmediato',
-        evidenceLevel: 'moderate'
+        evidenceLevel: 'B'
       });
     }
 
@@ -509,7 +509,7 @@ export class AIService {
         description: 'Solicitar información adicional sobre estilo de vida y hábitos',
         priority: 'medium',
         timeframe: '1 mes',
-        evidenceLevel: 'moderate'
+        evidenceLevel: 'B'
       });
     }
 
@@ -521,7 +521,7 @@ export class AIService {
         description: 'Recomendar programa de ejercicio moderado adaptado a condición actual',
         priority: 'medium',
         rationale: 'La actividad física regular mejora el control glucémico y la presión arterial',
-        evidenceLevel: 'high'
+        evidenceLevel: 'A'
       });
     }
 
