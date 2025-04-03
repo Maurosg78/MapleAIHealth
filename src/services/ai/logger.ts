@@ -1,25 +1,24 @@
 import { LogEntry, LogLevel } from './types';
 
 /**
- * Servicio de logging para registrar eventos y errores del servicio de IA
+ * Servicio de logging para los servicios de IA
+ * Permite registrar mensajes, eventos y errores en diferentes niveles
  */
 export class Logger {
   private readonly serviceName: string;
-  private readonly isProduction: boolean;
-  private static logHistory: LogEntry[] = [];
-  private static readonly MAX_LOG_HISTORY = 1000;
+  private readonly maxEntries = 1000;
+  private entries: LogEntry[] = [];
 
   /**
    * Constructor del logger
-   * @param serviceName - Nombre del servicio que utilizará el logger
+   * @param serviceName - Nombre del servicio que utiliza el logger
    */
   constructor(serviceName: string) {
     this.serviceName = serviceName;
-    this.isProduction = process.env.NODE_ENV === 'production';
   }
 
   /**
-   * Registra un mensaje informativo
+   * Registra un mensaje de nivel info
    * @param message - Mensaje a registrar
    * @param data - Datos adicionales opcionales
    */
@@ -28,7 +27,7 @@ export class Logger {
   }
 
   /**
-   * Registra un mensaje de advertencia
+   * Registra un mensaje de nivel warning
    * @param message - Mensaje a registrar
    * @param data - Datos adicionales opcionales
    */
@@ -37,7 +36,7 @@ export class Logger {
   }
 
   /**
-   * Registra un mensaje de error
+   * Registra un mensaje de nivel error
    * @param message - Mensaje a registrar
    * @param data - Datos adicionales opcionales
    */
@@ -46,110 +45,88 @@ export class Logger {
   }
 
   /**
-   * Registra un mensaje de depuración (solo en desarrollo)
+   * Registra un mensaje de nivel debug
    * @param message - Mensaje a registrar
    * @param data - Datos adicionales opcionales
    */
   public debug(message: string, data?: Record<string, unknown>): void {
-    // Los mensajes de debug solo se registran en entorno no-producción
-    if (!this.isProduction) {
-      this.log('debug', message, data);
-    }
+    this.log('debug', message, data);
   }
 
   /**
-   * Registra un mensaje con el nivel especificado
-   * @param level - Nivel de log (info, warn, error, debug)
+   * Función principal para registrar mensajes
+   * @param level - Nivel de log
    * @param message - Mensaje a registrar
    * @param data - Datos adicionales opcionales
    */
   private log(level: LogLevel, message: string, data?: Record<string, unknown>): void {
-    const timestamp = new Date().toISOString();
-
-    const logEntry: LogEntry = {
-      timestamp,
+    const entry: LogEntry = {
+      timestamp: new Date().toISOString(),
       level,
       service: this.serviceName,
       message,
       data
     };
 
-    // Agregar al historial
-    Logger.addToHistory(logEntry);
+    // Registrar en la consola con colores según el nivel
+    let consoleMethod = console.log;
+    let colorCode = '\x1b[0m'; // Reset
 
-    // Formatear el mensaje para la consola
-    const formattedMessage = this.formatLogMessage(logEntry);
-
-    // Salida a consola según el nivel
     switch (level) {
       case 'error':
-        console.error(formattedMessage);
+        consoleMethod = console.error;
+        colorCode = '\x1b[31m'; // Rojo
         break;
       case 'warn':
-        console.warn(formattedMessage);
+        consoleMethod = console.warn;
+        colorCode = '\x1b[33m'; // Amarillo
+        break;
+      case 'info':
+        colorCode = '\x1b[36m'; // Cian
         break;
       case 'debug':
-        console.debug(formattedMessage);
+        colorCode = '\x1b[90m'; // Gris
         break;
-      default:
-        console.info(formattedMessage);
     }
 
-    // En producción, podríamos enviar logs críticos a un servicio de monitoreo
-    if (this.isProduction && (level === 'error' || level === 'warn')) {
-      this.sendToMonitoringService(logEntry);
-    }
-  }
-
-  /**
-   * Formatea un mensaje de log para la consola
-   */
-  private formatLogMessage(logEntry: LogEntry): string {
-    const { timestamp, level, service, message, data } = logEntry;
-    let formattedMessage = `[${timestamp}] [${level.toUpperCase()}] [${service}] ${message}`;
+    // Formatear mensaje de consola
+    const logPrefix = `${colorCode}[${entry.timestamp}] [${level.toUpperCase()}] [${this.serviceName}]\x1b[0m`;
 
     if (data) {
-      formattedMessage += '\n' + JSON.stringify(data, null, 2);
+      consoleMethod(`${logPrefix} ${message}`, data);
+    } else {
+      consoleMethod(`${logPrefix} ${message}`);
     }
 
-    return formattedMessage;
-  }
-
-  /**
-   * Envía logs críticos a un servicio de monitoreo externo
-   * Implementación simulada - en un caso real enviaría a un servicio como Sentry, DataDog, etc.
-   */
-  private sendToMonitoringService(logEntry: LogEntry): void {
-    // Implementación simulada
-    if (logEntry.level === 'error') {
-      // En una implementación real, enviaríamos el log a un servicio de monitoreo
-      console.info(`[MONITOR] Error enviado a servicio de monitoreo: ${logEntry.message}`);
-    }
-  }
-
-  /**
-   * Agrega una entrada al historial de logs
-   */
-  private static addToHistory(logEntry: LogEntry): void {
-    this.logHistory.push(logEntry);
+    // Agregar a la historia
+    this.entries.push(entry);
 
     // Limitar el tamaño del historial
-    if (this.logHistory.length > this.MAX_LOG_HISTORY) {
-      this.logHistory.shift();
+    if (this.entries.length > this.maxEntries) {
+      this.entries = this.entries.slice(-this.maxEntries);
     }
   }
 
   /**
    * Obtiene el historial de logs
+   * @param level - Filtrar por nivel (opcional)
+   * @param limit - Límite de entradas a devolver (opcional)
+   * @returns Array de entradas de log
    */
-  public static getHistory(): LogEntry[] {
-    return [...this.logHistory];
+  public getHistory(level?: LogLevel, limit = 100): LogEntry[] {
+    let filteredEntries = this.entries;
+
+    if (level) {
+      filteredEntries = filteredEntries.filter(entry => entry.level === level);
+    }
+
+    return filteredEntries.slice(-limit);
   }
 
   /**
    * Limpia el historial de logs
    */
-  public static clearHistory(): void {
-    this.logHistory = [];
+  public clearHistory(): void {
+    this.entries = [];
   }
 }
