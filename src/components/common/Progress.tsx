@@ -1,65 +1,36 @@
-import { 
-   useState, useEffect 
- } from "react"
-interface ProgressProps {
-import { 
-   Button, Input, Select, Modal, Spinner 
- } from "@chakra-ui/react"
-  /**
-import React from "react"
-   * Valor del progreso (0-100)
-   */
+import React from 'react';
+
+export interface ProgressProps {
   value: number;
-  /**
-   * Etiqueta del progreso
-   */
+  max?: number;
   label?: string;
-  /**
-   * Si el progreso está en estado indeterminado
-   */
-  isIndeterminate?: boolean;
-  /**
-   * Si se muestra el valor del progreso
-   */
   showValue?: boolean;
-  /**
-   * Clases CSS adicionales
-   */
-  className?: string;
 }
 
-export const Progress: React.FC<ProgressProps> = ({
-  value,
-  isIndeterminate = false,
-  label = 'Progreso',
-  className,
-  showValue = true,
+export const Progress: React.FC<ProgressProps> = ({ 
+  value, 
+  max = 100,
+  label,
+  showValue = false
 }) => {
+  const percentage = Math.round((value / max) * 100);
+  
   return (
-    <div className="w-full">
-      {label && (
-        <div className="flex justify-between mb-1">
-          <span className="text-sm font-medium text-gray-700">{label}</span>
-          {showValue && !isIndeterminate && (
-            <span className="text-sm font-medium text-gray-700">{value}%</span>
-          )}
-        </div>
-      )}
-      <div className="relative">
-        <progress
-          value={isIndeterminate ? undefined : value}
-          max="100"
-          className={twMerge(
-            'w-full h-2 rounded-full overflow-hidden',
-            '[&::-webkit-progress-bar]:bg-gray-200 [&::-webkit-progress-bar]:rounded-full',
-            '[&::-webkit-progress-value]:bg-primary-600 [&::-webkit-progress-value]:rounded-full',
-            '[&::-moz-progress-bar]:bg-primary-600 [&::-moz-progress-bar]:rounded-full',
-            isIndeterminate && 'animate-progress-indeterminate',
-            className
-          )}
-          aria-label={label}
-        />
+    <div className="progress-container">
+      {label && <div className="progress-label">{label}</div>}
+      <div className="progress">
+        <div 
+          className="progress-bar" 
+          style={{ width: `${percentage}%` }}
+          role="progressbar"
+          aria-valuenow={value}
+          aria-valuemin={0}
+          aria-valuemax={max}
+        ></div>
       </div>
+      {showValue && <div className="progress-value">{percentage}%</div>}
     </div>
   );
 };
+
+export default Progress;

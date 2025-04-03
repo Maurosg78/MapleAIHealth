@@ -1,115 +1,70 @@
-export const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL ?? 'http://localhost:3000/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+export interface HttpService {
+  get<T>(url: string, params?: Record<string, any>): Promise<T>;
+  post<T>(url: string, data?: any): Promise<T>;
+  put<T>(url: string, data?: any): Promise<T>;
+  delete<T>(url: string): Promise<T>;
+}
 
-// Interceptor para manejar errores
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error);
-    return Promise.reject(
-      new Error(error.message || 'Error en la respuesta de la API')
-    );
+class ApiService implements HttpService {
+  private baseUrl: string;
+  
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
   }
+  
+  private async request<T>(
+    method: string,
+    endpoint: string,
+    data?: any,
+    params?: Record<string, any>
+  ): Promise<T> {
+    const url = new URL(`${this.baseUrl}${endpoint}`);
+    
+    if (params) {
+      Object.keys(params).forEach(key => 
+        url.searchParams.append(key, params[key])
+      );
+    }
+    
+    const options: RequestInit = {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    
+    if (data) {
+      options.body = JSON.stringify(data);
+    }
+    
+    const response = await fetch(url.toString(), options);
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+  
+  async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+    return this.request<T>('GET', endpoint, undefined, params);
+  }
+  
+  async post<T>(endpoint: string, data?: any): Promise<T> {
+    return this.request<T>('POST', endpoint, data);
+  }
+  
+  async put<T>(endpoint: string, data?: any): Promise<T> {
+    return this.request<T>('PUT', endpoint, data);
+  }
+  
+  async delete<T>(endpoint: string): Promise<T> {
+    return this.request<T>('DELETE', endpoint);
+  }
+}
+
+export const apiService = new ApiService(
+  import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 );
 
-export interface HttpService {
-  get<T>(url: string, config?: {
-    params?: Record<string, string>;
-    headers?: Record<string, string>;
-  }): Promise<T>;
-
-  post<T>(url: string, data?: unknown, config?: {
-    params?: Record<string, string>;
-    headers?: Record<string, string>;
-  }): Promise<T>;
-
-  put<T>(url: string, data?: unknown, config?: {
-    params?: Record<string, string>;
-    headers?: Record<string, string>;
-  }): Promise<T>;
-
-  delete<T>(url: string, config?: {
-    params?: Record<string, string>;
-    headers?: Record<string, string>;
-  }): Promise<T>;
-}
-
-class HttpServiceImpl implements HttpService {
-  async get<T>(url: string, config?: {
-    params?: Record<string, string>;
-    headers?: Record<string, string>;
-  }): Promise<T> {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: config?.headers
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
-  }
-
-  async post<T>(url: string, data?: unknown, config?: {
-    params?: Record<string, string>;
-    headers?: Record<string, string>;
-  }): Promise<T> {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...config?.headers
-      },
-      body: data ? JSON.stringify(data) : undefined
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
-  }
-
-  async put<T>(url: string, data?: unknown, config?: {
-    params?: Record<string, string>;
-    headers?: Record<string, string>;
-  }): Promise<T> {
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        ...config?.headers
-      },
-      body: data ? JSON.stringify(data) : undefined
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
-  }
-
-  async delete<T>(url: string, config?: {
-    params?: Record<string, string>;
-    headers?: Record<string, string>;
-  }): Promise<T> {
-    const response = await fetch(url, {
-      method: 'DELETE',
-      headers: config?.headers
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
-  }
-}
-
-export
+export default apiService;

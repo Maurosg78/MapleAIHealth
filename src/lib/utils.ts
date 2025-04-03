@@ -1,3 +1,4 @@
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+// utils simplificado
+export const utils = {
+  // Implementación básica
+};
