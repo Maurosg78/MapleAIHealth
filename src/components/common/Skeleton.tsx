@@ -11,15 +11,20 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   height,
   variant = 'text'
 }) => {
-  const style: React.CSSProperties = {
-    width: width || (variant === 'text' ? '100%' : 50),
-    height: height || (variant === 'text' ? 16 : 50),
+  const getClassName = () => {
+    const classes = ['skeleton', `skeleton-${variant}`];
+    
+    if (width) classes.push('skeleton-custom-width');
+    if (height) classes.push('skeleton-custom-height');
+    
+    return classes.join(' ');
   };
   
   return (
     <div 
-      className={`skeleton skeleton-${variant}`}
-      style={style}
+      className={getClassName()}
+      data-width={width}
+      data-height={height}
     />
   );
 };

@@ -1,7 +1,11 @@
+// Definir type alias para los parámetros y datos
+type QueryParams = Record<string, string | number | boolean>;
+type RequestData = Record<string, unknown>;
+
 export interface HttpService {
-  get<T>(url: string, params?: Record<string, string | number | boolean>): Promise<T>;
-  post<T>(url: string, data?: Record<string, unknown>): Promise<T>;
-  put<T>(url: string, data?: Record<string, unknown>): Promise<T>;
+  get<T>(url: string, params?: QueryParams): Promise<T>;
+  post<T>(url: string, data?: RequestData): Promise<T>;
+  put<T>(url: string, data?: RequestData): Promise<T>;
   delete<T>(url: string): Promise<T>;
 }
 
@@ -15,8 +19,8 @@ class ApiService implements HttpService {
   private async request<T>(
     method: string,
     endpoint: string,
-    data?: Record<string, unknown>,
-    params?: Record<string, string | number | boolean>
+    data?: RequestData,
+    params?: QueryParams
   ): Promise<T> {
     const url = new URL(`${this.baseUrl}${endpoint}`);
     
@@ -46,15 +50,15 @@ class ApiService implements HttpService {
     return response.json();
   }
   
-  async get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Promise<T> {
+  async get<T>(endpoint: string, params?: QueryParams): Promise<T> {
     return this.request<T>('GET', endpoint, undefined, params);
   }
   
-  async post<T>(endpoint: string, data?: Record<string, unknown>): Promise<T> {
+  async post<T>(endpoint: string, data?: RequestData): Promise<T> {
     return this.request<T>('POST', endpoint, data);
   }
   
-  async put<T>(endpoint: string, data?: Record<string, unknown>): Promise<T> {
+  async put<T>(endpoint: string, data?: RequestData): Promise<T> {
     return this.request<T>('PUT', endpoint, data);
   }
   
