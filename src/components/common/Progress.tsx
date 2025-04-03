@@ -17,17 +17,13 @@ export const Progress: React.FC<ProgressProps> = ({
   
   return (
     <div className="progress-container">
-      {label && <div className="progress-label">{label}</div>}
-      <div className="progress">
-        <div 
-          className="progress-bar" 
-          style={{ width: `${percentage}%` }}
-          role="progressbar"
-          aria-valuenow={value}
-          aria-valuemin={0}
-          aria-valuemax={max}
-        ></div>
-      </div>
+      {label && <div className="progress-label" id="progress-label">{label}</div>}
+      <progress 
+        className="progress-bar"
+        value={value}
+        max={max}
+        aria-labelledby={label ? "progress-label" : undefined}
+      />
       {showValue && <div className="progress-value">{percentage}%</div>}
     </div>
   );
