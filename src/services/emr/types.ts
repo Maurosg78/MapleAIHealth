@@ -25,3 +25,117 @@ export interface EMRTreatment {
 }
 
 export type EMRStatus = "active" | "inactive" | "pending" | "cancelled" | "completed";
+
+/**
+ * Representa una nota médica no estructurada en el sistema EMR
+ */
+export interface EMRUnstructuredNote {
+  id: string;
+  patientId: string;
+  date: string;
+  provider: string;
+  content: string;
+  type: 'progress' | 'consultation' | 'discharge' | 'referral' | 'other';
+  specialty?: string;
+  consultationId?: string;
+}
+
+/**
+ * Representa información vital del paciente
+ */
+export interface EMRVitalSign {
+  date: string;
+  bloodPressure?: string;
+  heartRate?: number;
+  respiratoryRate?: number;
+  temperature?: number;
+  oxygenSaturation?: number;
+}
+
+/**
+ * Representa un medicamento en el historial del paciente
+ */
+export interface EMRMedication {
+  name: string;
+  dosage: string;
+  frequency: string;
+  startDate: string;
+  endDate?: string;
+  active: boolean;
+  prescribedBy?: string;
+}
+
+/**
+ * Representa un procedimiento médico en el historial del paciente
+ */
+export interface EMRProcedure {
+  name: string;
+  date: string;
+  provider?: string;
+  notes?: string;
+  status?: EMRStatus;
+}
+
+/**
+ * Representa los datos demográficos del paciente
+ */
+export interface EMRDemographics {
+  name: string;
+  age: number;
+  sex: 'male' | 'female' | 'other';
+  dob: string;
+  ethnicity?: string;
+  language?: string;
+}
+
+/**
+ * Representa un laboratorio o prueba diagnóstica
+ */
+export interface EMRLabResult {
+  name: string;
+  date: string;
+  value: string;
+  unit?: string;
+  normalRange?: string;
+  isAbnormal?: boolean;
+  notes?: string;
+}
+
+/**
+ * Representa una condición médica o diagnóstico
+ */
+export interface EMRCondition {
+  name: string;
+  diagnosisDate?: string;
+  status: 'active' | 'resolved' | 'inactive';
+  severity?: 'mild' | 'moderate' | 'severe';
+  notes?: string;
+}
+
+/**
+ * Representa el historial médico completo del paciente
+ */
+export interface EMRMedicalHistory {
+  conditions: EMRCondition[];
+  allergies: string[];
+  medications: EMRMedication[];
+  procedures: EMRProcedure[];
+  labResults?: EMRLabResult[];
+  familyHistory?: string[];
+  socialHistory?: Record<string, string>;
+  immunizations?: Array<{name: string, date: string}>;
+}
+
+/**
+ * Representa los datos completos de EMR para un paciente
+ * Este formato es compatible con el formato esperado por el servicio de IA
+ */
+export interface CompleteEMRData {
+  patientId: string;
+  demographics: EMRDemographics;
+  medicalHistory: EMRMedicalHistory;
+  vitalSigns?: EMRVitalSign[];
+  consultations?: EMRConsultation[];
+  unstructuredNotes?: EMRUnstructuredNote[];
+  lastUpdated: string;
+}
