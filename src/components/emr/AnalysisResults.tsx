@@ -22,7 +22,7 @@ import {
   Box,
 } from '@mui/material';
 
-export interface AnalysisResultsProps {
+export export interface AnalysisResultsProps {
   response: AIResponse;
 }
 

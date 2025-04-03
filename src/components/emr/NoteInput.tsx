@@ -1,7 +1,7 @@
 import { 
    useState, useEffect 
  } from "react"
-export interface NoteInputProps {
+export export interface NoteInputProps {
 import { 
    Button, Input, Select, Modal, Spinner 
  } from "@chakra-ui/react"

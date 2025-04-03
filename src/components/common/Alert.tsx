@@ -12,7 +12,7 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/24/outline';
 
-export interface AlertProps {
+export export interface AlertProps {
   /**
    * El tipo de alerta
    */

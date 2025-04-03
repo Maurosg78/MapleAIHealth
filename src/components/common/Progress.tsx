@@ -1,7 +1,7 @@
 import { 
    useState, useEffect 
  } from "react"
-export interface ProgressProps {
+export export interface ProgressProps {
 import { 
    Button, Input, Select, Modal, Spinner 
  } from "@chakra-ui/react"

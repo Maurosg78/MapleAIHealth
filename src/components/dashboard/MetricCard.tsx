@@ -1,4 +1,4 @@
-export interface MetricCardProps {
+export export interface MetricCardProps {
 import { 
    useState, useEffect 
  } from "react"

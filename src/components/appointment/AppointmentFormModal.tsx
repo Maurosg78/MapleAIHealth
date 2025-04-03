@@ -11,7 +11,7 @@ import {
   AppointmentType,
 } from '../../types/appointment';
 
-export interface AppointmentFormModalProps {
+export export interface AppointmentFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   appointment?: Appointment;

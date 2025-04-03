@@ -1,7 +1,7 @@
 import { 
    useState, useEffect 
  } from "react"
-export interface RecentActivityProps {
+export export interface RecentActivityProps {
 import { 
    Button, Input, Select, Modal, Spinner 
  } from "@chakra-ui/react"

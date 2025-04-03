@@ -11,7 +11,7 @@ import {
   AIResponse,
 } from '../../services/ai/aiService';
 
-export interface AIAssistantProps {
+export export interface AIAssistantProps {
   patientId: string;
 }
 

@@ -12,7 +12,7 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/24/outline';
 
-export interface ToastProps {
+export export interface ToastProps {
   /**
    * El tipo de toast
    */
