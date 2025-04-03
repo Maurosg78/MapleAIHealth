@@ -7,10 +7,21 @@ import {
   CacheMetadata
 } from './SmartCacheInvalidationStrategy';
 
+import {
+  CachePrioritizationService,
+  ICachePrioritizationStrategy,
+  cachePrioritizationService,
+  PrioritizationStrategy,
+  CachePrioritizationConfig,
+  CacheItemStats
+} from './CachePrioritizationService';
+
 // Exportar todo lo necesario
 export {
   SmartCacheInvalidationStrategy,
-  smartCacheInvalidationStrategy
+  smartCacheInvalidationStrategy,
+  CachePrioritizationService,
+  cachePrioritizationService
 };
 
 // Exportar tipos
@@ -18,5 +29,9 @@ export type {
   ISmartCacheInvalidationStrategy,
   QueryCategory,
   CacheTag,
-  CacheMetadata
+  CacheMetadata,
+  ICachePrioritizationStrategy,
+  PrioritizationStrategy,
+  CachePrioritizationConfig,
+  CacheItemStats
 };

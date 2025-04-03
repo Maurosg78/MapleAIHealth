@@ -1,5 +1,10 @@
 import { AIResponse, CacheItem, AIQuery } from './types';
-import { smartCacheInvalidationStrategy, CacheMetadata } from './cache';
+import {
+  smartCacheInvalidationStrategy,
+  CacheMetadata,
+  cachePrioritizationService,
+  CacheItemStats
+} from './cache';
 import { Logger } from './logger';
 
 /**
@@ -15,10 +20,13 @@ export class CacheService {
   private cache: Map<string, CacheItem<AIResponse>> = new Map();
   private readonly MAX_CACHE_SIZE: number = 100;
   private readonly logger: Logger;
+  private cacheStats: Map<string, CacheItemStats> = new Map();
+  private startTime: number;
 
   private constructor() {
     this.logger = new Logger('CacheService');
-    this.logger.info('CacheService initialized with smart invalidation strategy');
+    this.logger.info('CacheService initialized with smart invalidation and prioritization strategies');
+    this.startTime = Date.now();
 
     // Inicialización del caché
     this.cleanupExpiredItems();
@@ -44,6 +52,8 @@ export class CacheService {
     const cacheItem = this.cache.get(queryKey);
 
     if (!cacheItem) {
+      // Registrar fallo en caché
+      cachePrioritizationService.recordAccess(queryKey, false);
       return null;
     }
 
@@ -51,6 +61,10 @@ export class CacheService {
     if (this.isExpired(cacheItem)) {
       this.logger.debug('Cache miss: expired item', { queryKey });
       this.cache.delete(queryKey);
+
+      // Registrar fallo por expiración
+      cachePrioritizationService.recordAccess(queryKey, false);
+
       return null;
     }
 
@@ -59,6 +73,9 @@ export class CacheService {
       metadata: cacheItem.metadata
     });
 
+    // Registrar acceso exitoso
+    cachePrioritizationService.recordAccess(queryKey, true);
+
     return cacheItem.value;
   }
 
@@ -66,10 +83,15 @@ export class CacheService {
    * Almacena una respuesta en el caché
    * @param query - La consulta original
    * @param response - La respuesta de IA a cachear
+   * @param processingStats - Estadísticas opcionales como tiempo de procesamiento y costo
    */
   public async set(
     query: AIQuery,
-    response: AIResponse
+    response: AIResponse,
+    processingStats?: {
+      processingTime?: number;
+      estimatedCost?: number;
+    }
   ): Promise<void> {
     const queryKey = this.generateCacheKey(query);
 
@@ -93,6 +115,16 @@ export class CacheService {
       timestamp: Date.now(),
       metadata: metadata as CacheItemMetadata
     });
+
+    // Registrar estadísticas de procesamiento para el servicio de priorización
+    if (processingStats) {
+      cachePrioritizationService.recordAccess(
+        queryKey,
+        false,
+        processingStats.processingTime,
+        processingStats.estimatedCost
+      );
+    }
   }
 
   /**
@@ -187,31 +219,30 @@ export class CacheService {
    * Elimina los elementos de menor prioridad cuando el caché está lleno
    */
   private evictLowPriorityItems(): void {
+    // Convertir caché en array para procesamiento
     const entries = Array.from(this.cache.entries());
 
-    // Ordenar por prioridad (menor primero) y luego por timestamp (más antiguos primero)
-    entries.sort((a, b) => {
-      const metadataA = a[1].metadata as CacheItemMetadata;
-      const metadataB = b[1].metadata as CacheItemMetadata;
-
-      const priorityA = metadataA?.priority ?? 0;
-      const priorityB = metadataB?.priority ?? 0;
-
-      // Si las prioridades son iguales, usar timestamp
-      if (priorityA === priorityB) {
-        return a[1].timestamp - b[1].timestamp;
-      }
-
-      return priorityA - priorityB;
+    // Preparar datos para el servicio de priorización
+    const cacheItems = entries.map(([key, item]) => {
+      const stats = this.cacheStats.get(key);
+      return [key, item, stats] as [string, CacheItem<AIResponse>, CacheItemStats | undefined];
     });
 
-    // Eliminar el 20% de menor prioridad
-    const itemsToRemove = Math.ceil(this.MAX_CACHE_SIZE * 0.2);
-    for (let i = 0; i < itemsToRemove && i < entries.length; i++) {
-      this.cache.delete(entries[i][0]);
+    // Calcular cuántos elementos conservar (80% de la capacidad máxima)
+    const targetCount = Math.floor(this.MAX_CACHE_SIZE * 0.8);
+
+    // Obtener claves a eliminar del servicio de priorización
+    const keysToRemove = cachePrioritizationService.getItemsToEvict(cacheItems, targetCount);
+
+    // Eliminar elementos
+    for (const key of keysToRemove) {
+      this.cache.delete(key);
     }
 
-    this.logger.debug(`Evicted ${itemsToRemove} low priority cache items`);
+    // Limpiar estadísticas
+    cachePrioritizationService.purgeStats(keysToRemove);
+
+    this.logger.debug(`Evicted ${keysToRemove.length} low priority cache items using prioritization service`);
   }
 
   /**
@@ -248,20 +279,26 @@ export class CacheService {
         // Contar por categoría
         const metadata = item.metadata as CacheItemMetadata;
         if (metadata?.queryCategory) {
-          categoryCounts[metadata.queryCategory] =
-            (categoryCounts[metadata.queryCategory] || 0) + 1;
+          const category = metadata.queryCategory;
+          categoryCounts[category] = (categoryCounts[category] || 0) + 1;
         }
       } else {
         expiredItems++;
       }
     }
 
+    // Obtener estadísticas del servicio de priorización
+    const prioritizationStats = cachePrioritizationService.getStatistics();
+
     return {
       totalItems: this.cache.size,
       activeItems,
       expiredItems,
-      maxSize: this.MAX_CACHE_SIZE,
-      categories: categoryCounts
+      categoryCounts,
+      uptime: Math.floor((Date.now() - this.startTime) / 1000 / 60), // minutos
+      maxCacheSize: this.MAX_CACHE_SIZE,
+      usagePercentage: (activeItems / this.MAX_CACHE_SIZE) * 100,
+      prioritizationStats
     };
   }
 }

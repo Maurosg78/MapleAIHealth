@@ -1,22 +1,38 @@
 // Exportar todos los servicios, tipos y clases del módulo IA
 
-// Servicios principales
-import { aiService } from './aiService';
-import { cacheService } from './cacheService';
-import { AIService, AIServiceError } from './aiService';
+// Importar y exportar servicios
+import { AIService } from './aiService';
+import { CacheService } from './cacheService';
 import { Logger } from './logger';
-import { evidenceEvaluationService, medicalSourceVerifier } from './evidence';
+import { MonitorService } from './monitorService';
+import { CachePrioritizationService, cachePrioritizationService, PrioritizationStrategy } from './cache';
 
-// Exportar todo lo necesario
+// Exportar tipos desde types.ts
+import type {
+  AIQuery,
+  AIResponse,
+  AIProvider
+} from './types';
+
+// Instancias de Servicios
+export const aiService = AIService.getInstance();
+export const cacheService = CacheService.getInstance();
+export const monitorService = MonitorService.getInstance();
+
+// Exportar todos los servicios
 export {
-  aiService,
-  cacheService,
   AIService,
-  AIServiceError,
+  CacheService,
+  MonitorService,
   Logger,
-  evidenceEvaluationService,
-  medicalSourceVerifier
+  CachePrioritizationService,
+  cachePrioritizationService
 };
 
 // Exportar tipos
-export * from './types';
+export type {
+  AIProvider,
+  AIQuery,
+  AIResponse,
+  PrioritizationStrategy
+};
