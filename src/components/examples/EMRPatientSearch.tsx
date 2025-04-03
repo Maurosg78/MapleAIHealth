@@ -4,8 +4,8 @@ export interface EMRPatientSearchProps {
   onPatientSelect?: (patientId: string) => void;
 }
 
-export const EMRPatientSearch: React.FC<EMRPatientSearchProps> = ({ 
-  onPatientSelect 
+export const EMRPatientSearch: React.FC<EMRPatientSearchProps> = ({
+  onPatientSelect
 }) => {
   const [query, setQuery] = React.useState('');
   const [results, setResults] = React.useState<Array<{ id: string; name: string }>>([]);
@@ -56,15 +56,17 @@ export const EMRPatientSearch: React.FC<EMRPatientSearchProps> = ({
       {results.length > 0 && (
         <ul className="results-list">
           {results.map(patient => (
-            <li 
-              key={patient.id} 
-              onClick={() => handlePatientSelect(patient.id)}
-              onKeyDown={(e) => handleKeyDown(e, patient.id)}
-              tabIndex={0}
-              role="button"
-              aria-label={`Seleccionar paciente ${patient.name}`}
-            >
-              {patient.name}
+            <li key={patient.id}>
+              <div
+                onClick={() => handlePatientSelect(patient.id)}
+                onKeyDown={(e) => handleKeyDown(e, patient.id)}
+                tabIndex={0}
+                role="button"
+                aria-label={`Seleccionar paciente ${patient.name}`}
+                className="w-full py-2 px-3 hover:bg-gray-100 cursor-pointer"
+              >
+                {patient.name}
+              </div>
             </li>
           ))}
         </ul>

@@ -3,6 +3,34 @@ import { useAIQuery } from '../hooks/useAIQuery';
 import { UnstructuredNote } from '../services/ai';
 import ResponseFeedback from '../components/ai/ResponseFeedback';
 
+// Función de utilidad para obtener las clases CSS según la severidad
+const getSeverityClassName = (severity: 'high' | 'medium' | 'low'): string => {
+  switch (severity) {
+    case 'high':
+      return 'text-xs px-2 py-0.5 rounded bg-red-100 text-red-700';
+    case 'medium':
+      return 'text-xs px-2 py-0.5 rounded bg-yellow-100 text-yellow-700';
+    case 'low':
+      return 'text-xs px-2 py-0.5 rounded bg-green-100 text-green-700';
+    default:
+      return 'text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-700';
+  }
+};
+
+// Función de utilidad para obtener las clases CSS según la prioridad
+const getPriorityClassName = (priority: 'high' | 'medium' | 'low'): string => {
+  switch (priority) {
+    case 'high':
+      return 'px-2 py-0.5 rounded bg-red-100 text-red-700';
+    case 'medium':
+      return 'px-2 py-0.5 rounded bg-yellow-100 text-yellow-700';
+    case 'low':
+      return 'px-2 py-0.5 rounded bg-green-100 text-green-700';
+    default:
+      return 'px-2 py-0.5 rounded bg-gray-100 text-gray-700';
+  }
+};
+
 const EMRPage: React.FC = () => {
   const [patientId, setPatientId] = useState('P12345');
   const [notes, setNotes] = useState<UnstructuredNote[]>([
@@ -182,7 +210,7 @@ const EMRPage: React.FC = () => {
               <h3 className="font-medium mb-2">Línea de Tiempo</h3>
               <div className="relative border-l-2 border-blue-200 ml-4 pl-4">
                 {result.timeline.map((event, index) => (
-                  <div key={index} className="mb-3 relative">
+                  <div key={`timeline-${event.date}-${index}`} className="mb-3 relative">
                     <div className="absolute -left-6 top-1 w-2 h-2 rounded-full bg-blue-500"></div>
                     <p className="text-sm text-gray-500">{event.date}</p>
                     <p className="font-medium">{event.title}</p>
@@ -198,14 +226,10 @@ const EMRPage: React.FC = () => {
               <h3 className="font-medium mb-2">Insights</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {result.insights.map((insight, index) => (
-                  <div key={index} className="p-3 bg-blue-50 rounded">
+                  <div key={`insight-${insight.title}-${index}`} className="p-3 bg-blue-50 rounded">
                     <p className="font-medium">{insight.title}</p>
                     <p className="text-sm mb-1">{insight.description}</p>
-                    <span className={`text-xs px-2 py-0.5 rounded ${
-                      insight.severity === 'high' ? 'bg-red-100 text-red-700' :
-                      insight.severity === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-green-100 text-green-700'
-                    }`}>
+                    <span className={getSeverityClassName(insight.severity)}>
                       {insight.severity}
                     </span>
                   </div>
@@ -219,15 +243,11 @@ const EMRPage: React.FC = () => {
               <h3 className="font-medium mb-2">Recomendaciones</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {result.recommendations.map((rec, index) => (
-                  <div key={index} className="p-3 bg-green-50 rounded">
+                  <div key={`recommendation-${rec.title}-${index}`} className="p-3 bg-green-50 rounded">
                     <p className="font-medium">{rec.title}</p>
                     <p className="text-sm mb-1">{rec.description}</p>
                     <div className="flex justify-between text-xs">
-                      <span className={`px-2 py-0.5 rounded ${
-                        rec.priority === 'high' ? 'bg-red-100 text-red-700' :
-                        rec.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-green-100 text-green-700'
-                      }`}>
+                      <span className={getPriorityClassName(rec.priority)}>
                         {rec.priority}
                       </span>
                       {rec.timeframe && (

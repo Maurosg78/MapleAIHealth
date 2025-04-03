@@ -5,6 +5,34 @@ import { emrConfigService } from '../services/emr';
 import ResponseFeedback from '../components/ai/ResponseFeedback';
 import { AIResponse } from '../services/ai';
 
+// Función de utilidad para obtener las clases CSS según la severidad
+const getSeverityClassName = (severity: 'high' | 'medium' | 'low'): string => {
+  switch (severity) {
+    case 'high':
+      return 'text-xs px-2 py-0.5 rounded bg-red-100 text-red-700';
+    case 'medium':
+      return 'text-xs px-2 py-0.5 rounded bg-yellow-100 text-yellow-700';
+    case 'low':
+      return 'text-xs px-2 py-0.5 rounded bg-green-100 text-green-700';
+    default:
+      return 'text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-700';
+  }
+};
+
+// Función de utilidad para obtener las clases CSS según la prioridad
+const getPriorityClassName = (priority: 'high' | 'medium' | 'low'): string => {
+  switch (priority) {
+    case 'high':
+      return 'text-xs px-2 py-0.5 rounded bg-red-100 text-red-700';
+    case 'medium':
+      return 'text-xs px-2 py-0.5 rounded bg-yellow-100 text-yellow-700';
+    case 'low':
+      return 'text-xs px-2 py-0.5 rounded bg-green-100 text-green-700';
+    default:
+      return 'text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-700';
+  }
+};
+
 const EMRAIPage: React.FC = () => {
   // Estado para el ID del paciente y sistema EMR
   const [patientId, setPatientId] = useState('P12345');
@@ -203,15 +231,11 @@ const EMRAIPage: React.FC = () => {
               <h3 className="font-medium mb-2">Insights</h3>
               <ul className="space-y-2">
                 {result.insights.map((insight, index) => (
-                  <li key={index} className="p-3 bg-blue-50 rounded">
+                  <li key={`insight-${insight.title}-${index}`} className="p-3 bg-blue-50 rounded">
                     <p className="font-medium">{insight.title}</p>
                     <p className="text-sm">{insight.description}</p>
                     <div className="flex items-center mt-2">
-                      <span className={`text-xs px-2 py-0.5 rounded ${
-                        insight.severity === 'high' ? 'bg-red-100 text-red-700' :
-                        insight.severity === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-green-100 text-green-700'
-                      }`}>
+                      <span className={getSeverityClassName(insight.severity)}>
                         {insight.severity}
                       </span>
                       {insight.type && (
@@ -231,15 +255,11 @@ const EMRAIPage: React.FC = () => {
               <h3 className="font-medium mb-2">Recomendaciones</h3>
               <ul className="space-y-2">
                 {result.recommendations.map((rec, index) => (
-                  <li key={index} className="p-3 bg-green-50 rounded">
+                  <li key={`recommendation-${rec.title}-${index}`} className="p-3 bg-green-50 rounded">
                     <p className="font-medium">{rec.title}</p>
                     <p className="text-sm">{rec.description}</p>
                     <div className="flex items-center mt-2">
-                      <span className={`text-xs px-2 py-0.5 rounded ${
-                        rec.priority === 'high' ? 'bg-red-100 text-red-700' :
-                        rec.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-green-100 text-green-700'
-                      }`}>
+                      <span className={getPriorityClassName(rec.priority)}>
                         {rec.priority}
                       </span>
                       {rec.timeframe && (
@@ -264,7 +284,7 @@ const EMRAIPage: React.FC = () => {
               <h3 className="font-medium mb-2">Línea de Tiempo</h3>
               <div className="border-l-2 border-blue-300 pl-4 py-2 space-y-4">
                 {result.timeline.map((event, index) => (
-                  <div key={index} className="relative">
+                  <div key={`timeline-${event.date}-${event.title}-${index}`} className="relative">
                     <div className="absolute -left-6 w-4 h-4 rounded-full bg-blue-500"></div>
                     <p className="text-sm text-gray-500">{event.date}</p>
                     <p className="font-medium">{event.title}</p>
@@ -285,7 +305,7 @@ const EMRAIPage: React.FC = () => {
               <h3 className="font-medium mb-2">Preguntas de Seguimiento</h3>
               <ul className="list-disc pl-5 space-y-1">
                 {result.followUpQuestions.map((question, index) => (
-                  <li key={index} className="text-blue-600 hover:underline cursor-pointer">
+                  <li key={`question-${index}`} className="text-blue-600 hover:underline cursor-pointer">
                     {question}
                   </li>
                 ))}
