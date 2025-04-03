@@ -1,15 +1,11 @@
-import { 
-   useState, useEffect 
- } from 'react'
-import { 
-   Button, Input, Select, Modal, Spinner 
- } from '@chakra-ui/react'
-import React from 'react'
+import { useState, useEffect } from 'react';
+import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
+import React from 'react';
 export type BadgeType = 'success' | 'error' | 'warning' | 'info';
 export type BadgeVariant = 'solid' | 'outlined' | 'ghost';
 export type BadgeSize = 'sm' | 'md' | 'lg';
 
-interface BadgeProps {
+export interface BadgeProps {
   type?: BadgeType;
   variant?: BadgeVariant;
   size?: BadgeSize;

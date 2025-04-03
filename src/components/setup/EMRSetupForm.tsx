@@ -1,11 +1,7 @@
-import { 
-   useState, useEffect 
- } from 'react'
- // Definir interfaz para la configuración de EMR
-import { 
-   Button, Input, Select, Modal, Spinner 
- } from '@chakra-ui/react'
-import React from 'react'
+import { useState, useEffect } from 'react';
+// Definir interfaz para la configuración de EMR
+import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
+import React from 'react';
 interface EMRAdapterConfig {
   baseUrl?: string;
   username?: string;
@@ -18,7 +14,7 @@ interface EMRAdapterConfig {
   [key: string]: string | undefined;
 }
 
-interface EMRSetupFormProps {
+export interface EMRSetupFormProps {
   onSetupComplete: (adapterName: string, config: EMRAdapterConfig) => void;
   initialAdapterName?: string;
   initialConfig?: EMRAdapterConfig;

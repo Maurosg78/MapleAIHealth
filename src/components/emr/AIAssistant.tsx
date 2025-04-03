@@ -1,3 +1,4 @@
+import React from "react";
 import { 
    useState, useEffect 
  } from "react"
@@ -10,7 +11,7 @@ import {
   AIResponse,
 } from '../../services/ai/aiService';
 
-interface AIAssistantProps {
+export interface AIAssistantProps {
   patientId: string;
 }
 

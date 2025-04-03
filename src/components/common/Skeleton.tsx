@@ -1,7 +1,7 @@
 import { 
    useState, useEffect 
  } from "react"
-interface SkeletonProps {
+export interface SkeletonProps {
 import { 
    Button, Input, Select, Modal, Spinner 
  } from "@chakra-ui/react"

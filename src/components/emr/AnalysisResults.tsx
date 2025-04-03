@@ -1,3 +1,4 @@
+import React from "react";
 import { 
    useState, useEffect 
  } from "react"
@@ -21,7 +22,7 @@ import {
   Box,
 } from '@mui/material';
 
-interface AnalysisResultsProps {
+export interface AnalysisResultsProps {
   response: AIResponse;
 }
 

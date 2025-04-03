@@ -1,7 +1,7 @@
 import { 
    useState, useEffect 
  } from "react"
-interface ProtectedRouteProps {
+export interface ProtectedRouteProps {
 import { 
    Button, Input, Select, Modal, Spinner 
  } from "@chakra-ui/react"
