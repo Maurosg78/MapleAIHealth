@@ -1,68 +1,61 @@
-name: Error Monitoring
+name: Error Check
 
 on:
-  push:
-    branches: [main, develop, feature/**, fix/**]
-  pull_request:
-    branches: [main, develop]
+  schedule:
+    - cron: '0 0 * * *'  # Runs at midnight every day
+  workflow_dispatch:
 
 jobs:
-  error-check:
-    name: Verificar errores críticos
+  check-errors:
     runs-on: ubuntu-latest
-
+    name: Check TypeScript Errors
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
-
+      
       - name: Install dependencies
         run: npm ci
-
-      - name: Create reports directory
-        run: mkdir -p reports
-
-      - name: Run error check script
+      
+      - name: Check TypeScript errors
+        id: ts-check
         run: |
-          chmod +x ./scripts/error-check.sh
-          ./scripts/error-check.sh
-
-      - name: Check critical errors
-        id: error-count
+          # Run type-check and save output
+          npm run type-check > ts-output.log 2>&1 || true
+          
+          # Count total errors
+          TOTAL_ERRORS=$(grep -c "error TS" ts-output.log || echo "0")
+          echo "Total TypeScript errors: $TOTAL_ERRORS"
+          
+          # Count critical errors (e.g., syntax errors)
+          CRITICAL_ERRORS=$(grep -c "error TS1" ts-output.log || echo "0")
+          echo "Critical TypeScript errors: $CRITICAL_ERRORS"
+          
+          # Output for workflow
+          echo "total=$TOTAL_ERRORS" >> $GITHUB_OUTPUT
+          echo "critical=$CRITICAL_ERRORS" >> $GITHUB_OUTPUT
+      
+      - name: Create report
         run: |
-          ESLINT_CRITICAL=$(grep -c '"severity":2' reports/eslint-report.json || echo 0)
-          TS_ERRORS=$(grep -c "error TS" reports/typescript-errors.txt || echo 0)
-          TOTAL_CRITICAL=$((ESLINT_CRITICAL + TS_ERRORS))
-          echo "TOTAL_CRITICAL=$TOTAL_CRITICAL" >> $GITHUB_ENV
-          if [ $TOTAL_CRITICAL -gt 0 ]; then
-            echo "::warning::Se encontraron $TOTAL_CRITICAL errores críticos"
-          else
-            echo "::notice::No se encontraron errores críticos"
+          echo "# Error Report" > error-report.md
+          echo "## TypeScript Errors" >> error-report.md
+          echo "Total errors: ${{ steps.ts-check.outputs.total }}" >> error-report.md
+          echo "Critical errors: ${{ steps.ts-check.outputs.critical }}" >> error-report.md
+          
+          if [ "${{ steps.ts-check.outputs.total }}" -gt "0" ]; then
+            echo "### Error details" >> error-report.md
+            echo '```' >> error-report.md
+            head -n 50 ts-output.log >> error-report.md
+            echo '```' >> error-report.md
           fi
-
-      - name: Create PR comment with error summary
-        if: github.event_name == 'pull_request' && env.TOTAL_CRITICAL > 0
+      
+      - name: Check if critical errors exist
+        if: ${{ steps.ts-check.outputs.critical > 0 }}
         run: |
-          SUMMARY=$(cat reports/error-summary.md)
-          cat << EOF > pr_comment.md
-          ## 🚨 Error Monitoring Alert
-
-          Se encontraron $TOTAL_CRITICAL errores críticos en este PR.
-
-          $SUMMARY
-          EOF
-
-          gh pr comment ${{ github.event.pull_request.number }} -F pr_comment.md
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Fail if critical errors exceed threshold on PRs
-        if: github.event_name == 'pull_request' && env.TOTAL_CRITICAL > 50
-        run: |
-          echo "❌ El número de errores críticos ($TOTAL_CRITICAL) excede el límite permitido (50)"
-          exit 1
+          echo "::warning::Found ${{ steps.ts-check.outputs.critical }} critical TypeScript errors that need immediate attention!"

@@ -26,6 +26,19 @@ export const EMRPatientSearch: React.FC<EMRPatientSearchProps> = ({
     }
   };
 
+  const handlePatientSelect = (patientId: string) => {
+    if (onPatientSelect) {
+      onPatientSelect(patientId);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, patientId: string) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handlePatientSelect(patientId);
+    }
+  };
+
   return (
     <div className="emr-patient-search">
       <h3>Búsqueda de Pacientes</h3>
@@ -43,7 +56,14 @@ export const EMRPatientSearch: React.FC<EMRPatientSearchProps> = ({
       {results.length > 0 && (
         <ul className="results-list">
           {results.map(patient => (
-            <li key={patient.id} onClick={() => onPatientSelect?.(patient.id)}>
+            <li 
+              key={patient.id} 
+              onClick={() => handlePatientSelect(patient.id)}
+              onKeyDown={(e) => handleKeyDown(e, patient.id)}
+              tabIndex={0}
+              role="button"
+              aria-label={`Seleccionar paciente ${patient.name}`}
+            >
               {patient.name}
             </li>
           ))}

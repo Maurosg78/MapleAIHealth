@@ -1,12 +1,12 @@
 export interface HttpService {
-  get<T>(url: string, params?: Record<string, any>): Promise<T>;
-  post<T>(url: string, data?: any): Promise<T>;
-  put<T>(url: string, data?: any): Promise<T>;
+  get<T>(url: string, params?: Record<string, string | number | boolean>): Promise<T>;
+  post<T>(url: string, data?: Record<string, unknown>): Promise<T>;
+  put<T>(url: string, data?: Record<string, unknown>): Promise<T>;
   delete<T>(url: string): Promise<T>;
 }
 
 class ApiService implements HttpService {
-  private baseUrl: string;
+  private readonly baseUrl: string;
   
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -15,14 +15,14 @@ class ApiService implements HttpService {
   private async request<T>(
     method: string,
     endpoint: string,
-    data?: any,
-    params?: Record<string, any>
+    data?: Record<string, unknown>,
+    params?: Record<string, string | number | boolean>
   ): Promise<T> {
     const url = new URL(`${this.baseUrl}${endpoint}`);
     
     if (params) {
       Object.keys(params).forEach(key => 
-        url.searchParams.append(key, params[key])
+        url.searchParams.append(key, String(params[key]))
       );
     }
     
@@ -46,15 +46,15 @@ class ApiService implements HttpService {
     return response.json();
   }
   
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+  async get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Promise<T> {
     return this.request<T>('GET', endpoint, undefined, params);
   }
   
-  async post<T>(endpoint: string, data?: any): Promise<T> {
+  async post<T>(endpoint: string, data?: Record<string, unknown>): Promise<T> {
     return this.request<T>('POST', endpoint, data);
   }
   
-  async put<T>(endpoint: string, data?: any): Promise<T> {
+  async put<T>(endpoint: string, data?: Record<string, unknown>): Promise<T> {
     return this.request<T>('PUT', endpoint, data);
   }
   

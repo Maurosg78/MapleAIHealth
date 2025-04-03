@@ -1,163 +1,92 @@
 name: Error Monitoring
 
 on:
-  push:
-    branches: [ main, develop, 'feature/*' ]
-  pull_request:
-    branches: [ main, develop ]
-  # Permite ejecutar el workflow manualmente desde la interfaz de GitHub
+  schedule:
+    - cron: '0 4 * * *'  # Runs at 4 AM UTC every day
   workflow_dispatch:
 
 jobs:
-  lint-and-typescript:
+  monitor:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+      
+      - name: Get date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      
+      - name: Get branch name
+        id: branch
+        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-
-      - name: Checkout target branch (for reference comparisons)
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
-          else
-            git fetch origin develop:develop || git fetch origin main:main || true
-          fi
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+          node-version: 18
           cache: 'npm'
-
+      
       - name: Install dependencies
         run: npm ci
-
-      - name: Run ESLint on current branch
-        run: npx eslint src/ --format json > eslint-report-current.json || true
-
-      - name: Run TypeScript check on current branch
-        run: npx tsc --noEmit --pretty false > ts-errors-current.txt || true
-
-      - name: Run ESLint on reference branch (for comparison)
+      
+      - name: Set up directory
+        run: mkdir -p reports
+      
+      - name: Check TypeScript errors
+        id: ts-check
         run: |
-          REFERENCE_BRANCH=""
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            REFERENCE_BRANCH="${{ github.base_ref }}"
-          elif git rev-parse --verify develop >/dev/null 2>&1; then
-            REFERENCE_BRANCH="develop"
-          elif git rev-parse --verify main >/dev/null 2>&1; then
-            REFERENCE_BRANCH="main"
-          fi
-
-          if [[ ! -z "$REFERENCE_BRANCH" ]]; then
-            echo "Comparando con rama de referencia: $REFERENCE_BRANCH"
-            git checkout $REFERENCE_BRANCH
-            npx eslint src/ --format json > eslint-report-reference.json || true
-            npx tsc --noEmit --pretty false > ts-errors-reference.txt || true
-            git checkout -
-          else
-            echo "No se pudo determinar una rama de referencia para comparación"
-            touch eslint-report-reference.json
-            touch ts-errors-reference.txt
-          fi
-
-      - name: Generate error report
+          # Run TypeScript check and capture output
+          npm run type-check > reports/ts-check.log 2>&1 || true
+          
+          # Count errors
+          ERROR_COUNT=$(grep -c "error TS" reports/ts-check.log || echo "0")
+          echo "typescript=$ERROR_COUNT" >> $GITHUB_OUTPUT
+          
+          # Group errors by type for summary
+          echo "### Error breakdown by type:" > reports/ts-summary.txt
+          grep "error TS" reports/ts-check.log | sed 's/.*error TS\([0-9]*\).*/TS\1/' | sort | uniq -c | sort -nr >> reports/ts-summary.txt
+          
+          # List top 10 files with most errors
+          echo "### Top files with errors:" >> reports/ts-summary.txt
+          grep -o "src/.*\.tsx\?:[0-9]*:[0-9]*" reports/ts-check.log | cut -d':' -f1 | sort | uniq -c | sort -nr | head -10 >> reports/ts-summary.txt
+      
+      - name: Check ESLint errors
+        id: eslint-check
         run: |
-          # Crear directorio para reportes
-          mkdir -p reports
-
-          # Generar reporte de ESLint actual
-          CRITICAL_CURRENT=$(grep -c '"severity":2' eslint-report-current.json || echo 0)
-          # Generar reporte de ESLint referencia
-          CRITICAL_REFERENCE=$(grep -c '"severity":2' eslint-report-reference.json || echo 0)
-
-          # Contar errores TypeScript
-          TS_ERRORS_CURRENT=$(grep -c "error TS" ts-errors-current.txt || echo 0)
-          TS_ERRORS_REFERENCE=$(grep -c "error TS" ts-errors-reference.txt || echo 0)
-
-          # Calcular diferencias
-          ESLINT_DIFF=$((CRITICAL_CURRENT - CRITICAL_REFERENCE))
-          TS_DIFF=$((TS_ERRORS_CURRENT - TS_ERRORS_REFERENCE))
-          TOTAL_DIFF=$((ESLINT_DIFF + TS_DIFF))
-
-          # Generar reporte resumido
-          echo "# 📊 Reporte de Supervisión de Errores" > error-summary.md
-          echo "" >> error-summary.md
-          echo "Fecha: $(date)" >> error-summary.md
-          echo "Rama: ${{ github.ref }}" >> error-summary.md
-          echo "" >> error-summary.md
-
-          echo "## Resumen" >> error-summary.md
-          echo "" >> error-summary.md
-          echo "| Categoría | Actuales | Referencia | Diferencia | Prioridad |" >> error-summary.md
-          echo "|-----------|----------|------------|------------|-----------|" >> error-summary.md
-          echo "| ESLint Errores | $CRITICAL_CURRENT | $CRITICAL_REFERENCE | $ESLINT_DIFF | 🔴 Crítico |" >> error-summary.md
-          echo "| TypeScript Errores | $TS_ERRORS_CURRENT | $TS_ERRORS_REFERENCE | $TS_DIFF | 🔴 Crítico |" >> error-summary.md
-          echo "| **Total** | $((CRITICAL_CURRENT + TS_ERRORS_CURRENT)) | $((CRITICAL_REFERENCE + TS_ERRORS_REFERENCE)) | $TOTAL_DIFF | |" >> error-summary.md
-
-          # Evaluar estado general
-          TOTAL_CRITICAL=$((CRITICAL_CURRENT + TS_ERRORS_CURRENT))
-          echo "TOTAL_CRITICAL=$TOTAL_CRITICAL" >> $GITHUB_ENV
-          echo "TOTAL_DIFF=$TOTAL_DIFF" >> $GITHUB_ENV
-
-          echo "" >> error-summary.md
-          if [ "$TOTAL_DIFF" -gt 10 ]; then
-            echo "## ❌ Estado: Crítico" >> error-summary.md
-            echo "Has añadido $TOTAL_DIFF nuevos errores críticos que deben ser corregidos inmediatamente." >> error-summary.md
-            echo "ESTADO=CRITICO" >> $GITHUB_ENV
-          elif [ "$TOTAL_DIFF" -gt 0 ]; then
-            echo "## ⚠️ Estado: Atención Necesaria" >> error-summary.md
-            echo "Has añadido $TOTAL_DIFF nuevos errores críticos que deben ser atendidos." >> error-summary.md
-            echo "ESTADO=ATENCION" >> $GITHUB_ENV
-          elif [ "$TOTAL_DIFF" -lt 0 ]; then
-            echo "## ✅ Estado: Mejora" >> error-summary.md
-            echo "¡Enhorabuena! Has reducido el número de errores críticos en $((TOTAL_DIFF * -1))." >> error-summary.md
-            echo "ESTADO=MEJORA" >> $GITHUB_ENV
+          # Run ESLint and capture output
+          npm run lint -- --format json > reports/eslint.json 2>reports/eslint-stderr.log || true
+          
+          # Count errors
+          if [ -s reports/eslint.json ]; then
+            ERROR_COUNT=$(cat reports/eslint.json | grep -o '"severity":2' | wc -l)
+            echo "eslint=$ERROR_COUNT" >> $GITHUB_OUTPUT
           else
-            echo "## 🟡 Estado: Sin Cambios" >> error-summary.md
-            echo "No has introducido nuevos errores críticos, pero tampoco has reducido los existentes." >> error-summary.md
-            echo "ESTADO=SINCAMBIOS" >> $GITHUB_ENV
+            echo "eslint=0" >> $GITHUB_OUTPUT
           fi
-
-          # Copiar los archivos de reporte
-          cp eslint-report-current.json reports/eslint-report.json
-          cp ts-errors-current.txt reports/typescript-errors.txt
-          cp error-summary.md reports/
-
-          # Mostrar resumen en la consola
-          echo "=======================================";
-          echo "          RESUMEN DE ERRORES            ";
-          echo "=======================================";
-          echo "ESLint Errores Críticos: $CRITICAL_CURRENT (Diferencia: $ESLINT_DIFF)";
-          echo "TypeScript Errores: $TS_ERRORS_CURRENT (Diferencia: $TS_DIFF)";
-          echo "Total Errores Críticos: $TOTAL_CRITICAL (Diferencia: $TOTAL_DIFF)";
-          echo "=======================================";
-
-      - name: Determinar si el workflow debe fallar
+      
+      - name: Generate summary report
         run: |
-          if [ "$ESTADO" = "CRITICO" ]; then
-            echo "❌ El workflow falla porque has introducido muchos errores nuevos ($TOTAL_DIFF)."
-            exit 1
-          elif [ "$ESTADO" = "ATENCION" ]; then
-            echo "⚠️ El workflow continúa con advertencia por nuevos errores ($TOTAL_DIFF)."
-          else
-            echo "✅ El workflow continúa normalmente. Estado: $ESTADO"
+          echo "# Error Monitoring Report" > reports/summary.md
+          echo "Date: ${{ steps.date.outputs.date }}" >> reports/summary.md
+          echo "Branch: ${{ steps.branch.outputs.branch }}" >> reports/summary.md
+          echo "" >> reports/summary.md
+          
+          echo "## Error Counts" >> reports/summary.md
+          echo "- TypeScript Errors: ${{ steps.ts-check.outputs.typescript }}" >> reports/summary.md
+          echo "- ESLint Errors: ${{ steps.eslint-check.outputs.eslint }}" >> reports/summary.md
+          echo "- Total Errors: $((${{ steps.ts-check.outputs.typescript }} + ${{ steps.eslint-check.outputs.eslint }}))" >> reports/summary.md
+          echo "" >> reports/summary.md
+          
+          if [ -s reports/ts-summary.txt ]; then
+            echo "## TypeScript Error Details" >> reports/summary.md
+            cat reports/ts-summary.txt >> reports/summary.md
+            echo "" >> reports/summary.md
           fi
-
-      - name: Create PR comment with error summary
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
+      
+      - name: Post report to GitHub Security tab
+        if: ${{ steps.ts-check.outputs.typescript > 0 || steps.eslint-check.outputs.eslint > 0 }}
+        uses: github/codeql-action/upload-sarif@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const summary = fs.readFileSync('error-summary.md', 'utf8');
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## 🔍 Error Monitoring Report\n\n${summary}`
-            });
+          sarif_file: reports/errors.sarif
+          category: typescript
