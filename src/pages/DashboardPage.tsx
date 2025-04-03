@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface DashboardPageProps {}
+export type DashboardPageProps = Record<string, never>;
 
 const DashboardPage: React.FC<DashboardPageProps> = () => {
   return (

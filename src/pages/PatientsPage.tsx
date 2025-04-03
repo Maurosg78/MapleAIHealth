@@ -20,31 +20,31 @@ const PatientsPage: React.FC = () => {
       try {
         // Simulación de API
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         setPatients([
-          { 
-            id: '1', 
-            firstName: 'Juan', 
-            lastName: 'Pérez', 
+          {
+            id: '1',
+            firstName: 'Juan',
+            lastName: 'Pérez',
             dateOfBirth: '1985-05-15',
             email: 'juan@example.com',
             phone: '555-123-4567'
           },
-          { 
-            id: '2', 
-            firstName: 'María', 
-            lastName: 'González', 
+          {
+            id: '2',
+            firstName: 'María',
+            lastName: 'González',
             dateOfBirth: '1990-10-20',
             email: 'maria@example.com'
           },
         ]);
         setIsLoading(false);
-      } catch (err) {
+      } catch {
         setError('Error al cargar pacientes');
         setIsLoading(false);
       }
     };
-    
+
     loadPatients();
   }, []);
 
@@ -54,7 +54,7 @@ const PatientsPage: React.FC = () => {
   return (
     <div className="patients-page">
       <h1>Pacientes</h1>
-      
+
       <table className="patients-table">
         <thead>
           <tr>
@@ -77,7 +77,7 @@ const PatientsPage: React.FC = () => {
           ))}
         </tbody>
       </table>
-      
+
       {patients.length === 0 && (
         <div className="no-patients">
           No hay pacientes registrados.

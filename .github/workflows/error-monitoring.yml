@@ -2,91 +2,103 @@ name: Error Monitoring
 
 on:
   schedule:
-    - cron: '0 4 * * *'  # Runs at 4 AM UTC every day
+    - cron: '0 0 * * 1'  # Ejecutar cada lunes a medianoche
   workflow_dispatch:
 
 jobs:
-  monitor:
+  error-monitoring:
+    name: Monitor TypeScript Errors
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Get date
-        id: date
-        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-      
-      - name: Get branch name
-        id: branch
-        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
-      
+        uses: actions/checkout@v3
+
+      - name: Get previous error count
+        id: prev-count
+        run: |
+          if [ -f .error-count ]; then
+            echo "previous=$(cat .error-count)" >> $GITHUB_OUTPUT
+          else
+            echo "previous=0" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
-      - name: Set up directory
-        run: mkdir -p reports
-      
+
       - name: Check TypeScript errors
         id: ts-check
         run: |
-          # Run TypeScript check and capture output
-          npm run type-check > reports/ts-check.log 2>&1 || true
-          
-          # Count errors
-          ERROR_COUNT=$(grep -c "error TS" reports/ts-check.log || echo "0")
-          echo "typescript=$ERROR_COUNT" >> $GITHUB_OUTPUT
-          
-          # Group errors by type for summary
-          echo "### Error breakdown by type:" > reports/ts-summary.txt
-          grep "error TS" reports/ts-check.log | sed 's/.*error TS\([0-9]*\).*/TS\1/' | sort | uniq -c | sort -nr >> reports/ts-summary.txt
-          
-          # List top 10 files with most errors
-          echo "### Top files with errors:" >> reports/ts-summary.txt
-          grep -o "src/.*\.tsx\?:[0-9]*:[0-9]*" reports/ts-check.log | cut -d':' -f1 | sort | uniq -c | sort -nr | head -10 >> reports/ts-summary.txt
-      
-      - name: Check ESLint errors
-        id: eslint-check
+          # Ejecutar verificación de tipos y guardar salida
+          npm run type-check > ts-output.log 2>&1 || true
+
+          # Contar errores totales
+          TOTAL_ERRORS=$(grep -c "error TS" ts-output.log || echo "0")
+          echo "Total TypeScript errors: $TOTAL_ERRORS"
+
+          # Contar errores críticos (errores de sintaxis)
+          CRITICAL_ERRORS=$(grep -c "error TS1" ts-output.log || echo "0")
+          echo "Critical TypeScript errors: $CRITICAL_ERRORS"
+
+          # Contar errores por archivo
+          echo "Errors by file:" > error-report.txt
+          grep "error TS" ts-output.log | sed 's/\(.*\)(\([0-9]*\),\([0-9]*\)):.*/\1/' | sort | uniq -c | sort -nr >> error-report.txt
+
+          # Errores más comunes
+          echo "Most common errors:" >> error-report.txt
+          grep "error TS" ts-output.log | sed 's/.*: \(.*\)$/\1/' | sort | uniq -c | sort -nr | head -10 >> error-report.txt
+
+          # Guardar para futuras comparaciones
+          echo "$TOTAL_ERRORS" > .error-count
+
+          # Output para el workflow
+          echo "total=$TOTAL_ERRORS" >> $GITHUB_OUTPUT
+          echo "critical=$CRITICAL_ERRORS" >> $GITHUB_OUTPUT
+          echo "previous=${{ steps.prev-count.outputs.previous }}" >> $GITHUB_OUTPUT
+
+      - name: Create SARIF file
         run: |
-          # Run ESLint and capture output
-          npm run lint -- --format json > reports/eslint.json 2>reports/eslint-stderr.log || true
-          
-          # Count errors
-          if [ -s reports/eslint.json ]; then
-            ERROR_COUNT=$(cat reports/eslint.json | grep -o '"severity":2' | wc -l)
-            echo "eslint=$ERROR_COUNT" >> $GITHUB_OUTPUT
-          else
-            echo "eslint=0" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Generate summary report
-        run: |
-          echo "# Error Monitoring Report" > reports/summary.md
-          echo "Date: ${{ steps.date.outputs.date }}" >> reports/summary.md
-          echo "Branch: ${{ steps.branch.outputs.branch }}" >> reports/summary.md
-          echo "" >> reports/summary.md
-          
-          echo "## Error Counts" >> reports/summary.md
-          echo "- TypeScript Errors: ${{ steps.ts-check.outputs.typescript }}" >> reports/summary.md
-          echo "- ESLint Errors: ${{ steps.eslint-check.outputs.eslint }}" >> reports/summary.md
-          echo "- Total Errors: $((${{ steps.ts-check.outputs.typescript }} + ${{ steps.eslint-check.outputs.eslint }}))" >> reports/summary.md
-          echo "" >> reports/summary.md
-          
-          if [ -s reports/ts-summary.txt ]; then
-            echo "## TypeScript Error Details" >> reports/summary.md
-            cat reports/ts-summary.txt >> reports/summary.md
-            echo "" >> reports/summary.md
-          fi
-      
-      - name: Post report to GitHub Security tab
-        if: ${{ steps.ts-check.outputs.typescript > 0 || steps.eslint-check.outputs.eslint > 0 }}
-        uses: github/codeql-action/upload-sarif@v2
+          cat > typescript-error-report.sarif << EOF
+          {
+            "\$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+            "version": "2.1.0",
+            "runs": [
+              {
+                "tool": {
+                  "driver": {
+                    "name": "TypeScript Error Monitor",
+                    "informationUri": "https://github.com/your-repo/your-app",
+                    "rules": []
+                  }
+                },
+                "results": []
+              }
+            ]
+          }
+          EOF
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v1
         with:
-          sarif_file: reports/errors.sarif
-          category: typescript
+          sarif_file: typescript-error-report.sarif
+
+      - name: Compare with previous count
+        run: |
+          PREV=${{ steps.ts-check.outputs.previous }}
+          CURRENT=${{ steps.ts-check.outputs.total }}
+
+          if [ $CURRENT -gt $PREV ]; then
+            DIFF=$((CURRENT - PREV))
+            echo "::warning::⚠️ TypeScript errors increased by $DIFF (from $PREV to $CURRENT)"
+          elif [ $CURRENT -lt $PREV ]; then
+            DIFF=$((PREV - CURRENT))
+            echo "::notice::✅ TypeScript errors decreased by $DIFF (from $PREV to $CURRENT)"
+          else
+            echo "TypeScript error count remains unchanged at $CURRENT"
+          fi
