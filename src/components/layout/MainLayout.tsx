@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
-import React from 'react';
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export function MainLayout() {
-  import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}

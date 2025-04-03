@@ -1,9 +1,9 @@
-import { Logger } from '../../lib/logger';
-import { EMRAdapter } from './interfaces/EMRAdapter';
-import { GenericEMRAdapter } from './implementations/GenericEMRAdapter';
-import { EPICAdapter } from './implementations/EPICAdapter';
-import { OSCARAdapter } from './implementations/OSCARAdapter';
-import { ClinicCloudAdapter } from './implementations/ClinicCloudAdapter';
+import { Logger } from '../../lib/logger'
+import { EMRAdapter } from './interfaces/EMRAdapter'
+import { GenericEMRAdapter } from './implementations/GenericEMRAdapter'
+import { EPICAdapter } from './implementations/EPICAdapter'
+import { OSCARAdapter } from './implementations/OSCARAdapter'
+import { ClinicCloudAdapter } from './implementations/ClinicCloudAdapter'
 
 /**
  * Tipo para las opciones de configuración de adaptadores EMR
@@ -119,21 +119,19 @@ export class EMRAdapterFactory {
           baseUrl: config.baseUrl,
           username: config.username || '',
           password: config.password || '',
-          clinicId: config.clinicId || '',
+          clinicId: config.clinicId || ''
         };
         return new OSCARAdapter(oscarConfig);
       }
 
       case 'CLINICCLOUD': {
         if (!config.apiUrl || !config.apiKey) {
-          throw new Error(
-            'Se requiere apiUrl y apiKey para el adaptador CLINICCLOUD'
-          );
+          throw new Error('Se requiere apiUrl y apiKey para el adaptador CLINICCLOUD');
         }
         const clinicCloudConfig: ClinicCloudAdapterConfig = {
           apiUrl: config.apiUrl,
           apiKey: config.apiKey,
-          clinicId: config.clinicId || '',
+          clinicId: config.clinicId || ''
         };
         return new ClinicCloudAdapter(clinicCloudConfig);
       }
@@ -146,7 +144,7 @@ export class EMRAdapterFactory {
           apiBaseUrl: config.baseUrl,
           apiKey: config.apiKey,
           clientId: config.clientId,
-          clientSecret: config.clientSecret,
+          clientSecret: config.clientSecret
         };
         return new EPICAdapter(epicConfig);
       }
@@ -167,15 +165,11 @@ export class EMRAdapterFactory {
   /**
    * Obtiene un mapa con información sobre los adaptadores disponibles
    */
-  public getAdaptersInfo(): Array<{
-    id: string;
-    name: string;
-    description: string;
-  }> {
+  public getAdaptersInfo(): Array<{ id: string; name: string; description: string }> {
     return Array.from(this.adapters.entries()).map(([id, adapter]) => ({
       id,
       name: adapter.name,
-      description: adapter.description || '',
+      description: adapter.description || ''
     }));
   }
 }

@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
-import React from 'react';
+import { 
+   useState, useEffect 
+ } from 'react'
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from '@chakra-ui/react'
+import React from 'react'
 export type SpinnerType = 'primary' | 'success' | 'error' | 'warning' | 'info';
 export type SpinnerSize = 'sm' | 'md' | 'lg';
 
-export interface SpinnerProps {
+interface SpinnerProps {
   /**
    * El tipo de spinner que determina el color
    */

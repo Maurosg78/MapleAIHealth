@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
-import React from 'react';
+import { 
+   useState, useEffect 
+ } from 'react'
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from '@chakra-ui/react'
+import React from 'react'
 type PatientFormData = Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>;
-export interface PatientFormProps {
+interface PatientFormProps {
   patient?: Patient;
   onSubmit: (data: PatientFormData) => Promise<void>;
   isLoading?: boolean;

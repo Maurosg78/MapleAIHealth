@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
-// Definir la interfaz para la consulta de búsqueda
-import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
-import React from 'react';
+import { 
+   useState, useEffect 
+ } from 'react'
+ // Definir la interfaz para la consulta de búsqueda
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from '@chakra-ui/react'
+import React from 'react'
 interface EMRSearchQuery {
   name: string;
   documentId: string;

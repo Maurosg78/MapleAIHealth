@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
-import React from 'react';
+import { 
+   useState, useEffect 
+ } from 'react'
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from '@chakra-ui/react'
+import React from 'react'
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
 export type AvatarVariant = 'circle' | 'square' | 'rounded';
 
-export interface AvatarProps {
+interface AvatarProps {
   /**
    * La URL de la imagen del avatar
    */

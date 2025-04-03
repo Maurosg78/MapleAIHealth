@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
-import React from 'react';
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const AIMedicalWidget: React.FC = () => {
-  import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

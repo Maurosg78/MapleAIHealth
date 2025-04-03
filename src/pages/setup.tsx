@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
-/**
+import { 
+   useState, useEffect 
+ } from 'react'
+ /**
 import React from 'react'
  * Página de configuración inicial de la aplicación
  */

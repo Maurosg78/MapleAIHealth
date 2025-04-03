@@ -110,15 +110,12 @@ export interface EMRPatientHistory {
     date: Date;
     type: string;
     name: string;
-    results: Record<
-      string,
-      {
-        value: string | number;
-        unit?: string;
-        referenceRange?: string;
-        isAbnormal?: boolean;
-      }
-    >;
+    results: Record<string, {
+      value: string | number;
+      unit?: string;
+      referenceRange?: string;
+      isAbnormal?: boolean;
+    }>;
     units?: string;
     range?: string;
     abnormal?: boolean;
@@ -173,10 +170,7 @@ export interface EMRAdapter {
    * @param limit Límite de resultados a devolver
    * @returns Promise con los resultados de la búsqueda
    */
-  searchPatients(
-    query: EMRSearchQuery,
-    limit?: number
-  ): Promise<EMRPatientSearchResult[]>;
+  searchPatients(query: EMRSearchQuery, limit?: number): Promise<EMRPatientSearchResult[]>;
 
   /**
    * Obtiene el historial médico completo de un paciente
@@ -184,10 +178,7 @@ export interface EMRAdapter {
    * @param options Opciones para filtrar el historial
    * @returns Promise con el historial médico del paciente
    */
-  getPatientHistory(
-    patientId: string,
-    options?: EMRHistoryOptions
-  ): Promise<EMRPatientHistory>;
+  getPatientHistory(patientId: string, options?: EMRHistoryOptions): Promise<EMRPatientHistory>;
 
   /**
    * Guarda una nueva consulta médica
@@ -202,10 +193,7 @@ export interface EMRAdapter {
    * @param updates Datos a actualizar
    * @returns Promise que resuelve a true si la actualización fue exitosa
    */
-  updateConsultation(
-    consultationId: string,
-    updates: Partial<EMRConsultation>
-  ): Promise<boolean>;
+  updateConsultation(consultationId: string, updates: Partial<EMRConsultation>): Promise<boolean>;
 
   /**
    * Registra un nuevo tratamiento médico
@@ -220,8 +208,5 @@ export interface EMRAdapter {
    * @param metricTypes Tipos de métricas a obtener
    * @returns Promise con las métricas del paciente
    */
-  getPatientMetrics(
-    patientId: string,
-    metricTypes: string[]
-  ): Promise<EMRPatientMetrics>;
+  getPatientMetrics(patientId: string, metricTypes: string[]): Promise<EMRPatientMetrics>;
 }

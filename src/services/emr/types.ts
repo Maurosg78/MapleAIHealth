@@ -37,15 +37,12 @@ export interface LabResult {
   date: Date;
   type: string;
   name: string;
-  results: Record<
-    string,
-    {
-      value: string | number;
-      unit?: string;
-      referenceRange?: string;
-      isAbnormal?: boolean;
-    }
-  >;
+  results: Record<string, {
+    value: string | number;
+    unit?: string;
+    referenceRange?: string;
+    isAbnormal?: boolean;
+  }>;
   status: 'final' | 'preliminary' | 'amended' | 'corrected';
   performingLab?: string;
   units?: string;
@@ -58,24 +55,12 @@ export interface LabResult {
 export interface EMRAdapter {
   testConnection(): Promise<boolean>;
   getPatientData(patientId: string): Promise<PatientData>;
-  searchPatients(
-    query: EMRSearchQuery,
-    limit?: number
-  ): Promise<EMRPatientSearchResult[]>;
-  getPatientHistory(
-    patientId: string,
-    options?: EMRHistoryOptions
-  ): Promise<EMRPatientHistory>;
+  searchPatients(query: EMRSearchQuery, limit?: number): Promise<EMRPatientSearchResult[]>;
+  getPatientHistory(patientId: string, options?: EMRHistoryOptions): Promise<EMRPatientHistory>;
   saveConsultation(consultation: EMRConsultation): Promise<string>;
-  updateConsultation(
-    consultationId: string,
-    updates: Partial<EMRConsultation>
-  ): Promise<boolean>;
+  updateConsultation(consultationId: string, updates: Partial<EMRConsultation>): Promise<boolean>;
   registerTreatment(treatment: EMRTreatment): Promise<string>;
-  getPatientMetrics(
-    patientId: string,
-    metricTypes: string[]
-  ): Promise<EMRPatientMetrics>;
+  getPatientMetrics(patientId: string, metricTypes: string[]): Promise<EMRPatientMetrics>;
 }
 
 export interface EMRAdapterConfig {
@@ -181,24 +166,18 @@ export interface EMRPatientHistory {
 
 export interface EMRPatientMetrics {
   patientId: string;
-  vitalSigns?: Record<
-    string,
-    Array<{
-      date: Date;
-      value: number;
-      unit?: string;
-    }>
-  >;
-  labResults?: Record<
-    string,
-    Array<{
-      date: Date;
-      value: number | string;
-      unit?: string;
-      referenceRange?: string;
-      isAbnormal?: boolean;
-    }>
-  >;
+  vitalSigns?: Record<string, Array<{
+    date: Date;
+    value: number;
+    unit?: string;
+  }>>;
+  labResults?: Record<string, Array<{
+    date: Date;
+    value: number | string;
+    unit?: string;
+    referenceRange?: string;
+    isAbnormal?: boolean;
+  }>>;
   weight?: Array<{
     date: Date;
     value: number;

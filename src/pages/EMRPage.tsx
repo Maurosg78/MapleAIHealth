@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
-import React from 'react';
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 interface PatientInfo {
   id: string;
   name: string;

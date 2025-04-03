@@ -1,8 +1,14 @@
-import { render, screen } from '@testing-library/react';
-import { useState, useEffect } from 'react';
-import React from 'react';
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Alert', () => {
-  import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   it('renderiza correctamente con el contenido proporcionado', () => {
     render(<Alert>Mensaje de alerta</Alert>);
     expect(screen.getByText('Mensaje de alerta')).toBeInTheDocument();

@@ -1,7 +1,7 @@
 import { 
    useState, useEffect 
  } from "react"
-export export interface ModalProps {
+interface ModalProps {
 import { 
    Button, Input, Select, Modal, Spinner 
  } from "@chakra-ui/react"

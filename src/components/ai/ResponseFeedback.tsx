@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
-import React from 'react';
-export interface ResponseFeedbackProps {
+import { 
+   useState, useEffect 
+ } from 'react'
+import { 
+   Button, Input, Select, Modal, Spinner 
+ } from '@chakra-ui/react'
+import React from 'react'
+interface ResponseFeedbackProps {
   entryId: string;
   onFeedbackSubmitted?: () => void;
 }

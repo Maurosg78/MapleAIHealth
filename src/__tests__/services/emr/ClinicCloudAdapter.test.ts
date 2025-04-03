@@ -1,7 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import { HttpService } from '../../../lib/api';
-import { ClinicCloudAdapter } from '../../../services/emr/implementations/ClinicCloudAdapter';
-import { MockHttpService } from './mocks/MockHttpService';
+import { render, screen } from "@testing-library/react"
+import { HttpService } from "../../../lib/api"
+import { ClinicCloudAdapter } from "../../../services/emr/implementations/ClinicCloudAdapter"
+import { MockHttpService } from "./mocks/MockHttpService"
 import {
   clinicCloudPatientData,
   clinicCloudSearchResults,
@@ -54,6 +54,7 @@ describe('ClinicCloudAdapter', () => {
 
       // Ejecutamos el método a probar
 
+
       // Verificamos el resultado
       expect(result).toBe(true);
       expect(mockHttp.authenticateClinicCloud).toHaveBeenCalledWith(
@@ -68,6 +69,7 @@ describe('ClinicCloudAdapter', () => {
         .mockRejectedValue(new Error('API Key inválida'));
 
       // Ejecutamos el método a probar
+
 
       // Verificamos el resultado
       expect(result).toBe(false);
@@ -84,6 +86,7 @@ describe('ClinicCloudAdapter', () => {
       jest.spyOn(mockHttp, 'get').mockResolvedValue(clinicCloudPatientData);
 
       // Ejecutamos el método a probar
+
 
       // Verificamos que se haya llamado correctamente al servicio HTTP
       expect(mockHttp.get).toHaveBeenCalledWith(
@@ -191,6 +194,7 @@ describe('ClinicCloudAdapter', () => {
 
       // Ejecutamos el método a probar
 
+
       // Verificamos que la URL de obtención sea correcta
       expect(mockHttp.get).toHaveBeenCalledWith(
         expect.stringContaining(
@@ -246,12 +250,13 @@ describe('ClinicCloudAdapter', () => {
             code: 'S83.6',
             description: 'Esguince de rodilla',
             system: 'ICD-10',
-            status: 'active',
+            status: 'active'
           } as EMRDiagnosis,
         ],
       };
 
       // Ejecutamos el método a probar
+
 
       // Verificamos el resultado
       expect(result).toBeDefined();
@@ -277,11 +282,11 @@ describe('ClinicCloudAdapter', () => {
       jest.spyOn(mockHttp, 'get').mockResolvedValue(patientMetrics);
 
       // Ejecutamos el método a probar
-      const metrics = (await adapter.getPatientMetrics('cc-67890', [
+      const metrics = await adapter.getPatientMetrics('cc-67890', [
         'peso',
         'altura',
         'tensionArterial',
-      ])) as unknown as {
+      ]) as unknown as {
         weight: { value: number; unit: string };
         height: { value: number; unit: string };
         bloodPressure: { systolic: number; diastolic: number };

@@ -1,7 +1,7 @@
 import { 
    useState, useEffect 
  } from "react"
-export export interface PatientFormModalProps {
+interface PatientFormModalProps {
 import { 
    Button, Input, Select, Modal, Spinner 
  } from "@chakra-ui/react"

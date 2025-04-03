@@ -1,4 +1,3 @@
-import React from "react";
 import { 
    useState, useEffect 
  } from "react"
@@ -11,7 +10,7 @@ import {
   AppointmentType,
 } from '../../types/appointment';
 
-export export interface AppointmentFormModalProps {
+interface AppointmentFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   appointment?: Appointment;

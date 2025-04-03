@@ -1,6 +1,6 @@
-import { Logger } from '../../lib/logger';
-import { EMRAdapterFactory } from './EMRAdapterFactory';
-import { EMRAdapter, EMRAdapterConfig } from './types';
+import { Logger } from "../../lib/logger";
+import { EMRAdapterFactory } from "./EMRAdapterFactory";
+import { EMRAdapter, EMRAdapterConfig } from "./types";
 
 /**
  * Servicio para gestionar la configuración de adaptadores EMR
@@ -36,8 +36,7 @@ export class EMRConfigService {
       this.logger.info(
         'No hay adaptador configurado, usando adaptador genérico'
       );
-      this.currentAdapter =
-        EMRAdapterFactory.getInstance().getAdapter('GENERIC');
+      this.currentAdapter = EMRAdapterFactory.getInstance().getAdapter('GENERIC');
       this.currentAdapterName = 'GENERIC';
     }
     return this.currentAdapter;
@@ -70,10 +69,7 @@ export class EMRConfigService {
       this.logger.info(`Configurando adaptador EMR: ${adapterName}`);
 
       // Obtener una instancia del adaptador con la configuración proporcionada
-      const adapter = EMRAdapterFactory.getInstance().getAdapter(
-        adapterName,
-        config
-      );
+      const adapter = EMRAdapterFactory.getInstance().getAdapter(adapterName, config);
 
       // Probar la conexión
       const isConnected = await adapter.testConnection();

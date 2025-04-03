@@ -1,4 +1,3 @@
-import crypto from "crypto";
   EMRAdapter,
 import { 
    HttpService 
@@ -834,7 +833,7 @@ export class OSCARAdapter implements EMRAdapter {
 
       // Construir objeto de datos del paciente
       const patientData: PatientData = {
-        id: demographic.id || crypto.randomUUID(),
+        id: demographic.id,
         personalInfo: {
           fullName,
           firstName,
@@ -902,7 +901,7 @@ export class OSCARAdapter implements EMRAdapter {
   ): MedicalHistoryResult {
     // Extraer alergias
     const allergies = data.allergies.map((allergy) => ({
-      id: allergy.id || crypto.randomUUID(),
+      id: allergy.id,
       description: allergy.description,
       reaction: allergy.reaction,
       severity: allergy.severity,
@@ -912,7 +911,7 @@ export class OSCARAdapter implements EMRAdapter {
     const problems = data.problems
       .filter((problem) => problem.active)
       .map((problem) => ({
-        id: problem.id || crypto.randomUUID(),
+        id: problem.id,
         code: problem.code,
         codeSystem: problem.codeSystem,
         description: problem.description,
@@ -971,7 +970,7 @@ export class OSCARAdapter implements EMRAdapter {
     if (!results?.demographics) return [];
 
     return results.demographics.map((demo: OSCARDemographic) => ({
-      id: demo.id || crypto.randomUUID(),
+      id: demo.id,
       name: `${demo.firstName ?? ''} ${demo.lastName ?? ''}`.trim(),
       birthDate: demo.birthDate,
       gender: demo.gender,
@@ -985,7 +984,7 @@ export class OSCARAdapter implements EMRAdapter {
     if (!encounters?.notes) return [];
 
     return encounters.notes.map((note: OSCAREncounter) => ({
-      id: note.id || crypto.randomUUID(),
+      id: note.id,
       patientId: note.id,
       providerId: note.providerName,
       date: new Date(note.date),
@@ -1001,7 +1000,7 @@ export class OSCARAdapter implements EMRAdapter {
     if (!prescriptions?.prescriptions) return [];
 
     return prescriptions.prescriptions.map((rx: OSCARPrescription) => ({
-      id: rx.id || crypto.randomUUID(),
+      id: rx.id,
       patientId: rx.id,
       providerId: rx.prescribedBy,
       startDate: new Date(rx.startDate),
@@ -1020,7 +1019,7 @@ export class OSCARAdapter implements EMRAdapter {
     if (!labs?.labs) return [];
 
     return labs.labs.map((lab) => ({
-      id: lab.id || crypto.randomUUID(),
+      id: lab.id,
       patientId: lab.id,
       date: new Date(lab.date),
       category: 'laboratory',
@@ -1037,7 +1036,7 @@ export class OSCARAdapter implements EMRAdapter {
     if (!problems?.problems) return [];
 
     return problems.problems.map((problem: OSCARProblem) => ({
-      id: problem.id || crypto.randomUUID(),
+      id: problem.id,
       patientId: problem.id,
       date: new Date(problem.dateRecorded),
       code: problem.code,

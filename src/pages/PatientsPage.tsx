@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
-import React from 'react';
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const PatientsPage: React.FC = () => {
   const [filters, setFilters] = useState<PatientFilters>({
     search: '',

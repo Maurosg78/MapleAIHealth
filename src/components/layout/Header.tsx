@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
-import React from 'react';
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 export const Header: React.FC = () => {
-  import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
 
   return (
     <header className="bg-white dark:bg-gray-800 shadow">

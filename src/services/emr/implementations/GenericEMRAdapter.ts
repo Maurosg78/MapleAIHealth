@@ -1,16 +1,15 @@
-import { Logger } from '../../../lib/logger';
+import { Logger } from "../../../lib/logger";
 import {
   EMRAdapter,
   PatientData,
   Encounter,
   Medication,
   Allergy,
-  LabResult,
+  LabResult
 } from '../types';
 
 // Tipos para datos mock
-interface MockPatient
-  extends Omit<PatientData, 'labResults' | 'medications' | 'allergies'> {
+interface MockPatient extends Omit<PatientData, 'labResults' | 'medications' | 'allergies'> {
   medicalHistory?: {
     allergies?: string[];
     chronicConditions?: string[];
@@ -109,15 +108,13 @@ export class GenericEMRAdapter implements EMRAdapter {
         address: 'Calle Libertad 123, Madrid',
       },
       lastVisit: new Date('2023-10-15'),
-      vitalSigns: [
-        {
-          date: new Date('2023-10-15'),
-          bloodPressure: {
-            systolic: 135,
-            diastolic: 85,
-          },
+      vitalSigns: [{
+        date: new Date('2023-10-15'),
+        bloodPressure: {
+          systolic: 135,
+          diastolic: 85,
         },
-      ],
+      }],
     });
 
     // Consulta de ejemplo
@@ -177,7 +174,7 @@ export class GenericEMRAdapter implements EMRAdapter {
     await new Promise((resolve) => setTimeout(resolve, 800));
 
     // Buscar paciente en datos de ejemplo
-    const patient = mockPatientData.find((p) => p.id === patientId);
+    const patient = mockPatientData.find(p => p.id === patientId);
 
     if (!patient) {
       this.logger.error('Paciente no encontrado', { patientId });
@@ -188,10 +185,10 @@ export class GenericEMRAdapter implements EMRAdapter {
     return {
       ...patient,
       lastVisit: patient.lastVisit ? new Date(patient.lastVisit) : undefined,
-      vitalSigns: patient.vitalSigns?.map((vs) => ({
+      vitalSigns: patient.vitalSigns?.map(vs => ({
         ...vs,
-        date: new Date(vs.date),
-      })),
+        date: new Date(vs.date)
+      }))
     };
   }
 
@@ -214,13 +211,13 @@ export class GenericEMRAdapter implements EMRAdapter {
           patient.documentId?.toLowerCase().includes(searchTerm)
         );
       })
-      .map((patient) => ({
+      .map(patient => ({
         ...patient,
         lastVisit: patient.lastVisit ? new Date(patient.lastVisit) : undefined,
-        vitalSigns: patient.vitalSigns?.map((vs) => ({
+        vitalSigns: patient.vitalSigns?.map(vs => ({
           ...vs,
-          date: new Date(vs.date),
-        })),
+          date: new Date(vs.date)
+        }))
       }));
 
     return results;
@@ -237,7 +234,7 @@ export class GenericEMRAdapter implements EMRAdapter {
     this.logger.info('Obteniendo encuentros del paciente', {
       patientId,
       startDate,
-      endDate,
+      endDate
     });
 
     // Simular latencia de red
@@ -245,16 +242,16 @@ export class GenericEMRAdapter implements EMRAdapter {
 
     // Filtrar encuentros del paciente
     const encounters = mockEncounters
-      .filter((encounter) => {
+      .filter(encounter => {
         if (encounter.patientId !== patientId) return false;
         const encounterDate = new Date(encounter.date);
         if (startDate && encounterDate < startDate) return false;
         if (endDate && encounterDate > endDate) return false;
         return true;
       })
-      .map((encounter) => ({
+      .map(encounter => ({
         ...encounter,
-        date: new Date(encounter.date),
+        date: new Date(encounter.date)
       }));
 
     return encounters;
@@ -271,11 +268,11 @@ export class GenericEMRAdapter implements EMRAdapter {
 
     // Filtrar medicamentos del paciente
     const medications = mockMedications
-      .filter((med) => med.patientId === patientId)
-      .map((med) => ({
+      .filter(med => med.patientId === patientId)
+      .map(med => ({
         ...med,
         startDate: new Date(med.startDate),
-        endDate: med.endDate ? new Date(med.endDate) : undefined,
+        endDate: med.endDate ? new Date(med.endDate) : undefined
       }));
 
     return medications;
@@ -291,7 +288,7 @@ export class GenericEMRAdapter implements EMRAdapter {
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     // En esta implementación de ejemplo, las alergias están en el historial médico
-    const patient = mockPatientData.find((p) => p.id === patientId);
+    const patient = mockPatientData.find(p => p.id === patientId);
     if (!patient?.medicalHistory?.allergies) {
       return [];
     }
@@ -301,7 +298,7 @@ export class GenericEMRAdapter implements EMRAdapter {
       allergen,
       severity: 'moderate',
       status: 'active',
-      recordedDate: new Date(),
+      recordedDate: new Date()
     }));
   }
 
@@ -316,7 +313,7 @@ export class GenericEMRAdapter implements EMRAdapter {
     this.logger.info('Obteniendo resultados de laboratorio del paciente', {
       patientId,
       startDate,
-      endDate,
+      endDate
     });
 
     // Simular latencia de red

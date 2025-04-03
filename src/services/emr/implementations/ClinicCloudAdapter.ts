@@ -1,4 +1,3 @@
-import crypto from "crypto";
   EMRAdapter,
 import { 
    HttpService 
@@ -413,7 +412,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
       );
 
       return response.map(patient => ({
-        id: patient.id || crypto.randomUUID(),
+        id: patient.id,
         fullName: `${patient.nombre} ${patient.apellido}`,
         name: `${patient.nombre} ${patient.apellido}`,
         birthDate: patient.fechaNacimiento,
@@ -449,7 +448,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
       );
 
       return response.map(consulta => ({
-        id: consulta.id || crypto.randomUUID(),
+        id: consulta.id,
         patientId: consulta.pacienteId,
         providerId: consulta.medicoId,
         date: new Date(consulta.fecha),
@@ -457,7 +456,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
         notes: consulta.notas,
         specialty: consulta.especialidad,
         diagnoses: consulta.diagnosticos?.map(d => ({
-          id: d.id || crypto.randomUUID(),
+          id: d.id,
           patientId: d.pacienteId,
           date: new Date(d.fecha),
           code: d.codigo,
@@ -862,7 +861,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
 
       // Construir el objeto PatientData
       const patientData: PatientData = {
-        id: pacienteData.id || crypto.randomUUID(),
+        id: pacienteData.id,
         personalInfo: {
           fullName,
           firstName,
@@ -934,7 +933,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
   ): MedicalHistoryResult {
     // Extraer alergias
     const alergias = data.alergias.map((alergia) => ({
-      id: alergia.id || crypto.randomUUID(),
+      id: alergia.id,
       descripcion: alergia.descripcion,
       reaccion: alergia.reaccion,
       gravedad: alergia.gravedad,
@@ -944,7 +943,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     const condiciones = data.condiciones
       .filter((condicion) => condicion.cronica)
       .map((condicion) => ({
-        id: condicion.id || crypto.randomUUID(),
+        id: condicion.id,
         codigo: condicion.codigo,
         sistema: condicion.sistema,
         descripcion: condicion.descripcion,
@@ -1014,7 +1013,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
       const fullName =
         `${paciente.nombre ?? ''} ${paciente.apellidos ?? ''}`.trim();
       return {
-        id: paciente.id || crypto.randomUUID(),
+        id: paciente.id,
         fullName: fullName,
         name: fullName,
         birthDate: paciente.fechaNacimiento ?? '',
@@ -1041,7 +1040,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     if (!consultas || !consultas.consultas) return [];
 
     return consultas.consultas.map((consulta) => ({
-      id: consulta.id || crypto.randomUUID(),
+      id: consulta.id,
       patientId: consulta.pacienteId,
       providerId: consulta.profesional,
       date: new Date(consulta.fecha),
@@ -1070,7 +1069,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     if (!tratamientos || !tratamientos.tratamientos) return [];
 
     return tratamientos.tratamientos.map((tratamiento) => ({
-      id: tratamiento.id || crypto.randomUUID(),
+      id: tratamiento.id,
       patientId: tratamiento.pacienteId,
       providerId: tratamiento.recetadoPor,
       startDate: new Date(tratamiento.fechaInicio),
@@ -1145,7 +1144,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     if (!laboratorio.resultados) return [];
 
     return laboratorio.resultados.map((resultado) => ({
-      id: resultado.id || crypto.randomUUID(),
+      id: resultado.id,
       patientId: resultado.pacienteId,
       date: new Date(resultado.fecha),
       category: 'laboratory',
@@ -1167,7 +1166,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     if (!diagnosticos?.diagnosticos) return [];
 
     return diagnosticos.diagnosticos.map((diagnostico) => ({
-      id: diagnostico.id || crypto.randomUUID(),
+      id: diagnostico.id,
       patientId: diagnostico.pacienteId,
       date: new Date(diagnostico.fecha),
       code: diagnostico.codigo ?? '',
@@ -1186,7 +1185,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     consultation: EMRConsultation
   ): ClinicCloudConsulta {
     const consulta: ClinicCloudConsulta = {
-      id: consultation.id || crypto.randomUUID(),
+      id: consultation.id,
       pacienteId: consultation.patientId,
       medicoId: consultation.providerId,
       fecha: this.formatDate(consultation.date),

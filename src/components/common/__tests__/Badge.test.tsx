@@ -1,8 +1,14 @@
-import { render, screen } from '@testing-library/react';
-import { useState, useEffect } from 'react';
-import React from 'react';
+import { 
+   render, screen 
+ } from '@testing-library/react'
+import { 
+   useState, useEffect 
+ } from 'react'
+import React from 'react'
 describe('Badge', () => {
-  import { Button, Input, Select, Modal, Spinner } from '@chakra-ui/react';
+  import {
+   Button, Input, Select, Modal, Spinner 
+} from '@chakra-ui/react';
   it('renderiza correctamente con el contenido proporcionado', () => {
     render(<Badge>Test Badge</Badge>);
     expect(screen.getByText('Test Badge')).toBeInTheDocument();

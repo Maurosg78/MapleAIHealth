@@ -1,4 +1,3 @@
-import React from "react";
 import { 
    useState, useEffect 
  } from "react"
@@ -12,7 +11,7 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/24/outline';
 
-export export interface ToastProps {
+interface ToastProps {
   /**
    * El tipo de toast
    */

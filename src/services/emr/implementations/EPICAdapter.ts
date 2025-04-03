@@ -1,16 +1,4 @@
-import crypto from 'crypto';
-import {
-  EMRAdapter,
-  EMRConsultation,
-  EMRPatientHistory,
-  EMRPatientMetrics,
-  EMRPatientSearchResult,
-  EMRSearchQuery,
-  EMRTreatment,
-  LabResult,
-  EMRAllergy,
-  EMREncounter,
-} from '../types';
+import { EMRAdapter, EMRConsultation, EMRPatientHistory, EMRPatientMetrics, EMRPatientSearchResult, EMRSearchQuery, EMRTreatment, LabResult, EMRAllergy, EMREncounter } from '../types';
 import { Logger } from '../../../lib/logger';
 import { PatientData } from '../types';
 
@@ -411,25 +399,16 @@ export class EPICAdapter implements EMRAdapter {
   /**
    * Obtiene el historial médico del paciente de EPIC
    */
-  public async getPatientHistory(
-    patientId: string
-  ): Promise<EMRPatientHistory> {
+  public async getPatientHistory(patientId: string): Promise<EMRPatientHistory> {
     try {
       console.log('Obteniendo historial del paciente desde EPIC');
 
-      const [encounters, medications, allergies, labResults] =
-        await Promise.all([
-          this.fetchFHIRResource<FHIRBundle>(`Encounter?patient=${patientId}`),
-          this.fetchFHIRResource<FHIRBundle>(
-            `MedicationRequest?patient=${patientId}`
-          ),
-          this.fetchFHIRResource<FHIRBundle>(
-            `AllergyIntolerance?patient=${patientId}`
-          ),
-          this.fetchFHIRResource<FHIRBundle>(
-            `Observation?patient=${patientId}&category=laboratory`
-          ),
-        ]);
+      const [encounters, medications, allergies, labResults] = await Promise.all([
+        this.fetchFHIRResource<FHIRBundle>(`Encounter?patient=${patientId}`),
+        this.fetchFHIRResource<FHIRBundle>(`MedicationRequest?patient=${patientId}`),
+        this.fetchFHIRResource<FHIRBundle>(`AllergyIntolerance?patient=${patientId}`),
+        this.fetchFHIRResource<FHIRBundle>(`Observation?patient=${patientId}&category=laboratory`)
+      ]);
 
       const patientHistory: EMRPatientHistory = {
         patientId,
@@ -439,7 +418,7 @@ export class EPICAdapter implements EMRAdapter {
         labResults: this.convertFHIRObservations(labResults),
         diagnoses: [],
         consultations: [],
-        treatments: [],
+        treatments: []
       };
 
       return patientHistory;
@@ -558,7 +537,10 @@ export class EPICAdapter implements EMRAdapter {
       }
 
       // Enviar el tratamiento a EPIC
-      const response = await this.postFHIRResource(resourceType, fhirResource);
+      const response = await this.postFHIRResource(
+        resourceType,
+        fhirResource
+      );
 
       // Extraer el ID del recurso creado
       const resourceId = this.extractResourceIdFromResponse(response);
@@ -815,12 +797,7 @@ export class EPICAdapter implements EMRAdapter {
       },
       lastVisit: undefined,
       vitalSigns: [],
-      labResults: this.convertFHIRObservations(
-        additionalData.observations || {
-          resourceType: 'Bundle',
-          type: 'searchset',
-        }
-      ),
+      labResults: this.convertFHIRObservations(additionalData.observations || { resourceType: 'Bundle', type: 'searchset' }),
       medications: [],
       allergies: [],
       diagnoses: [],
@@ -853,8 +830,7 @@ export class EPICAdapter implements EMRAdapter {
 
   private extractAddressFromFHIR(patientResource: FHIRPatient): string {
     const primaryAddress =
-      patientResource.address?.find((a) => !a.use || a.use === 'home') ||
-      patientResource.address?.[0];
+      patientResource.address?.find((a) => !a.use || a.use === 'home') || patientResource.address?.[0];
 
     if (!primaryAddress) return '';
 
@@ -999,9 +975,7 @@ export class EPICAdapter implements EMRAdapter {
       .filter((entry) => entry.resource?.resourceType === 'Patient')
       .map((entry) => {
         const resource = entry.resource as FHIRPatient;
-        const primaryName = resource.name?.find(
-          (n) => !n.use || n.use === 'official'
-        ) ??
+        const primaryName = resource.name?.find((n) => !n.use || n.use === 'official') ??
           resource.name?.[0] ?? { given: [], family: '' };
 
         const givenNames = primaryName.given || [];
@@ -1020,8 +994,8 @@ export class EPICAdapter implements EMRAdapter {
           contactInfo: {
             email: this.extractEmailFromFHIR(resource),
             phone: this.extractPhoneFromFHIR(resource),
-            address: this.extractAddressFromFHIR(resource),
-          },
+            address: this.extractAddressFromFHIR(resource)
+          }
         };
       });
   }
@@ -1029,7 +1003,7 @@ export class EPICAdapter implements EMRAdapter {
   private convertFHIREncounters(bundle: FHIRBundle): EMREncounter[] {
     if (!bundle.entry) return [];
 
-    return bundle.entry.map((entry) => {
+    return bundle.entry.map(entry => {
       const encounter = entry.resource as FHIREncounterResource;
       const id = encounter.id || crypto.randomUUID();
       return {
@@ -1038,14 +1012,11 @@ export class EPICAdapter implements EMRAdapter {
         date: new Date(encounter.period?.start || new Date()),
         type: encounter.class?.code || 'unknown',
         status: this.mapEncounterStatus(encounter.status || 'unknown'),
-        providerId:
-          encounter.participant?.[0]?.individual?.reference?.split('/')[1],
+        providerId: encounter.participant?.[0]?.individual?.reference?.split('/')[1],
         notes: encounter.text?.div,
         reason: encounter.reasonCode?.[0]?.text,
-        diagnoses: encounter.diagnosis?.map((diagnosis) => ({
-          id:
-            diagnosis.condition?.reference?.split('/')[1] ||
-            crypto.randomUUID(),
+        diagnoses: encounter.diagnosis?.map(diagnosis => ({
+          id: diagnosis.condition?.reference?.split('/')[1] || crypto.randomUUID(),
           patientId: encounter.subject?.reference?.split('/')[1] || '',
           date: new Date(encounter.period?.start || new Date()),
           code: diagnosis.condition?.reference?.split('/')[1] || '',
@@ -1053,8 +1024,8 @@ export class EPICAdapter implements EMRAdapter {
           description: diagnosis.condition?.display || 'Unknown diagnosis',
           status: 'active',
           type: 'encounter-diagnosis',
-          recordedDate: new Date(encounter.period?.start || new Date()),
-        })),
+          recordedDate: new Date(encounter.period?.start || new Date())
+        }))
       };
     });
   }
@@ -1080,9 +1051,7 @@ export class EPICAdapter implements EMRAdapter {
     }
   }
 
-  private mapAllergyStatus(
-    status?: string
-  ): 'active' | 'inactive' | 'resolved' {
+  private mapAllergyStatus(status?: string): 'active' | 'inactive' | 'resolved' {
     switch (status?.toLowerCase()) {
       case 'active':
         return 'active';
@@ -1093,9 +1062,7 @@ export class EPICAdapter implements EMRAdapter {
     }
   }
 
-  private mapAllergySeverity(
-    severity?: string
-  ): 'mild' | 'moderate' | 'severe' {
+  private mapAllergySeverity(severity?: string): 'mild' | 'moderate' | 'severe' {
     switch (severity?.toLowerCase()) {
       case 'high':
         return 'severe';
@@ -1109,31 +1076,23 @@ export class EPICAdapter implements EMRAdapter {
   private convertFHIRAllergyIntolerances(bundle: FHIRBundle): EMRAllergy[] {
     if (!bundle.entry) return [];
 
-    return bundle.entry.map((entry) => {
+    return bundle.entry.map(entry => {
       const allergy = entry.resource as FHIRAllergyIntolerance;
       const id = allergy.id || crypto.randomUUID();
       return {
         id,
         patientId: allergy.patient.reference.split('/')[1],
-        name:
-          allergy.code?.text || allergy.code?.coding?.[0]?.display || 'Unknown',
+        name: allergy.code?.text || allergy.code?.coding?.[0]?.display || 'Unknown',
         type: allergy.type || 'allergy',
-        status: this.mapAllergyStatus(
-          allergy.clinicalStatus?.coding?.[0]?.code
-        ),
+        status: this.mapAllergyStatus(allergy.clinicalStatus?.coding?.[0]?.code),
         severity: this.mapAllergySeverity(allergy.criticality),
-        onsetDate: allergy.onsetDateTime
-          ? new Date(allergy.onsetDateTime)
-          : undefined,
-        endDate: allergy.recordedDate
-          ? new Date(allergy.recordedDate)
-          : undefined,
+        onsetDate: allergy.onsetDateTime ? new Date(allergy.onsetDateTime) : undefined,
+        endDate: allergy.recordedDate ? new Date(allergy.recordedDate) : undefined,
         notes: allergy.note?.[0]?.text,
-        reactions: allergy.reaction?.map((reaction) => ({
-          manifestation:
-            reaction.manifestation?.[0]?.coding?.[0]?.display || 'Unknown',
-          severity: this.mapAllergySeverity(reaction.severity),
-        })),
+        reactions: allergy.reaction?.map(reaction => ({
+          manifestation: reaction.manifestation?.[0]?.coding?.[0]?.display || 'Unknown',
+          severity: this.mapAllergySeverity(reaction.severity)
+        }))
       };
     });
   }
@@ -1141,14 +1100,13 @@ export class EPICAdapter implements EMRAdapter {
   private convertFHIRObservations(bundle: FHIRBundle): LabResult[] {
     if (!bundle.entry) return [];
 
-    return bundle.entry.map((entry) => {
+    return bundle.entry.map(entry => {
       const observation = entry.resource as FHIRObservation;
       const id = observation.id || crypto.randomUUID();
       const resultValue = observation.valueQuantity?.value?.toString() || '';
       const resultUnit = observation.valueQuantity?.unit || '';
       const resultRange = observation.referenceRange?.[0]?.text || '';
-      const isAbnormal =
-        observation.interpretation?.[0]?.coding?.[0]?.code === 'H' || false;
+      const isAbnormal = observation.interpretation?.[0]?.coding?.[0]?.code === 'H' || false;
       const observationCode = observation.code?.coding?.[0]?.code || 'unknown';
 
       return {
@@ -1156,28 +1114,23 @@ export class EPICAdapter implements EMRAdapter {
         patientId: observation.subject?.reference?.split('/')[1] || '',
         date: new Date(observation.effectiveDateTime || new Date()),
         type: observationCode,
-        name:
-          observation.code?.text ||
-          observation.code?.coding?.[0]?.display ||
-          '',
+        name: observation.code?.text || observation.code?.coding?.[0]?.display || '',
         results: {
           [observationCode]: {
             value: resultValue,
             unit: resultUnit,
             referenceRange: resultRange,
-            isAbnormal,
-          },
+            isAbnormal
+          }
         },
         status: this.mapObservationStatus(observation.status || 'final'),
         performingLab: observation.performer?.[0]?.reference?.split('/')[1],
-        notes: observation.note?.[0]?.text,
+        notes: observation.note?.[0]?.text
       } as LabResult;
     });
   }
 
-  private mapObservationStatus(
-    status: string
-  ): 'final' | 'preliminary' | 'amended' | 'corrected' {
+  private mapObservationStatus(status: string): 'final' | 'preliminary' | 'amended' | 'corrected' {
     switch (status.toLowerCase()) {
       case 'preliminary':
         return 'preliminary';
@@ -1190,9 +1143,7 @@ export class EPICAdapter implements EMRAdapter {
     }
   }
 
-  private convertToFHIREncounter(
-    consultation: EMRConsultation
-  ): FHIREncounterResource {
+  private convertToFHIREncounter(consultation: EMRConsultation): FHIREncounterResource {
     return {
       resourceType: 'Encounter',
       id: consultation.id || crypto.randomUUID(),
@@ -1200,42 +1151,29 @@ export class EPICAdapter implements EMRAdapter {
       class: {
         system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode',
         code: consultation.type || 'AMB',
-        display: consultation.type || 'ambulatory',
+        display: consultation.type || 'ambulatory'
       },
       subject: {
-        reference: `Patient/${consultation.patientId}`,
+        reference: `Patient/${consultation.patientId}`
       },
-      participant: consultation.providerId
-        ? [
-            {
-              individual: {
-                reference: `Practitioner/${consultation.providerId}`,
-              },
-            },
-          ]
-        : undefined,
+      participant: consultation.providerId ? [{
+        individual: {
+          reference: `Practitioner/${consultation.providerId}`
+        }
+      }] : undefined,
       period: {
-        start: consultation.date.toISOString(),
+        start: consultation.date.toISOString()
       },
-      reasonCode: consultation.reason
-        ? [
-            {
-              text: consultation.reason,
-            },
-          ]
-        : undefined,
-      text: consultation.notes
-        ? {
-            div: consultation.notes,
-          }
-        : undefined,
+      reasonCode: consultation.reason ? [{
+        text: consultation.reason
+      }] : undefined,
+      text: consultation.notes ? {
+        div: consultation.notes
+      } : undefined
     };
   }
 
-  private applyConsultationUpdates(
-    existingEncounter: FHIRResource,
-    updates: Partial<EMRConsultation>
-  ): FHIRResource {
+  private applyConsultationUpdates(existingEncounter: FHIRResource, updates: Partial<EMRConsultation>): FHIRResource {
     const encounter = existingEncounter as FHIREncounterResource;
 
     if (updates.status) {
@@ -1246,21 +1184,19 @@ export class EPICAdapter implements EMRAdapter {
       encounter.class = {
         ...encounter.class,
         code: updates.type,
-        display: updates.type,
+        display: updates.type
       };
     }
 
     if (updates.reason) {
-      encounter.reasonCode = [
-        {
-          text: updates.reason,
-        },
-      ];
+      encounter.reasonCode = [{
+        text: updates.reason
+      }];
     }
 
     if (updates.notes) {
       encounter.text = {
-        div: updates.notes,
+        div: updates.notes
       };
     }
 
@@ -1272,28 +1208,23 @@ export class EPICAdapter implements EMRAdapter {
       weight: '29463-7',
       height: '8302-2',
       bloodPressure: '85354-9',
-      glucose: '2339-0',
+      glucose: '2339-0'
     };
 
     return metricTypes
-      .filter((type) => metricToLoinc[type])
-      .map((type) => metricToLoinc[type]);
+      .filter(type => metricToLoinc[type])
+      .map(type => metricToLoinc[type]);
   }
 
-  private processFHIRObservationsToMetrics(
-    observations: FHIRBundle,
-    metrics: EMRPatientMetrics
-  ): void {
+  private processFHIRObservationsToMetrics(observations: FHIRBundle, metrics: EMRPatientMetrics): void {
     if (!observations.entry) return;
 
-    observations.entry.forEach((entry) => {
+    observations.entry.forEach(entry => {
       const observation = entry.resource as FHIRObservation;
       const code = observation.code?.coding?.[0]?.code;
       const value = observation.valueQuantity?.value;
       const unit = observation.valueQuantity?.unit;
-      const date = observation.effectiveDateTime
-        ? new Date(observation.effectiveDateTime)
-        : new Date();
+      const date = observation.effectiveDateTime ? new Date(observation.effectiveDateTime) : new Date();
 
       if (!code || value === undefined) return;
 
@@ -1309,7 +1240,7 @@ export class EPICAdapter implements EMRAdapter {
             date,
             systolic: value,
             diastolic: value,
-            unit: unit || 'mmHg',
+            unit: unit || 'mmHg'
           });
           break;
         case '2339-0': // glucose
@@ -1317,7 +1248,7 @@ export class EPICAdapter implements EMRAdapter {
             date,
             value,
             unit: unit || 'mg/dL',
-            type: 'random',
+            type: 'random'
           });
           break;
       }
@@ -1340,7 +1271,7 @@ export class EPICAdapter implements EMRAdapter {
   private convertFHIRMedicationRequests(bundle: FHIRBundle): EMRTreatment[] {
     if (!bundle.entry) return [];
 
-    return bundle.entry.map((entry) => {
+    return bundle.entry.map(entry => {
       const medication = entry.resource as FHIRMedicationResource;
       const id = medication.id || crypto.randomUUID();
       return {
@@ -1351,16 +1282,13 @@ export class EPICAdapter implements EMRAdapter {
         startDate: new Date(medication.authoredOn || new Date()),
         providerId: medication.requester?.reference?.split('/')[1],
         details: {
-          name:
-            medication.medicationCodeableConcept?.text || 'Unknown medication',
-        },
+          name: medication.medicationCodeableConcept?.text || 'Unknown medication'
+        }
       };
     });
   }
 
-  private mapMedicationStatus(
-    status: string
-  ): 'active' | 'completed' | 'cancelled' | 'scheduled' {
+  private mapMedicationStatus(status: string): 'active' | 'completed' | 'cancelled' | 'scheduled' {
     switch (status.toLowerCase()) {
       case 'active':
         return 'active';
@@ -1373,27 +1301,21 @@ export class EPICAdapter implements EMRAdapter {
     }
   }
 
-  private convertToFHIRMedicationRequest(
-    treatment: EMRTreatment
-  ): FHIRMedicationRequest {
+  private convertToFHIRMedicationRequest(treatment: EMRTreatment): FHIRMedicationRequest {
     return {
       resourceType: 'MedicationRequest',
       id: treatment.id || crypto.randomUUID(),
       subject: {
-        reference: `Patient/${treatment.patientId}`,
+        reference: `Patient/${treatment.patientId}`
       },
-      requester: treatment.providerId
-        ? {
-            reference: `Practitioner/${treatment.providerId}`,
-          }
-        : undefined,
+      requester: treatment.providerId ? {
+        reference: `Practitioner/${treatment.providerId}`
+      } : undefined,
       medicationCodeableConcept: {
-        text:
-          (treatment.details as { name?: string })?.name ||
-          'Unknown medication',
+        text: (treatment.details as { name?: string })?.name || 'Unknown medication'
       },
       authoredOn: treatment.startDate.toISOString(),
-      status: treatment.status,
+      status: treatment.status
     };
   }
 
@@ -1402,23 +1324,18 @@ export class EPICAdapter implements EMRAdapter {
       resourceType: 'Procedure',
       id: treatment.id || crypto.randomUUID(),
       subject: {
-        reference: `Patient/${treatment.patientId}`,
+        reference: `Patient/${treatment.patientId}`
       },
-      performer: treatment.providerId
-        ? [
-            {
-              actor: {
-                reference: `Practitioner/${treatment.providerId}`,
-              },
-            },
-          ]
-        : undefined,
+      performer: treatment.providerId ? [{
+        actor: {
+          reference: `Practitioner/${treatment.providerId}`
+        }
+      }] : undefined,
       code: {
-        text:
-          (treatment.details as { name?: string })?.name || 'Unknown procedure',
+        text: (treatment.details as { name?: string })?.name || 'Unknown procedure'
       },
       performedDateTime: treatment.startDate.toISOString(),
-      status: treatment.status,
+      status: treatment.status
     };
   }
 
@@ -1427,21 +1344,17 @@ export class EPICAdapter implements EMRAdapter {
       resourceType: 'CarePlan',
       id: treatment.id || crypto.randomUUID(),
       subject: {
-        reference: `Patient/${treatment.patientId}`,
+        reference: `Patient/${treatment.patientId}`
       },
-      activity: [
-        {
-          detail: {
-            code: {
-              text:
-                (treatment.details as { name?: string })?.name ||
-                'Unknown care plan',
-            },
-            scheduledString: treatment.startDate.toISOString(),
-            status: treatment.status,
+      activity: [{
+        detail: {
+          code: {
+            text: (treatment.details as { name?: string })?.name || 'Unknown care plan'
           },
-        },
-      ],
+          scheduledString: treatment.startDate.toISOString(),
+          status: treatment.status
+        }
+      }]
     };
   }
 }
