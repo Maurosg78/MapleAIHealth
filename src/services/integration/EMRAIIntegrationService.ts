@@ -1,5 +1,4 @@
-import { EMRAdapterFactory, EMRSystem, CompleteEMRData, EMRUnstructuredNote } from '../emr';
-import { emrConfigService } from '../emr';
+import { EMRAdapterFactory, EMRSystem, CompleteEMRData, EMRUnstructuredNote, emrConfigService } from '../emr';
 import { aiService, AIResponse, UnstructuredNote, ContextType, AIContext } from '../ai';
 import { Logger } from '../ai/logger';
 
@@ -9,7 +8,7 @@ import { Logger } from '../ai/logger';
  */
 export class EMRAIIntegrationService {
   private static instance: EMRAIIntegrationService;
-  private logger: Logger;
+  private readonly logger: Logger;
 
   /**
    * Constructor privado para implementar patrón singleton
@@ -36,7 +35,7 @@ export class EMRAIIntegrationService {
    * @returns Respuesta del análisis de IA
    */
   public async analyzePatientNotes(patientId: string, system?: EMRSystem): Promise<AIResponse> {
-    const currentSystem = system || emrConfigService.getCurrentSystem();
+    const currentSystem = system ?? emrConfigService.getCurrentSystem();
     this.logger.info('Analyzing patient notes', { patientId, system: currentSystem });
 
     try {
@@ -70,8 +69,8 @@ export class EMRAIIntegrationService {
 
       this.logger.info('Analysis completed successfully', {
         patientId,
-        insightCount: aiResponse.insights?.length || 0,
-        recommendationCount: aiResponse.recommendations?.length || 0
+        insightCount: aiResponse.insights?.length ?? 0,
+        recommendationCount: aiResponse.recommendations?.length ?? 0
       });
 
       return aiResponse;
@@ -88,7 +87,7 @@ export class EMRAIIntegrationService {
    * @returns Respuesta del análisis de IA
    */
   public async getPatientCompleteAnalysis(patientId: string, system?: EMRSystem): Promise<AIResponse> {
-    const currentSystem = system || emrConfigService.getCurrentSystem();
+    const currentSystem = system ?? emrConfigService.getCurrentSystem();
     this.logger.info('Getting complete patient analysis', { patientId, system: currentSystem });
 
     try {
@@ -107,7 +106,7 @@ export class EMRAIIntegrationService {
       const emrData = await adapter.getCompleteEMRData(patientId);
 
       // Obtener notas no estructuradas
-      const emrNotes = emrData.unstructuredNotes || [];
+      const emrNotes = emrData.unstructuredNotes ?? [];
 
       // Convertir a formato esperado por el servicio de IA
       const notes = this.convertEMRNotesToAIFormat(emrNotes);
@@ -128,8 +127,8 @@ export class EMRAIIntegrationService {
 
       this.logger.info('Complete analysis finished', {
         patientId,
-        insightCount: aiResponse.insights?.length || 0,
-        recommendationCount: aiResponse.recommendations?.length || 0
+        insightCount: aiResponse.insights?.length ?? 0,
+        recommendationCount: aiResponse.recommendations?.length ?? 0
       });
 
       return aiResponse;
@@ -153,7 +152,7 @@ export class EMRAIIntegrationService {
     includeMedicalData = true,
     system?: EMRSystem
   ): Promise<AIResponse> {
-    const currentSystem = system || emrConfigService.getCurrentSystem();
+    const currentSystem = system ?? emrConfigService.getCurrentSystem();
     this.logger.info('Executing custom patient query', {
       patientId,
       system: currentSystem,
@@ -181,7 +180,7 @@ export class EMRAIIntegrationService {
       // Si se requieren datos médicos completos, obtenerlos y agregarlos a la consulta
       if (includeMedicalData) {
         const emrData = await adapter.getCompleteEMRData(patientId);
-        const emrNotes = emrData.unstructuredNotes || [];
+        const emrNotes = emrData.unstructuredNotes ?? [];
         const notes = this.convertEMRNotesToAIFormat(emrNotes);
 
         // Agregar contexto y notas a la consulta
@@ -199,8 +198,8 @@ export class EMRAIIntegrationService {
 
       this.logger.info('Custom query completed', {
         patientId,
-        insightCount: aiResponse.insights?.length || 0,
-        recommendationCount: aiResponse.recommendations?.length || 0
+        insightCount: aiResponse.insights?.length ?? 0,
+        recommendationCount: aiResponse.recommendations?.length ?? 0
       });
 
       return aiResponse;
