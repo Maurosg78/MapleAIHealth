@@ -121,7 +121,7 @@ export class MedicalSourceVerifier implements IMedicalSourceVerifier {
         if (isVerified) {
           this.logger.debug('Source verified in database', {
             sourceId: source.id,
-            database: database.name
+            databaseName: database.name
           });
 
           // Actualizar información de la fuente
@@ -264,6 +264,9 @@ export class MedicalSourceVerifier implements IMedicalSourceVerifier {
     // Simulación: mayor probabilidad de verificación para fuentes con DOI o autores
     const baseChance = 0.7;
     let verificationChance = baseChance;
+
+    // Aumentar probabilidad basado en la confiabilidad de la base de datos
+    verificationChance += database.reliability * 0.1;
 
     if (source.doi) verificationChance += 0.2;
     if (source.authors && source.authors.length > 0) verificationChance += 0.05;
