@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 export interface ProgressProps {
   value: number;
@@ -7,25 +7,27 @@ export interface ProgressProps {
   showValue?: boolean;
 }
 
-export const Progress: React.FC<ProgressProps> = ({ 
-  value, 
+export const Progress: React.FC<ProgressProps> = ({
+  value,
   max = 100,
   label,
-  showValue = false
+  showValue = false,
 }) => {
   const percentage = Math.round((value / max) * 100);
-  
+
   return (
-    <div className="progress-container">
-      {label && <div className="progress-label" id="progress-label">{label}</div>}
-      <progress 
-        className="progress-bar"
-        value={value}
-        max={max}
-        aria-labelledby={label ? "progress-label" : undefined}
-      />
-      {showValue && <div className="progress-value">{percentage}%</div>}
+    React.createElement('div', { className: "progress-container" }, 
+      {label && (
+        <div className="progress-label" id="progress-label">
+          {label}
+        )
+      )}
+      React.createElement('progress', { className: "progress-bar", value: value
+        max: max
+        aria-labelledby: label ? 'progress-label' : undefined })
+      {showValue && React.createElement('div', { className: "progress-value" }, {percentage}%)}
     </div>
+    null
   );
 };
 

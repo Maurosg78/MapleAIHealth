@@ -7,11 +7,16 @@ import { GenericEMRAdapter } from './GenericEMRAdapter';
  * Adaptador para el sistema EMR ClinicCloud
  * Extiende el adaptador genérico pero implementa métodos específicos
  */
-export class ClinicCloudAdapter extends GenericEMRAdapter implements EMRAdapter {
+
+import logger from '../../../services/logger';
+export class ClinicCloudAdapter
+  extends GenericEMRAdapter
+  implements EMRAdapter
+{
   constructor(config: EMRAdapterConfig) {
-    super(config);
+    super;
     // Configuración específica para ClinicCloud
-    this.validateClinicCloudConfig(config);
+    this.validateClinicCloudConfig;
   }
 
   /**
@@ -20,10 +25,16 @@ export class ClinicCloudAdapter extends GenericEMRAdapter implements EMRAdapter 
    */
   private validateClinicCloudConfig(config: EMRAdapterConfig): void {
     if (!config.apiKey) {
-      console.warn('ClinicCloud Adapter: apiKey no especificada, algunas funciones podrían no estar disponibles');
+      console.warn(
+        'ClinicCloud Adapter: apiKey no especificada, algunas funciones podrían no estar disponibles'
+    null
+  );
     }
     if (!config.username || !config.password) {
-      console.warn('ClinicCloud Adapter: credenciales no especificadas, algunas funciones podrían no estar disponibles');
+      console.warn(
+        'ClinicCloud Adapter: credenciales no especificadas, algunas funciones podrían no estar disponibles'
+    null
+  );
     }
   }
 
@@ -34,7 +45,7 @@ export class ClinicCloudAdapter extends GenericEMRAdapter implements EMRAdapter 
   async testConnection(): Promise<boolean> {
     // Aquí iría la implementación real para verificar la conexión con ClinicCloud
     // Por ahora simulamos que la conexión es exitosa
-    console.log('Verificando conexión con ClinicCloud:', this.config.username);
+    logger.debug('Verificando conexión con ClinicCloud:', this.config.username);
 
     return true;
   }
@@ -47,10 +58,10 @@ export class ClinicCloudAdapter extends GenericEMRAdapter implements EMRAdapter 
   async getPatientData(patientId: string): Promise<PatientData> {
     // Aquí iría la implementación real para obtener datos del paciente desde ClinicCloud
     // Por ahora usamos datos simulados pero con formato específico de ClinicCloud
-    console.log('Obteniendo datos del paciente desde ClinicCloud:', patientId);
+    logger.debug('Obteniendo datos del paciente desde ClinicCloud:', patientId);
 
     // Simulamos un retraso de red
-    await new Promise(resolve => setTimeout(resolve, 250));
+    await new Promise( => setTimeout);
 
     return {
       id: patientId,
@@ -60,7 +71,7 @@ export class ClinicCloudAdapter extends GenericEMRAdapter implements EMRAdapter 
       gender: 'male',
       email: 'juan.ejemplo@example.com',
       phone: '+56 9 1234 5678',
-      address: 'Av. Ejemplo 123, Santiago, Chile'
+      address: 'Av. Ejemplo 123, Santiago, Chile',
     };
   }
 
@@ -70,49 +81,57 @@ export class ClinicCloudAdapter extends GenericEMRAdapter implements EMRAdapter 
    * @param patientId ID del paciente
    * @param limit Límite de resultados
    */
-  async getUnstructuredNotes(patientId: string, limit = 10): Promise<EMRUnstructuredNote[]> {
+  async getUnstructuredNotes(
+    patientId: string,
+    limit = 10
+  ): Promise<EMRUnstructuredNote[]> {
     // Aquí iría la implementación real para obtener notas médicas desde ClinicCloud
     // Por ahora usamos datos simulados pero con formato específico de ClinicCloud
-    console.log('Obteniendo notas médicas desde ClinicCloud:', patientId);
+    logger.debug('Obteniendo notas médicas desde ClinicCloud:', patientId);
 
     // Simulamos un retraso de red
-    await new Promise(resolve => setTimeout(resolve, 350));
+    await new Promise( => setTimeout);
 
-    // Notas en formato ClinicCloud (simulado)
+    // Notas en formato ClinicCloud 
     const notes: EMRUnstructuredNote[] = [
       {
         id: 'CC-N3001',
         patientId,
         date: '2023-05-10',
         provider: 'Dr. García',
-        content: '[ClinicCloud] Paciente masculino de 45 años acude por dolor en región lumbar de 2 semanas de evolución. Refiere que empeora con el movimiento y mejora parcialmente con antiinflamatorios. No refiere traumatismo previo. Examen físico: dolor a la palpación de musculatura paravertebral lumbar, sin signos radiculares. Diagnóstico presuntivo: lumbalgia mecánica. Plan: reposo relativo, ibuprofeno 400mg cada 8 horas por 5 días, control en 10 días.',
-        type: 'progress',
+        content:
+          '[ClinicCloud] Paciente masculino de 45 años acude por dolor en región lumbar de 2 semanas de evolución. Refiere que empeora con el movimiento y mejora parcialmente con antiinflamatorios. No refiere traumatismo previo. Examen físico: dolor a la palpación de musculatura paravertebral lumbar, sin signos radiculares. Diagnóstico presuntivo: lumbalgia mecánica. Plan: reposo relativo, ibuprofeno 400mg cada 8 horas por 5 días, control en 10 días.',
+        $1,
+      createdAt: new Date(),
         consultationId: 'CC-C1001',
-        specialty: 'Medicina General'
+        specialty: 'Medicina General',
       },
       {
         id: 'CC-N3002',
         patientId,
         date: '2023-06-15',
         provider: 'Dr. García',
-        content: '[ClinicCloud] Paciente en control por lumbalgia. Refiere mejoría significativa del dolor. Mantiene episodios ocasionales de molestia leve con esfuerzos. Examen físico: sin dolor a la palpación, movilidad conservada. Plan: mantener ejercicios de fortalecimiento lumbar, usar analgésicos solo si necesario, control en 1 mes.',
-        type: 'progress',
+        content:
+          '[ClinicCloud] Paciente en control por lumbalgia. Refiere mejoría significativa del dolor. Mantiene episodios ocasionales de molestia leve con esfuerzos. Examen físico: sin dolor a la palpación, movilidad conservada. Plan: mantener ejercicios de fortalecimiento lumbar, usar analgésicos solo si necesario, control en 1 mes.',
+        $1,
+      createdAt: new Date(),
         consultationId: 'CC-C1002',
-        specialty: 'Medicina General'
+        specialty: 'Medicina General',
       },
       {
         id: 'CC-N3003',
         patientId,
         date: '2023-08-05',
         provider: 'Dra. Sánchez',
-        content: '[ClinicCloud] Paciente acude a consulta de control. Refiere buena evolución, sin molestias significativas. Se recomienda continuar con ejercicios y mantener alimentación saludable.',
+        content:
+          '[ClinicCloud] Paciente acude a consulta de control. Refiere buena evolución, sin molestias significativas. Se recomienda continuar con ejercicios y mantener alimentación saludable.',
         type: 'consultation',
         consultationId: 'CC-C1003',
-        specialty: 'Nutrición'
-      }
+        specialty: 'Nutrición',
+      },
     ];
 
-    return notes.slice(0, limit);
+    return notes.slice;
   }
 
   /**
@@ -122,13 +141,13 @@ export class ClinicCloudAdapter extends GenericEMRAdapter implements EMRAdapter 
   async getCompleteEMRData(patientId: string): Promise<CompleteEMRData> {
     // Para ClinicCloud, podríamos tener una implementación específica que combine
     // todos los datos necesarios de manera eficiente en una sola consulta
-    console.log('Obteniendo datos completos desde ClinicCloud:', patientId);
+    logger.debug('Obteniendo datos completos desde ClinicCloud:', patientId);
 
     // Simulamos un retraso de red para una consulta grande
-    await new Promise(resolve => setTimeout(resolve, 550));
+    await new Promise( => setTimeout);
 
     // Simulamos una respuesta específica de ClinicCloud con algunos datos particulares
-    const baseData = await super.getCompleteEMRData(patientId);
+    const baseData = await super.getCompleteEMRData;
 
     // Agregar información específica que solo está disponible en ClinicCloud
     // En este caso simulado agregamos un medicamento adicional
@@ -138,7 +157,7 @@ export class ClinicCloudAdapter extends GenericEMRAdapter implements EMRAdapter 
       frequency: 'QD',
       startDate: '2023-08-05',
       active: true,
-      prescribedBy: 'Dra. Sánchez'
+      prescribedBy: 'Dra. Sánchez',
     });
 
     return baseData;

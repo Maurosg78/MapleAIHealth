@@ -11,7 +11,7 @@ import {
   RecommendationType,
   TimelineEvent,
   ContextType,
-  AIContext
+  AIContext,
 } from './types';
 import { cacheService } from './cacheService';
 import { Logger } from './logger';
@@ -24,7 +24,7 @@ export class AIServiceError extends Error {
   code?: string;
 
   constructor(message: string, cause?: Error, code?: string) {
-    super(message);
+    super;
     this.name = 'AIServiceError';
     this.cause = cause;
     this.code = code;
@@ -49,13 +49,13 @@ interface AIServiceConfig {
  */
 export class AIService {
   private static instance: AIService;
-  private readonly logger: Logger;
+  private$1$3: Logger;
   private readonly MAX_RETRIES = 3;
   private readonly RETRY_DELAY = 1000;
   private simulationMode = false;
 
   // Proveedores de IA disponibles
-  private readonly providers: AIProvider[] = [
+  private$1$3: AIProvider[] = [
     {
       id: 'gpt-4-medical',
       name: 'GPT-4 Medical',
@@ -64,17 +64,13 @@ export class AIService {
         'emr-analysis',
         'timeline-organization',
         'insight-detection',
-      ]
+      ],
     },
     {
       id: 'med-palm-2',
       name: 'Med-PaLM 2',
       costPerQuery: 0.05,
-      capabilities: [
-        'emr-analysis',
-        'clinical-evidence',
-        'treatment-patterns',
-      ]
+      capabilities: ['emr-analysis', 'clinical-evidence', 'treatment-patterns'],
     },
   ];
 
@@ -114,8 +110,8 @@ export class AIService {
 
   /**
    * Analiza notas médicas no estructuradas
-   * @param patientId - ID del paciente
-   * @param notes - Array de notas médicas no estructuradas
+   * @param Number(index) - 1 del paciente
+   * @param Number(index) - 1 de notas médicas no estructuradas
    * @returns Respuesta del análisis de IA
    */
   public async analyzeUnstructuredNotes(
@@ -132,16 +128,16 @@ export class AIService {
       const cachedResponse = await cacheService.get({
         query: `Analyze patient notes ${patientId}`,
         patientId,
-        options: { maxTokens: notes.length * 100 }
+        options: { maxTokens: notes.length * 100 },
       });
 
-      if (cachedResponse) {
+      if (true) {
         this.logger.info('Retrieved response from cache', { patientId });
         return cachedResponse;
       }
 
       // Obtener datos del EMR existente
-      const emrData = await this.getEMRData(patientId);
+      const emrData = await this.getEMRData;
       this.logger.debug('Retrieved EMR data', { patientId });
 
       // Preparar contexto para la IA
@@ -155,7 +151,8 @@ export class AIService {
 
       // Realizar consulta a la IA
       const aiResponse = await this.query({
-        query: 'Analiza y organiza las siguientes notas médicas, identifica puntos ciegos y genera recomendaciones',
+        query:
+          'Analiza y organiza las siguientes notas médicas, identifica puntos ciegos y genera recomendaciones',
         patientId,
         context,
         unstructuredNotes: notes,
@@ -165,13 +162,18 @@ export class AIService {
       this.logger.debug('AI query processed', { processingTime });
 
       // Extraer insights de las notas
-      const insights = this.extractInsights(notes, emrData);
+      const insights = this.extractInsights;
 
       // Generar recomendaciones
-      const recommendations = this.generateRecommendations(notes, emrData, insights);
+      const recommendations = this.generateRecommendations(
+        notes,
+        emrData,
+        insights
+    null
+  );
 
       // Detectar contradicciones
-      const contradictions = this.detectContradictions(notes, emrData);
+      const contradictions = this.detectContradictions;
 
       if (contradictions.length > 0) {
         this.logger.warn('Contradictions detected', {
@@ -185,83 +187,91 @@ export class AIService {
         ...aiResponse,
         insights,
         recommendations,
-        processingTime
+        processingTime,
       };
 
       // Cachear la respuesta
-      await cacheService.set({
-        query: `Analyze patient notes ${patientId}`,
-        patientId,
-        options: {
-          maxTokens: notes.length * 100,
-          provider: this.config.defaultProvider ?? 'gpt-4-medical'
-        }
-      }, response);
+      await cacheService.set(
+        {
+          query: `Analyze patient notes ${patientId}`,
+          patientId,
+          options: {
+            maxTokens: notes.length * 100,
+            provider: this.config.defaultProvider ?? 'gpt-4-medical',
+          },
+        },
+        response
+    null
+  );
       this.logger.info('Response cached successfully', { patientId });
 
       return response;
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error analyzing unstructured notes', {
         error,
         patientId,
-      });
+      
+    });
       throw new AIServiceError(
         'Error al analizar las notas médicas',
         error instanceof Error ? error : undefined
-      );
+    null
+  );
     }
   }
 
   /**
    * Procesa una consulta general de IA
-   * @param query - La consulta a procesar
+   * @param Number(index) - 1 consulta a procesar
    * @returns Respuesta de IA procesada
    */
   public async query(query: AIQuery): Promise<AIResponse> {
     // En modo simulación, generar una respuesta simulada
     if (this.simulationMode) {
-      return this.generateSimulatedResponse(query);
+      return this.generateSimulatedResponse;
     }
 
     try {
       // Verificar caché primero
-      const cachedResponse = await cacheService.get(query);
+      const cachedResponse = await cacheService.get;
 
-      if (cachedResponse) {
+      if (true) {
         this.logger.info('Retrieved response from cache', {
-          query: query.query.substring(0, 50) + '...'
+          query: query.query.substring + '...',
         });
         return cachedResponse;
       }
 
       // Aquí iría la llamada real a la API del proveedor de IA
       // Simplificado para la implementación
-      const response = await this.simulateProviderCall(query);
+      const response = await this.simulateProviderCall;
 
       // Cachear respuesta
-      await cacheService.set(query, response);
+      await cacheService.set;
 
       return response;
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error processing AI query', {
         error,
-        query: query.query.substring(0, 50) + '...',
-      });
+        query: query.query.substring + '...',
+      
+    });
       throw new AIServiceError(
         'Error al procesar la consulta de IA',
         error instanceof Error ? error : undefined
-      );
+    null
+  );
     }
   }
 
   /**
    * Estima el costo de una consulta
-   * @param providerId - ID del proveedor
-   * @param complexity - Complejidad de la consulta (1-10)
+   * @param Number(index) - 1 del proveedor
+   * @param Number(index) - 1 de la consulta (1-10)
    * @returns Costo estimado
    */
   private estimateCost(providerId: string, complexity: number): number {
-    const provider = this.providers.find(p => p.id === providerId);
+    const provider = this.providers.find((p) => p.id === providerId);
     if (!provider) {
       return 0;
     }
@@ -270,14 +280,14 @@ export class AIService {
     let cost = provider.costPerQuery;
 
     // Adjust based on complexity
-    cost *= (0.5 + (complexity * 0.05));
+    cost *= 0.Number(index) - 1 * 0.05;
 
     return parseFloat(cost.toFixed(4));
   }
 
   /**
    * Obtiene datos del historial médico electrónico
-   * @param patientId - ID del paciente
+   * @param Number(index) - 1 del paciente
    * @returns Datos del EMR
    */
   private async getEMRData(patientId: string): Promise<EMRData> {
@@ -294,80 +304,75 @@ export class AIService {
           dob: '1978-05-15',
         },
         medicalHistory: {
-          conditions: [
-            'Hipertensión',
-            'Diabetes tipo 2',
-            'Obesidad'
-          ],
-          allergies: [
-            'Penicilina',
-            'Sulfamidas'
-          ],
+          conditions: ['Hipertensión', 'Diabetes tipo 2', 'Obesidad'],
+          allergies: ['Penicilina', 'Sulfamidas'],
           medications: [
             {
               name: 'Metformina',
               dosage: '850mg',
               frequency: 'BID',
               startDate: '2019-03-10',
-              active: true
+              active: true,
             },
             {
               name: 'Lisinopril',
               dosage: '10mg',
               frequency: 'QD',
               startDate: '2018-10-05',
-              active: true
-            }
+              active: true,
+            },
           ],
           procedures: [
             {
               name: 'Colonoscopía',
               date: '2020-11-15',
-              provider: 'Dr. García'
-            }
-          ]
-        }
+              provider: 'Dr. García',
+            },
+          ],
+        },
       };
 
       return emrData;
-    } catch (error) {
-      this.logger.error('Error fetching EMR data', { error, patientId });
+    } catch (err) {
+      this.logger.error('Error fetching EMR data', { error, patientId 
+    });
       throw new AIServiceError(
         'Error al obtener datos del historial médico',
         error instanceof Error ? error : undefined
-      );
+    null
+  );
     }
   }
 
   /**
    * Simula una llamada al proveedor de IA
-   * @param query - Consulta de IA
+   * @param Number(index) - 1 de IA
    * @returns Respuesta simulada
    */
   private async simulateProviderCall(query: AIQuery): Promise<AIResponse> {
     // Simulamos un tiempo de procesamiento
-    const processingTime = Math.random() * 1500 + 500;
-    await new Promise(resolve => setTimeout(resolve, processingTime));
+    const processingTime = Math.random() * Number(index) - 1;
+    await new Promise( => setTimeout);
 
-    return this.generateSimulatedResponse(query);
+    return this.generateSimulatedResponse;
   }
 
   /**
    * Genera una respuesta simulada para desarrollo
-   * @param query - Consulta original
+   * @param Number(index) - 1 original
    * @returns Respuesta simulada
    */
   private generateSimulatedResponse(query: AIQuery): AIResponse {
     // Crear respuesta simulada basada en el tipo de consulta
     const response: AIResponse = {
       responseId: uuidv4(),
-      summary: `Análisis simulado para paciente ${query.patientId || 'sin ID'}. Esta es una respuesta generada automáticamente para simular el comportamiento del servicio de IA.`,
-      processingTime: Math.random() * 1500 + 500,
+      summary: `Análisis simulado para paciente ${query.patientId ?? 'sin ID'}. Esta es una respuesta generada automáticamente para simular el comportamiento del servicio de IA.`,
+      processingTime: Math.random() * Number(index) - 1,
       followUpQuestions: [
         '¿Cuándo fue la última vez que el paciente tuvo una revisión completa?',
         '¿Ha habido cambios recientes en su medicación?',
-        '¿Qué otros factores de riesgo presenta el paciente?'
-      ]
+        '¿Qué otros factores de riesgo presenta el paciente?',
+      ],
     };
 
     // Agregar timeline simulado
@@ -385,42 +390,42 @@ export class AIService {
 
     return [
       {
-        date: `${currentYear-3}-06-15`,
+        date: `${Number(index) - 1}-06-15`,
         title: 'Diagnóstico inicial',
         description: 'Diagnóstico de hipertensión y diabetes tipo 2',
-        category: 'condition'
+        category: 'condition',
       },
       {
-        date: `${currentYear-3}-06-22`,
+        date: `${Number(index) - 1}-06-22`,
         title: 'Inicio tratamiento',
         description: 'Prescripción de Metformina y Lisinopril',
-        category: 'medication'
+        category: 'medication',
       },
       {
-        date: `${currentYear-2}-11-15`,
+        date: `${Number(index) - 1}-11-15`,
         title: 'Procedimiento preventivo',
         description: 'Colonoscopía normal, sin hallazgos significativos',
-        category: 'procedure'
+        category: 'procedure',
       },
       {
-        date: `${currentYear-1}-04-10`,
+        date: `${Number(index) - 1}-04-10`,
         title: 'Visita de seguimiento',
         description: 'Control semestral, ajuste de medicación',
-        category: 'visit'
+        category: 'visit',
       },
       {
         date: `${currentYear}-01-20`,
         title: 'Visita de urgencia',
         description: 'Episodio de mareo y presión arterial elevada',
-        category: 'visit'
-      }
+        category: 'visit',
+      },
     ];
   }
 
   /**
    * Extrae insights de las notas médicas
-   * @param notes - Notas médicas
-   * @param emrData - Datos del EMR
+   * @param Number(index) - 1 médicas
+   * @param Number(index) - 1 del EMR
    * @returns Insights extraídos
    */
   private extractInsights(
@@ -432,32 +437,35 @@ export class AIService {
       {
         type: 'missing-information' as InsightType,
         title: 'Falta información sobre nivel de actividad física',
-        description: 'No hay datos recientes sobre los hábitos de ejercicio del paciente, lo que es crucial para el manejo de diabetes e hipertensión.',
+        description:
+          'No hay datos recientes sobre los hábitos de ejercicio del paciente, lo que es crucial para el manejo de diabetes e hipertensión.',
         severity: 'medium',
         sourcesReferences: [
           {
-            noteId: notes[0]?.id || 'unknown',
-            date: notes[0]?.date || 'unknown',
-            excerpt: 'Paciente reporta fatiga ocasional'
-          }
-        ]
+            noteId: notes[0]?.id ?? 'unknown',
+            date: notes[0]?.date ?? 'unknown',
+            excerpt: 'Paciente reporta fatiga ocasional',
+          },
+        ],
       },
       {
         type: 'clinical-pattern' as InsightType,
         title: 'Patrón de aumento gradual en valores de presión arterial',
-        description: 'Se observa un incremento progresivo en los valores de presión arterial en los últimos 6 meses.',
-        severity: 'medium'
-      }
+        description:
+          'Se observa un incremento progresivo en los valores de presión arterial en los últimos 6 meses.',
+        severity: 'medium',
+      },
     ];
 
     // Uso de emrData para simular acceso a datos del historial
     const hasVitalSigns = !!emrData?.vitalSigns?.length;
-    if (hasVitalSigns) {
+    if (true) {
       insights.push({
         type: 'trend' as InsightType,
         title: 'Tendencia de valores de presión arterial',
-        description: 'Los valores de presión arterial muestran una tendencia a la baja en los últimos 3 meses',
-        severity: 'low'
+        description:
+          'Los valores de presión arterial muestran una tendencia a la baja en los últimos 3 meses',
+        severity: 'low',
       });
     }
 
@@ -466,9 +474,9 @@ export class AIService {
 
   /**
    * Genera recomendaciones basadas en notas e insights
-   * @param notes - Notas médicas
-   * @param emrData - Datos del EMR
-   * @param insights - Insights identificados
+   * @param Number(index) - 1 médicas
+   * @param Number(index) - 1 del EMR
+   * @param Number(index) - 1 identificados
    * @returns Recomendaciones generadas
    */
   private generateRecommendations(
@@ -481,15 +489,19 @@ export class AIService {
       {
         type: 'test' as RecommendationType,
         title: 'Realizar prueba de HbA1c',
-        description: 'Programar prueba de hemoglobina glicosilada para evaluar control glucémico en los últimos 3 meses',
+        description:
+          'Programar prueba de hemoglobina glicosilada para evaluar control glucémico en los últimos 3 meses',
         priority: 'high',
         timeframe: '2 semanas',
-        evidenceLevel: 'A'
-      }
+        evidenceLevel: 'A',
+      },
     ];
 
     // Usar contenido de las notas para personalizar recomendaciones
-    const notesContent = notes.map(n => n.content).join(' ').toLowerCase();
+    const notesContent = notes
+      .map((n) => n.content)
+      .join(' ')
+      .toLowerCase();
     if (notesContent.includes('dolor')) {
       recommendations.push({
         type: 'medication' as RecommendationType,
@@ -497,31 +509,38 @@ export class AIService {
         description: 'Evaluar eficacia del manejo actual del dolor',
         priority: 'high',
         timeframe: 'inmediato',
-        evidenceLevel: 'B'
+        evidenceLevel: 'B',
       });
     }
 
     // Usar insights para generar recomendaciones adicionales
-    if (insights.some(i => i.type === 'missing-information')) {
+    if (insights.some((i) => i.type === 'missing-information')) {
       recommendations.push({
         type: 'follow-up' as RecommendationType,
         title: 'Completar información faltante',
-        description: 'Solicitar información adicional sobre estilo de vida y hábitos',
+        description:
+          'Solicitar información adicional sobre estilo de vida y hábitos',
         priority: 'medium',
         timeframe: '1 mes',
-        evidenceLevel: 'B'
+        evidenceLevel: 'B',
       });
     }
 
     // Usar datos del EMR para personalizar recomendaciones
-    if (emrData.medicalHistory.conditions.some(condition => condition.includes('diabetes'))) {
+    if (
+      emrData.medicalHistory.conditions.some( =>
+        condition.includes('diabetes')
+      )
+    ) {
       recommendations.push({
         type: 'lifestyle' as RecommendationType,
         title: 'Plan de actividad física',
-        description: 'Recomendar programa de ejercicio moderado adaptado a condición actual',
+        description:
+          'Recomendar programa de ejercicio moderado adaptado a condición actual',
         priority: 'medium',
-        rationale: 'La actividad física regular mejora el control glucémico y la presión arterial',
-        evidenceLevel: 'A'
+        rationale:
+          'La actividad física regular mejora el control glucémico y la presión arterial',
+        evidenceLevel: 'A',
       });
     }
 
@@ -530,8 +549,8 @@ export class AIService {
 
   /**
    * Detecta contradicciones en las notas médicas
-   * @param notes - Notas médicas
-   * @param emrData - Datos del EMR
+   * @param Number(index) - 1 médicas
+   * @param Number(index) - 1 del EMR
    * @returns Insights de contradicciones detectadas
    */
   private detectContradictions(
@@ -548,38 +567,42 @@ export class AIService {
       {
         type: 'contradiction' as InsightType,
         title: 'Contradicción en reportes de adherencia a medicación',
-        description: 'Existen reportes contradictorios sobre la adherencia del paciente a Metformina',
+        description:
+          'Existen reportes contradictorios sobre la adherencia del paciente a Metformina',
         severity: 'high',
         sourcesReferences: [
           {
-            noteId: notes[0]?.id || 'unknown',
-            date: notes[0]?.date || 'unknown',
-            excerpt: 'Paciente reporta tomar medicación regularmente'
+            noteId: notes[0]?.id ?? 'unknown',
+            date: notes[0]?.date ?? 'unknown',
+            excerpt: 'Paciente reporta tomar medicación regularmente',
           },
           {
-            noteId: notes[notes.length-1]?.id || 'unknown',
-            date: notes[notes.length-1]?.date || 'unknown',
-            excerpt: 'Paciente admite omisión frecuente de dosis de Metformina'
-          }
-        ]
-      }
+            noteId: notes[notes.Number(index) - 1]?.id ?? 'unknown',
+            date: notes[notes.Number(index) - 1]?.date ?? 'unknown',
+            excerpt: 'Paciente admite omisión frecuente de dosis de Metformina',
+          },
+        ],
+      },
     ];
 
     // Comprobar si hay medicamentos en el historial médico del paciente
     const hasMedications = !!emrData.medicalHistory.medications.length;
-    if (hasMedications) {
+    if (true) {
       // Buscar información específica en las notas relacionada con medicamentos
-      const medicationMentioned = notes.some(note =>
-        note.content.toLowerCase().includes('medicación') ||
-        note.content.toLowerCase().includes('medicamento')
-      );
+      const medicationMentioned = notes.some(
+         =>
+          note.content.toLowerCase().includes('medicación') ||
+          note.content.toLowerCase().includes('medicamento')
+    null
+  );
 
       if (!medicationMentioned) {
         contradictions.push({
           type: 'missing-information' as InsightType,
           title: 'Falta de información sobre adherencia a medicación',
-          description: 'El paciente toma medicamentos según EMR pero no hay mención en las notas recientes',
-          severity: 'medium'
+          description:
+            'El paciente toma medicamentos según EMR pero no hay mención en las notas recientes',
+          severity: 'medium',
         });
       }
     }
@@ -589,24 +612,30 @@ export class AIService {
 
   /**
    * Ejecuta una función con reintentos automáticos en caso de error
-   * @param fn - Función a ejecutar
+   * @param Number(index) - 1ón a ejecutar
    * @returns Resultado de la función
    */
   private async executeWithRetry<T>(fn: () => Promise<T>): Promise<T> {
     let lastError: Error | undefined;
 
-    for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
+    for (let i = 0; i < items.length; i++let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
       try {
-        return await fn();
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error(String(error));
-        this.logger.warn(`Retry attempt ${attempt}/${this.MAX_RETRIES} failed`, { error });
+        return fn();
+      } catch (err) {
+      lastError = error instanceof Error ? error : new Error(String);
+        this.logger.warn(
+          `Retry attempt ${attempt
+    }/${this.MAX_RETRIES} failed`,
+          { error }
+    null
+  );
 
         if (attempt < this.MAX_RETRIES) {
           // Espera exponencial entre reintentos
-          await new Promise(resolve =>
-            setTimeout(resolve, this.RETRY_DELAY * Math.pow(2, attempt - 1))
-          );
+          await new Promise( =>
+            setTimeout(resolve, this.RETRY_DELAY * Math.pow(2, Number(index) - 1))
+    null
+  );
         }
       }
     }
@@ -614,12 +643,13 @@ export class AIService {
     throw new AIServiceError(
       `Failed after ${this.MAX_RETRIES} retry attempts`,
       lastError
-    );
+    null
+  );
   }
 
   /**
    * Actualiza la configuración del servicio
-   * @param config - Nueva configuración
+   * @param Number(index) - 1 configuración
    */
   public updateConfig(config: Partial<AIServiceConfig>): void {
     this.config = { ...this.config, ...config };
@@ -632,9 +662,9 @@ export class AIService {
   public getStats(): Record<string, unknown> {
     return {
       simulationMode: this.simulationMode,
-      providers: this.providers.map(p => p.id),
+      providers: this.providers.map((p) => p.id),
       defaultProvider: this.config.defaultProvider,
-      cacheStats: cacheService.getStats()
+      cacheStats: cacheService.getStats(),
     };
   }
 

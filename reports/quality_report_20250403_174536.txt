@@ -1,0 +1,688 @@
+Informe de calidad del código - jueves,  3 de abril de 2025, 17:45:36 CEST
+======================================================
+===============================================
+  Iniciando limpieza automática del proyecto  
+===============================================
+
+[1/3] Eliminando archivos .bak...
+No se encontraron archivos .bak.
+
+[2/3] Aplicando correcciones de logging...
+Buscando archivos TS/TSX para procesar...
+Procesado: src/services/ai/logger.ts
+¡Proceso completado!
+Los console.log han sido reemplazados con logger.debug
+
+[3/3] Formateando el código con Prettier...
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts 101ms (unchanged)
+src/__tests__/services/emr/EMRAdapterFactory.test.ts 7ms (unchanged)
+src/__tests__/services/emr/mocks/MockEMRResponses.ts 78ms (unchanged)
+src/__tests__/services/emr/mocks/MockHttpService.ts 12ms (unchanged)
+src/__tests__/services/emr/OSCARAdapter.test.ts 4ms (unchanged)
+src/__tests__/setup.ts 1ms (unchanged)
+src/App.tsx 7ms (unchanged)
+src/components/admin/CacheControlPanel.tsx 103ms (unchanged)
+src/components/ai/ResponseFeedback.tsx 30ms (unchanged)
+src/components/appointment/AppointmentFormModal.tsx 2ms (unchanged)
+src/components/auth/ProtectedRoute.tsx 2ms (unchanged)
+src/components/common/Alert.tsx 5ms (unchanged)
+src/components/common/Avatar.tsx 7ms (unchanged)
+src/components/common/Badge.tsx 6ms (unchanged)
+src/components/common/Button.tsx 6ms (unchanged)
+src/components/common/Card.tsx 6ms (unchanged)
+src/components/common/index.ts 4ms (unchanged)
+src/components/common/Input.tsx 7ms (unchanged)
+src/components/common/Modal.tsx 7ms (unchanged)
+src/components/common/NotFound.tsx 4ms (unchanged)
+src/components/common/Progress.tsx 7ms (unchanged)
+src/components/common/Select.tsx 10ms (unchanged)
+src/components/common/Skeleton.tsx 5ms (unchanged)
+src/components/common/Spinner.tsx 3ms (unchanged)
+src/components/common/TextArea.tsx 5ms (unchanged)
+src/components/common/Toast.tsx 3ms (unchanged)
+src/components/dashboard/AIMedicalWidget.tsx 6ms (unchanged)
+src/components/dashboard/ClinicalDashboard.tsx 7ms (unchanged)
+src/components/dashboard/EvidenceSummaryCard.tsx 10ms (unchanged)
+src/components/dashboard/MetricCard.tsx 1ms (unchanged)
+src/components/dashboard/RecentActivities.tsx 3ms (unchanged)
+src/components/dashboard/RecentActivity.tsx 2ms (unchanged)
+src/components/dashboard/RecentEvaluationsCard.tsx 15ms (unchanged)
+src/components/dashboard/SourceVerificationsCard.tsx 15ms (unchanged)
+src/components/dashboard/TopMedicalTopicsCard.tsx 9ms (unchanged)
+src/components/emr/AIAssistant.tsx 2ms (unchanged)
+src/components/emr/AnalysisResults.tsx 2ms (unchanged)
+src/components/emr/NoteInput.tsx 2ms (unchanged)
+src/components/evidence/EvidenceBadge.tsx 5ms (unchanged)
+src/components/evidence/EvidenceDetails.tsx 18ms (unchanged)
+src/components/evidence/EvidenceViewer.tsx 41ms (unchanged)
+src/components/evidence/index.ts 1ms (unchanged)
+src/components/examples/EMRPatientSearch.tsx 9ms (unchanged)
+src/components/examples/EvidenceViewerDemo.tsx 18ms (unchanged)
+src/components/layout/Header.tsx 4ms (unchanged)
+src/components/layout/Layout.tsx 1ms (unchanged)
+src/components/layout/MainLayout.tsx 3ms (unchanged)
+src/components/layout/Sidebar.tsx 1ms (unchanged)
+src/components/patient/PatientForm.tsx 3ms (unchanged)
+src/components/patient/PatientFormModal.tsx 3ms (unchanged)
+src/components/patient/PatientFormModal2.tsx 1ms (unchanged)
+src/components/setup/EMRSetupForm.tsx 6ms (unchanged)
+src/hooks/useAIQuery.ts 4ms (unchanged)
+src/hooks/useApi.ts 3ms (unchanged)
+src/hooks/useAuth.ts 1ms (unchanged)
+src/hooks/useDashboard.ts 2ms (unchanged)
+src/hooks/useEMRAI.ts 6ms (unchanged)
+src/lib/api.ts 9ms (unchanged)
+src/lib/logger.ts 9ms (unchanged)
+src/lib/queryClient.ts 2ms (unchanged)
+src/lib/utils.ts 2ms (unchanged)
+src/main.tsx 3ms (unchanged)
+src/pages/AIHistoryPage.tsx 1ms (unchanged)
+src/pages/AppointmentsPage.tsx 3ms (unchanged)
+src/pages/dashboard/DashboardPage.tsx 1ms (unchanged)
+src/pages/DashboardPage.tsx 6ms (unchanged)
+src/pages/EMRAIPage.tsx 48ms (unchanged)
+src/pages/EMRPage.tsx 29ms (unchanged)
+src/pages/index.ts 3ms (unchanged)
+src/pages/LoginPage.tsx 2ms (unchanged)
+src/pages/NotFoundPage.tsx 3ms (unchanged)
+src/pages/PatientsPage.tsx 21ms (unchanged)
+src/pages/setup.tsx 9ms (unchanged)
+src/pages/TestAIPage.tsx 10ms (unchanged)
+src/routes/index.tsx 4ms (unchanged)
+src/routes/ProtectedRoute.tsx 7ms (unchanged)
+src/services/ai/__tests__/aiService.test.ts 2ms (unchanged)
+src/services/ai/__tests__/cacheIntegration.test.ts 9ms (unchanged)
+src/services/ai/__tests__/cachePrioritizationService.test.ts 9ms (unchanged)
+src/services/ai/__tests__/cacheService.test.ts 2ms (unchanged)
+src/services/ai/aiHistoryService.ts 1ms (unchanged)
+src/services/ai/aiService.ts 121ms (unchanged)
+src/services/ai/cache/CachePrioritizationService.ts 66ms (unchanged)
+src/services/ai/cache/index.ts 3ms (unchanged)
+src/services/ai/cache/SmartCacheInvalidationStrategy.ts 74ms (unchanged)
+src/services/ai/cacheService.ts 28ms (unchanged)
+src/services/ai/ClinicalCopilotService.ts 2ms (unchanged)
+src/services/ai/evidence/EvidenceEvaluationService.ts 40ms (unchanged)
+src/services/ai/evidence/index.ts 1ms (unchanged)
+src/services/ai/evidence/MedicalSourceVerifier.ts 15ms (unchanged)
+src/services/ai/index.ts 5ms (unchanged)
+src/services/ai/logger.ts 9ms (unchanged)
+src/services/ai/monitorService.ts 14ms (unchanged)
+src/services/ai/providers/AIProviderClient.ts 2ms (unchanged)
+src/services/ai/providers/index.ts 1ms (unchanged)
+src/services/ai/providers/MedPaLMProvider.ts 1ms (unchanged)
+src/services/ai/providers/OpenAIProvider.ts 2ms (unchanged)
+src/services/ai/types.ts 6ms (unchanged)
+src/services/api.ts 1ms (unchanged)
+src/services/appointmentService.ts 1ms (unchanged)
+src/services/auth.ts 1ms (unchanged)
+src/services/dashboard.ts 8ms (unchanged)
+src/services/dashboardService.ts 2ms (unchanged)
+src/services/emr/EMRAdapter.ts 2ms (unchanged)
+src/services/emr/EMRAdapterFactory.ts 5ms (unchanged)
+src/services/emr/EMRConfigService.ts 6ms (unchanged)
+src/services/emr/implementations/ClinicCloudAdapter.ts 8ms (unchanged)
+src/services/emr/implementations/EPICAdapter.ts 9ms (unchanged)
+src/services/emr/implementations/GenericEMRAdapter.ts 10ms (unchanged)
+src/services/emr/implementations/OSCARAdapter.ts 7ms (unchanged)
+src/services/emr/index.ts 2ms (unchanged)
+src/services/emr/interfaces/EMRAdapter.ts 6ms (unchanged)
+src/services/emr/types.ts 5ms (unchanged)
+src/services/integration/EMRAIIntegrationService.ts 15ms (unchanged)
+src/services/integration/index.ts 2ms (unchanged)
+src/services/logger.ts 5ms (unchanged)
+src/services/ownEmr/appointmentService.ts 24ms (unchanged)
+src/services/ownEmr/authService.ts 26ms (unchanged)
+src/services/ownEmr/database/databaseService.ts 24ms (unchanged)
+src/services/ownEmr/database/sampleData.ts 17ms (unchanged)
+src/services/ownEmr/database/schema.ts 9ms (unchanged)
+src/services/ownEmr/index.ts 4ms (unchanged)
+src/services/ownEmr/patientService.ts 23ms (unchanged)
+src/services/ownEmr/prescriptionService.ts 14ms (unchanged)
+src/services/patient.ts 1ms (unchanged)
+src/services/patientService.ts 1ms (unchanged)
+src/services/storage/index.ts 1ms (unchanged)
+src/test/setup.ts 1ms (unchanged)
+src/types/appointment.ts 2ms (unchanged)
+src/types/dashboard.ts 4ms (unchanged)
+src/types/global.d.ts 2ms (unchanged)
+src/types/patient.ts 2ms (unchanged)
+src/utils/logger.ts 14ms (unchanged)
+src/vite-env.d.ts 6ms (unchanged)
+Código formateado correctamente.
+
+===============================================
+      Limpieza automática completada      
+===============================================
+===============================================
+  Análisis de problemas de rendimiento  
+===============================================
+
+[1/5] Analizando tamaño de componentes React...
+     517 src/components/admin/CacheControlPanel.tsx
+     398 src/components/examples/EvidenceViewerDemo.tsx
+     361 src/pages/EMRAIPage.tsx
+     299 src/pages/EMRPage.tsx
+     243 src/components/evidence/EvidenceViewer.tsx
+     166 src/components/evidence/EvidenceDetails.tsx
+     150 src/pages/TestAIPage.tsx
+     113 src/components/dashboard/RecentEvaluationsCard.tsx
+     102 src/components/dashboard/SourceVerificationsCard.tsx
+      88 src/pages/PatientsPage.tsx
+[1;33mEstos son los 10 componentes más grandes que podrían beneficiarse de refactorización.[0m
+
+[2/5] Identificando potenciales renderizados innecesarios...
+
+[3/5] Buscando operaciones bloqueantes...
+src/components/dashboard/RecentEvaluationsCard.tsx:  const formatRelativeTime = (timestamp: string): string => {
+src/components/examples/EvidenceViewerDemo.tsx:      return 'La metformina es considerada la primera línea de tratamiento para pacientes con diabetes tipo 2, particularmente en pacientes con sobrepeso. Estudios observacionales sugieren beneficios cardiovasculares adicionales pero la evidencia de ensayos controlados es limitada.';
+src/components/examples/EvidenceViewerDemo.tsx:              'Metformin as first-line therapy in type 2 diabetes: a systematic review',
+src/components/examples/EvidenceViewerDemo.tsx:              'Cardiovascular outcomes in patients with type 2 diabetes treated with metformin',
+src/components/examples/EvidenceViewerDemo.tsx:        title: 'Iniciar tratamiento con metformina',
+src/components/examples/EvidenceViewerDemo.tsx:          'Comenzar con metformina 500mg/día con las comidas, aumentando gradualmente a 1000mg dos veces al día después de 1-2 semanas si es bien tolerada.',
+src/components/examples/EvidenceViewerDemo.tsx:          'La metformina reduce efectivamente los niveles de glucosa sanguínea, particularmente la producción hepática de glucosa, y puede proporcionar beneficios cardiovasculares adicionales.',
+src/pages/EMRPage.tsx:              <li>Metformina 850mg BID</li>
+src/services/emr/implementations/ClinicCloudAdapter.ts:    // Por ahora usamos datos simulados pero con formato específico de ClinicCloud
+src/services/emr/implementations/ClinicCloudAdapter.ts:    // Por ahora usamos datos simulados pero con formato específico de ClinicCloud
+src/services/emr/implementations/ClinicCloudAdapter.ts:    // Notas en formato ClinicCloud (simulado)
+src/services/emr/implementations/ClinicCloudAdapter.ts:    // Agregar información específica que solo está disponible en ClinicCloud
+src/services/emr/implementations/GenericEMRAdapter.ts:            name: 'Metformina',
+src/services/integration/EMRAIIntegrationService.ts:    for (const recommendation of recommendations) {
+src/services/ai/cache/SmartCacheInvalidationStrategy.ts:    for (const [category, keywords] of Object.entries(this.categoryKeywords)) {
+src/services/ai/cache/CachePrioritizationService.ts:    for (const key of keys) {
+src/services/ai/cache/CachePrioritizationService.ts:    for (const itemStats of this.cacheStats.values()) {
+src/services/ai/evidence/EvidenceEvaluationService.ts:      for (const [dbName, connector] of this.databaseConnectors.entries()) {
+src/services/ai/evidence/EvidenceEvaluationService.ts:    for (const source of sources) {
+src/services/ai/evidence/MedicalSourceVerifier.ts:    for (const database of this.databases) {
+[1;33mEstos bucles podrían ser bloqueantes y deberían considerarse para asincronía.[0m
+
+[4/5] Analizando estrategia de caché...
+Encontrados 13 archivos relacionados con caché.
+src/services/emr/EMRAdapterFactory.ts
+src/services/emr/EMRConfigService.ts
+src/services/ai/cache/SmartCacheInvalidationStrategy.ts
+src/services/ai/cache/CachePrioritizationService.ts
+src/services/ai/cache/index.ts
+src/services/ai/aiService.ts
+src/services/ai/types.ts
+src/services/ai/cacheService.ts
+src/services/ai/__tests__/cacheIntegration.test.ts
+src/services/ai/__tests__/cacheService.test.ts
+src/services/ai/__tests__/cachePrioritizationService.test.ts
+src/services/ai/index.ts
+src/services/ai/monitorService.ts
+
+[5/5] Analizando gestión de recursos...
+Recursos abiertos: 15
+Liberaciones de recursos: 3
+[0;31m⚠️ ADVERTENCIA: Parece haber menos liberaciones de recursos que aperturas, posible fuga.[0m
+
+[+] Analizando useEffect sin cleanup...
+[1;33mRevisar estos useEffect que podrían no tener función de limpieza.[0m
+
+===============================================
+      Análisis de rendimiento completado      
+===============================================
+
+[0;32mRECOMENDACIONES DE OPTIMIZACIÓN:[0m
+1. Considera dividir componentes grandes en partes más pequeñas y reutilizables.
+2. Usa React.memo para componentes que se renderizan frecuentemente con las mismas props.
+3. Implementa useCallback para funciones pasadas como props a componentes memorizados.
+4. Utiliza useMemo para cálculos costosos.
+5. Asegúrate de limpiar efectos, suscripciones y temporizadores.
+6. Considera técnicas de carga diferida (lazy loading) para rutas y componentes grandes.
+7. Implementa estrategias de debounce/throttle para eventos frecuentes como scroll o resize.
+===============================================
+  Corrección de problemas de seguridad  
+===============================================
+
+[1/5] Buscando vulnerabilidades XSS potenciales...
+Encontradas 1 posibles vulnerabilidades XSS:
+
+
+[2/5] Buscando problemas de ruta de acceso relativa...
+Encontrados 9 posibles problemas de ruta relativa:
+src/components/evidence/EvidenceViewer.tsx:} from '../../services/ai/types';
+src/components/evidence/EvidenceDetails.tsx:} from '../../services/ai/types';
+src/components/admin/CacheControlPanel.tsx:} from '../../services/ai';
+src/components/examples/EvidenceViewerDemo.tsx:} from '../../services/ai/types';
+src/services/emr/implementations/GenericEMRAdapter.ts:} from '../types';
+src/services/integration/EMRAIIntegrationService.ts:} from '../emr';
+src/services/integration/EMRAIIntegrationService.ts:} from '../ai';
+src/services/ai/evidence/EvidenceEvaluationService.ts:} from '../types';
+src/services/ownEmr/patientService.ts:} from '../emr/types';
+
+[3/5] Buscando evaluación de código dinámico inseguro...
+Encontradas 78 evaluaciones de código dinámico potencialmente inseguras:
+src/types/dashboard.ts: * Resumen de evaluaciones de evidencia
+src/components/evidence/EvidenceViewer.tsx: * Componente para visualizar resultados de evaluación de evidencia clínica
+src/components/evidence/EvidenceViewer.tsx:  // Renderizar la evaluación principal de evidencia
+src/components/evidence/EvidenceDetails.tsx: * incluidas las fuentes, criterios de evaluación y puntuación de confianza.
+src/components/dashboard/EvidenceSummaryCard.tsx: * Tarjeta que muestra un resumen de las evaluaciones de evidencia clínica
+src/components/dashboard/RecentEvaluationsCard.tsx:  evaluations: RecentEvaluation[];
+src/components/dashboard/RecentEvaluationsCard.tsx: * Tarjeta que muestra las evaluaciones recientes de evidencia clínica
+src/components/dashboard/RecentEvaluationsCard.tsx:  evaluations,
+src/components/dashboard/RecentEvaluationsCard.tsx:        {evaluations.map((evaluation) => (
+src/components/dashboard/RecentEvaluationsCard.tsx:            key={evaluation.id}
+src/components/dashboard/RecentEvaluationsCard.tsx:                {evaluation.content}
+src/components/dashboard/RecentEvaluationsCard.tsx:                level={evaluation.evidenceLevel}
+src/components/dashboard/RecentEvaluationsCard.tsx:                {formatRelativeTime(evaluation.timestamp)}
+src/components/dashboard/RecentEvaluationsCard.tsx:                  <span>{evaluation.confidenceScore}% confianza</span>
+src/components/dashboard/RecentEvaluationsCard.tsx:                  <span>{evaluation.sources} fuentes</span>
+src/components/dashboard/RecentEvaluationsCard.tsx:          Ver todas las evaluaciones
+src/components/dashboard/ClinicalDashboard.tsx: * Muestra información relacionada con la evaluación de evidencia clínica
+src/components/dashboard/ClinicalDashboard.tsx:      <RecentEvaluationsCard evaluations={data.recentEvaluations} />
+src/components/examples/EvidenceViewerDemo.tsx:  const [evaluationResult, setEvaluationResult] =
+src/components/examples/EvidenceViewerDemo.tsx:        // Usar el servicio real de evaluación si está disponible
+src/components/examples/EvidenceViewerDemo.tsx:          // Intentar usar el servicio de evaluación real
+src/components/examples/EvidenceViewerDemo.tsx:          const result = await service.evaluateEvidence(exampleContent);
+src/components/examples/EvidenceViewerDemo.tsx:          const evalPromises = getExampleRecommendations(selectedExample).map(
+src/components/examples/EvidenceViewerDemo.tsx:            (rec) => service.evaluateRecommendation(rec)
+src/components/examples/EvidenceViewerDemo.tsx:          setRecommendations(await Promise.all(evalPromises));
+src/components/examples/EvidenceViewerDemo.tsx:          Este componente permite visualizar la evaluación de evidencia clínica
+src/components/examples/EvidenceViewerDemo.tsx:      {evaluationResult && (
+src/components/examples/EvidenceViewerDemo.tsx:          result={evaluationResult}
+src/components/examples/EvidenceViewerDemo.tsx:// Función para generar resultados de evaluación simulados
+src/components/examples/EvidenceViewerDemo.tsx:        'En pacientes con comorbilidades específicas, evaluar combinaciones terapéuticas individualizadas',
+src/components/examples/EvidenceViewerDemo.tsx:        'Faltan ensayos clínicos aleatorizados a largo plazo que evalúen específicamente los desenlaces cardiovasculares',
+src/components/examples/EvidenceViewerDemo.tsx:          'Realizar mediciones domiciliarias de presión arterial dos veces al día y llevar registro para evaluación médica.',
+src/components/examples/EvidenceViewerDemo.tsx:          'El monitoreo regular permite evaluar la eficacia del tratamiento y realizar ajustes oportunos.',
+src/services/emr/implementations/EPICAdapter.ts:          '[EPIC] Paciente acude a evaluación por especialista traumatólogo. Refiere dolor ocasional en región lumbar. Se solicita resonancia magnética para descartar patología discal.',
+src/services/integration/EMRAIIntegrationService.ts:        const evaluatedRecommendations = await Promise.all(
+src/services/integration/EMRAIIntegrationService.ts:            evidenceEvaluationService.evaluateRecommendation(recommendation)
+src/services/integration/EMRAIIntegrationService.ts:        // Actualizar respuesta con recomendaciones evaluadas
+src/services/integration/EMRAIIntegrationService.ts:        aiResponse.recommendations = evaluatedRecommendations;
+src/services/integration/EMRAIIntegrationService.ts:        // Log de resultados de evaluación
+src/services/integration/EMRAIIntegrationService.ts:          evaluatedRecommendations
+src/services/integration/EMRAIIntegrationService.ts:        this.logger.info('Evidence evaluation completed', {
+src/services/integration/EMRAIIntegrationService.ts:        const evaluatedRecommendations = await Promise.all(
+src/services/integration/EMRAIIntegrationService.ts:            evidenceEvaluationService.evaluateRecommendation(recommendation)
+src/services/integration/EMRAIIntegrationService.ts:        aiResponse.recommendations = evaluatedRecommendations;
+src/services/integration/EMRAIIntegrationService.ts:   * @param recommendations Lista de recomendaciones evaluadas
+src/services/ai/cache/SmartCacheInvalidationStrategy.ts:   * @param query Consulta a evaluar
+src/services/ai/cache/SmartCacheInvalidationStrategy.ts:   * @param query Consulta a evaluar
+src/services/ai/cache/SmartCacheInvalidationStrategy.ts:      'evaluación',
+src/services/ai/cache/SmartCacheInvalidationStrategy.ts:   * @param query Consulta a evaluar
+src/services/ai/cache/SmartCacheInvalidationStrategy.ts:   * @param query Consulta a evaluar
+src/services/ai/evidence/EvidenceEvaluationService.ts: * Interfaz para el servicio de evaluación de evidencia clínica
+src/services/ai/evidence/EvidenceEvaluationService.ts:   * @param content El contenido o texto que contiene la recomendación a evaluar
+src/services/ai/evidence/EvidenceEvaluationService.ts:   * @returns Resultado de la evaluación de evidencia
+src/services/ai/evidence/EvidenceEvaluationService.ts:  evaluateEvidence(content: string): Promise<EvidenceEvaluationResult>;
+src/services/ai/evidence/EvidenceEvaluationService.ts:   * @param recommendation La recomendación a evaluar
+src/services/ai/evidence/EvidenceEvaluationService.ts:  evaluateRecommendation(
+src/services/ai/evidence/EvidenceEvaluationService.ts: * Servicio para evaluar la calidad de la evidencia clínica en las respuestas de IA
+src/services/ai/evidence/EvidenceEvaluationService.ts:   * @param content El contenido a evaluar
+src/services/ai/evidence/EvidenceEvaluationService.ts:   * @returns Resultado de la evaluación de evidencia
+src/services/ai/evidence/EvidenceEvaluationService.ts:  public async evaluateEvidence(
+src/services/ai/evidence/EvidenceEvaluationService.ts:      this.logger.error('Error evaluating evidence', { error });
+src/services/ai/evidence/EvidenceEvaluationService.ts:      return this.generateLowEvidenceResult('Error al evaluar la evidencia');
+src/services/ai/evidence/EvidenceEvaluationService.ts:   * @param recommendation La recomendación a evaluar
+src/services/ai/evidence/EvidenceEvaluationService.ts:  public async evaluateRecommendation(
+src/services/ai/evidence/EvidenceEvaluationService.ts:      const evaluationResult = await this.evaluateEvidence(content);
+src/services/ai/evidence/EvidenceEvaluationService.ts:      // Actualizar la recomendación con la evaluación
+src/services/ai/evidence/EvidenceEvaluationService.ts:        evidenceLevel: evaluationResult.evidenceLevel,
+src/services/ai/evidence/EvidenceEvaluationService.ts:        evidenceDetails: evaluationResult.details,
+src/services/ai/evidence/EvidenceEvaluationService.ts:      this.logger.error('Error evaluating recommendation', {
+src/services/ai/evidence/EvidenceEvaluationService.ts:   * Genera un resultado de evaluación con nivel de evidencia bajo
+src/services/ai/evidence/EvidenceEvaluationService.ts:   * @returns Resultado de evaluación
+src/services/ai/evidence/MedicalSourceVerifier.ts:   * @param source Fuente a evaluar
+src/services/ai/evidence/MedicalSourceVerifier.ts:   * @param source Fuente a evaluar
+src/services/ai/aiService.ts:          'Programar prueba de hemoglobina glicosilada para evaluar control glucémico en los últimos 3 meses',
+src/services/ai/types.ts:// Tipos para evaluación de evidencia clínica
+src/services/ai/index.ts:// Mock del servicio de evaluación de evidencia
+src/services/ai/index.ts:  evaluateEvidence: (evidence: string[]) => ({
+src/services/ai/index.ts:  evaluateRecommendation: (recommendation: Recommendation) => ({
+[0;31m⚠️ ADVERTENCIA: El uso de eval() o new Function() representa una grave vulnerabilidad de seguridad.[0m
+[1;33mRecomendación: Reemplazar con alternativas más seguras como JSON.parse() para datos JSON.[0m
+
+[4/5] Comprobando almacenamiento seguro...
+Encontrados 18 usos de almacenamiento local:
+src/services/ownEmr/database/databaseService.ts: * Esta implementación utiliza localStorage para persistencia durante el desarrollo,
+src/services/ownEmr/database/databaseService.ts:// Prefijo para las claves en localStorage para evitar colisiones
+src/services/ownEmr/database/databaseService.ts:      if (!localStorage.getItem(`${STORAGE_PREFIX}${table}`)) {
+src/services/ownEmr/database/databaseService.ts:        localStorage.setItem(`${STORAGE_PREFIX}${table}`, JSON.stringify([]));
+src/services/ownEmr/database/databaseService.ts:    const data = localStorage.getItem(`${STORAGE_PREFIX}${table}`);
+src/services/ownEmr/database/databaseService.ts:    localStorage.setItem(`${STORAGE_PREFIX}${table}`, JSON.stringify(items));
+src/services/ownEmr/database/databaseService.ts:    localStorage.setItem(`${STORAGE_PREFIX}${table}`, JSON.stringify(items));
+src/services/ownEmr/database/databaseService.ts:    localStorage.setItem(`${STORAGE_PREFIX}${table}`, JSON.stringify(items));
+src/services/ownEmr/database/databaseService.ts:      localStorage.setItem(`${STORAGE_PREFIX}${table}`, JSON.stringify([]));
+src/services/ownEmr/authService.ts: * Para simplificar, usamos localStorage para persistir los datos de sesión
+src/services/ownEmr/authService.ts:// Clave para almacenar la sesión en localStorage
+src/services/ownEmr/authService.ts:   * Carga la sesión desde localStorage si existe
+src/services/ownEmr/authService.ts:    const sessionData = localStorage.getItem(SESSION_STORAGE_KEY);
+src/services/ownEmr/authService.ts:          localStorage.removeItem(SESSION_STORAGE_KEY);
+src/services/ownEmr/authService.ts:        localStorage.removeItem(SESSION_STORAGE_KEY);
+src/services/ownEmr/authService.ts:   * Guarda la sesión en localStorage
+src/services/ownEmr/authService.ts:    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+src/services/ownEmr/authService.ts:    localStorage.removeItem(SESSION_STORAGE_KEY);
+[1;33m⚠️ Posible almacenamiento inseguro de datos sensibles en localStorage/sessionStorage.[0m
+[1;33mRecomendación: Considerar encriptar datos sensibles o usar cookies seguras con httpOnly.[0m
+
+[5/5] Analizando protección CSRF...
+Encontradas 1 peticiones HTTP mutables:
+
+===============================================
+      Análisis de seguridad completado      
+===============================================
+
+[0;32mRECOMENDACIONES DE SEGURIDAD:[0m
+1. Sanitizar cualquier contenido HTML dinámico con DOMPurify para prevenir XSS.
+2. Evitar el uso de eval() o new Function() por completo.
+3. No almacenar datos sensibles en localStorage sin encriptación.
+4. Implementar protección CSRF para todas las peticiones mutables.
+5. Considerar la implementación de Content Security Policy (CSP).
+6. Validar siempre todos los inputs tanto en cliente como en servidor.
+7. Usar HTTPS para todas las comunicaciones.
+===============================================
+  Corrección de problemas críticos de calidad 
+===============================================
+
+[1/6] Corrigiendo posibles fugas de memoria...
+Verificando 1 intervalos y 1 timeouts...
+
+[2/6] Añadiendo manejo de errores a promesas...
+Encontradas 1 promesas sin manejo de errores
+
+[3/6] Optimizando renderizados de React...
+Encontrados 1 componentes React que podrían beneficiarse de React.memo
+
+[4/6] Corrigiendo problemas de accesibilidad...
+Encontradas 1 imágenes sin atributo alt
+
+[5/6] Reemplazando 'any' con tipos apropiados...
+Encontrados 1 usos de 'any'
+
+[6/6] Eliminando imports sin utilizar...
+Analizando 227 imports para detectar los no utilizados
+
+===============================================
+      Correcciones de calidad completadas      
+===============================================
+Ejecutando ESLint autofix...
+
+/Users/mauriciosobarzo/Desktop/MapleAIHealth/src/services/ai/logger.ts
+  7:8  error  'logger' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (1 error, 0 warnings)
+
+Formateando código con Prettier...
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts 46ms (unchanged)
+src/__tests__/services/emr/EMRAdapterFactory.test.ts 4ms (unchanged)
+src/__tests__/services/emr/mocks/MockEMRResponses.ts 52ms (unchanged)
+src/__tests__/services/emr/mocks/MockHttpService.ts 12ms (unchanged)
+src/__tests__/services/emr/OSCARAdapter.test.ts 1ms (unchanged)
+src/__tests__/setup.ts 1ms (unchanged)
+src/App.tsx 5ms (unchanged)
+src/components/admin/CacheControlPanel.tsx 76ms (unchanged)
+src/components/ai/ResponseFeedback.tsx 17ms (unchanged)
+src/components/appointment/AppointmentFormModal.tsx 2ms (unchanged)
+src/components/auth/ProtectedRoute.tsx 1ms (unchanged)
+src/components/common/Alert.tsx 4ms (unchanged)
+src/components/common/Avatar.tsx 3ms (unchanged)
+src/components/common/Badge.tsx 3ms (unchanged)
+src/components/common/Button.tsx 5ms (unchanged)
+src/components/common/Card.tsx 3ms (unchanged)
+src/components/common/index.ts 4ms (unchanged)
+src/components/common/Input.tsx 6ms (unchanged)
+src/components/common/Modal.tsx 3ms (unchanged)
+src/components/common/NotFound.tsx 3ms (unchanged)
+src/components/common/Progress.tsx 3ms (unchanged)
+src/components/common/Select.tsx 8ms (unchanged)
+src/components/common/Skeleton.tsx 4ms (unchanged)
+src/components/common/Spinner.tsx 2ms (unchanged)
+src/components/common/TextArea.tsx 6ms (unchanged)
+src/components/common/Toast.tsx 3ms (unchanged)
+src/components/dashboard/AIMedicalWidget.tsx 4ms (unchanged)
+src/components/dashboard/ClinicalDashboard.tsx 7ms (unchanged)
+src/components/dashboard/EvidenceSummaryCard.tsx 8ms (unchanged)
+src/components/dashboard/MetricCard.tsx 1ms (unchanged)
+src/components/dashboard/RecentActivities.tsx 1ms (unchanged)
+src/components/dashboard/RecentActivity.tsx 1ms (unchanged)
+src/components/dashboard/RecentEvaluationsCard.tsx 8ms (unchanged)
+src/components/dashboard/SourceVerificationsCard.tsx 8ms (unchanged)
+src/components/dashboard/TopMedicalTopicsCard.tsx 8ms (unchanged)
+src/components/emr/AIAssistant.tsx 2ms (unchanged)
+src/components/emr/AnalysisResults.tsx 3ms (unchanged)
+src/components/emr/NoteInput.tsx 2ms (unchanged)
+src/components/evidence/EvidenceBadge.tsx 5ms (unchanged)
+src/components/evidence/EvidenceDetails.tsx 16ms (unchanged)
+src/components/evidence/EvidenceViewer.tsx 20ms (unchanged)
+src/components/evidence/index.ts 1ms (unchanged)
+src/components/examples/EMRPatientSearch.tsx 6ms (unchanged)
+src/components/examples/EvidenceViewerDemo.tsx 19ms (unchanged)
+src/components/layout/Header.tsx 1ms (unchanged)
+src/components/layout/Layout.tsx 2ms (unchanged)
+src/components/layout/MainLayout.tsx 2ms (unchanged)
+src/components/layout/Sidebar.tsx 1ms (unchanged)
+src/components/patient/PatientForm.tsx 1ms (unchanged)
+src/components/patient/PatientFormModal.tsx 2ms (unchanged)
+src/components/patient/PatientFormModal2.tsx 1ms (unchanged)
+src/components/setup/EMRSetupForm.tsx 4ms (unchanged)
+src/hooks/useAIQuery.ts 4ms (unchanged)
+src/hooks/useApi.ts 1ms (unchanged)
+src/hooks/useAuth.ts 1ms (unchanged)
+src/hooks/useDashboard.ts 1ms (unchanged)
+src/hooks/useEMRAI.ts 5ms (unchanged)
+src/lib/api.ts 8ms (unchanged)
+src/lib/logger.ts 8ms (unchanged)
+src/lib/queryClient.ts 2ms (unchanged)
+src/lib/utils.ts 1ms (unchanged)
+src/main.tsx 1ms (unchanged)
+src/pages/AIHistoryPage.tsx 1ms (unchanged)
+src/pages/AppointmentsPage.tsx 1ms (unchanged)
+src/pages/dashboard/DashboardPage.tsx 1ms (unchanged)
+src/pages/DashboardPage.tsx 3ms (unchanged)
+src/pages/EMRAIPage.tsx 24ms (unchanged)
+src/pages/EMRPage.tsx 16ms (unchanged)
+src/pages/index.ts 1ms (unchanged)
+src/pages/LoginPage.tsx 2ms (unchanged)
+src/pages/NotFoundPage.tsx 2ms (unchanged)
+src/pages/PatientsPage.tsx 8ms (unchanged)
+src/pages/setup.tsx 1ms (unchanged)
+src/pages/TestAIPage.tsx 13ms (unchanged)
+src/routes/index.tsx 3ms (unchanged)
+src/routes/ProtectedRoute.tsx 2ms (unchanged)
+src/services/ai/__tests__/aiService.test.ts 1ms (unchanged)
+src/services/ai/__tests__/cacheIntegration.test.ts 5ms (unchanged)
+src/services/ai/__tests__/cachePrioritizationService.test.ts 3ms (unchanged)
+src/services/ai/__tests__/cacheService.test.ts 1ms (unchanged)
+src/services/ai/aiHistoryService.ts 1ms (unchanged)
+src/services/ai/aiService.ts 56ms (unchanged)
+src/services/ai/cache/CachePrioritizationService.ts 67ms (unchanged)
+src/services/ai/cache/index.ts 4ms (unchanged)
+src/services/ai/cache/SmartCacheInvalidationStrategy.ts 43ms (unchanged)
+src/services/ai/cacheService.ts 18ms (unchanged)
+src/services/ai/ClinicalCopilotService.ts 2ms (unchanged)
+src/services/ai/evidence/EvidenceEvaluationService.ts 23ms (unchanged)
+src/services/ai/evidence/index.ts 1ms (unchanged)
+src/services/ai/evidence/MedicalSourceVerifier.ts 22ms (unchanged)
+src/services/ai/index.ts 4ms (unchanged)
+src/services/ai/logger.ts 8ms (unchanged)
+src/services/ai/monitorService.ts 11ms (unchanged)
+src/services/ai/providers/AIProviderClient.ts 1ms (unchanged)
+src/services/ai/providers/index.ts 1ms (unchanged)
+src/services/ai/providers/MedPaLMProvider.ts 1ms (unchanged)
+src/services/ai/providers/OpenAIProvider.ts 2ms (unchanged)
+src/services/ai/types.ts 9ms (unchanged)
+src/services/api.ts 3ms (unchanged)
+src/services/appointmentService.ts 7ms (unchanged)
+src/services/auth.ts 2ms (unchanged)
+src/services/dashboard.ts 54ms (unchanged)
+src/services/dashboardService.ts 1ms (unchanged)
+src/services/emr/EMRAdapter.ts 17ms (unchanged)
+src/services/emr/EMRAdapterFactory.ts 9ms (unchanged)
+src/services/emr/EMRConfigService.ts 11ms (unchanged)
+src/services/emr/implementations/ClinicCloudAdapter.ts 12ms (unchanged)
+src/services/emr/implementations/EPICAdapter.ts 5ms (unchanged)
+src/services/emr/implementations/GenericEMRAdapter.ts 16ms (unchanged)
+src/services/emr/implementations/OSCARAdapter.ts 16ms (unchanged)
+src/services/emr/index.ts 1ms (unchanged)
+src/services/emr/interfaces/EMRAdapter.ts 6ms (unchanged)
+src/services/emr/types.ts 4ms (unchanged)
+src/services/integration/EMRAIIntegrationService.ts 18ms (unchanged)
+src/services/integration/index.ts 0ms (unchanged)
+src/services/logger.ts 5ms (unchanged)
+src/services/ownEmr/appointmentService.ts 31ms (unchanged)
+src/services/ownEmr/authService.ts 20ms (unchanged)
+src/services/ownEmr/database/databaseService.ts 29ms (unchanged)
+src/services/ownEmr/database/sampleData.ts 17ms (unchanged)
+src/services/ownEmr/database/schema.ts 10ms (unchanged)
+src/services/ownEmr/index.ts 3ms (unchanged)
+src/services/ownEmr/patientService.ts 24ms (unchanged)
+src/services/ownEmr/prescriptionService.ts 13ms (unchanged)
+src/services/patient.ts 1ms (unchanged)
+src/services/patientService.ts 1ms (unchanged)
+src/services/storage/index.ts 1ms (unchanged)
+src/test/setup.ts 1ms (unchanged)
+src/types/appointment.ts 1ms (unchanged)
+src/types/dashboard.ts 2ms (unchanged)
+src/types/global.d.ts 2ms (unchanged)
+src/types/patient.ts 2ms (unchanged)
+src/utils/logger.ts 6ms (unchanged)
+src/vite-env.d.ts 2ms (unchanged)
+
+/Users/mauriciosobarzo/Desktop/MapleAIHealth/src/services/ai/logger.ts
+  7:8  error  'logger' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (1 error, 0 warnings)
+
+src/__tests__/services/emr/ClinicCloudAdapter.test.ts 45ms (unchanged)
+src/__tests__/services/emr/EMRAdapterFactory.test.ts 4ms (unchanged)
+src/__tests__/services/emr/mocks/MockEMRResponses.ts 86ms (unchanged)
+src/__tests__/services/emr/mocks/MockHttpService.ts 14ms (unchanged)
+src/__tests__/services/emr/OSCARAdapter.test.ts 2ms (unchanged)
+src/__tests__/setup.ts 1ms (unchanged)
+src/App.tsx 13ms (unchanged)
+src/components/admin/CacheControlPanel.tsx 79ms (unchanged)
+src/components/ai/ResponseFeedback.tsx 18ms (unchanged)
+src/components/appointment/AppointmentFormModal.tsx 2ms (unchanged)
+src/components/auth/ProtectedRoute.tsx 2ms (unchanged)
+src/components/common/Alert.tsx 4ms (unchanged)
+src/components/common/Avatar.tsx 3ms (unchanged)
+src/components/common/Badge.tsx 4ms (unchanged)
+src/components/common/Button.tsx 3ms (unchanged)
+src/components/common/Card.tsx 3ms (unchanged)
+src/components/common/index.ts 4ms (unchanged)
+src/components/common/Input.tsx 9ms (unchanged)
+src/components/common/Modal.tsx 6ms (unchanged)
+src/components/common/NotFound.tsx 3ms (unchanged)
+src/components/common/Progress.tsx 7ms (unchanged)
+src/components/common/Select.tsx 6ms (unchanged)
+src/components/common/Skeleton.tsx 4ms (unchanged)
+src/components/common/Spinner.tsx 2ms (unchanged)
+src/components/common/TextArea.tsx 4ms (unchanged)
+src/components/common/Toast.tsx 3ms (unchanged)
+src/components/dashboard/AIMedicalWidget.tsx 4ms (unchanged)
+src/components/dashboard/ClinicalDashboard.tsx 6ms (unchanged)
+src/components/dashboard/EvidenceSummaryCard.tsx 9ms (unchanged)
+src/components/dashboard/MetricCard.tsx 1ms (unchanged)
+src/components/dashboard/RecentActivities.tsx 1ms (unchanged)
+src/components/dashboard/RecentActivity.tsx 1ms (unchanged)
+src/components/dashboard/RecentEvaluationsCard.tsx 7ms (unchanged)
+src/components/dashboard/SourceVerificationsCard.tsx 11ms (unchanged)
+src/components/dashboard/TopMedicalTopicsCard.tsx 6ms (unchanged)
+src/components/emr/AIAssistant.tsx 1ms (unchanged)
+src/components/emr/AnalysisResults.tsx 1ms (unchanged)
+src/components/emr/NoteInput.tsx 1ms (unchanged)
+src/components/evidence/EvidenceBadge.tsx 5ms (unchanged)
+src/components/evidence/EvidenceDetails.tsx 21ms (unchanged)
+src/components/evidence/EvidenceViewer.tsx 18ms (unchanged)
+src/components/evidence/index.ts 2ms (unchanged)
+src/components/examples/EMRPatientSearch.tsx 6ms (unchanged)
+src/components/examples/EvidenceViewerDemo.tsx 17ms (unchanged)
+src/components/layout/Header.tsx 1ms (unchanged)
+src/components/layout/Layout.tsx 2ms (unchanged)
+src/components/layout/MainLayout.tsx 1ms (unchanged)
+src/components/layout/Sidebar.tsx 3ms (unchanged)
+src/components/patient/PatientForm.tsx 1ms (unchanged)
+src/components/patient/PatientFormModal.tsx 2ms (unchanged)
+src/components/patient/PatientFormModal2.tsx 1ms (unchanged)
+src/components/setup/EMRSetupForm.tsx 4ms (unchanged)
+src/hooks/useAIQuery.ts 5ms (unchanged)
+src/hooks/useApi.ts 1ms (unchanged)
+src/hooks/useAuth.ts 1ms (unchanged)
+src/hooks/useDashboard.ts 2ms (unchanged)
+src/hooks/useEMRAI.ts 6ms (unchanged)
+src/lib/api.ts 9ms (unchanged)
+src/lib/logger.ts 9ms (unchanged)
+src/lib/queryClient.ts 1ms (unchanged)
+src/lib/utils.ts 1ms (unchanged)
+src/main.tsx 2ms (unchanged)
+src/pages/AIHistoryPage.tsx 1ms (unchanged)
+src/pages/AppointmentsPage.tsx 1ms (unchanged)
+src/pages/dashboard/DashboardPage.tsx 1ms (unchanged)
+src/pages/DashboardPage.tsx 3ms (unchanged)
+src/pages/EMRAIPage.tsx 30ms (unchanged)
+src/pages/EMRPage.tsx 18ms (unchanged)
+src/pages/index.ts 2ms (unchanged)
+src/pages/LoginPage.tsx 1ms (unchanged)
+src/pages/NotFoundPage.tsx 1ms (unchanged)
+src/pages/PatientsPage.tsx 6ms (unchanged)
+src/pages/setup.tsx 1ms (unchanged)
+src/pages/TestAIPage.tsx 13ms (unchanged)
+src/routes/index.tsx 5ms (unchanged)
+src/routes/ProtectedRoute.tsx 4ms (unchanged)
+src/services/ai/__tests__/aiService.test.ts 1ms (unchanged)
+src/services/ai/__tests__/cacheIntegration.test.ts 6ms (unchanged)
+src/services/ai/__tests__/cachePrioritizationService.test.ts 4ms (unchanged)
+src/services/ai/__tests__/cacheService.test.ts 1ms (unchanged)
+src/services/ai/aiHistoryService.ts 2ms (unchanged)
+src/services/ai/aiService.ts 46ms (unchanged)
+src/services/ai/cache/CachePrioritizationService.ts 54ms (unchanged)
+src/services/ai/cache/index.ts 1ms (unchanged)
+src/services/ai/cache/SmartCacheInvalidationStrategy.ts 47ms (unchanged)
+src/services/ai/cacheService.ts 31ms (unchanged)
+src/services/ai/ClinicalCopilotService.ts 2ms (unchanged)
+src/services/ai/evidence/EvidenceEvaluationService.ts 43ms (unchanged)
+src/services/ai/evidence/index.ts 1ms (unchanged)
+src/services/ai/evidence/MedicalSourceVerifier.ts 31ms (unchanged)
+src/services/ai/index.ts 11ms (unchanged)
+src/services/ai/logger.ts 9ms (unchanged)
+src/services/ai/monitorService.ts 14ms (unchanged)
+src/services/ai/providers/AIProviderClient.ts 2ms (unchanged)
+src/services/ai/providers/index.ts 1ms (unchanged)
+src/services/ai/providers/MedPaLMProvider.ts 2ms (unchanged)
+src/services/ai/providers/OpenAIProvider.ts 1ms (unchanged)
+src/services/ai/types.ts 13ms (unchanged)
+src/services/api.ts 2ms (unchanged)
+src/services/appointmentService.ts 2ms (unchanged)
+src/services/auth.ts 1ms (unchanged)
+src/services/dashboard.ts 9ms (unchanged)
+src/services/dashboardService.ts 2ms (unchanged)
+src/services/emr/EMRAdapter.ts 3ms (unchanged)
+src/services/emr/EMRAdapterFactory.ts 6ms (unchanged)
+src/services/emr/EMRConfigService.ts 6ms (unchanged)
+src/services/emr/implementations/ClinicCloudAdapter.ts 5ms (unchanged)
+src/services/emr/implementations/EPICAdapter.ts 6ms (unchanged)
+src/services/emr/implementations/GenericEMRAdapter.ts 14ms (unchanged)
+src/services/emr/implementations/OSCARAdapter.ts 5ms (unchanged)
+src/services/emr/index.ts 1ms (unchanged)
+src/services/emr/interfaces/EMRAdapter.ts 7ms (unchanged)
+src/services/emr/types.ts 6ms (unchanged)
+src/services/integration/EMRAIIntegrationService.ts 19ms (unchanged)
+src/services/integration/index.ts 0ms (unchanged)
+src/services/logger.ts 6ms (unchanged)
+src/services/ownEmr/appointmentService.ts 23ms (unchanged)
+src/services/ownEmr/authService.ts 31ms (unchanged)
+src/services/ownEmr/database/databaseService.ts 16ms (unchanged)
+src/services/ownEmr/database/sampleData.ts 15ms (unchanged)
+src/services/ownEmr/database/schema.ts 32ms (unchanged)
+src/services/ownEmr/index.ts 2ms (unchanged)
+src/services/ownEmr/patientService.ts 27ms (unchanged)
+src/services/ownEmr/prescriptionService.ts 21ms (unchanged)
+src/services/patient.ts 1ms (unchanged)
+src/services/patientService.ts 1ms (unchanged)
+src/services/storage/index.ts 2ms (unchanged)
+src/test/setup.ts 1ms (unchanged)
+src/types/appointment.ts 2ms (unchanged)
+src/types/dashboard.ts 3ms (unchanged)
+src/types/global.d.ts 5ms (unchanged)
+src/types/patient.ts 2ms (unchanged)
+src/utils/logger.ts 4ms (unchanged)
+src/vite-env.d.ts 1ms (unchanged)
+[0;31m[1m⚠️ Todavía quedan errores de linting:[0m
+
+/Users/mauriciosobarzo/Desktop/MapleAIHealth/src/services/ai/logger.ts
+  7:8  error  'logger' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (1 error, 0 warnings)
+[1;33mQuedan [0;31m2[1;33m errores y [0;31m1[1;33m advertencias.[0m

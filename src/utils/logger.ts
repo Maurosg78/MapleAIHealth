@@ -20,7 +20,7 @@ export interface LogEntry {
 export class Logger {
   private logs: LogEntry[] = [];
   private readonly MAX_LOGS = 1000;
-  private readonly serviceName: string;
+  private serviceName: string;
 
   constructor(serviceName: string) {
     this.serviceName = serviceName;
@@ -99,3 +99,7 @@ export class Logger {
     this.logs = [];
   }
 }
+
+// Exportamos una instancia por defecto para el logger del sistema
+const logger = new Logger('system');
+export default logger;

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState } from 'react';
 import {
   Box,
   Button,
@@ -48,7 +49,7 @@ const EMRPatientSearch: React.FC = () => {
 
   // Actualizar campo de búsqueda
   const handleSearchChange = (field: keyof EMRSearchQuery, value: string) => {
-    setSearchQuery((prev) => ({
+    setSearchQuery( => ({
       ...prev,
       [field]: value,
     }));
@@ -57,10 +58,10 @@ const EMRPatientSearch: React.FC = () => {
   // Realizar búsqueda de pacientes
   const handleSearch = async () => {
     // Simulamos búsqueda para evitar dependencias externas
-    setIsSearching(true);
+    setIsSearching(null);
 
     // Simulación de tiempo de carga
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout);
 
     // Resultado de ejemplo
     const mockResults: EMRPatientSearchResult[] = [
@@ -80,9 +81,9 @@ const EMRPatientSearch: React.FC = () => {
       }
     ];
 
-    setSearchResults(mockResults);
-    setHasSearched(true);
-    setIsSearching(false);
+    setSearchResults(null);
+    setHasSearched(null);
+    setIsSearching(null);
   };
 
   // Limpiar formulario
@@ -94,11 +95,11 @@ const EMRPatientSearch: React.FC = () => {
       phone: '',
     });
     setSearchResults([]);
-    setHasSearched(false);
+    setHasSearched(null);
   };
 
   return (
-    <Box p={6} borderWidth="1px" borderRadius="lg" bg="white" shadow="md">
+    React.createElement('Box', { p: 6 borderWidth: "1px" borderRadius: "lg" bg: "white" shadow: "md"}, 
       <VStack align="stretch">
         <Heading size="md">Búsqueda de Pacientes</Heading>
         <Text fontSize="sm" color="gray.600">
@@ -113,18 +114,18 @@ const EMRPatientSearch: React.FC = () => {
               value={searchQuery.name}
               onChange={(e) => handleSearchChange('name', e.target.value)}
             />
-          </Box>
+          )
 
-          <Box mb={4}>
+          React.createElement('Box', { mb: 4}, 
             <Text fontWeight="bold" mb={2}>Documento de Identidad</Text>
             <Input
               placeholder="Ej. 12345678X"
               value={searchQuery.documentId}
               onChange={(e) => handleSearchChange('documentId', e.target.value)}
             />
-          </Box>
+          )
 
-          <Box mb={4}>
+          React.createElement('Box', { mb: 4}, 
             <Text fontWeight="bold" mb={2}>Email</Text>
             <Input
               placeholder="Ej. paciente@correo.com"
@@ -132,19 +133,19 @@ const EMRPatientSearch: React.FC = () => {
               type="email"
               onChange={(e) => handleSearchChange('email', e.target.value)}
             />
-          </Box>
+          )
 
-          <Box mb={4}>
+          React.createElement('Box', { mb: 4}, 
             <Text fontWeight="bold" mb={2}>Teléfono</Text>
             <Input
               placeholder="Ej. 612345678"
               value={searchQuery.phone}
               onChange={(e) => handleSearchChange('phone', e.target.value)}
             />
-          </Box>
+          )
         </Box>
 
-        <Box>
+        React.createElement('Box', {}, 
           <Button
             variant="outline"
             onClick={handleClear}
@@ -160,10 +161,10 @@ const EMRPatientSearch: React.FC = () => {
           >
             Buscar Paciente
           </Button>
-        </Box>
+        )
 
         {hasSearched && (
-          <Box mt={4}>
+          React.createElement('Box', { mt: 4}, 
             <Heading size="sm" mb={3}>
               Resultados
             </Heading>
@@ -174,7 +175,7 @@ const EMRPatientSearch: React.FC = () => {
               </Text>
             ) : (
               <Box overflowX="auto">
-                {searchResults.map((patient) => (
+                {searchResults.map((item) => (
                   <Box
                     key={patient.id}
                     p={3}
@@ -187,7 +188,7 @@ const EMRPatientSearch: React.FC = () => {
                     <Text><strong>Fecha Nacimiento:</strong> {patient.birthDate}</Text>
                     <Text><strong>Género:</strong> {patient.gender}</Text>
                     <Text><strong>MRN:</strong> {patient.mrn}</Text>
-                  </Box>
+                  )
                 ))}
               </Box>
             )}
@@ -195,6 +196,7 @@ const EMRPatientSearch: React.FC = () => {
         )}
       </VStack>
     </Box>
+    null
   );
 };
 

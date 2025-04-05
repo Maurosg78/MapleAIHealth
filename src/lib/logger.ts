@@ -4,16 +4,16 @@
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 /**
- * Clase para manejar registros (logs) en la aplicación
+ * Clase para manejar registros  en la aplicación
  */
 export class Logger {
-  private readonly moduleName: string;
+  private moduleName: string;
   private static logLevel: LogLevel = 'info';
-  private static readonly LOG_LEVELS: Record<LogLevel, number> = {
+  private static$1$3: Record<LogLevel, number> = {
     debug: 0,
     info: 1,
     warn: 2,
-    error: 3
+    error: 3,
   };
 
   /**

@@ -1,7 +1,3 @@
-import EvidenceBadge from './EvidenceBadge';
-import EvidenceDetails from './EvidenceDetails';
-
-export {
-  EvidenceBadge,
-  EvidenceDetails
-};
+export { default as EvidenceBadge } from './EvidenceBadge';
+export { default as EvidenceDetails } from './EvidenceDetails';
+export { default as EvidenceViewer } from './EvidenceViewer';

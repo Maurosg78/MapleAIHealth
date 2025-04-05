@@ -1,14 +1,14 @@
-import React from 'react';
+import * as React from 'react';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'elevated' | 'outlined';
 }
 
-export const Card: React.FC<CardProps> = ({ 
-  children, 
+export const Card: React.FC<CardProps> = ({
+  children,
   variant = 'default',
   className = '',
-  ...props 
+  ...props
 }) => {
   return (
     <div className={`card card-${variant} ${className}`} {...props}>

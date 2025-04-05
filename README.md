@@ -1,6 +1,196 @@
-# MapleHealth AI
+# Maple AI Health 🍁
 
-Una plataforma de inteligencia artificial para la asistencia clínica en tiempo real, diseñada para transformar la atención médica mediante tecnología avanzada adaptada a las necesidades de los profesionales de la salud.
+Una plataforma de salud con IA que integra herramientas de análisis y gestión de evidencia médica.
+
+## Características principales
+
+- Sistema de EMR (Registro Médico Electrónico) con integración de IA
+- Evaluación de evidencia médica con verificación de fuentes
+- Gestión de alertas clínicas con detección de contraindicaciones
+- Componentes optimizados para aplicaciones médicas de alta demanda
+- Soporte para temas claro/oscuro y accesibilidad
+
+## Inicio rápido
+
+```bash
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
+npm run dev
+
+# Construir para producción
+npm run build
+
+# Ejecutar pruebas
+npm test
+```
+
+## Estructura del proyecto
+
+```
+src/
+├── components/     # Componentes de React organizados por funcionalidad
+│   ├── alerts/     # Sistema de alertas clínicas
+│   ├── dashboard/  # Componentes para el dashboard principal
+│   ├── emr/        # Componentes para el sistema EMR
+│   ├── evidence/   # Visualización y análisis de evidencia médica
+│   ├── optimized/  # Componentes optimizados (lazy loading, virtualización)
+│   └── common/     # Componentes compartidos (botones, inputs, etc.)
+├── hooks/          # Hooks personalizados
+│   └── list/       # Hooks para optimizar listas virtualizadas
+├── services/       # Servicios y lógica de negocio
+│   ├── ai/         # Servicios de inteligencia artificial
+│   ├── alerts/     # Servicio de alertas clínicas
+│   ├── emr/        # Comunicación con sistemas EMR
+│   └── performance/# Servicios para optimizar rendimiento
+├── utils/          # Utilidades generales
+└── pages/          # Páginas/rutas de la aplicación
+```
+
+## Guía de solución de problemas
+
+### Errores comunes y soluciones
+
+#### 1. Problemas con modificador 'readonly'
+
+El modificador `readonly` solo debe utilizarse en interfaces y tipos, no en objetos literales.
+
+**Incorrecto:**
+```typescript
+const objeto = {
+  readonly propiedad: valor
+};
+```
+
+**Correcto:**
+```typescript
+interface MiInterfaz {
+  readonly propiedad: string;
+}
+
+const objeto = {
+  propiedad: valor
+};
+```
+
+#### 2. Errores de tipo en operaciones aritméticas
+
+Siempre asegúrate de que las variables en operaciones aritméticas sean de tipo numérico.
+
+**Incorrecto:**
+```typescript
+const resultado = variable1 - variable2;
+```
+
+**Correcto:**
+```typescript
+const resultado = Number(variable1) - Number(variable2);
+```
+
+#### 3. Propiedades faltantes en tipos
+
+Cuando un tipo requiere propiedades específicas, asegúrate de proveerlas todas.
+
+**Incorrecto:**
+```typescript
+const note: UnstructuredNote = {
+  id: 'note-1',
+  content: 'Contenido de la nota',
+  type: 'progress'
+  // Falta: createdAt
+};
+```
+
+**Correcto:**
+```typescript
+const note: UnstructuredNote = {
+  id: 'note-1',
+  content: 'Contenido de la nota',
+  type: 'progress',
+  createdAt: new Date()
+};
+```
+
+#### 4. Problemas de React hooks
+
+Los hooks de React deben seguir reglas específicas.
+
+**Incorrecto:**
+```typescript
+const MiComponente = () => {
+  const handleClick = () => {
+    // Error: hook dentro de una función anidada
+    const memoizedValue = useMemo(() => calcularValor(), []);
+  };
+
+  if (condición) {
+    // Error: hook dentro de una condición
+    useEffect(() => {}, []);
+  }
+};
+```
+
+**Correcto:**
+```typescript
+const MiComponente = () => {
+  // Correcto: hooks al nivel superior del componente
+  const memoizedValue = useMemo(() => calcularValor(), []);
+
+  useEffect(() => {
+    if (condición) {
+      // Lógica condicional aquí dentro
+    }
+  }, [condición]);
+};
+```
+
+### Script para corrección automática
+
+Se incluye un script para detectar y corregir errores comunes:
+
+```bash
+node scripts/fix-typescript-errors.cjs
+```
+
+Este script:
+- Corrige el uso incorrecto de `readonly` en objetos literales
+- Añade propiedades faltantes a objetos (como `createdAt` en notas)
+- Completa objetos `AIContext` que necesitan la propiedad `content`
+
+### Verificación de compatibilidad
+
+Para verificar errores de TypeScript:
+
+```bash
+npm run type-check
+```
+
+Para verificar errores de linting:
+
+```bash
+npm run lint
+```
+
+## Consideraciones de rendimiento
+
+- Los componentes en `src/components/optimized/` están diseñados para alto rendimiento
+- Se utilizan técnicas de memoización en `src/services/performance/`
+- Los hooks en `src/hooks/list/` optimizan el renderizado de listas grandes
+
+## Accesibilidad
+
+El proyecto sigue las pautas WCAG 2.1 AA. Aspectos importantes:
+- Contraste de color adecuado
+- Atributos ARIA correctos en componentes interactivos
+- Textos alternativos para imágenes
+- Navegación por teclado
+
+## Contribución
+
+1. Asegúrate de que el linting pase: `npm run lint`
+2. Asegúrate de que las pruebas pasen: `npm test`
+3. Verifica la compatibilidad de tipos: `npm run type-check`
 
 ## Nuestra Visión
 

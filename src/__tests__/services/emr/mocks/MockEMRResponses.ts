@@ -230,7 +230,7 @@ export const clinicCloudPatientHistory = {
   ],
 };
 
-// Datos de paciente mock para EPIC (formato FHIR)
+// Datos de paciente mock para EPIC 
 export const epicPatientData = {
   resourceType: 'Patient',
   id: 'ep-54321',
@@ -272,7 +272,7 @@ export const epicPatientData = {
   ],
 };
 
-// Resultados de búsqueda para EPIC (formato FHIR)
+// Resultados de búsqueda para EPIC 
 export const epicSearchResults = {
   resourceType: 'Bundle',
   type: 'searchset',
@@ -323,7 +323,7 @@ export const epicSearchResults = {
   ],
 };
 
-// Historia del paciente para EPIC (formato FHIR)
+// Historia del paciente para EPIC 
 export const epicPatientHistory = {
   resourceType: 'Bundle',
   type: 'collection',
@@ -424,7 +424,7 @@ export const epicPatientHistory = {
   ],
 };
 
-// Métricas del paciente (para todos los sistemas)
+// Métricas del paciente 
 export const patientMetrics = {
   weight: {
     value: 75.5,

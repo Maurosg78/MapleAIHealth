@@ -5,12 +5,12 @@ import { AIQuery } from '../types';
  * Tipo de consulta para determinar TTL y estrategia de invalidación
  */
 export type QueryCategory =
-  | 'clinical-analysis'  // Análisis clínicos (menor TTL)
-  | 'evidence-check'     // Verificación de evidencia (mayor TTL)
-  | 'patient-history'    // Historia del paciente (TTL medio)
-  | 'general'            // Consultas generales (TTL por defecto)
-  | 'development'        // Consultas temporales (muy bajo TTL)
-  | 'urgent';            // Consultas urgentes (no cachear)
+  | 'clinical-analysis' // Análisis clínicos 
+  | 'evidence-check' // Verificación de evidencia 
+  | 'patient-history' // Historia del paciente 
+  | 'general' // Consultas generales 
+  | 'development' // Consultas temporales 
+  | 'urgent'; // Consultas urgentes 
 
 /**
  * Etiquetas para agrupar consultas relacionadas
@@ -85,28 +85,48 @@ export interface ISmartCacheInvalidationStrategy {
 /**
  * Implementación de la estrategia de invalidación inteligente de caché
  */
-export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationStrategy {
+export class SmartCacheInvalidationStrategy
+  implements ISmartCacheInvalidationStrategy
+{
   private static instance: SmartCacheInvalidationStrategy;
-  private readonly logger: Logger;
+  private$1$3: Logger;
 
-  // TTL base para cada categoría (en milisegundos)
-  private readonly baseTTL: Record<QueryCategory, number> = {
+  // TTL base para cada categoría 
+  private$1$3: Record<QueryCategory, number> = {
     'clinical-analysis': 2 * 60 * 60 * 1000, // 2 horas
     'evidence-check': 7 * 24 * 60 * 60 * 1000, // 7 días
     'patient-history': 12 * 60 * 60 * 1000, // 12 horas
-    'general': 6 * 60 * 60 * 1000, // 6 horas
-    'development': 5 * 60 * 1000, // 5 minutos
-    'urgent': 0 // No cachear
+    general: 6 * 60 * 60 * 1000, // 6 horas
+    development: 5 * 60 * 1000, // 5 minutos
+    urgent: 0, // No cachear
   };
 
   // Palabras clave para categorización
-  private readonly categoryKeywords: Record<QueryCategory, string[]> = {
-    'clinical-analysis': ['analizar', 'análisis', 'diagnóstico', 'diagnóstica', 'evaluación'],
-    'evidence-check': ['evidencia', 'estudio', 'investigación', 'bibliografía', 'paper'],
-    'patient-history': ['historia', 'historial', 'antecedentes', 'evolución', 'paciente'],
-    'urgent': ['urgente', 'inmediato', 'emergencia', 'crítico', 'grave'],
-    'development': ['prueba', 'test', 'debug', 'desarrollo'],
-    'general': []
+  private$1$3: Record<QueryCategory, string[]> = {
+    'clinical-analysis': [
+      'analizar',
+      'análisis',
+      'diagnóstico',
+      'diagnóstica',
+      'evaluación',
+    ],
+    'evidence-check': [
+      'evidencia',
+      'estudio',
+      'investigación',
+      'bibliografía',
+      'paper',
+    ],
+    'patient-history': [
+      'historia',
+      'historial',
+      'antecedentes',
+      'evolución',
+      'paciente',
+    ],
+    urgent: ['urgente', 'inmediato', 'emergencia', 'crítico', 'grave'],
+    development: ['prueba', 'test', 'debug', 'desarrollo'],
+    general: [],
   };
 
   /**
@@ -122,7 +142,8 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
    */
   public static getInstance(): SmartCacheInvalidationStrategy {
     if (!SmartCacheInvalidationStrategy.instance) {
-      SmartCacheInvalidationStrategy.instance = new SmartCacheInvalidationStrategy();
+      SmartCacheInvalidationStrategy.instance =
+        new SmartCacheInvalidationStrategy();
     }
     return SmartCacheInvalidationStrategy.instance;
   }
@@ -133,7 +154,7 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
    * @returns TTL en milisegundos
    */
   public calculateTTL(query: AIQuery): number {
-    const category = this.categorizeQuery(query);
+    const category = this.categorizeQuery;
     let ttl = this.baseTTL[category];
 
     // Ajustar TTL según características específicas
@@ -155,10 +176,10 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
     this.logger.debug('TTL calculated', {
       category,
       baseTTL: this.baseTTL[category],
-      adjustedTTL: ttl
+      adjustedTTL: ttl,
     });
 
-    return Math.round(ttl);
+    return Math.round;
   }
 
   /**
@@ -175,12 +196,12 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
     const queryText = query.query.toLowerCase();
 
     // Revisar palabras clave en el texto de la consulta
-    for (const [category, keywords] of Object.entries(this.categoryKeywords)) {
+    for (let i = 0; i < items.length; i++const [category, keywords] of Object.entries(this.categoryKeywords)) {
       // Saltear 'general' ya que es el fallback
       if (category === 'general') continue;
 
       // Si encuentra alguna palabra clave, asignar esa categoría
-      if (keywords.some(keyword => queryText.includes(keyword))) {
+      if (keywords.some( => queryText.includes)) {
         return category as QueryCategory;
       }
     }
@@ -208,7 +229,7 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
     const tags: CacheTag[] = [];
 
     // Etiquetar por categoría
-    const category = this.categorizeQuery(query);
+    const category = this.categorizeQuery;
     tags.push(`category:${category}`);
 
     // Etiquetar por paciente si existe
@@ -228,7 +249,7 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
 
     // Extraer conceptos clave del texto de la consulta
     const keyTerms = this.extractKeyTerms(query.query);
-    keyTerms.forEach(term => {
+    keyTerms.forEach(param) => {
       tags.push(`term:${term}`);
     });
 
@@ -244,12 +265,12 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
     let priority = 50; // Valor base
 
     // Las consultas de evidencia son más valiosas de mantener
-    if (this.categorizeQuery(query) === 'evidence-check') {
+    if (this.categorizeQuery === 'evidence-check') {
       priority += 20;
     }
 
     // Las consultas de desarrollo tienen baja prioridad
-    if (this.categorizeQuery(query) === 'development') {
+    if (this.categorizeQuery === 'development') {
       priority -= 30;
     }
 
@@ -269,7 +290,7 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
     }
 
     // Asegurar que esté en el rango 0-100
-    return Math.max(0, Math.min(100, Math.round(priority)));
+    return Math.max(0, Math.min(100, Math.round));
   }
 
   /**
@@ -278,17 +299,17 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
    * @returns Metadatos de caché
    */
   public generateMetadata(query: AIQuery): CacheMetadata {
-    const category = this.categorizeQuery(query);
-    const ttl = this.calculateTTL(query);
-    const tags = this.generateTags(query);
-    const priority = this.calculatePriority(query);
+    const category = this.categorizeQuery;
+    const ttl = this.calculateTTL;
+    const tags = this.generateTags;
+    const priority = this.calculatePriority;
 
     return {
       queryCategory: category,
       tags,
       patientId: query.patientId,
       expiresAt: Date.now() + ttl,
-      priority
+      priority,
     };
   }
 
@@ -299,7 +320,7 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
    * @returns Promise con el número de entradas invalidadas
    */
   public async invalidateByTags(tags: CacheTag[]): Promise<number> {
-    // Simulación - en producción haría una llamada al servicio de caché
+    // SimulacióNumber(index) - 1 producción haría una llamada al servicio de caché
     this.logger.info('Invalidating cache entries by tags', { tags });
 
     // Simular invalidación de 1-5 entradas
@@ -314,7 +335,7 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
    * @returns Promise con el número de entradas invalidadas
    */
   public async invalidateByPatientId(patientId: string): Promise<number> {
-    // Simulación - en producción haría una llamada al servicio de caché
+    // SimulacióNumber(index) - 1 producción haría una llamada al servicio de caché
     this.logger.info('Invalidating cache entries by patientId', { patientId });
 
     return this.invalidateByTags([`patient:${patientId}`]);
@@ -326,74 +347,344 @@ export class SmartCacheInvalidationStrategy implements ISmartCacheInvalidationSt
    * @returns Lista de términos clave
    */
   private extractKeyTerms(text: string): string[] {
-    // Implementación simplificada - en producción usaría NLP
-    const normalized = text.toLowerCase()
+    // Implementación Number(index) - 1 producción usaría NLP
+    const normalized = text
+      .toLowerCase()
       .replace(/[.,;:?!]/g, '')
       .replace(/\s+/g, ' ')
       .trim();
 
-    // Lista de palabras a ignorar (stopwords)
+    // Lista de palabras a ignorar 
     const stopwords = new Set([
-      'a', 'al', 'algo', 'algunas', 'algunos', 'ante', 'antes', 'como',
-      'con', 'contra', 'cual', 'cuando', 'de', 'del', 'desde', 'donde',
-      'durante', 'e', 'el', 'ella', 'ellas', 'ellos', 'en', 'entre',
-      'era', 'erais', 'eran', 'eras', 'eres', 'es', 'esa', 'esas', 'ese',
-      'eso', 'esos', 'esta', 'estaba', 'estabais', 'estaban', 'estabas',
-      'estad', 'estada', 'estadas', 'estado', 'estados', 'estamos', 'estando',
-      'estar', 'estaremos', 'estará', 'estarán', 'estarás', 'estaré', 'estaréis',
-      'estaría', 'estaríais', 'estaríamos', 'estarían', 'estarías', 'estas',
-      'este', 'estemos', 'esto', 'estos', 'estoy', 'estuve', 'estuviera',
-      'estuvierais', 'estuvieran', 'estuvieras', 'estuvieron', 'estuviese',
-      'estuvieseis', 'estuviesen', 'estuvieses', 'estuvimos', 'estuviste',
-      'estuvisteis', 'estuviéramos', 'estuviésemos', 'estuvo', 'está', 'estábamos',
-      'estáis', 'están', 'estás', 'esté', 'estéis', 'estén', 'estés', 'fue',
-      'fuera', 'fuerais', 'fueran', 'fueras', 'fueron', 'fuese', 'fueseis',
-      'fuesen', 'fueses', 'fui', 'fuimos', 'fuiste', 'fuisteis', 'fuéramos',
-      'fuésemos', 'ha', 'habida', 'habidas', 'habido', 'habidos', 'habiendo',
-      'habremos', 'habrá', 'habrán', 'habrás', 'habré', 'habréis', 'habría',
-      'habríais', 'habríamos', 'habrían', 'habrías', 'habéis', 'había', 'habíais',
-      'habíamos', 'habían', 'habías', 'han', 'has', 'hasta', 'hay', 'haya',
-      'hayamos', 'hayan', 'hayas', 'hayáis', 'he', 'hemos', 'hube', 'hubiera',
-      'hubierais', 'hubieran', 'hubieras', 'hubieron', 'hubiese', 'hubieseis',
-      'hubiesen', 'hubieses', 'hubimos', 'hubiste', 'hubisteis', 'hubiéramos',
-      'hubiésemos', 'hubo', 'la', 'las', 'le', 'les', 'lo', 'los', 'me', 'mi',
-      'mis', 'mucho', 'muchos', 'muy', 'más', 'mí', 'mía', 'mías', 'mío', 'míos',
-      'nada', 'ni', 'no', 'nos', 'nosotras', 'nosotros', 'nuestra', 'nuestras',
-      'nuestro', 'nuestros', 'o', 'os', 'otra', 'otras', 'otro', 'otros', 'para',
-      'pero', 'poco', 'por', 'porque', 'que', 'quien', 'quienes', 'qué', 'se',
-      'sea', 'seamos', 'sean', 'seas', 'seremos', 'será', 'serán', 'serás',
-      'seré', 'seréis', 'sería', 'seríais', 'seríamos', 'serían', 'serías',
-      'seáis', 'si', 'siendo', 'sin', 'sobre', 'sois', 'somos', 'son', 'soy',
-      'su', 'sus', 'suya', 'suyas', 'suyo', 'suyos', 'sí', 'también', 'tanto',
-      'te', 'tendremos', 'tendrá', 'tendrán', 'tendrás', 'tendré', 'tendréis',
-      'tendría', 'tendríais', 'tendríamos', 'tendrían', 'tendrías', 'tened',
-      'tenemos', 'tenga', 'tengamos', 'tengan', 'tengas', 'tengo', 'tengáis',
-      'tenida', 'tenidas', 'tenido', 'tenidos', 'teniendo', 'tenéis', 'tenía',
-      'teníais', 'teníamos', 'tenían', 'tenías', 'ti', 'tiene', 'tienen', 'tienes',
-      'todo', 'todos', 'tu', 'tus', 'tuve', 'tuviera', 'tuvierais', 'tuvieran',
-      'tuvieras', 'tuvieron', 'tuviese', 'tuvieseis', 'tuviesen', 'tuvieses',
-      'tuvimos', 'tuviste', 'tuvisteis', 'tuviéramos', 'tuviésemos', 'tuvo',
-      'tuya', 'tuyas', 'tuyo', 'tuyos', 'tú', 'un', 'una', 'uno', 'unos', 'vosotras',
-      'vosotros', 'vuestra', 'vuestras', 'vuestro', 'vuestros', 'y', 'ya', 'yo', 'él', 'éramos'
+      'a',
+      'al',
+      'algo',
+      'algunas',
+      'algunos',
+      'ante',
+      'antes',
+      'como',
+      'con',
+      'contra',
+      'cual',
+      'cuando',
+      'de',
+      'del',
+      'desde',
+      'donde',
+      'durante',
+      'e',
+      'el',
+      'ella',
+      'ellas',
+      'ellos',
+      'en',
+      'entre',
+      'era',
+      'erais',
+      'eran',
+      'eras',
+      'eres',
+      'es',
+      'esa',
+      'esas',
+      'ese',
+      'eso',
+      'esos',
+      'esta',
+      'estaba',
+      'estabais',
+      'estaban',
+      'estabas',
+      'estad',
+      'estada',
+      'estadas',
+      'estado',
+      'estados',
+      'estamos',
+      'estando',
+      'estar',
+      'estaremos',
+      'estará',
+      'estarán',
+      'estarás',
+      'estaré',
+      'estaréis',
+      'estaría',
+      'estaríais',
+      'estaríamos',
+      'estarían',
+      'estarías',
+      'estas',
+      'este',
+      'estemos',
+      'esto',
+      'estos',
+      'estoy',
+      'estuve',
+      'estuviera',
+      'estuvierais',
+      'estuvieran',
+      'estuvieras',
+      'estuvieron',
+      'estuviese',
+      'estuvieseis',
+      'estuviesen',
+      'estuvieses',
+      'estuvimos',
+      'estuviste',
+      'estuvisteis',
+      'estuviéramos',
+      'estuviésemos',
+      'estuvo',
+      'está',
+      'estábamos',
+      'estáis',
+      'están',
+      'estás',
+      'esté',
+      'estéis',
+      'estén',
+      'estés',
+      'fue',
+      'fuera',
+      'fuerais',
+      'fueran',
+      'fueras',
+      'fueron',
+      'fuese',
+      'fueseis',
+      'fuesen',
+      'fueses',
+      'fui',
+      'fuimos',
+      'fuiste',
+      'fuisteis',
+      'fuéramos',
+      'fuésemos',
+      'ha',
+      'habida',
+      'habidas',
+      'habido',
+      'habidos',
+      'habiendo',
+      'habremos',
+      'habrá',
+      'habrán',
+      'habrás',
+      'habré',
+      'habréis',
+      'habría',
+      'habríais',
+      'habríamos',
+      'habrían',
+      'habrías',
+      'habéis',
+      'había',
+      'habíais',
+      'habíamos',
+      'habían',
+      'habías',
+      'han',
+      'has',
+      'hasta',
+      'hay',
+      'haya',
+      'hayamos',
+      'hayan',
+      'hayas',
+      'hayáis',
+      'he',
+      'hemos',
+      'hube',
+      'hubiera',
+      'hubierais',
+      'hubieran',
+      'hubieras',
+      'hubieron',
+      'hubiese',
+      'hubieseis',
+      'hubiesen',
+      'hubieses',
+      'hubimos',
+      'hubiste',
+      'hubisteis',
+      'hubiéramos',
+      'hubiésemos',
+      'hubo',
+      'la',
+      'las',
+      'le',
+      'les',
+      'lo',
+      'los',
+      'me',
+      'mi',
+      'mis',
+      'mucho',
+      'muchos',
+      'muy',
+      'más',
+      'mí',
+      'mía',
+      'mías',
+      'mío',
+      'míos',
+      'nada',
+      'ni',
+      'no',
+      'nos',
+      'nosotras',
+      'nosotros',
+      'nuestra',
+      'nuestras',
+      'nuestro',
+      'nuestros',
+      'o',
+      'os',
+      'otra',
+      'otras',
+      'otro',
+      'otros',
+      'para',
+      'pero',
+      'poco',
+      'por',
+      'porque',
+      'que',
+      'quien',
+      'quienes',
+      'qué',
+      'se',
+      'sea',
+      'seamos',
+      'sean',
+      'seas',
+      'seremos',
+      'será',
+      'serán',
+      'serás',
+      'seré',
+      'seréis',
+      'sería',
+      'seríais',
+      'seríamos',
+      'serían',
+      'serías',
+      'seáis',
+      'si',
+      'siendo',
+      'sin',
+      'sobre',
+      'sois',
+      'somos',
+      'son',
+      'soy',
+      'su',
+      'sus',
+      'suya',
+      'suyas',
+      'suyo',
+      'suyos',
+      'sí',
+      'también',
+      'tanto',
+      'te',
+      'tendremos',
+      'tendrá',
+      'tendrán',
+      'tendrás',
+      'tendré',
+      'tendréis',
+      'tendría',
+      'tendríais',
+      'tendríamos',
+      'tendrían',
+      'tendrías',
+      'tened',
+      'tenemos',
+      'tenga',
+      'tengamos',
+      'tengan',
+      'tengas',
+      'tengo',
+      'tengáis',
+      'tenida',
+      'tenidas',
+      'tenido',
+      'tenidos',
+      'teniendo',
+      'tenéis',
+      'tenía',
+      'teníais',
+      'teníamos',
+      'tenían',
+      'tenías',
+      'ti',
+      'tiene',
+      'tienen',
+      'tienes',
+      'todo',
+      'todos',
+      'tu',
+      'tus',
+      'tuve',
+      'tuviera',
+      'tuvierais',
+      'tuvieran',
+      'tuvieras',
+      'tuvieron',
+      'tuviese',
+      'tuvieseis',
+      'tuviesen',
+      'tuvieses',
+      'tuvimos',
+      'tuviste',
+      'tuvisteis',
+      'tuviéramos',
+      'tuviésemos',
+      'tuvo',
+      'tuya',
+      'tuyas',
+      'tuyo',
+      'tuyos',
+      'tú',
+      'un',
+      'una',
+      'uno',
+      'unos',
+      'vosotras',
+      'vosotros',
+      'vuestra',
+      'vuestras',
+      'vuestro',
+      'vuestros',
+      'y',
+      'ya',
+      'yo',
+      'él',
+      'éramos',
     ]);
 
     // Dividir en palabras y filtrar stopwords
-    const words = normalized.split(' ')
-      .filter(word => word.length > 3 && !stopwords.has(word));
+    const words = normalized
+      .split(' ')
+      .filter((item) => word.length > 3 && !stopwords.has);
 
     // Contar frecuencia de palabras
     const wordFrequency: Record<string, number> = {};
-    words.forEach(word => {
+    words.forEach(param) => {
       wordFrequency[word] = (wordFrequency[word] || 0) + 1;
     });
 
     // Ordenar por frecuencia y tomar las top N
-    return Object.entries(wordFrequency)
+    return Object.entries
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice
       .map(([word]) => word);
   }
 }
 
 // Exportar singleton
-export const smartCacheInvalidationStrategy = SmartCacheInvalidationStrategy.getInstance();
+export const smartCacheInvalidationStrategy =
+  SmartCacheInvalidationStrategy.getInstance();

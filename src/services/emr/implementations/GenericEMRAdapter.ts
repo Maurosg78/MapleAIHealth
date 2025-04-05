@@ -1,5 +1,11 @@
 import { EMRAdapter } from '../EMRAdapter';
-import { PatientData, EMRConsultation, EMRTreatment, EMRUnstructuredNote, CompleteEMRData } from '../types';
+import {
+  PatientData,
+  EMRConsultation,
+  EMRTreatment,
+  EMRUnstructuredNote,
+  CompleteEMRData,
+} from '../types';
 import { EMRAdapterConfig } from '../EMRAdapterFactory';
 
 /**
@@ -27,7 +33,7 @@ export class GenericEMRAdapter implements EMRAdapter {
       gender: 'male',
       email: 'juan.ejemplo@example.com',
       phone: '+56 9 1234 5678',
-      address: 'Av. Ejemplo 123, Santiago, Chile'
+      address: 'Av. Ejemplo 123, Santiago, Chile',
     };
   }
 
@@ -36,7 +42,10 @@ export class GenericEMRAdapter implements EMRAdapter {
    * @param criteria Criterios de búsqueda
    * @param limit Límite de resultados
    */
-  async searchPatients(criteria: Record<string, unknown>, limit = 10): Promise<PatientData[]> {
+  async searchPatients(
+    criteria: Record<string, unknown>,
+    limit = 10
+  ): Promise<PatientData[]> {
     // Simulación para propósitos de demo
     return [
       {
@@ -44,16 +53,16 @@ export class GenericEMRAdapter implements EMRAdapter {
         firstName: 'Juan',
         lastName: 'Ejemplo',
         dateOfBirth: '1978-05-15',
-        gender: 'male'
+        gender: 'male',
       },
       {
         id: 'P12346',
         firstName: 'María',
         lastName: 'Modelo',
         dateOfBirth: '1985-10-20',
-        gender: 'female'
-      }
-    ].slice(0, limit);
+        gender: 'female',
+      },
+    ].slice;
   }
 
   /**
@@ -61,32 +70,38 @@ export class GenericEMRAdapter implements EMRAdapter {
    * @param patientId ID del paciente
    * @param limit Límite de resultados
    */
-  async getConsultations(patientId: string, limit = 10): Promise<EMRConsultation[]> {
+  async getConsultations(
+    patientId: string,
+    limit = 10
+  ): Promise<EMRConsultation[]> {
     // Simulación para propósitos de demo
     const consultations: EMRConsultation[] = [
       {
         id: 'C1001',
         patientId,
         date: '2023-05-10',
-        notes: 'Paciente acude por dolor lumbar. Se recomienda reposo y analgésicos.',
-        status: 'completed'
+        notes:
+          'Paciente acude por dolor lumbar. Se recomienda reposo y analgésicos.',
+        status: 'completed',
       },
       {
         id: 'C1002',
         patientId,
         date: '2023-06-15',
-        notes: 'Control. Paciente refiere mejoría del dolor. Se mantiene tratamiento.',
-        status: 'completed'
+        notes:
+          'Control. Paciente refiere mejoría del dolor. Se mantiene tratamiento.',
+        status: 'completed',
       },
       {
         id: 'C1003',
         patientId,
         date: '2023-08-20',
-        notes: 'Paciente presenta dolor en rodilla derecha. Se solicita radiografía.',
-        status: 'active'
-      }
+        notes:
+          'Paciente presenta dolor en rodilla derecha. Se solicita radiografía.',
+        status: 'active',
+      },
     ];
-    return consultations.slice(0, limit);
+    return consultations.slice;
   }
 
   /**
@@ -100,14 +115,14 @@ export class GenericEMRAdapter implements EMRAdapter {
         id: 'T2001',
         consultationId,
         description: 'Ibuprofeno 400mg cada 8 horas por 5 días',
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'T2002',
         consultationId,
         description: 'Fisioterapia 2 veces por semana por 3 semanas',
-        status: 'active'
-      }
+        status: 'active',
+      },
     ];
   }
 
@@ -124,7 +139,10 @@ export class GenericEMRAdapter implements EMRAdapter {
    * @param patientId ID del paciente
    * @param limit Límite de resultados
    */
-  async getUnstructuredNotes(patientId: string, limit = 10): Promise<EMRUnstructuredNote[]> {
+  async getUnstructuredNotes(
+    patientId: string,
+    limit = 10
+  ): Promise<EMRUnstructuredNote[]> {
     // Simulación para propósitos de demo
     const notes: EMRUnstructuredNote[] = [
       {
@@ -132,30 +150,36 @@ export class GenericEMRAdapter implements EMRAdapter {
         patientId,
         date: '2023-05-10',
         provider: 'Dr. García',
-        content: 'Paciente masculino de 45 años acude por dolor en región lumbar de 2 semanas de evolución. Refiere que empeora con el movimiento y mejora parcialmente con antiinflamatorios. No refiere traumatismo previo. Examen físico: dolor a la palpación de musculatura paravertebral lumbar, sin signos radiculares. Diagnóstico presuntivo: lumbalgia mecánica. Plan: reposo relativo, ibuprofeno 400mg cada 8 horas por 5 días, control en 10 días.',
-        type: 'progress',
-        consultationId: 'C1001'
+        content:
+          'Paciente masculino de 45 años acude por dolor en región lumbar de 2 semanas de evolución. Refiere que empeora con el movimiento y mejora parcialmente con antiinflamatorios. No refiere traumatismo previo. Examen físico: dolor a la palpación de musculatura paravertebral lumbar, sin signos radiculares. Diagnóstico presuntivo: lumbalgia mecánica. Plan: reposo relativo, ibuprofeno 400mg cada 8 horas por 5 días, control en 10 días.',
+        $1,
+      createdAt: new Date(),
+        consultationId: 'C1001',
       },
       {
         id: 'N3002',
         patientId,
         date: '2023-06-15',
         provider: 'Dr. García',
-        content: 'Paciente en control por lumbalgia. Refiere mejoría significativa del dolor. Mantiene episodios ocasionales de molestia leve con esfuerzos. Examen físico: sin dolor a la palpación, movilidad conservada. Plan: mantener ejercicios de fortalecimiento lumbar, usar analgésicos solo si necesario, control en 1 mes.',
-        type: 'progress',
-        consultationId: 'C1002'
+        content:
+          'Paciente en control por lumbalgia. Refiere mejoría significativa del dolor. Mantiene episodios ocasionales de molestia leve con esfuerzos. Examen físico: sin dolor a la palpación, movilidad conservada. Plan: mantener ejercicios de fortalecimiento lumbar, usar analgésicos solo si necesario, control en 1 mes.',
+        $1,
+      createdAt: new Date(),
+        consultationId: 'C1002',
       },
       {
         id: 'N3003',
         patientId,
         date: '2023-08-20',
         provider: 'Dr. García',
-        content: 'Paciente acude por cuadro de 1 semana de dolor en rodilla derecha, de inicio progresivo, no relacionado con traumatismo. Refiere dolor principalmente al subir y bajar escaleras. Examen físico: dolor a la palpación de región anterior de rodilla, sin signos de inestabilidad ligamentaria. Diagnóstico presuntivo: condromalacia patelar. Plan: solicitud de radiografía de rodilla, ibuprofeno 400mg cada 8 horas por 5 días, reposo deportivo.',
-        type: 'progress',
-        consultationId: 'C1003'
-      }
+        content:
+          'Paciente acude por cuadro de 1 semana de dolor en rodilla derecha, de inicio progresivo, no relacionado con traumatismo. Refiere dolor principalmente al subir y bajar escaleras. Examen físico: dolor a la palpación de región anterior de rodilla, sin signos de inestabilidad ligamentaria. Diagnóstico presuntivo: condromalacia patelar. Plan: solicitud de radiografía de rodilla, ibuprofeno 400mg cada 8 horas por 5 días, reposo deportivo.',
+        $1,
+      createdAt: new Date(),
+        consultationId: 'C1003',
+      },
     ];
-    return notes.slice(0, limit);
+    return notes.slice;
   }
 
   /**
@@ -164,9 +188,9 @@ export class GenericEMRAdapter implements EMRAdapter {
    */
   async getCompleteEMRData(patientId: string): Promise<CompleteEMRData> {
     // Para la implementación genérica, recopilamos datos de otros métodos
-    const patientData = await this.getPatientData(patientId);
-    const consultations = await this.getConsultations(patientId);
-    const notes = await this.getUnstructuredNotes(patientId);
+    const patientData = await this.getPatientData;
+    const consultations = await this.getConsultations;
+    const notes = await this.getUnstructuredNotes;
 
     // Crear formato estandarizado para IA
     return {
@@ -174,27 +198,31 @@ export class GenericEMRAdapter implements EMRAdapter {
       demographics: {
         name: `${patientData.firstName} ${patientData.lastName}`,
         age: this.calculateAge(patientData.dateOfBirth),
-        sex: patientData.gender === 'male' ? 'male' :
-             patientData.gender === 'female' ? 'female' : 'other',
-        dob: patientData.dateOfBirth
+        sex:
+          patientData.gender === 'male'
+            ? 'male'
+            : patientData.gender === 'female'
+              ? 'female'
+              : 'other',
+        dob: patientData.dateOfBirth,
       },
       medicalHistory: {
         conditions: [
           {
             name: 'Hipertensión',
             diagnosisDate: '2020-03-15',
-            status: 'active'
+            status: 'active',
           },
           {
             name: 'Diabetes tipo 2',
             diagnosisDate: '2021-05-10',
-            status: 'active'
+            status: 'active',
           },
           {
             name: 'Obesidad',
             diagnosisDate: '2019-07-22',
-            status: 'active'
-          }
+            status: 'active',
+          },
         ],
         allergies: ['Penicilina', 'Sulfamidas'],
         medications: [
@@ -203,23 +231,23 @@ export class GenericEMRAdapter implements EMRAdapter {
             dosage: '850mg',
             frequency: 'BID',
             startDate: '2021-05-10',
-            active: true
+            active: true,
           },
           {
             name: 'Lisinopril',
             dosage: '10mg',
             frequency: 'QD',
             startDate: '2020-03-15',
-            active: true
-          }
+            active: true,
+          },
         ],
         procedures: [
           {
             name: 'Colonoscopía',
             date: '2022-11-15',
             provider: 'Dr. García',
-            notes: 'Sin hallazgos significativos'
-          }
+            notes: 'Sin hallazgos significativos',
+          },
         ],
         labResults: [
           {
@@ -228,7 +256,7 @@ export class GenericEMRAdapter implements EMRAdapter {
             value: '126',
             unit: 'mg/dL',
             normalRange: '70-100',
-            isAbnormal: true
+            isAbnormal: true,
           },
           {
             name: 'HbA1c',
@@ -236,7 +264,7 @@ export class GenericEMRAdapter implements EMRAdapter {
             value: '7.2',
             unit: '%',
             normalRange: '4.0-5.6',
-            isAbnormal: true
+            isAbnormal: true,
           },
           {
             name: 'Colesterol total',
@@ -244,9 +272,9 @@ export class GenericEMRAdapter implements EMRAdapter {
             value: '210',
             unit: 'mg/dL',
             normalRange: '<200',
-            isAbnormal: true
-          }
-        ]
+            isAbnormal: true,
+          },
+        ],
       },
       vitalSigns: [
         {
@@ -255,7 +283,7 @@ export class GenericEMRAdapter implements EMRAdapter {
           heartRate: 78,
           respiratoryRate: 16,
           temperature: 36.7,
-          oxygenSaturation: 98
+          oxygenSaturation: 98,
         },
         {
           date: '2023-06-15',
@@ -263,12 +291,12 @@ export class GenericEMRAdapter implements EMRAdapter {
           heartRate: 82,
           respiratoryRate: 18,
           temperature: 36.5,
-          oxygenSaturation: 97
-        }
+          oxygenSaturation: 97,
+        },
       ],
       consultations,
       unstructuredNotes: notes,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     };
   }
 
@@ -278,12 +306,15 @@ export class GenericEMRAdapter implements EMRAdapter {
    * @returns Edad calculada
    */
   protected calculateAge(dob: string): number {
-    const birthDate = new Date(dob);
+    const birthDate = new Date;
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
 
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
       age--;
     }
 

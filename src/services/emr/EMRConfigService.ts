@@ -20,28 +20,28 @@ export class EMRConfigService {
       baseUrl: 'https://api.example.com/emr/generic',
       timeout: 30000,
       useCache: true,
-      cacheTTL: 3600000
+      cacheTTL: 3600000,
     });
 
     this.configs.set('EPIC', {
       baseUrl: 'https://api.example.com/emr/epic',
       timeout: 30000,
       useCache: true,
-      cacheTTL: 3600000
+      cacheTTL: 3600000,
     });
 
     this.configs.set('OSCAR', {
       baseUrl: 'https://api.example.com/emr/oscar',
       timeout: 30000,
       useCache: true,
-      cacheTTL: 3600000
+      cacheTTL: 3600000,
     });
 
     this.configs.set('ClinicCloud', {
       baseUrl: 'https://api.example.com/emr/cliniccloud',
       timeout: 30000,
       useCache: true,
-      cacheTTL: 3600000
+      cacheTTL: 3600000,
     });
   }
 
@@ -62,7 +62,7 @@ export class EMRConfigService {
    */
   public setConfig(system: EMRSystem, config: EMRAdapterConfig): void {
     // Combinar con configuración existente si existe
-    const existingConfig = this.configs.get(system) || {};
+    const existingConfig = this.configs.get || {};
     this.configs.set(system, { ...existingConfig, ...config });
   }
 
@@ -72,7 +72,7 @@ export class EMRConfigService {
    * @returns Configuración del sistema
    */
   public getConfig(system: EMRSystem): EMRAdapterConfig {
-    return this.configs.get(system) || {};
+    return this.configs.get || {};
   }
 
   /**
@@ -114,7 +114,7 @@ export class EMRConfigService {
    * @returns Verdadero si hay configuración para el sistema
    */
   public hasConfig(system: EMRSystem): boolean {
-    return this.configs.has(system);
+    return this.configs.has;
   }
 
   /**
@@ -122,7 +122,7 @@ export class EMRConfigService {
    * @param system Sistema EMR
    */
   public deleteConfig(system: EMRSystem): void {
-    this.configs.delete(system);
+    this.configs.delete;
   }
 
   /**

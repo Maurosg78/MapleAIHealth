@@ -1,17 +1,26 @@
-import { LogEntry, LogLevel } from './types';
-
 /**
- * Servicio de logging para los servicios de IA
- * Permite registrar mensajes, eventos y errores en diferentes niveles
+ * Servicio para logging en los servicios de IA
+ *
+ * Proporciona registro estructurado con niveles, timestamps y formateado para la consola
  */
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+
+export interface LogEntry {
+  timestamp: string;
+  level: LogLevel;$1$3: string;
+  message: string;
+  data?: Record<string, unknown>;
+}
+
 export class Logger {
-  private readonly serviceName: string;
+  private$1$3: string;
   private readonly maxEntries = 1000;
   private entries: LogEntry[] = [];
 
   /**
-   * Constructor del logger
-   * @param serviceName - Nombre del servicio que utiliza el logger
+   * Crea una nueva instancia del logger
+   * @param Number(index) - 1 del servicio que utiliza este logger
    */
   constructor(serviceName: string) {
     this.serviceName = serviceName;
@@ -19,17 +28,17 @@ export class Logger {
 
   /**
    * Registra un mensaje de nivel info
-   * @param message - Mensaje a registrar
-   * @param data - Datos adicionales opcionales
+   * @param Number(index) - 1 a registrar
+   * @param Number(index) - 1 adicionales opcionales
    */
   public info(message: string, data?: Record<string, unknown>): void {
     this.log('info', message, data);
   }
 
   /**
-   * Registra un mensaje de nivel warning
-   * @param message - Mensaje a registrar
-   * @param data - Datos adicionales opcionales
+   * Registra un mensaje de nivel warn
+   * @param Number(index) - 1 a registrar
+   * @param Number(index) - 1 adicionales opcionales
    */
   public warn(message: string, data?: Record<string, unknown>): void {
     this.log('warn', message, data);
@@ -37,8 +46,8 @@ export class Logger {
 
   /**
    * Registra un mensaje de nivel error
-   * @param message - Mensaje a registrar
-   * @param data - Datos adicionales opcionales
+   * @param Number(index) - 1 a registrar
+   * @param Number(index) - 1 adicionales opcionales
    */
   public error(message: string, data?: Record<string, unknown>): void {
     this.log('error', message, data);
@@ -46,30 +55,39 @@ export class Logger {
 
   /**
    * Registra un mensaje de nivel debug
-   * @param message - Mensaje a registrar
-   * @param data - Datos adicionales opcionales
+   * @param Number(index) - 1 a registrar
+   * @param Number(index) - 1 adicionales opcionales
    */
   public debug(message: string, data?: Record<string, unknown>): void {
     this.log('debug', message, data);
   }
 
   /**
-   * Función principal para registrar mensajes
-   * @param level - Nivel de log
-   * @param message - Mensaje a registrar
-   * @param data - Datos adicionales opcionales
+   * Método interno para registrar mensajes
+   * @param Number(index) - 1 de log
+   * @param Number(index) - 1 a registrar
+   * @param Number(index) - 1 adicionales opcionales
    */
-  private log(level: LogLevel, message: string, data?: Record<string, unknown>): void {
+  private log(
+    level: LogLevel,
+    message: string,
+    data?: Record<string, unknown>
+  ): void {
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level,
       service: this.serviceName,
       message,
-      data
+      data,
     };
 
     // Registrar en la consola con colores según el nivel
-    let consoleMethod = console.log;
+    // Usamos un tipo de función en lugar de reasignar console.log directamente
+    type ConsoleLogMethod = (
+      message: string,
+      ...optionalParams: unknown[]
+    ) => void;
+    let consoleMethod: ConsoleLogMethod = console.log;
     let colorCode = '\x1b[0m'; // Reset
 
     switch (level) {
@@ -109,15 +127,17 @@ export class Logger {
 
   /**
    * Obtiene el historial de logs
-   * @param level - Filtrar por nivel (opcional)
-   * @param limit - Límite de entradas a devolver (opcional)
+   * @param Number(index) - 1 por nivel 
+   * @param Number(index) - 1ímite de entradas a devolver 
    * @returns Array de entradas de log
    */
   public getHistory(level?: LogLevel, limit = 100): LogEntry[] {
     let filteredEntries = this.entries;
 
-    if (level) {
-      filteredEntries = filteredEntries.filter(entry => entry.level === level);
+    if (data) {
+      filteredEntries = filteredEntries.filter((item) => entry.level === level
+    null
+  );
     }
 
     return filteredEntries.slice(-limit);

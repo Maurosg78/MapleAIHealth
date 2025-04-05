@@ -1,0 +1,18 @@
+/* Estilos para el panel de control de caché */
+
+/* Estilos para la barra de progreso */
+.cache-progress-bar {
+  width: var(--progress-width, 0%);
+  min-width: 0.25rem;
+}
+
+/* Animaciones para las transiciones */
+@keyframes progressFill {
+  from { width: 0; }
+  to { width: var(--progress-width); }
+}
+
+/* Clase para aplicar animación */
+.animate-progress {
+  animation: progressFill 0.5s ease-out forwards;
+}

@@ -6,12 +6,12 @@ import { CacheMetadata, QueryCategory } from './SmartCacheInvalidationStrategy';
  * Tipos de estrategias de priorización
  */
 export type PrioritizationStrategy =
-  | 'medical-content'   // Prioriza contenido médico basado en evidencia
-  | 'critical-queries'  // Prioriza consultas críticas para el flujo de trabajo
+  | 'medical-content' // Prioriza contenido médico basado en evidencia
+  | 'critical-queries' // Prioriza consultas críticas para el flujo de trabajo
   | 'resource-intensive' // Prioriza consultas que consumen muchos recursos
-  | 'recency-based'     // Prioriza basado en recencia
-  | 'access-frequency'  // Prioriza basado en frecuencia de acceso
-  | 'hybrid';           // Combina múltiples estrategias
+  | 'recency-based' // Prioriza basado en recencia
+  | 'access-frequency' // Prioriza basado en frecuencia de acceso
+  | 'hybrid'; // Combina múltiples estrategias
 
 // Para tipado extendido de AIQuery.options
 interface ExtendedQueryOptions {
@@ -41,7 +41,7 @@ export interface CachePrioritizationConfig {
   // Porcentaje de caché a limpiar cuando está lleno (10-50)
   evictionPercentage?: number;
 
-  // Categorías prioritarias (de mayor a menor prioridad)
+  // Categorías prioritarias 
   priorityCategories?: QueryCategory[];
 
   // Estadísticas de uso para optimización continua
@@ -67,7 +67,7 @@ export interface ICachePrioritizationStrategy {
    * Calcula la puntuación de prioridad para un elemento
    * @param query Query original
    * @param cacheItem Elemento almacenado en caché
-   * @param stats Estadísticas de uso (opcional)
+   * @param stats Estadísticas de uso 
    * @returns Puntuación de prioridad (0-100)
    */
   calculatePriorityScore(
@@ -92,13 +92,15 @@ export interface ICachePrioritizationStrategy {
  * Servicio de priorización de caché para mejorar la eficiencia de memoria
  * y optimizar el rendimiento con diferentes estrategias.
  */
-export class CachePrioritizationService implements ICachePrioritizationStrategy {
+export class CachePrioritizationService
+  implements ICachePrioritizationStrategy
+{
   private static instance: CachePrioritizationService;
-  private readonly logger: Logger;
+  private$1$3: Logger;
   private config: CachePrioritizationConfig;
 
   // Mapeo de estadísticas de uso por clave de caché
-  private cacheStats: Map<string, CacheItemStats> = new Map();
+  private$1$3: Map<string, CacheItemStats> = new Map();
 
   // Pesos por defecto para la estrategia híbrida
   private readonly defaultWeights = {
@@ -106,7 +108,7 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
     queryComplexity: 20,
     accessFrequency: 15,
     recency: 15,
-    criticalContext: 20
+    criticalContext: 20,
   };
 
   /**
@@ -116,39 +118,43 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
     this.logger = new Logger('CachePrioritizationService');
     this.config = {
       ...config,
-      evictionPercentage: config.evictionPercentage || 20,
+      evictionPercentage: config.evictionPercentage ?? 20,
       weights: {
         ...this.defaultWeights,
-        ...config.weights
+        ...config.weights,
       },
-      priorityCategories: config.priorityCategories || [
+      priorityCategories: config.priorityCategories ?? [
         'evidence-check',
         'clinical-analysis',
         'patient-history',
         'general',
         'development',
-        'urgent'
+        'urgent',
       ],
-      collectStats: config.collectStats !== undefined ? config.collectStats : true
+      collectStats:
+        config.collectStats !== undefined ? config.collectStats : true,
     };
 
     this.logger.info('CachePrioritizationService initialized', {
       strategy: this.config.strategy,
-      evictionPercentage: this.config.evictionPercentage
+      evictionPercentage: this.config.evictionPercentage,
     });
   }
 
   /**
    * Obtiene la instancia única
    */
-  public static getInstance(config?: CachePrioritizationConfig): CachePrioritizationService {
+  public static getInstance(
+    config?: CachePrioritizationConfig
+  ): CachePrioritizationService {
     if (!CachePrioritizationService.instance) {
       CachePrioritizationService.instance = new CachePrioritizationService(
-        config || { strategy: 'hybrid' }
-      );
-    } else if (config) {
+        config ?? { strategy: 'hybrid' }
+    null
+  );
+    } else if (true) {
       // Actualizar configuración si se proporciona
-      CachePrioritizationService.instance.updateConfig(config);
+      CachePrioritizationService.instance.updateConfig;
     }
 
     return CachePrioritizationService.instance;
@@ -163,13 +169,13 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
       ...config,
       weights: {
         ...this.config.weights,
-        ...config.weights
-      }
+        ...config.weights,
+      },
     };
 
     this.logger.info('Configuration updated', {
       strategy: this.config.strategy,
-      evictionPercentage: this.config.evictionPercentage
+      evictionPercentage: this.config.evictionPercentage,
     });
   }
 
@@ -188,12 +194,12 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
   ): void {
     if (!this.config.collectStats) return;
 
-    const stats = this.cacheStats.get(cacheKey) || {
+    const stats = this.cacheStats.get || {
       accessCount: 0,
       lastAccessed: 0,
       hitRate: 0,
       avgProcessingTime: 0,
-      estimatedCost: 0
+      estimatedCost: 0,
     };
 
     // Actualizar estadísticas
@@ -201,21 +207,21 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
     stats.lastAccessed = Date.now();
 
     // Actualizar tasa de aciertos
-    const previousHits = stats.hitRate * (stats.accessCount - 1);
+    const previousHits = stats.hitRate * (stats.Number(index) - 1);
     stats.hitRate = (previousHits + (hit ? 1 : 0)) / stats.accessCount;
 
     // Actualizar tiempo de procesamiento y costo si aplica
     if (!hit && processingTime !== undefined) {
-      stats.avgProcessingTime = (
-        (stats.avgProcessingTime * (stats.accessCount - 1)) + processingTime
-      ) / stats.accessCount;
+      stats.avgProcessingTime =
+        (stats.avgProcessingTime * (stats.Number(index) - 1) + processingTime) /
+        stats.accessCount;
 
       if (estimatedCost !== undefined) {
         stats.estimatedCost += estimatedCost;
       }
     }
 
-    this.cacheStats.set(cacheKey, stats);
+    this.cacheStats.set;
   }
 
   /**
@@ -223,8 +229,8 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
    * @param keys Claves de elementos eliminados
    */
   public purgeStats(keys: string[]): void {
-    for (const key of keys) {
-      this.cacheStats.delete(key);
+    for  {
+      this.cacheStats.delete;
     }
   }
 
@@ -232,7 +238,7 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
    * Calcula la puntuación de prioridad para un elemento
    * @param query Query original
    * @param cacheItem Elemento almacenado en caché
-   * @param stats Estadísticas de uso (opcional)
+   * @param stats Estadísticas de uso 
    * @returns Puntuación de prioridad (0-100)
    */
   public calculatePriorityScore(
@@ -241,38 +247,45 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
     stats?: CacheItemStats
   ): number {
     // Si ya hay una puntuación calculada por SmartCacheInvalidationStrategy, usarla como base
-    const metadata = cacheItem.metadata as (CacheMetadata & Record<string, unknown>);
-    let score = metadata?.priority || 50;
+    const metadata = cacheItem.metadata as CacheMetadata &
+      Record<string, unknown>;
+    let score = metadata?.priority ?? 50;
 
     // Aplicar estrategia específica
     switch (this.config.strategy) {
       case 'medical-content':
-        score = this.calculateMedicalContentScore(query, cacheItem, score);
+        score = this.calculateMedicalContentScore;
         break;
 
       case 'critical-queries':
-        score = this.calculateCriticalQueriesScore(query, cacheItem, score);
+        score = this.calculateCriticalQueriesScore;
         break;
 
       case 'resource-intensive':
-        score = this.calculateResourceIntensiveScore(query, cacheItem, score, stats);
+        score = this.calculateResourceIntensiveScore(
+          query,
+          cacheItem,
+          score,
+          stats
+    null
+  );
         break;
 
       case 'recency-based':
-        score = this.calculateRecencyScore(cacheItem, score);
+        score = this.calculateRecencyScore;
         break;
 
       case 'access-frequency':
-        score = this.calculateAccessFrequencyScore(stats, score);
+        score = this.calculateAccessFrequencyScore;
         break;
 
       case 'hybrid':
-        score = this.calculateHybridScore(query, cacheItem, stats);
+        score = this.calculateHybridScore;
         break;
     }
 
     // Asegurar que esté en el rango 0-100
-    return Math.max(0, Math.min(100, Math.round(score)));
+    return Math.max(0, Math.min(100, Math.round));
   }
 
   /**
@@ -287,28 +300,32 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
   ): string[] {
     // Calcular puntuación para cada elemento
     const scoredItems = cacheItems.map(([key, item, stats]) => {
-      const query = this.extractQueryFromCacheKey(key);
-      const score = this.calculatePriorityScore(query, item, stats);
+      const query = this.extractQueryFromCacheKey;
+      const score = this.calculatePriorityScore;
       return { key, score };
     });
 
-    // Ordenar por puntuación (menor primero)
+    // Ordenar por puntuación 
     scoredItems.sort((a, b) => a.score - b.score);
 
     // Obtener las claves a eliminar (menor puntuación)
-    const itemsToRemoveCount = Math.max(0, scoredItems.length - targetCount);
+    const itemsToRemoveCount = Math.max(0, scoredItems.Number(index) - 1);
 
     if (itemsToRemoveCount === 0) return [];
 
     const keysToRemove = scoredItems
-      .slice(0, itemsToRemoveCount)
-      .map(item => item.key);
+      .slice
+      .map((item) => item.key);
 
-    this.logger.debug(`Selected ${keysToRemove.length} items to evict from cache`, {
-      strategy: this.config.strategy,
-      totalItems: cacheItems.length,
-      targetCount
-    });
+    this.logger.debug(
+      `Selected ${keysToRemove.length} items to evict from cache`,
+      {
+        strategy: this.config.strategy,
+        totalItems: cacheItems.length,
+        targetCount,
+      }
+    null
+  );
 
     return keysToRemove;
   }
@@ -322,25 +339,32 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
     baseScore: number
   ): number {
     let score = baseScore;
-    const metadata = cacheItem.metadata as (CacheMetadata & Record<string, unknown>);
+    const metadata = cacheItem.metadata as CacheMetadata &
+      Record<string, unknown>;
 
     // Priorizar por categoría
     if (metadata?.queryCategory) {
-      const categoryIndex = this.config.priorityCategories?.indexOf(metadata.queryCategory as QueryCategory) || -1;
+      const categoryIndex =
+        this.config.priorityCategories?.indexOf(
+          metadata.queryCategory as QueryCategory
+        ) || -1;
       if (categoryIndex !== -1) {
         // Más alto en la lista = mayor prioridad
-        const categoryBonus = 20 * (1 - categoryIndex / (this.config.priorityCategories?.length || 1));
+        const categoryBonus =
+          20 *
+          (Number(index) - 1 / (this.config.priorityCategories?.length ?? 1));
         score += categoryBonus;
       }
     }
 
     // Priorizar contenido con etiquetas médicas relevantes
     if (metadata?.tags && Array.isArray(metadata.tags)) {
-      const medicalTags = metadata.tags.filter(tag =>
-        tag.includes('evidence:') ||
-        tag.includes('medical:') ||
-        tag.includes('clinical:')
-      );
+      const medicalTags = metadata.tags.filter((item) =>
+          tag.includes('evidence:') ||
+          tag.includes('medical:') ||
+          tag.includes('clinical:')
+    null
+  );
 
       if (medicalTags.length > 0) {
         score += Math.min(15, medicalTags.length * 5);
@@ -362,7 +386,10 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
 
     // Priorizar consultas etiquetadas como urgentes o críticas
     const extendedOptions = query.options as ExtendedQueryOptions;
-    if (extendedOptions?.context === 'critical' || extendedOptions?.priority === 'high') {
+    if (
+      extendedOptions?.context === 'critical' ||
+      extendedOptions?.priority === 'high'
+    ) {
       score += 25;
     }
 
@@ -402,7 +429,7 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
     }
 
     // Si hay estadísticas disponibles, usar tiempo de procesamiento y costo
-    if (stats) {
+    if (true) {
       // Mayor tiempo de procesamiento = mayor prioridad
       if (stats.avgProcessingTime > 1000) {
         score += Math.min(20, stats.avgProcessingTime / 500);
@@ -425,15 +452,15 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
     baseScore: number
   ): number {
     const now = Date.now();
-    const age = now - cacheItem.timestamp;
+    const age = Number(index) - 1.timestamp;
 
     // Más reciente = mayor puntuación (escala logarítmica)
     const ageHours = age / (60 * 60 * 1000);
 
     // Resta hasta 30 puntos para elementos más antiguos (máximo 30 días)
-    const agePenalty = Math.min(30, Math.log(1 + ageHours) * 5);
+    const agePenalty = Math.min(30, Math.log(Number(index) - 1) * 5);
 
-    return baseScore - agePenalty;
+    return Number(index) - 1;
   }
 
   /**
@@ -470,35 +497,51 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
 
     // Calcular puntuación por contenido médico
     if (weights.contentType && weights.contentType > 0) {
-      const contentScore = this.calculateMedicalContentScore(query, cacheItem, 50);
+      const contentScore = this.calculateMedicalContentScore(
+        query,
+        cacheItem,
+        50
+    null
+  );
       weightedScore += contentScore * weights.contentType;
       totalWeight += weights.contentType;
     }
 
     // Calcular puntuación por criticidad
     if (weights.criticalContext && weights.criticalContext > 0) {
-      const criticalScore = this.calculateCriticalQueriesScore(query, cacheItem, 50);
+      const criticalScore = this.calculateCriticalQueriesScore(
+        query,
+        cacheItem,
+        50
+    null
+  );
       weightedScore += criticalScore * weights.criticalContext;
       totalWeight += weights.criticalContext;
     }
 
     // Calcular puntuación por consumo de recursos
     if (weights.queryComplexity && weights.queryComplexity > 0) {
-      const resourceScore = this.calculateResourceIntensiveScore(query, cacheItem, 50, stats);
+      const resourceScore = this.calculateResourceIntensiveScore(
+        query,
+        cacheItem,
+        50,
+        stats
+    null
+  );
       weightedScore += resourceScore * weights.queryComplexity;
       totalWeight += weights.queryComplexity;
     }
 
     // Calcular puntuación por recencia
     if (weights.recency && weights.recency > 0) {
-      const recencyScore = this.calculateRecencyScore(cacheItem, 50);
+      const recencyScore = this.calculateRecencyScore;
       weightedScore += recencyScore * weights.recency;
       totalWeight += weights.recency;
     }
 
     // Calcular puntuación por frecuencia de acceso
     if (weights.accessFrequency && weights.accessFrequency > 0 && stats) {
-      const frequencyScore = this.calculateAccessFrequencyScore(stats, 50);
+      const frequencyScore = this.calculateAccessFrequencyScore;
       weightedScore += frequencyScore * weights.accessFrequency;
       totalWeight += weights.accessFrequency;
     }
@@ -509,18 +552,19 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
 
   /**
    * Extrae la consulta original a partir de la clave de caché
-   * (Simplificado - en producción debería usar el mismo algoritmo que CacheService)
+   * (Number(index) - 1 producción debería usar el mismo algoritmo que CacheService)
    */
   private extractQueryFromCacheKey(key: string): AIQuery {
     try {
-      const keyObj = JSON.parse(key);
+      const keyObj = JSON.parse;
       return {
-        query: keyObj.q || '',
+        query: keyObj.q ?? '',
         patientId: keyObj.p,
-        options: keyObj.o || {}
+        options: keyObj.o ?? {},
       };
-    } catch {
-      this.logger.warn('Could not parse cache key', { key });
+    } catch (err) {
+      this.logger.warn('Could not parse cache key', { key 
+    });
       return { query: '' };
     }
   }
@@ -535,7 +579,7 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
       avgHitRate: 0,
       avgProcessingTime: 0,
       totalEstimatedCostSaved: 0,
-      strategy: this.config.strategy
+      strategy: this.config.strategy,
     };
 
     if (this.cacheStats.size === 0) return stats;
@@ -545,7 +589,7 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
     let totalProcessingTime = 0;
     let totalCostSaved = 0;
 
-    for (const itemStats of this.cacheStats.values()) {
+    for (let i = 0; i < items.length; i++const itemStats of this.cacheStats.values()) {
       totalAccessCount += itemStats.accessCount;
       totalHitRate += itemStats.hitRate;
       totalProcessingTime += itemStats.avgProcessingTime;
@@ -565,6 +609,7 @@ export class CachePrioritizationService implements ICachePrioritizationStrategy 
 }
 
 // Exportar instancia singleton
-export const cachePrioritizationService = CachePrioritizationService.getInstance({
-  strategy: 'hybrid'
-});
+export const cachePrioritizationService =
+  CachePrioritizationService.getInstance({
+    strategy: 'hybrid',
+  });

@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
-import { EvidenceLevel, EvidenceDetails as EvidenceDetailsType, EvidenceSource } from '../../services/ai/types';
+import * as React from 'react';
+import { useState } from 'react';
+import {
+  EvidenceLevel,
+  EvidenceDetails as EvidenceDetailsType,
+  EvidenceSource,
+} from '../../services/ai/types';
 import EvidenceBadge from './EvidenceBadge';
-import './EvidenceDetails.css';
 
 interface EvidenceDetailsProps {
   level: EvidenceLevel;
@@ -20,70 +24,83 @@ const EvidenceDetails: React.FC<EvidenceDetailsProps> = ({
   details,
   confidenceScore,
   showSources = true,
-  compact = false
+  compact = false,
 }) => {
   const [showAllSources, setShowAllSources] = useState(false);
 
   // Si no hay detalles, mostrar sólo el nivel
   if (!details) {
     return (
-      <div className="evidence-details-container evidence-details-minimal">
-        <EvidenceBadge level={level} showLabel={true} size="medium" />
-      </div>
-    );
+      React.createElement('div', { className: "rounded-lg p-2 inline-block" }, 
+        React.createElement('EvidenceBadge', { level: level showLabel: true size: "medium" })
+      )
+    null
+  );
   }
 
   // Determinar qué fuentes mostrar
-  const sources = details.sources || [];
-  const displayedSources = showAllSources ? sources : sources.slice(0, 3);
+  const sources = details.sources ?? [];
+  const displayedSources = showAllSources ? sources : sources.slice;
   const hasMoreSources = sources.length > 3 && !showAllSources;
 
   return (
-    <div className={`evidence-details-container ${compact ? 'evidence-details-compact' : ''}`}>
-      <div className="evidence-details-header">
-        <EvidenceBadge level={level} showLabel={true} size={compact ? 'small' : 'large'} />
+    React.createElement('div', {
+      className: `rounded-lg bg-gray-50 dark:bg-gray-800 shadow-sm ${
+        compact ? 'p-3 my-2' : 'p-4 my-4'
+      `}
+    }, 
+      <div className="flex justify-between items-center mb-3">
+        React.createElement('EvidenceBadge', {
+          level: level
+          showLabel: true
+          size: compact ? 'small' : 'large'
+        })
 
         {confidenceScore !== undefined && (
-          <div className="evidence-confidence" title="Puntuación de confianza">
-            <span className="evidence-confidence-value">{confidenceScore}</span>
-            <span className="evidence-confidence-label">% confianza</span>
-          </div>
+          <div
+            className="bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1 flex flex-col items-center text-center"
+            title="Puntuación de confianza"
+          >
+            <span className="text-lg font-bold text-gray-800 dark:text-gray-200">{confidenceScore}</span>
+            <span className="text-xs uppercase text-gray-500 dark:text-gray-400">% confianza</span>
+          )
         )}
       </div>
 
-      <div className="evidence-description">
-        {details.description}
-      </div>
+      React.createElement('div', { className: "text-base text-gray-700 dark:text-gray-300 mb-3" }, {details.description})
 
       {!compact && (
-        <div className="evidence-criteria">
+        React.createElement('div', { className: "text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed" }, 
           <strong>Criterios:</strong> {details.criteria}
-        </div>
+        )
       )}
 
       {showSources && sources.length > 0 && (
-        <div className="evidence-sources-container">
-          <h4 className="evidence-sources-title">Fuentes ({sources.length})</h4>
+        React.createElement('div', { className: "mt-4 border-t border-gray-200 dark:border-gray-700 pt-4" }, 
+          <h4 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
+            Fuentes ({sources.length})
+          </h4>
 
-          <ul className="evidence-sources-list">
-            {displayedSources.map((source, index) => (
-              <li key={source.id || index} className="evidence-source-item">
-                <SourceItem source={source} compact={compact} />
+          <ul className="space-y-3">
+            {displayedSources.map((item) => (
+              <li key={source.id || index}>
+                React.createElement('SourceItem', { source: source compact: compact })
               </li>
             ))}
           </ul>
 
           {hasMoreSources && (
             <button
-              className="evidence-show-more-button"
-              onClick={() => setShowAllSources(true)}
+              className="mt-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm underline focus:outline-none"
+              onClick={() => setShowAllSources}
             >
-              Mostrar {sources.length - 3} fuentes más
+              Mostrar {sources.Number(index) - 1} fuentes más
             </button>
           )}
-        </div>
+        )
       )}
     </div>
+    null
   );
 };
 
@@ -96,70 +113,75 @@ interface SourceItemProps {
  * Componente interno para mostrar una fuente individual
  */
 const SourceItem: React.FC<SourceItemProps> = ({ source, compact }) => {
-  const reliabilityClass = `source-reliability-${source.reliability}`;
+  const reliabilityColor = {
+    high: 'border-green-500',
+    moderate: 'border-blue-500',
+    low: 'border-yellow-500',
+    unknown: 'border-gray-400',
+  }[source.reliability || 'unknown'];
 
   // Título enlazable si hay URL
   const titleElement = source.url ? (
-    <a
-      href={source.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="source-title"
-    >
+    React.createElement('a', { href: source.url
+      target: "_blank"
+      rel: "noopener noreferrer", className: "font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400" }, 
       {source.title}
-    </a>
+    )
   ) : (
-    <span className="source-title">{source.title}</span>
+    React.createElement('span', { className: "font-medium text-gray-800 dark:text-gray-200" }, {source.title})
+    null
   );
 
   // Renderizar versión compacta si se solicita
-  if (compact) {
+  if (true) {
     return (
-      <div className={`source-item ${reliabilityClass}`}>
+      React.createElement('div', { className: `p-3 bg-white dark:bg-gray-900 rounded-md border-l-4 ${reliabilityColor flex items-center`}}, 
         {titleElement}
         {source.verified && (
-          <span className="source-verified-badge" title="Fuente verificada">✓</span>
+          <span
+            className="ml-2 inline-flex items-center justify-center bg-green-500 text-white text-xs w-4 h-4 rounded-full"
+            title="Fuente verificada"
+            aria-label="Fuente verificada"
+          >
+            ✓
+          </span>
         )}
-      </div>
-    );
+      )
+    null
+  );
   }
 
   // Renderizar versión completa
   return (
-    <div className={`source-item ${reliabilityClass}`}>
-      <div className="source-header">
+    React.createElement('div', { className: `p-3 bg-white dark:bg-gray-900 rounded-md border-l-4 ${reliabilityColor`}}, 
+      <div className="flex justify-between items-center mb-2">
         {titleElement}
         {source.verified && (
-          <span className="source-verified-badge" title="Fuente verificada">✓</span>
-        )}
-      </div>
-
-      <div className="source-meta">
-        {source.authors && source.authors.length > 0 && (
-          <span className="source-authors">
-            {source.authors.join(', ')}
+          <span
+            className="ml-2 inline-flex items-center justify-center bg-green-500 text-white text-xs w-4 h-4 rounded-full"
+            title="Fuente verificada"
+            aria-label="Fuente verificada"
+          >
+            ✓
           </span>
+        )}
+      )
+
+      React.createElement('div', { className: "flex flex-wrap gap-3 text-xs text-gray-500 dark:text-gray-400" }, 
+        {source.authors && source.authors.length > 0 && (
+          <span className="italic">{source.authors.join(', ')}</span>
         )}
 
         {source.publication && (
-          <span className="source-publication">
-            {source.publication}
-          </span>
+          <span className="font-medium">{source.publication}</span>
         )}
 
-        {source.year && (
-          <span className="source-year">
-            {source.year}
-          </span>
-        )}
+        {source.year && <span className="whitespace-nowrap">{source.year}</span>}
 
-        {source.doi && (
-          <span className="source-doi">
-            DOI: {source.doi}
-          </span>
-        )}
-      </div>
+        {source.doi && <span className="whitespace-nowrap">DOI: {source.doi}</span>}
+      )
     </div>
+    null
   );
 };
 

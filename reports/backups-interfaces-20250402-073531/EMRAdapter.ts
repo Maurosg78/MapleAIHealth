@@ -2,13 +2,12 @@ import { PatientData } from '../ai/types';
 
 /**
  * Interfaz base para adaptadores de EMR
- * Define las operaciones comunes para interactuar con sistemas de Registros Médicos Electrónicos (EMR)
+ * Define las operaciones comunes para interactuar con sistemas de Registros Médicos Electrónicos 
  */
 export interface EMRAdapter {
   /**
    * Nombre identificador del sistema EMR
-   */
-  readonly name: string;
+   */$1$3: string;
 
   /**
    * Verifica la conexión con el sistema EMR

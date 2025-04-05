@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 
 const ProtectedRoute: React.FC = () => {
-  return <div>ProtectedRoute simplificado</div>;
+  return React.createElement('div', {}, ProtectedRoute simplificado);
 };
 
 export default ProtectedRoute;

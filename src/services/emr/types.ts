@@ -14,17 +14,22 @@ export interface EMRConsultation {
   patientId: string;
   date: string;
   notes: string;
-  status: "active" | "inactive" | "pending" | "cancelled" | "completed";
+  status: 'active' | 'inactive' | 'pending' | 'cancelled' | 'completed';
 }
 
 export interface EMRTreatment {
   id: string;
   consultationId: string;
   description: string;
-  status: "active" | "inactive" | "pending" | "cancelled" | "completed";
+  status: 'active' | 'inactive' | 'pending' | 'cancelled' | 'completed';
 }
 
-export type EMRStatus = "active" | "inactive" | "pending" | "cancelled" | "completed";
+export type EMRStatus =
+  | 'active'
+  | 'inactive'
+  | 'pending'
+  | 'cancelled'
+  | 'completed';
 
 /**
  * Representa una nota médica no estructurada en el sistema EMR
@@ -35,7 +40,8 @@ export interface EMRUnstructuredNote {
   date: string;
   provider: string;
   content: string;
-  type: 'progress' | 'consultation' | 'discharge' | 'referral' | 'other';
+  type: 'consultation' | 'discharge' | 'referral' | 'other';
+  createdAt: Date;
   specialty?: string;
   consultationId?: string;
 }
@@ -123,7 +129,7 @@ export interface EMRMedicalHistory {
   labResults?: EMRLabResult[];
   familyHistory?: string[];
   socialHistory?: Record<string, string>;
-  immunizations?: Array<{name: string, date: string}>;
+  immunizations?: Array<{ name: string; date: string }>;
 }
 
 /**

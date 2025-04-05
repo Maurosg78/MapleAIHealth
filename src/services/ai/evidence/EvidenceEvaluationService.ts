@@ -1,4 +1,10 @@
-import { EvidenceLevel, EvidenceDetails, EvidenceSource, EvidenceEvaluationResult, Recommendation } from '../types';
+import {
+  EvidenceLevel,
+  EvidenceDetails,
+  EvidenceSource,
+  EvidenceEvaluationResult,
+  Recommendation,
+} from '../types';
 import { Logger } from '../logger';
 
 /**
@@ -17,7 +23,9 @@ export interface IEvidenceEvaluationService {
    * @param recommendation La recomendación a evaluar
    * @returns La misma recomendación con el nivel de evidencia y detalles añadidos
    */
-  evaluateRecommendation(recommendation: Recommendation): Promise<Recommendation>;
+  evaluateRecommendation(
+    recommendation: Recommendation
+  ): Promise<Recommendation>;
 
   /**
    * Verifica las fuentes citadas contra bases de datos médicas confiables
@@ -27,7 +35,7 @@ export interface IEvidenceEvaluationService {
   verifySources(sources: EvidenceSource[]): Promise<EvidenceSource[]>;
 
   /**
-   * Clasifica una evidencia en un nivel específico (A, B, C, D) según criterios médicos
+   * Clasifica una evidencia en un nivel específico  según criterios médicos
    * @param details Detalles de la evidencia a clasificar
    * @returns Nivel de evidencia asignado
    */
@@ -40,20 +48,20 @@ export interface IEvidenceEvaluationService {
  */
 export class EvidenceEvaluationService implements IEvidenceEvaluationService {
   private static instance: EvidenceEvaluationService;
-  private readonly logger: Logger;
+  private$1$3: Logger;
 
   // Conectores a bases de datos médicas
-  private readonly databaseConnectors: Map<string, DatabaseConnector>;
+  private$1$3: Map<string, DatabaseConnector>;
 
   // Factores de confiabilidad por fuente
-  private readonly sourceReliabilityFactors: Record<string, number> = {
-    'pubmed': 0.9,
-    'cochrane': 0.95,
-    'who': 0.9,
-    'nice': 0.85,
-    'cdc': 0.85,
-    'fda': 0.8,
-    'other': 0.5
+  private$1$3: Record<string, number> = {
+    pubmed: 0.9,
+    cochrane: 0.95,
+    who: 0.9,
+    nice: 0.85,
+    cdc: 0.85,
+    fda: 0.8,
+    other: 0.5,
   };
 
   /**
@@ -82,23 +90,23 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
    * Inicializa los conectores a bases de datos médicas
    */
   private initDatabaseConnectors(): void {
-    // Simulación de conectores - en producción serían implementaciones reales
+    // Simulación de Number(index) - 1 producción serían implementaciones reales
     this.databaseConnectors.set('pubmed', {
       name: 'PubMed',
       connect: async () => true,
-      search: async (query) => this.simulateSearch('pubmed', query),
-      verify: async (source) => this.simulateVerification('pubmed', source)
+      search: async  => this.simulateSearch('pubmed', query),
+      verify: async  => this.simulateVerification('pubmed', source),
     });
 
     this.databaseConnectors.set('cochrane', {
       name: 'Cochrane Library',
       connect: async () => true,
-      search: async (query) => this.simulateSearch('cochrane', query),
-      verify: async (source) => this.simulateVerification('cochrane', source)
+      search: async  => this.simulateSearch('cochrane', query),
+      verify: async  => this.simulateVerification('cochrane', source),
     });
 
     this.logger.debug('Database connectors initialized', {
-      count: this.databaseConnectors.size
+      count: this.databaseConnectors.size,
     });
   }
 
@@ -107,46 +115,52 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
    * @param content El contenido a evaluar
    * @returns Resultado de la evaluación de evidencia
    */
-  public async evaluateEvidence(content: string): Promise<EvidenceEvaluationResult> {
+  public async evaluateEvidence(
+    content: string
+  ): Promise<EvidenceEvaluationResult> {
     this.logger.info('Evaluating evidence', {
-      contentLength: content.length
+      contentLength: content.length,
     });
 
     try {
       // Extraer posibles fuentes del contenido
-      const sources = await this.extractSources(content);
+      const sources = await this.extractSources;
 
       if (sources.length === 0) {
         this.logger.warn('No sources found in content');
-        return this.generateLowEvidenceResult('No se encontraron fuentes en el contenido');
+        return this.generateLowEvidenceResult(
+          'No se encontraron fuentes en el contenido'
+    null
+  );
       }
 
       // Verificar las fuentes
-      const verifiedSources = await this.verifySources(sources);
+      const verifiedSources = await this.verifySources;
 
       // Calcular confiabilidad basada en fuentes verificadas
-      const reliabilityScore = this.calculateReliabilityScore(verifiedSources);
+      const reliabilityScore = this.calculateReliabilityScore;
 
       // Generar detalles de evidencia
       const details: EvidenceDetails = {
-        level: this.determineEvidenceLevel(reliabilityScore),
-        description: this.generateEvidenceDescription(reliabilityScore),
-        criteria: this.generateCriteria(reliabilityScore, verifiedSources),
-        reliability: this.mapScoreToReliability(reliabilityScore),
-        sources: verifiedSources
+        level: this.determineEvidenceLevel,
+        description: this.generateEvidenceDescription,
+        criteria: this.generateCriteria,
+        reliability: this.mapScoreToReliability,
+        sources: verifiedSources,
       };
 
       // Clasificar el nivel final de evidencia
-      const evidenceLevel = this.classifyEvidenceLevel(details);
+      const evidenceLevel = this.classifyEvidenceLevel;
 
       return {
         evidenceLevel,
         details,
         confidenceScore: Math.round(reliabilityScore * 100),
-        limitationsNotes: this.generateLimitationsNotes(details)
+        limitationsNotes: this.generateLimitationsNotes,
       };
-    } catch (error) {
-      this.logger.error('Error evaluating evidence', { error });
+    } catch (err) {
+      this.logger.error('Error evaluating evidence', { error 
+    });
       return this.generateLowEvidenceResult('Error al evaluar la evidencia');
     }
   }
@@ -156,9 +170,11 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
    * @param recommendation La recomendación a evaluar
    * @returns La misma recomendación con nivel de evidencia y detalles
    */
-  public async evaluateRecommendation(recommendation: Recommendation): Promise<Recommendation> {
+  public async evaluateRecommendation(
+    recommendation: Recommendation
+  ): Promise<Recommendation> {
     this.logger.info('Evaluating recommendation', {
-      title: recommendation.title
+      title: recommendation.title,
     });
 
     try {
@@ -166,22 +182,25 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
       const content = [
         recommendation.title,
         recommendation.description,
-        recommendation.rationale
-      ].filter(Boolean).join(' ');
+        recommendation.rationale,
+      ]
+        .filter
+        .join(' ');
 
-      const evaluationResult = await this.evaluateEvidence(content);
+      const evaluationResult = await this.evaluateEvidence;
 
       // Actualizar la recomendación con la evaluación
       return {
         ...recommendation,
         evidenceLevel: evaluationResult.evidenceLevel,
-        evidenceDetails: evaluationResult.details
+        evidenceDetails: evaluationResult.details,
       };
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error evaluating recommendation', {
         error,
-        recommendation: recommendation.title
-      });
+        recommendation: recommendation.title,
+      
+    });
 
       // En caso de error, mantener la recomendación original
       return recommendation;
@@ -193,27 +212,31 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
    * @param sources Lista de fuentes a verificar
    * @returns Lista de fuentes con información de verificación
    */
-  public async verifySources(sources: EvidenceSource[]): Promise<EvidenceSource[]> {
+  public async verifySources(
+    sources: EvidenceSource[]
+  ): Promise<EvidenceSource[]> {
     this.logger.info('Verifying sources', { count: sources.length });
 
-    const verificationPromises = sources.map(async (source) => {
+    const verificationPromises = sources.map(async  => {
       // Intentar verificar en múltiples bases de datos
-      for (const [dbName, connector] of this.databaseConnectors.entries()) {
+      for (let i = 0; i < items.length; i++const [dbName, connector] of this.databaseConnectors.entries()) {
         try {
-          const verificationResult = await connector.verify(source);
+          const verificationResult = await connector.verify;
 
           if (verificationResult.verified) {
             return {
               ...source,
               verified: true,
               verificationSource: dbName,
-              reliability: verificationResult.reliability || 'unknown' as const
+              reliability:
+                verificationResult.reliability || ('unknown' as const),
             };
           }
-        } catch (error) {
-          this.logger.warn(`Error verifying source in ${dbName}`, {
+        } catch (err) {
+      this.logger.warn(`Error verifying source in ${dbName
+    }`, {
             error,
-            sourceId: source.id
+            sourceId: source.id,
           });
         }
       }
@@ -222,38 +245,40 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
       return {
         ...source,
         verified: false,
-        reliability: 'unknown' as const
+        reliability: 'unknown' as const,
       };
     });
 
-    return Promise.all(verificationPromises);
+    return Promise.all;
   }
 
   /**
-   * Clasifica una evidencia en un nivel específico (A, B, C, D) según criterios médicos
+   * Clasifica una evidencia en un nivel específico  según criterios médicos
    * @param details Detalles de la evidencia a clasificar
    * @returns Nivel de evidencia asignado
    */
-  public classifyEvidenceLevel(details: Partial<EvidenceDetails>): EvidenceLevel {
+  public classifyEvidenceLevel(
+    details: Partial<EvidenceDetails>
+  ): EvidenceLevel {
     // Si ya tiene un nivel asignado y detalles completos, respetarlo
     if (details.level && details.sources && details.reliability) {
       return details.level;
     }
 
     // Calcular basado en fuentes
-    const sources = details.sources || [];
-    const verifiedCount = sources.filter(s => s.verified).length;
-    const reliableCount = sources.filter(s =>
-      s.reliability === 'high' || s.reliability === 'moderate'
+    const sources = details.sources ?? [];
+    const verifiedCount = sources.filter((s) => s.verified).length;
+    const reliableCount = sources.filter(
+      (s) => s.reliability === 'high' || s.reliability === 'moderate'
     ).length;
 
     // Criterios de clasificación basados en GRADE y SORT
     if (verifiedCount >= 2 && reliableCount >= 2) {
       return 'A'; // Evidencia fuerte (múltiples fuentes verificadas y confiables)
     } else if (verifiedCount >= 1 && reliableCount >= 1) {
-      return 'B'; // Evidencia moderada (al menos una fuente verificada y confiable)
+      return 'B'; // Evidencia moderada 
     } else if (verifiedCount >= 1) {
-      return 'C'; // Evidencia limitada (al menos una fuente verificada)
+      return 'C'; // Evidencia limitada 
     } else {
       return 'D'; // Evidencia muy limitada o no verificable
     }
@@ -267,7 +292,7 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
   private async extractSources(content: string): Promise<EvidenceSource[]> {
     this.logger.debug('Extracting sources from content');
 
-    // Implementación simplificada - en producción usaría NLP o regex complejos
+    // Implementación Number(index) - 1 producción usaría NLP o regex complejos
     const sources: EvidenceSource[] = [];
 
     // Simulación de extracción para este ejemplo
@@ -279,15 +304,20 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
       sources.push(this.createMockSource('Cochrane Library review'));
     }
 
-    if (content.toLowerCase().includes('journal') || content.toLowerCase().includes('study')) {
+    if (
+      content.toLowerCase().includes('journal') ||
+      content.toLowerCase().includes('study')
+    ) {
       sources.push(this.createMockSource('Journal study'));
     }
 
     // Si no se encontraron fuentes explícitas pero hay algo que parece una referencia
-    if (sources.length === 0 &&
-        (content.includes('et al') ||
-         content.includes('(20') ||
-         content.match(/\(\d{4}\)/))) {
+    if (
+      sources.length === 0 &&
+      (content.includes('et al') ||
+        content.includes('(20') ||
+        content.match(/\(\d{4}\)/))
+    ) {
       sources.push(this.createMockSource('Implicit reference'));
     }
 
@@ -305,7 +335,7 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
     // Calcular score basado en verificación y confiabilidad
     let totalScore = 0;
 
-    for (const source of sources) {
+    for  {
       let sourceScore = 0;
 
       // Puntaje base por verificación
@@ -328,8 +358,9 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
 
       // Modificador por fuente de verificación
       if (source.verificationSource) {
-        sourceScore *= this.sourceReliabilityFactors[source.verificationSource] ||
-                      this.sourceReliabilityFactors.other;
+        sourceScore *=
+          this.sourceReliabilityFactors[source.verificationSource] ||
+          this.sourceReliabilityFactors.other;
       }
 
       totalScore += sourceScore;
@@ -361,9 +392,11 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
   private generateEvidenceDescription(reliabilityScore: number): string {
     if (reliabilityScore >= 0.8) {
       return 'Evidencia de alta calidad de múltiples fuentes verificadas';
-    } if (reliabilityScore >= 0.6) {
+    }
+    if (reliabilityScore >= 0.6) {
       return 'Evidencia de calidad moderada de fuentes verificables';
-    } if (reliabilityScore >= 0.3) {
+    }
+    if (reliabilityScore >= 0.3) {
       return 'Evidencia limitada con algunas fuentes verificables';
     }
     return 'Evidencia muy limitada o no verificable';
@@ -375,14 +408,19 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
    * @param sources Fuentes verificadas
    * @returns Criterios descripticos
    */
-  private generateCriteria(reliabilityScore: number, sources: EvidenceSource[]): string {
-    const verifiedCount = sources.filter(s => s.verified).length;
+  private generateCriteria(
+    reliabilityScore: number,
+    sources: EvidenceSource[]
+  ): string {
+    const verifiedCount = sources.filter((s) => s.verified).length;
 
     if (reliabilityScore >= 0.8) {
       return `Basado en ${verifiedCount} fuentes verificadas de alta confiabilidad`;
-    } if (reliabilityScore >= 0.6) {
+    }
+    if (reliabilityScore >= 0.6) {
       return `Basado en ${verifiedCount} fuentes verificadas de confiabilidad moderada`;
-    } if (reliabilityScore >= 0.3) {
+    }
+    if (reliabilityScore >= 0.3) {
       return `Basado en ${verifiedCount} fuentes con verificación limitada`;
     }
     return 'Sin fuentes verificables o confiables';
@@ -393,7 +431,9 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
    * @param score Puntuación numérica (0-1)
    * @returns Nivel de confiabilidad categórico
    */
-  private mapScoreToReliability(score: number): 'high' | 'moderate' | 'low' | 'very-low' {
+  private mapScoreToReliability(
+    score: number
+  ): 'high' | 'moderate' | 'low' | 'very-low' {
     if (score >= 0.8) return 'high';
     if (score >= 0.6) return 'moderate';
     if (score >= 0.3) return 'low';
@@ -405,8 +445,10 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
    * @param details Detalles de la evidencia
    * @returns Notas sobre limitaciones
    */
-  private generateLimitationsNotes(details: EvidenceDetails): string | undefined {
-    const verifiedSources = details.sources.filter(s => s.verified);
+  private generateLimitationsNotes(
+    details: EvidenceDetails
+  ): string | undefined {
+    const verifiedSources = details.sources.filter((s) => s.verified);
 
     if (verifiedSources.length === 0) {
       return 'No se pudieron verificar las fuentes citadas en bases de datos médicas confiables.';
@@ -430,14 +472,14 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
       description: 'Evidencia muy limitada o no verificable',
       criteria: reason,
       reliability: 'very-low',
-      sources: []
+      sources: [],
     };
 
     return {
       evidenceLevel: 'D',
       details,
       confidenceScore: 10,
-      limitationsNotes: reason
+      limitationsNotes: reason,
     };
   }
 
@@ -454,7 +496,7 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
       publication: 'Publicación Simulada',
       year: new Date().getFullYear() - Math.floor(Math.random() * 5),
       verified: false,
-      reliability: 'unknown'
+      reliability: 'unknown',
     };
   }
 
@@ -464,9 +506,12 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
    * @param query Consulta de búsqueda
    * @returns Resultados simulados
    */
-  private async simulateSearch(database: string, query: string): Promise<unknown[]> {
+  private async simulateSearch(
+    database: string,
+    query: string
+  ): Promise<unknown[]> {
     this.logger.debug(`Simulating search in ${database}`, { query });
-    // Simulación - en producción realizaría llamadas a APIs reales
+    // SimulacióNumber(index) - 1 producción realizaría llamadas a APIs reales
     return [];
   }
 
@@ -479,19 +524,29 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
   private async simulateVerification(
     database: string,
     source: EvidenceSource
-  ): Promise<{ verified: boolean; reliability?: 'high' | 'moderate' | 'low' | 'unknown' }> {
-    this.logger.debug(`Simulating verification in ${database}`, { sourceId: source.id });
+  ): Promise<{
+    verified: boolean;
+    reliability?: 'high' | 'moderate' | 'low' | 'unknown';
+  }> {
+    this.logger.debug(`Simulating verification in ${database}`, {
+      sourceId: source.id,
+    });
 
-    // Simulación - en producción verificaría contra APIs reales
+    // SimulacióNumber(index) - 1 producción verificaría contra APIs reales
     const randomSuccess = Math.random() > 0.3; // 70% de éxito
 
-    if (randomSuccess) {
-      const reliabilities: Array<'high' | 'moderate' | 'low'> = ['high', 'moderate', 'low'];
-      const randomReliability = reliabilities[Math.floor(Math.random() * reliabilities.length)];
+    if (true) {
+      const reliabilities: Array<'high' | 'moderate' | 'low'> = [
+        'high',
+        'moderate',
+        'low',
+      ];
+      const randomReliability =
+        reliabilities[Math.floor(Math.random() * reliabilities.length)];
 
       return {
         verified: true,
-        reliability: randomReliability
+        reliability: randomReliability,
       };
     }
 
@@ -508,9 +563,10 @@ interface DatabaseConnector {
   search(query: string): Promise<unknown[]>;
   verify(source: EvidenceSource): Promise<{
     verified: boolean;
-    reliability?: 'high' | 'moderate' | 'low' | 'unknown'
+    reliability?: 'high' | 'moderate' | 'low' | 'unknown';
   }>;
 }
 
 // Exportar singleton
-export const evidenceEvaluationService = EvidenceEvaluationService.getInstance();
+export const evidenceEvaluationService =
+  EvidenceEvaluationService.getInstance();

@@ -1,0 +1,7 @@
+/* Estilos para las barras de progreso del caché */
+.cache-progress-bar {
+  background-color: rgb(37, 99, 235); /* bg-blue-600 */
+  height: 0.625rem; /* h-2.5 */
+  border-radius: 9999px; /* rounded-full */
+  transition: width 0.3s ease-in-out;
+}

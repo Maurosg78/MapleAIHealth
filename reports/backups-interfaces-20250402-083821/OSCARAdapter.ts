@@ -230,16 +230,16 @@ interface PatientMetricEntry {
 
 /**
  * Adaptador para integración con OSCAR EMR
- * OSCAR (Open Source Clinical Application Resource) es uno de los sistemas EMR más utilizados en Ontario, Canadá
+ * OSCAR  es uno de los sistemas EMR más utilizados en Ontario, Canadá
  * Es un sistema de código abierto diseñado específicamente para el sistema de salud canadiense
  */
 export class OSCARAdapter implements EMRAdapter {
   public readonly name = 'OSCAR EMR Adapter';
-  private readonly logger: Logger;
-  private readonly baseUrl: string;
-  private readonly username: string;
-  private readonly password: string;
-  private readonly clinicId: string;
+  private$1$3: Logger;
+  private$1$3: string;
+  private$1$3: string;
+  private$1$3: string;
+  private$1$3: string;
   private sessionToken: string | null = null;
   private tokenExpiration: Date | null = null;
 
@@ -271,8 +271,9 @@ export class OSCARAdapter implements EMRAdapter {
       // Intentar autenticarse para verificar conexión
       await this.authenticate();
       return true;
-    } catch (error) {
-      this.logger.error('Error al conectar con OSCAR EMR', { error });
+    } catch (err) {
+      this.logger.error('Error al conectar con OSCAR EMR', { error 
+    });
       return false;
     }
   }
@@ -290,18 +291,22 @@ export class OSCARAdapter implements EMRAdapter {
       // Obtener datos demográficos del paciente
       const demographic = await this.fetchData(
         `/demographicData?id=${patientId}`
-      );
+    null
+  );
 
       // Obtener historial médico, alergias, condiciones, etc.
       const allergies = await this.fetchData(
         `/allergies?id=${patientId}`
-      );
+    null
+  );
       const medications = await this.fetchData(
         `/prescriptions?id=${patientId}`
-      );
+    null
+  );
       const problems = await this.fetchData(
         `/diseaseRegistry?id=${patientId}`
-      );
+    null
+  );
 
       // Convertir datos de OSCAR al formato PatientData de la aplicación
       return this.convertOscarToPatientData(demographic, {
@@ -309,14 +314,16 @@ export class OSCARAdapter implements EMRAdapter {
         medications,
         problems,
       });
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al obtener datos del paciente desde OSCAR', {
         error,
         patientId,
-      });
+      
+    });
       throw new Error(
-        `Error al obtener datos del paciente: ${(error as Error).message}`
-      );
+        `Error al obtener datos del paciente: ${.message}`
+    null
+  );
     }
   }
 
@@ -390,13 +397,14 @@ export class OSCARAdapter implements EMRAdapter {
       }
 
       // Limitar resultados
-      const results = filteredResults.slice(0, limit);
+      const results = filteredResults.slice;
 
       this.logger.info(`Se encontraron ${results.length} pacientes`);
       return results;
-    } catch (error) {
-      this.logger.error('Error al buscar pacientes en OSCAR', { error, query });
-      throw new Error(`Error al buscar pacientes: ${(error as Error).message}`);
+    } catch (err) {
+      this.logger.error('Error al buscar pacientes en OSCAR', { error, query 
+    });
+      throw new Error(`Error al buscar pacientes: ${.message}`);
     }
   }
 
@@ -435,44 +443,50 @@ export class OSCARAdapter implements EMRAdapter {
       if (!options || options.includeConsultations !== false) {
         const encounters = await this.fetchData(
           `/casemgmt/note?id=${patientId}${dateFilter}`
-        );
-        patientHistory.consultations = this.convertOscarEncounters(encounters);
+    null
+  );
+        patientHistory.consultations = this.convertOscarEncounters;
       }
 
       // Obtener tratamientos si se solicitan
       if (!options || options.includeTreatments !== false) {
         const prescriptions = await this.fetchData(
           `/prescriptions?id=${patientId}${dateFilter}`
-        );
+    null
+  );
         patientHistory.treatments =
-          this.convertOscarPrescriptions(prescriptions);
+          this.convertOscarPrescriptions;
       }
 
       // Obtener resultados de laboratorio si se solicitan
       if (!options || options.includeLabResults !== false) {
         const labs = await this.fetchData(
           `/lab/reports?id=${patientId}${dateFilter}`
-        );
-        patientHistory.labResults = this.convertOscarLabResults(labs);
+    null
+  );
+        patientHistory.labResults = this.convertOscarLabResults;
       }
 
       // Obtener diagnósticos si se solicitan
       if (!options || options.includeDiagnoses !== false) {
         const problems = await this.fetchData(
           `/diseaseRegistry?id=${patientId}`
-        );
-        patientHistory.diagnoses = this.convertOscarProblems(problems);
+    null
+  );
+        patientHistory.diagnoses = this.convertOscarProblems;
       }
 
       return patientHistory;
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al obtener historial médico desde OSCAR', {
         error,
         patientId,
-      });
+      
+    });
       throw new Error(
-        `Error al obtener historial médico: ${(error as Error).message}`
-      );
+        `Error al obtener historial médico: ${.message}`
+    null
+  );
     }
   }
 
@@ -489,7 +503,7 @@ export class OSCARAdapter implements EMRAdapter {
       await this.ensureAuthenticated();
 
       // Convertir consulta al formato de OSCAR
-      const oscarNote = this.convertToOscarNote(consultation);
+      const oscarNote = this.convertToOscarNote;
 
       // Enviar la consulta a OSCAR
       const response = await this.postData('/casemgmt/note', oscarNote);
@@ -502,12 +516,13 @@ export class OSCARAdapter implements EMRAdapter {
 
       this.logger.info('Consulta guardada exitosamente en OSCAR', { noteId });
       return noteId.toString();
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al guardar consulta en OSCAR', {
         error,
         consultation,
-      });
-      throw new Error(`Error al guardar consulta: ${(error as Error).message}`);
+      
+    });
+      throw new Error(`Error al guardar consulta: ${.message}`);
     }
   }
 
@@ -525,10 +540,11 @@ export class OSCARAdapter implements EMRAdapter {
       // Obtener la consulta existente
       const existingNote = await this.fetchData(
         `/casemgmt/note/${consultationId}`
-      );
+    null
+  );
 
       // Aplicar actualizaciones a la nota
-      const updatedNote = this.applyConsultationUpdates(existingNote, updates);
+      const updatedNote = this.applyConsultationUpdates;
 
       // Enviar la consulta actualizada
       await this.putData(`/casemgmt/note/${consultationId}`, updatedNote);
@@ -537,14 +553,16 @@ export class OSCARAdapter implements EMRAdapter {
         consultationId,
       });
       return true;
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al actualizar consulta en OSCAR', {
         error,
         consultationId,
-      });
+      
+    });
       throw new Error(
-        `Error al actualizar consulta: ${(error as Error).message}`
-      );
+        `Error al actualizar consulta: ${.message}`
+    null
+  );
     }
   }
 
@@ -564,14 +582,14 @@ export class OSCARAdapter implements EMRAdapter {
 
       if (treatment.type === 'medication') {
         endpoint = '/prescription';
-        payload = this.convertToOscarPrescription(treatment);
+        payload = this.convertToOscarPrescription;
       } else {
         endpoint = '/preventions';
-        payload = this.convertToOscarProcedure(treatment);
+        payload = this.convertToOscarProcedure;
       }
 
       // Enviar el tratamiento a OSCAR
-      const response = await this.postData(endpoint, payload);
+      const response = await this.postData;
 
       // Extraer el ID del tratamiento creado
       const treatmentId = response.id;
@@ -583,14 +601,16 @@ export class OSCARAdapter implements EMRAdapter {
         treatmentId,
       });
       return treatmentId.toString();
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al registrar tratamiento en OSCAR', {
         error,
         treatment,
-      });
+      
+    });
       throw new Error(
-        `Error al registrar tratamiento: ${(error as Error).message}`
-      );
+        `Error al registrar tratamiento: ${.message}`
+    null
+  );
     }
   }
 
@@ -620,20 +640,23 @@ export class OSCARAdapter implements EMRAdapter {
       // Obtener las mediciones disponibles
       const measurements = await this.fetchData(
         `/measurements?id=${patientId}`
-      );
+    null
+  );
 
       // Procesar las mediciones según los tipos solicitados
-      this.processOscarMeasurements(measurements, metrics, metricTypes);
+      this.processOscarMeasurements;
 
       return metrics;
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al obtener métricas del paciente desde OSCAR', {
         error,
         patientId,
-      });
+      
+    });
       throw new Error(
-        `Error al obtener métricas del paciente: ${(error as Error).message}`
-      );
+        `Error al obtener métricas del paciente: ${.message}`
+    null
+  );
     }
   }
 
@@ -666,7 +689,8 @@ export class OSCARAdapter implements EMRAdapter {
       if (!response.ok) {
         throw new Error(
           `Error al autenticar: ${response.status} ${response.statusText}`
-        );
+    null
+  );
       }
 
       const data = await response.json();
@@ -681,9 +705,10 @@ export class OSCARAdapter implements EMRAdapter {
 
       this.logger.info('Autenticación con OSCAR exitosa');
       return this.sessionToken;
-    } catch (error) {
-      this.logger.error('Error en autenticación con OSCAR', { error });
-      throw new Error(`Error de autenticación: ${(error as Error).message}`);
+    } catch (err) {
+      this.logger.error('Error en autenticación con OSCAR', { error 
+    });
+      throw new Error(`Error de autenticación: ${.message}`);
     }
   }
 
@@ -720,15 +745,17 @@ export class OSCARAdapter implements EMRAdapter {
       if (!response.ok) {
         throw new Error(
           `Error en petición: ${response.status} ${response.statusText}`
-        );
+    null
+  );
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al recuperar datos de OSCAR', {
         error,
         endpoint,
-      });
+      
+    });
       throw error;
     }
   }
@@ -750,18 +777,20 @@ export class OSCARAdapter implements EMRAdapter {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify,
       });
 
       if (!response.ok) {
         throw new Error(
           `Error en petición POST: ${response.status} ${response.statusText}`
-        );
+    null
+  );
       }
 
       return await response.json();
-    } catch (error) {
-      this.logger.error('Error al enviar datos a OSCAR', { error, endpoint });
+    } catch (err) {
+      this.logger.error('Error al enviar datos a OSCAR', { error, endpoint 
+    });
       throw error;
     }
   }
@@ -783,21 +812,23 @@ export class OSCARAdapter implements EMRAdapter {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify,
       });
 
       if (!response.ok) {
         throw new Error(
           `Error en petición PUT: ${response.status} ${response.statusText}`
-        );
+    null
+  );
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al actualizar datos en OSCAR', {
         error,
         endpoint,
-      });
+      
+    });
       throw error;
     }
   }
@@ -818,12 +849,12 @@ export class OSCARAdapter implements EMRAdapter {
       const firstName = demographic.firstName ?? '';
       const lastName = demographic.lastName ?? '';
       const dob = demographic.birthDate;
-      const age = this.calculateAge(dob);
+      const age = this.calculateAge;
 
       // Obtener información de contacto
       const email = demographic.email ?? '';
       const phone = demographic.phone ?? '';
-      const address = this.formatAddress(demographic);
+      const address = this.formatAddress;
 
       // Construir objeto de datos del paciente
       const patientData: PatientData = {
@@ -842,15 +873,16 @@ export class OSCARAdapter implements EMRAdapter {
             address,
           },
         },
-        medicalHistory: this.extractMedicalHistoryFromOscar(additionalData),
+        medicalHistory: this.extractMedicalHistoryFromOscar,
         vitalSigns: {},
       };
 
       return patientData;
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al convertir datos de OSCAR a PatientData', {
         error,
-      });
+      
+    });
       throw new Error('Error al procesar datos del paciente');
     }
   }
@@ -862,7 +894,7 @@ export class OSCARAdapter implements EMRAdapter {
     if (!birthDate) return 0;
 
     const today = new Date();
-    const birthDate = new Date(birthDate);
+    const birthDate = new Date;
     let age = today.getFullYear() - birthDate.getFullYear();
     const m = today.getMonth() - birthDate.getMonth();
 
@@ -882,7 +914,7 @@ export class OSCARAdapter implements EMRAdapter {
       demographic.city,
       demographic.province,
       demographic.postalCode,
-    ].filter(Boolean);
+    ].filter;
 
     return components.join(', ');
   }
@@ -894,17 +926,17 @@ export class OSCARAdapter implements EMRAdapter {
     data: OSCARAdditionalData
   ): MedicalHistoryResult {
     // Extraer alergias
-    const allergies = data.allergies.map((allergy) => ({
+    const allergies = data.allergies.map((item) => ({
       id: allergy.id,
       description: allergy.description,
       reaction: allergy.reaction,
       severity: allergy.severity,
     }));
 
-    // Extraer condiciones crónicas (problemas activos)
+    // Extraer condiciones crónicas 
     const problems = data.problems
-      .filter((problem) => problem.active)
-      .map((problem) => ({
+      .filter((item) => problem.active)
+      .map((item) => ({
         id: problem.id,
         code: problem.code,
         codeSystem: problem.codeSystem,
@@ -1012,7 +1044,7 @@ export class OSCARAdapter implements EMRAdapter {
   private convertOscarLabResults(labs: OSCARLabResult): LabResultData[] {
     if (!labs?.labs) return [];
 
-    return labs.labs.map((lab) => ({
+    return labs.labs.map((item) => ({
       id: lab.id,
       patientId: lab.id,
       date: new Date(lab.date),
@@ -1144,7 +1176,7 @@ export class OSCARAdapter implements EMRAdapter {
       const metricType = oscarTypeMap[measurement.type];
 
       // Verificar si este tipo de métrica fue solicitado
-      if (metricType && metricTypes.includes(metricType)) {
+      if (metricType && metricTypes.includes) {
         const entry = {
           date: new Date(measurement.date),
           value: parseFloat(measurement.value),
@@ -1155,7 +1187,7 @@ export class OSCARAdapter implements EMRAdapter {
         if (metricType === 'bloodPressure' && measurement.value.includes('/')) {
           const [systolic, diastolic] = measurement.value
             .split('/')
-            .map(Number);
+            .map;
           metrics.bloodPressure.push({
             date: entry.date,
             systolic,
@@ -1167,7 +1199,7 @@ export class OSCARAdapter implements EMRAdapter {
             metrics[
               metricType as keyof EMRPatientMetrics
             ] as PatientMetricEntry[]
-          ).push(entry);
+          ).push;
         }
       }
     });

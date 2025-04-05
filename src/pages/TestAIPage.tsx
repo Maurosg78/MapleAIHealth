@@ -1,7 +1,32 @@
-import React, { useState } from 'react';
+import logger from '../services/logger';
+import * as React from 'react';
+import { useState } from 'react';
 import { useAIQuery } from '../hooks/useAIQuery';
 import ResponseFeedback from '../components/ai/ResponseFeedback';
 import { AIResponse } from '../services/ai';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Chip
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+const TestContainer = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(3),
+  maxWidth: '800px',
+  margin: '0 auto',
+}));
+
+const TestPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+}));
 
 const TestAIPage: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -17,124 +42,139 @@ const TestAIPage: React.FC = () => {
       patientId,
       context: {
         type: 'general',
-        data: {}
-      }
+        data: {
+          content: query
+        }
+      },
     });
   };
 
   const handleFeedback = (feedback: { helpful: boolean; comments: string }) => {
-    console.log('Feedback recibido:', feedback);
+    logger.debug('Feedback recibido:', feedback);
+  };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'high': return 'error';
+      case 'medium': return 'warning';
+      default: return 'success';
+    }
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <h1 className="text-2xl font-bold mb-6">Prueba del Servicio de IA</h1>
+    <TestContainer>
+      <Typography variant="h4" gutterBottom>
+        Prueba del Servicio de IA
+      </Typography>
 
-      <form onSubmit={handleSubmit} className="mb-8">
-        <div className="mb-4">
-          <label htmlFor="patientId" className="block text-sm font-medium mb-1">ID del Paciente</label>
-          <input
-            id="patientId"
-            type="text"
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Box component="form" onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label="ID del Paciente"
             value={patientId}
             onChange={(e) => setPatientId(e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="Ingresa el ID del paciente"
-            aria-label="ID del Paciente"
+            margin="normal"
           />
-        </div>
 
-        <div className="mb-4">
-          <label htmlFor="queryText" className="block text-sm font-medium mb-1">Consulta Médica</label>
-          <textarea
-            id="queryText"
+          <TextField
+            fullWidth
+            label="Consulta Médica"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full p-2 border rounded"
+            multiline
             rows={4}
-            placeholder="Escribe tu consulta médica aquí..."
-            aria-label="Consulta Médica"
+            margin="normal"
           />
-        </div>
 
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={loading || !query.trim()}
-            className="px-4 py-2 bg-blue-600 text-white rounded disabled:bg-gray-400"
-          >
-            {loading ? 'Procesando...' : 'Enviar Consulta'}
-          </button>
-
-          {result && (
-            <button
-              type="button"
-              onClick={reset}
-              className="px-4 py-2 border rounded"
+          <Box display="flex" gap={2} mt={2}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={loading || !query.trim()}
             >
-              Nueva Consulta
-            </button>
-          )}
-        </div>
-      </form>
+              {loading ? 'Procesando...' : 'Enviar Consulta'}
+            </Button>
+
+            {result && (
+              <Button
+                variant="outlined"
+                onClick={reset}
+              >
+                Nueva Consulta
+              </Button>
+            )}
+          </Box>
+        </Box>
+      </Paper>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md mb-6">
-          <p className="text-red-600">{error.message}</p>
-        </div>
+        <Paper sx={{ p: 2, bgcolor: 'error.light', color: 'error.contrastText' }}>
+          <Typography>{error.message}</Typography>
+        </Paper>
       )}
 
       {result && (
-        <div className="border rounded-md p-6 bg-white shadow-sm">
-          <h2 className="text-xl font-medium mb-4">Respuesta</h2>
+        <TestPaper>
+          <Typography variant="h5" gutterBottom>
+            Respuesta
+          </Typography>
 
-          <div className="mb-4">
-            <h3 className="font-medium mb-2">Resumen</h3>
-            <p className="text-gray-700">{result.summary}</p>
-          </div>
+          <Box mb={3}>
+            <Typography variant="h6" gutterBottom>
+              Resumen
+            </Typography>
+            <Typography>{result.summary}</Typography>
+          </Box>
 
           {result.insights && result.insights.length > 0 && (
-            <div className="mb-4">
-              <h3 className="font-medium mb-2">Insights</h3>
-              <ul className="space-y-2">
+            <Box mb={3}>
+              <Typography variant="h6" gutterBottom>
+                Insights
+              </Typography>
+              <List>
                 {result.insights.map((insight, index) => (
-                  <li key={index} className="p-2 bg-blue-50 rounded">
-                    <p className="font-medium">{insight.title}</p>
-                    <p className="text-sm">{insight.description}</p>
-                    <span className={`text-xs px-2 py-0.5 rounded ${
-                      insight.severity === 'high' ? 'bg-red-100 text-red-700' :
-                      insight.severity === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-green-100 text-green-700'
-                    }`}>
-                      {insight.severity}
-                    </span>
-                  </li>
+                  <ListItem key={index} sx={{ bgcolor: 'primary.light', mb: 1, borderRadius: 1 }}>
+                    <ListItemText
+                      primary={insight.title}
+                      secondary={insight.description}
+                    />
+                    <Chip
+                      label={insight.severity}
+                      color={getSeverityColor(insight.severity)}
+                      size="small"
+                    />
+                  </ListItem>
                 ))}
-              </ul>
-            </div>
+              </List>
+            </Box>
           )}
 
           {result.recommendations && result.recommendations.length > 0 && (
-            <div className="mb-4">
-              <h3 className="font-medium mb-2">Recomendaciones</h3>
-              <ul className="space-y-2">
+            <Box mb={3}>
+              <Typography variant="h6" gutterBottom>
+                Recomendaciones
+              </Typography>
+              <List>
                 {result.recommendations.map((rec, index) => (
-                  <li key={index} className="p-2 bg-green-50 rounded">
-                    <p className="font-medium">{rec.title}</p>
-                    <p className="text-sm">{rec.description}</p>
-                  </li>
+                  <ListItem key={index} sx={{ bgcolor: 'success.light', mb: 1, borderRadius: 1 }}>
+                    <ListItemText
+                      primary={rec.title}
+                      secondary={rec.description}
+                    />
+                  </ListItem>
                 ))}
-              </ul>
-            </div>
+              </List>
+            </Box>
           )}
 
           <ResponseFeedback
             response={result as AIResponse}
             onFeedbackSubmit={handleFeedback}
           />
-        </div>
+        </TestPaper>
       )}
-    </div>
+    </TestContainer>
   );
 };
 

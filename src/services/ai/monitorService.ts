@@ -8,7 +8,7 @@ import { aiService } from './aiService';
  */
 export class MonitorService {
   private static instance: MonitorService;
-  private readonly logger: Logger;
+  private logger: Logger;
   private readonly checkIntervalMs = 60 * 60 * 1000; // 1 hora
   private checkInterval: ReturnType<typeof setInterval> | null = null;
   private isRunning = false;
@@ -21,7 +21,7 @@ export class MonitorService {
     errors: 0,
     averageResponseTime: 0,
     lastCheckTime: Date.now(),
-    uptime: 0
+    uptime: 0,
   };
 
   private constructor() {
@@ -90,7 +90,7 @@ export class MonitorService {
       this.logger.info('Health check completed', {
         metrics: this.metrics,
         aiStats,
-        cacheStats
+        cacheStats,
       });
 
       // Verificar posibles problemas
@@ -113,18 +113,20 @@ export class MonitorService {
     this.metrics.uptime = now - this.metrics.lastCheckTime;
 
     // Actualizar estadísticas de caché
-    const activeItems = cacheStats.activeItems as number || 0;
-    const totalItems = cacheStats.totalItems as number || 0;
+    const totalItems = (cacheStats.totalItems ) || 0;
+    const activeItems = (cacheStats.activeItems ) || 0;
 
-    // Estimar uso del caché (simplificado)
-    if (totalItems > 0) {
-      this.metrics.cacheHits = activeItems;
-      this.metrics.cacheMisses = totalItems - activeItems;
-      this.metrics.totalQueries = totalItems;
+    const totalItemsCount = typeof totalItems === 'number' ? totalItems : 0;
+    const activeItemsCount = typeof activeItems === 'number' ? activeItems : 0;
+
+    if (totalItemsCount > 0) {
+      this.metrics.cacheHits = activeItemsCount;
+      this.metrics.cacheMisses = totalItemsCount - activeItemsCount;
+      this.metrics.totalQueries = totalItemsCount;
     }
 
     // Obtener propiedades de rendimiento
-    const simulationMode = aiStats.simulationMode as boolean;
+    const simulationMode = aiStats.simulationMode ;
 
     // Registrar modo simulación
     if (simulationMode) {
@@ -140,28 +142,32 @@ export class MonitorService {
    */
   private checkForIssues(): void {
     // Verificar ratio de errores
-    const errorRate = this.metrics.totalQueries > 0
-      ? this.metrics.errors / this.metrics.totalQueries
-      : 0;
+    const errorRate =
+      this.metrics.totalQueries > 0
+        ? this.metrics.errors / this.metrics.totalQueries
+        : 0;
 
-    if (errorRate > 0.05) { // Si más del 5% de consultas fallan
+    if (errorRate > 0.05) {
+      // Si más del 5% de consultas fallan
       this.logger.warn('High error rate detected', {
         errorRate,
         totalErrors: this.metrics.errors,
-        totalQueries: this.metrics.totalQueries
+        totalQueries: this.metrics.totalQueries,
       });
     }
 
     // Verificar uso del caché
-    const cacheHitRate = this.metrics.totalQueries > 0
-      ? this.metrics.cacheHits / this.metrics.totalQueries
-      : 0;
+    const cacheHitRate =
+      this.metrics.totalQueries > 0
+        ? this.metrics.cacheHits / this.metrics.totalQueries
+        : 0;
 
-    if (cacheHitRate < 0.3) { // Si menos del 30% de consultas usan caché
+    if (cacheHitRate < 0.3) {
+      // Si menos del 30% de consultas usan caché
       this.logger.info('Low cache hit rate', {
         cacheHitRate,
         cacheHits: this.metrics.cacheHits,
-        totalQueries: this.metrics.totalQueries
+        totalQueries: this.metrics.totalQueries,
       });
     }
   }
@@ -180,15 +186,17 @@ export class MonitorService {
   public trackQuery(responseTime: number, cacheHit: boolean): void {
     this.metrics.totalQueries++;
 
-    if (cacheHit) {
+    if (simulationMode) {
       this.metrics.cacheHits++;
     } else {
       this.metrics.cacheMisses++;
     }
 
     // Actualizar tiempo de respuesta promedio
-    const currentTotal = this.metrics.averageResponseTime * (this.metrics.totalQueries - 1);
-    this.metrics.averageResponseTime = (currentTotal + responseTime) / this.metrics.totalQueries;
+    const currentTotal =
+      this.metrics.averageResponseTime * (this.metrics.totalQueries - 1);
+    this.metrics.averageResponseTime =
+      (currentTotal + responseTime) / this.metrics.totalQueries;
   }
 
   /**
@@ -206,7 +214,7 @@ export class MonitorService {
       metrics: this.metrics,
       timestamp: new Date().toISOString(),
       aiService: aiService.getStats(),
-      cacheService: cacheService.getStats()
+      cacheService: cacheService.getStats(),
     };
   }
 }

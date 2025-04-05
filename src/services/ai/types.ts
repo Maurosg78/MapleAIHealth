@@ -87,7 +87,8 @@ export interface UnstructuredNote {
   date: string;
   provider: string;
   content: string;
-  type: 'progress' | 'consultation' | 'discharge' | 'referral' | 'other';
+  type: 'consultation' | 'discharge' | 'referral' | 'other';
+  createdAt: string;
   specialty?: string;
 }
 

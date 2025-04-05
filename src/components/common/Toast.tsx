@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 export interface ToastProps {
   message: string;
@@ -6,17 +6,17 @@ export interface ToastProps {
   onClose?: () => void;
 }
 
-export const Toast: React.FC<ToastProps> = ({ 
-  message, 
+export const Toast: React.FC<ToastProps> = ({
+  message,
   type = 'info',
-  onClose
+  onClose,
 }) => {
   return (
     <div className={`toast toast-${type}`}>
       <div className="toast-content">{message}</div>
       {onClose && (
         <button className="toast-close" onClick={onClose}>
-          ×
+          &times;
         </button>
       )}
     </div>

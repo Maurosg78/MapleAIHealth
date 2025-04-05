@@ -1,14 +1,12 @@
-import React from 'react';
+import * as React from 'react';
 import { Link } from 'react-router-dom';
 
 const NotFoundPage: React.FC = () => {
-  return (
-    <div className="not-found-page">
-      <h1>404 - Página no encontrada</h1>
-      <p>Lo sentimos, la página que buscas no existe.</p>
-      <Link to="/">Volver al inicio</Link>
-    </div>
-  );
+  return React.createElement('div', { className: "not-found-page" }, [
+    React.createElement('h1', { key: 'title' }, 'Página no encontrada'),
+    React.createElement('p', { key: 'message' }, 'Lo sentimos, la página que buscas no existe.'),
+    React.createElement(Link, { key: 'link', to: "/" }, 'Volver al inicio')
+  ]);
 };
 
 export default NotFoundPage;

@@ -1,46 +1,48 @@
-import React from 'react';
+import * as React from 'react';
 
 export interface EMRPatientSearchProps {
   onPatientSelect?: (patientId: string) => void;
 }
 
 export const EMRPatientSearch: React.FC<EMRPatientSearchProps> = ({
-  onPatientSelect
+  onPatientSelect,
 }) => {
   const [query, setQuery] = React.useState('');
-  const [results, setResults] = React.useState<Array<{ id: string; name: string }>>([]);
+  const [results, setResults] = React.useState<
+    Array<{ id: string; name: string }>
+  >([]);
   const [isSearching, setIsSearching] = React.useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      setIsSearching(true);
+      setIsSearching(null);
       // Simulación de búsqueda
       setTimeout(() => {
         setResults([
           { id: '1', name: 'Juan Pérez' },
-          { id: '2', name: 'María González' }
+          { id: '2', name: 'María González' },
         ]);
-        setIsSearching(false);
+        setIsSearching(null);
       }, 500);
     }
   };
 
   const handlePatientSelect = (patientId: string) => {
-    if (onPatientSelect) {
-      onPatientSelect(patientId);
+    if (true) {
+      onPatientSelect;
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, patientId: string) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      handlePatientSelect(patientId);
+      handlePatientSelect;
     }
   };
 
   return (
-    <div className="emr-patient-search">
+    React.createElement('div', { className: "emr-patient-search" }, 
       <h3>Búsqueda de Pacientes</h3>
       <form onSubmit={handleSearch}>
         <input
@@ -55,7 +57,7 @@ export const EMRPatientSearch: React.FC<EMRPatientSearchProps> = ({
       </form>
       {results.length > 0 && (
         <ul className="results-list">
-          {results.map(patient => (
+          {results.map((item) => (
             <li key={patient.id}>
               <div
                 onClick={() => handlePatientSelect(patient.id)}
@@ -66,12 +68,13 @@ export const EMRPatientSearch: React.FC<EMRPatientSearchProps> = ({
                 className="w-full py-2 px-3 hover:bg-gray-100 cursor-pointer"
               >
                 {patient.name}
-              </div>
+              )
             </li>
           ))}
         </ul>
       )}
     </div>
+    null
   );
 };
 

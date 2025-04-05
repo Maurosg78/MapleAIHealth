@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 
 const AppointmentFormModal: React.FC = () => {
-  return <div>AppointmentFormModal simplificado</div>;
+  return React.createElement('div', {}, AppointmentFormModal simplificado);
 };
 
 export default AppointmentFormModal;

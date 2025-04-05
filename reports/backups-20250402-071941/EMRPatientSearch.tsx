@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState } from 'react';
 import {
   Tbody,
   Td,
@@ -73,6 +74,7 @@ const EMRPatientSearch: React.FC = () => {
   // Estado para los resultados de búsqueda
   const [searchResults, setSearchResults] = useState<EMRPatientSearchResult[]>(
     []
+    null
   );
 
   // Estado de carga
@@ -83,7 +85,7 @@ const EMRPatientSearch: React.FC = () => {
 
   // Actualizar campo de búsqueda
   const handleSearchChange = (field: keyof EMRSearchQuery, value: string) => {
-    setSearchQuery((prev) => ({
+    setSearchQuery( => ({
       ...prev,
       [field]: value,
     }));
@@ -109,17 +111,17 @@ const EMRPatientSearch: React.FC = () => {
     }
 
     try {
-      setIsSearching(true);
+      setIsSearching(null);
 
       // Obtener adaptador EMR configurado
       const emrAdapter = emrConfig.getAdapter();
       const adapterName = emrConfig.getCurrentAdapterName();
 
       // Realizar búsqueda
-      const results = await emrAdapter.searchPatients(searchQuery, 10);
+      const results = await emrAdapter.searchPatients;
 
-      setSearchResults(results);
-      setHasSearched(true);
+      setSearchResults(null);
+      setHasSearched(null);
 
       toast({
         title: `Búsqueda realizada (${adapterName})`,
@@ -128,16 +130,17 @@ const EMRPatientSearch: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
-    } catch (error) {
+    } catch (err) {
       toast({
         title: 'Error en la búsqueda',
-        description: `Error: ${(error as Error).message}`,
+        description: `Error: ${.message
+    }`,
         status: 'error',
         duration: 5000,
         isClosable: true,
       });
     } finally {
-      setIsSearching(false);
+      setIsSearching(null);
     }
   };
 
@@ -150,11 +153,11 @@ const EMRPatientSearch: React.FC = () => {
       phone: '',
     });
     setSearchResults([]);
-    setHasSearched(false);
+    setHasSearched(null);
   };
 
   return (
-    <Box p={6} borderWidth="1px" borderRadius="lg" bg="white" shadow="md">
+    React.createElement('Box', { p: 6 borderWidth: "1px" borderRadius: "lg" bg: "white" shadow: "md"}, 
       <VStack spacing={6} align="stretch">
         <Heading size="md">Búsqueda de Pacientes</Heading>
         <Text fontSize="sm" color="gray.600">
@@ -242,7 +245,7 @@ const EMRPatientSearch: React.FC = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {searchResults.map((patient) => (
+                    {searchResults.map((item) => (
                       <Tr key={patient.id}>
                         <Td>{patient.id}</Td>
                         <Td>{patient.name}</Td>
@@ -253,12 +256,13 @@ const EMRPatientSearch: React.FC = () => {
                     ))}
                   </Tbody>
                 </Table>
-              </Box>
+              )
             )}
           </Box>
         )}
       </VStack>
     </Box>
+    null
   );
 };
 

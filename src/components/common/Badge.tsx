@@ -1,19 +1,15 @@
-import React from 'react';
+import * as React from 'react';
 
 export interface BadgeProps {
   children: React.ReactNode;
   variant?: 'default' | 'primary' | 'success' | 'warning' | 'error';
 }
 
-export const Badge: React.FC<BadgeProps> = ({ 
-  children, 
-  variant = 'default' 
+export const Badge: React.FC<BadgeProps> = ({
+  children,
+  variant = 'default',
 }) => {
-  return (
-    <span className={`badge badge-${variant}`}>
-      {children}
-    </span>
-  );
+  return <span className={`badge badge-${variant}`}>{children}</span>;
 };
 
 export default Badge;

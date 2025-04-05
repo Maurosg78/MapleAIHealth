@@ -1,12 +1,20 @@
-import { evidenceEvaluationService, IEvidenceEvaluationService, EvidenceEvaluationService } from './EvidenceEvaluationService';
-import { medicalSourceVerifier, IMedicalSourceVerifier, MedicalSourceVerifier } from './MedicalSourceVerifier';
+import {
+  evidenceEvaluationService,
+  IEvidenceEvaluationService,
+  EvidenceEvaluationService,
+} from './EvidenceEvaluationService';
+import {
+  medicalSourceVerifier,
+  IMedicalSourceVerifier,
+  MedicalSourceVerifier,
+} from './MedicalSourceVerifier';
 
 // Exportar servicios singleton
 export {
   evidenceEvaluationService,
   EvidenceEvaluationService,
   medicalSourceVerifier,
-  MedicalSourceVerifier
+  MedicalSourceVerifier,
 };
 
 // Exportar tipos

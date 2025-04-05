@@ -1,0 +1,27 @@
+/* Estilos para el componente SourceVerificationsCard */
+
+.progress-bar {
+  min-width: var(--min-bar-width, 0);
+  transition: width 0.3s ease-in-out;
+}
+
+.verified-bar {
+  background-color: #10b981; /* Verde */
+  width: var(--verified-percent, 0%);
+}
+
+.pending-bar {
+  background-color: #f59e0b; /* Amarillo */
+  width: var(--pending-percent, 0%);
+}
+
+.unverified-bar {
+  background-color: #ef4444; /* Rojo */
+  width: var(--unverified-percent, 0%);
+}
+
+.database-bar {
+  background-color: #3b82f6; /* Azul */
+  width: var(--db-percent, 0%);
+  min-width: var(--min-bar-width, 0);
+}

@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 
 const Layout: React.FC = () => {
-  return <div>Layout simplificado</div>;
+  return React.createElement('div', {}, Layout simplificado);
 };
 
 export default Layout;

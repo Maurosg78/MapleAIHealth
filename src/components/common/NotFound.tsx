@@ -1,18 +1,16 @@
-import React from 'react';
+import * as React from 'react';
 
 export interface NotFoundProps {
   message?: string;
 }
 
-export const NotFound: React.FC<NotFoundProps> = ({ 
-  message = 'No se encontró el recurso solicitado.'
+export const NotFound: React.FC<NotFoundProps> = ({
+  message = 'No se encontró el recurso solicitado.',
 }) => {
-  return (
-    <div className="not-found">
-      <h1>404</h1>
-      <p>{message}</p>
-    </div>
-  );
+  return React.createElement('div', { className: "not-found" }, [
+    React.createElement('h1', { key: 'title' }, '404'),
+    React.createElement('p', { key: 'message' }, message)
+  ]);
 };
 
 export default NotFound;

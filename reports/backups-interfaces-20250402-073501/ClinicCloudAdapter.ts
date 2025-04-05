@@ -279,12 +279,12 @@ interface ClinicCloudMetricaResult {
  */
 export class ClinicCloudAdapter implements EMRAdapter {
   public readonly name = 'ClinicCloud Adapter';
-  private readonly logger: Logger;
-  private readonly apiUrl: string;
-  private readonly apiKey: string;
-  private readonly clinicId: string;
-  private readonly clientId: string;
-  private readonly clientSecret: string;
+  private$1$3: Logger;
+  private$1$3: string;
+  private$1$3: string;
+  private$1$3: string;
+  private$1$3: string;
+  private$1$3: string;
   private accessToken: string | null = null;
   private tokenExpiration: Date | null = null;
 
@@ -322,8 +322,9 @@ export class ClinicCloudAdapter implements EMRAdapter {
       await this.fetchData('/ping');
 
       return true;
-    } catch (error) {
-      this.logger.error('Error al conectar con ClinicCloud', { error });
+    } catch (err) {
+      this.logger.error('Error al conectar con ClinicCloud', { error 
+    });
       return false;
     }
   }
@@ -344,21 +345,25 @@ export class ClinicCloudAdapter implements EMRAdapter {
       const alergias = await this.fetchData(`/pacientes/${patientId}/alergias`);
       const condiciones = await this.fetchData(
         `/pacientes/${patientId}/condiciones`
-      );
+    null
+  );
 
       // Convertir datos al formato PatientData de la aplicación
       return this.convertPatientData(pacientData, {
         alergias,
         condiciones,
       });
-    } catch (error) {
+    } catch (err) {
       this.logger.error(
         'Error al obtener datos del paciente desde ClinicCloud',
-        { error, patientId }
-      );
+        { error, patientId 
+    }
+    null
+  );
       throw new Error(
-        `Error al obtener datos del paciente: ${(error as Error).message}`
-      );
+        `Error al obtener datos del paciente: ${.message}`
+    null
+  );
     }
   }
 
@@ -373,22 +378,24 @@ export class ClinicCloudAdapter implements EMRAdapter {
       this.logger.info('Buscando pacientes en ClinicCloud', { query, limit });
 
       // Construir parámetros de búsqueda
-      const searchParams = this.buildSearchParams(query);
+      const searchParams = this.buildSearchParams;
       searchParams.append('limit', limit.toString());
 
       // Ejecutar la búsqueda
       const results = await this.fetchData(
         `/pacientes/buscar?${searchParams.toString()}`
-      );
+    null
+  );
 
       // Convertir resultados al formato de la aplicación
-      return this.convertSearchResults(results);
-    } catch (error) {
+      return this.convertSearchResults;
+    } catch (err) {
       this.logger.error('Error al buscar pacientes en ClinicCloud', {
         error,
         query,
-      });
-      throw new Error(`Error al buscar pacientes: ${(error as Error).message}`);
+      
+    });
+      throw new Error(`Error al buscar pacientes: ${.message}`);
     }
   }
 
@@ -426,43 +433,49 @@ export class ClinicCloudAdapter implements EMRAdapter {
       if (!options || options.includeConsultations !== false) {
         const consultas = await this.fetchData(
           `/pacientes/${patientId}/consultas?${fechaParams}`
-        );
-        patientHistory.consultations = this.convertConsultas(consultas);
+    null
+  );
+        patientHistory.consultations = this.convertConsultas;
       }
 
       // Obtener tratamientos si se solicitan
       if (!options || options.includeTreatments !== false) {
         const tratamientos = await this.fetchData(
           `/pacientes/${patientId}/tratamientos?${fechaParams}`
-        );
-        patientHistory.treatments = this.convertTratamientos(tratamientos);
+    null
+  );
+        patientHistory.treatments = this.convertTratamientos;
       }
 
       // Obtener resultados de laboratorio si se solicitan
       if (!options || options.includeLabResults !== false) {
         const laboratorio = await this.fetchData(
           `/pacientes/${patientId}/laboratorio?${fechaParams}`
-        );
-        patientHistory.labResults = this.convertLaboratorio(laboratorio);
+    null
+  );
+        patientHistory.labResults = this.convertLaboratorio;
       }
 
       // Obtener diagnósticos si se solicitan
       if (!options || options.includeDiagnoses !== false) {
         const diagnosticos = await this.fetchData(
           `/pacientes/${patientId}/diagnosticos?${fechaParams}`
-        );
-        patientHistory.diagnoses = this.convertDiagnosticos(diagnosticos);
+    null
+  );
+        patientHistory.diagnoses = this.convertDiagnosticos;
       }
 
       return patientHistory;
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al obtener historial médico desde ClinicCloud', {
         error,
         patientId,
-      });
+      
+    });
       throw new Error(
-        `Error al obtener historial médico: ${(error as Error).message}`
-      );
+        `Error al obtener historial médico: ${.message}`
+    null
+  );
     }
   }
 
@@ -478,7 +491,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
       });
 
       // Convertir consulta al formato de ClinicCloud
-      const consultaData = this.convertToClinicCloudConsulta(consultation);
+      const consultaData = this.convertToClinicCloudConsulta;
 
       // Enviar la consulta a ClinicCloud
       const response = await this.postData('/consultas', consultaData);
@@ -493,12 +506,13 @@ export class ClinicCloudAdapter implements EMRAdapter {
         consultaId,
       });
       return consultaId.toString();
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al guardar consulta en ClinicCloud', {
         error,
         consultation,
-      });
-      throw new Error(`Error al guardar consulta: ${(error as Error).message}`);
+      
+    });
+      throw new Error(`Error al guardar consulta: ${.message}`);
     }
   }
 
@@ -517,13 +531,15 @@ export class ClinicCloudAdapter implements EMRAdapter {
       // Obtener la consulta existente
       const consultaExistente = await this.fetchData(
         `/consultas/${consultationId}`
-      );
+    null
+  );
 
       // Aplicar actualizaciones
       const consultaActualizada = this.applyConsultaUpdates(
         consultaExistente,
         updates
-      );
+    null
+  );
 
       // Enviar los cambios
       await this.putData(`/consultas/${consultationId}`, consultaActualizada);
@@ -532,14 +548,16 @@ export class ClinicCloudAdapter implements EMRAdapter {
         consultationId,
       });
       return true;
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al actualizar consulta en ClinicCloud', {
         error,
         consultationId,
-      });
+      
+    });
       throw new Error(
-        `Error al actualizar consulta: ${(error as Error).message}`
-      );
+        `Error al actualizar consulta: ${.message}`
+    null
+  );
     }
   }
 
@@ -553,7 +571,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
       });
 
       // Convertir tratamiento al formato de ClinicCloud
-      const tratamientoData = this.convertToClinicCloudTratamiento(treatment);
+      const tratamientoData = this.convertToClinicCloudTratamiento;
 
       // Enviar el tratamiento a ClinicCloud
       let endpoint;
@@ -565,7 +583,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
         endpoint = '/tratamientos/otros';
       }
 
-      const response = await this.postData(endpoint, tratamientoData);
+      const response = await this.postData;
 
       // Extraer el ID del tratamiento creado
       const tratamientoId = response.id;
@@ -577,14 +595,16 @@ export class ClinicCloudAdapter implements EMRAdapter {
         tratamientoId,
       });
       return tratamientoId.toString();
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al registrar tratamiento en ClinicCloud', {
         error,
         treatment,
-      });
+      
+    });
       throw new Error(
-        `Error al registrar tratamiento: ${(error as Error).message}`
-      );
+        `Error al registrar tratamiento: ${.message}`
+    null
+  );
     }
   }
 
@@ -621,29 +641,33 @@ export class ClinicCloudAdapter implements EMRAdapter {
 
       // Filtrar los tipos solicitados que tienen equivalente en ClinicCloud
       const metricTypesToQuery = metricTypes
-        .filter((type) => metricMap[type])
-        .map((type) => metricMap[type]);
+        .filter((item) => metricMap[type])
+        .map((item) => metricMap[type]);
 
       if (metricTypesToQuery.length > 0) {
         // Obtener todas las métricas en una sola petición
         const tiposParam = metricTypesToQuery.join(',');
         const metricas = await this.fetchData(
           `/pacientes/${patientId}/metricas?tipos=${tiposParam}`
-        );
+    null
+  );
 
         // Procesar cada tipo de métrica
-        this.processMetricas(metricas, metrics);
+        this.processMetricas;
       }
 
       return metrics;
-    } catch (error) {
+    } catch (err) {
       this.logger.error(
         'Error al obtener métricas del paciente desde ClinicCloud',
-        { error, patientId }
-      );
+        { error, patientId 
+    }
+    null
+  );
       throw new Error(
-        `Error al obtener métricas del paciente: ${(error as Error).message}`
-      );
+        `Error al obtener métricas del paciente: ${.message}`
+    null
+  );
     }
   }
 
@@ -686,7 +710,8 @@ export class ClinicCloudAdapter implements EMRAdapter {
         if (!response.ok) {
           throw new Error(
             `Error en autenticación OAuth2: ${response.status} ${response.statusText}`
-          );
+    null
+  );
         }
 
         const data = await response.json();
@@ -706,13 +731,15 @@ export class ClinicCloudAdapter implements EMRAdapter {
 
       this.logger.info('Token de acceso ClinicCloud obtenido exitosamente');
       return token;
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al obtener token de acceso ClinicCloud', {
         error,
-      });
+      
+    });
       throw new Error(
-        `Error al obtener token de acceso: ${(error as Error).message}`
-      );
+        `Error al obtener token de acceso: ${.message}`
+    null
+  );
     }
   }
 
@@ -743,15 +770,17 @@ export class ClinicCloudAdapter implements EMRAdapter {
       if (!response.ok) {
         throw new Error(
           `Error en petición: ${response.status} ${response.statusText}`
-        );
+    null
+  );
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al recuperar datos de ClinicCloud', {
         error,
         endpoint,
-      });
+      
+    });
       throw error;
     }
   }
@@ -774,21 +803,23 @@ export class ClinicCloudAdapter implements EMRAdapter {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify,
       });
 
       if (!response.ok) {
         throw new Error(
           `Error en petición POST: ${response.status} ${response.statusText}`
-        );
+    null
+  );
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al enviar datos a ClinicCloud', {
         error,
         endpoint,
-      });
+      
+    });
       throw error;
     }
   }
@@ -811,21 +842,23 @@ export class ClinicCloudAdapter implements EMRAdapter {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify,
       });
 
       if (!response.ok) {
         throw new Error(
           `Error en petición PUT: ${response.status} ${response.statusText}`
-        );
+    null
+  );
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al actualizar datos en ClinicCloud', {
         error,
         endpoint,
-      });
+      
+    });
       throw error;
     }
   }
@@ -844,12 +877,12 @@ export class ClinicCloudAdapter implements EMRAdapter {
       const firstName = pacienteData.nombre ?? '';
       const lastName = pacienteData.apellidos ?? '';
       const dob = pacienteData.fechaNacimiento;
-      const age = this.calculateAge(dob);
+      const age = this.calculateAge;
 
       // Obtener información de contacto
       const email = pacienteData.email ?? '';
       const phone = pacienteData.telefono ?? '';
-      const address = this.formatAddress(pacienteData);
+      const address = this.formatAddress;
 
       // Construir el objeto PatientData
       const patientData: PatientData = {
@@ -868,15 +901,16 @@ export class ClinicCloudAdapter implements EMRAdapter {
             address,
           },
         },
-        medicalHistory: this.extractMedicalHistory(additionalData),
+        medicalHistory: this.extractMedicalHistory,
         vitalSigns: {},
       };
 
       return patientData;
-    } catch (error) {
+    } catch (err) {
       this.logger.error('Error al convertir datos de paciente de ClinicCloud', {
         error,
-      });
+      
+    });
       throw new Error('Error al procesar datos del paciente');
     }
   }
@@ -906,7 +940,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     if (!dateOfBirth) return 0;
 
     const today = new Date();
-    const birthDate = new Date(dateOfBirth);
+    const birthDate = new Date;
     let age = today.getFullYear() - birthDate.getFullYear();
     const m = today.getMonth() - birthDate.getMonth();
 
@@ -924,7 +958,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
     data: ClinicCloudAdditionalData
   ): MedicalHistoryResult {
     // Extraer alergias
-    const alergias = data.alergias.map((alergia) => ({
+    const alergias = data.alergias.map((item) => ({
       id: alergia.id,
       descripcion: alergia.descripcion,
       reaccion: alergia.reaccion,
@@ -933,8 +967,8 @@ export class ClinicCloudAdapter implements EMRAdapter {
 
     // Extraer condiciones crónicas
     const condiciones = data.condiciones
-      .filter((condicion) => condicion.cronica)
-      .map((condicion) => ({
+      .filter((item) => condicion.cronica)
+      .map((item) => ({
         id: condicion.id,
         codigo: condicion.codigo,
         sistema: condicion.sistema,
@@ -1001,7 +1035,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
   ): EMRPatientSearchResult[] {
     if (!results || !results.pacientes) return [];
 
-    return results.pacientes.map((paciente) => ({
+    return results.pacientes.map((item) => ({
       id: paciente.id,
       fullName: `${paciente.nombre ?? ''} ${paciente.apellidos ?? ''}`.trim(),
       dateOfBirth: paciente.fechaNacimiento
@@ -1023,14 +1057,14 @@ export class ClinicCloudAdapter implements EMRAdapter {
   ): EMRConsultation[] {
     if (!consultas || !consultas.consultas) return [];
 
-    return consultas.consultas.map((consulta) => ({
+    return consultas.consultas.map((item) => ({
       id: consulta.id,
       patientId: consulta.pacienteId,
       providerId: consulta.profesional,
       date: new Date(consulta.fecha),
       reason: consulta.motivo,
       notes: consulta.contenido,
-      diagnoses: consulta.diagnosticos.map((diag) => ({
+      diagnoses: consulta.diagnosticos.map((item) => ({
         code: diag.codigo,
         system: diag.sistema as 'ICD-10' | 'ICD-11' | 'SNOMED-CT' | 'other',
         description: diag.descripcion,
@@ -1052,7 +1086,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
   ): EMRTreatment[] {
     if (!tratamientos || !tratamientos.tratamientos) return [];
 
-    return tratamientos.tratamientos.map((tratamiento) => ({
+    return tratamientos.tratamientos.map((item) => ({
       id: tratamiento.id,
       patientId: tratamiento.pacienteId,
       providerId: tratamiento.recetadoPor,
@@ -1127,7 +1161,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
   ): LabResultData[] {
     if (!laboratorio.resultados) return [];
 
-    return laboratorio.resultados.map((resultado) => ({
+    return laboratorio.resultados.map((item) => ({
       id: resultado.id,
       patientId: resultado.pacienteId,
       date: new Date(resultado.fecha),
@@ -1149,7 +1183,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
   ): EMRDiagnosis[] {
     if (!diagnosticos?.diagnosticos) return [];
 
-    return diagnosticos.diagnosticos.map((diagnostico) => ({
+    return diagnosticos.diagnosticos.map((item) => ({
       id: diagnostico.id,
       patientId: diagnostico.pacienteId,
       date: new Date(diagnostico.fecha),
@@ -1185,7 +1219,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
 
     // Añadir diagnósticos si existen
     if (consultation.diagnoses?.length > 0) {
-      consulta.diagnosticos = consultation.diagnoses.map((diag) => ({
+      consulta.diagnosticos = consultation.diagnoses.map((item) => ({
         codigo: diag.code,
         sistema: diag.system,
         descripcion: diag.description,
@@ -1281,7 +1315,7 @@ export class ClinicCloudAdapter implements EMRAdapter {
    * Mapea el estado del tratamiento del formato de la aplicación al de ClinicCloud
    */
   private reverseMapTreatmentStatus(status: string): string {
-    switch (status) {
+    switch (type) {
       case 'active':
         return 'activo';
       case 'completed':

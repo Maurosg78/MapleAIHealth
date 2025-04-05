@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 
 const PatientForm: React.FC = () => {
-  return <div>PatientForm simplificado</div>;
+  return React.createElement('div', {}, PatientForm simplificado);
 };
 
 export default PatientForm;

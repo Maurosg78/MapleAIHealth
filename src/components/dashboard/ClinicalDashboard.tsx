@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ClinicalDashboardData } from '../../types/dashboard';
 import { dashboardService } from '../../services/dashboard';
 import EvidenceSummaryCard from './EvidenceSummaryCard';
@@ -11,70 +12,97 @@ import { Spinner } from '../common/Spinner';
 /**
  * Dashboard de Información Clínica
  * Muestra información relacionada con la evaluación de evidencia clínica
+ * Optimizado con mejoras de rendimiento y accesibilidad
  */
 const ClinicalDashboard: React.FC = () => {
-  const [data, setData] = useState<ClinicalDashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<ClinicalDashboardData | null>;
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const clinicalData = await dashboardService.getClinicalDashboardData();
-        setData(clinicalData);
-      } catch (err) {
-        console.error('Error al cargar datos del dashboard clínico', err);
-        setError('No se pudieron cargar los datos clínicos');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+  // Extraer la lógica de carga de datos a un callback reutilizable
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      setLoading(false);
+      setError(null);
+      const clinicalData = await dashboardService.getClinicalDashboardData();
+      setData(null);
+    } catch (err) {
+      console.error('Error al cargar datos del dashboard clínico', err);
+      setError('No se pudieron cargar los datos clínicos. Por favor, intente nuevamente más tarde.');
+    
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Spinner />
-      </div>
-    );
-  }
+  // Efecto para cargar datos iniciales
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
-  if (error) {
-    return (
-      <Card className="p-4 bg-red-50 border-red-200">
-        <h3 className="text-lg font-semibold text-red-800">Error</h3>
-        <p className="text-red-600">{error}</p>
-      </Card>
-    );
-  }
+  // Handler para intentar cargar los datos nuevamente
+  const handleRetry = useCallback(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
-  if (!data) {
+  // Componente de carga
+  const loadingComponent = useMemo(() => (
+    React.createElement('div', { className: "flex justify-center items-center h-64", role: "status" aria-live: "polite" }, 
+      React.createElement('Spinner', { })
+      <span className="sr-only">Cargando datos del dashboard clínico...</span>
+    )
+  ), []);
+
+  // Componente de error
+  const errorComponent = useMemo(() => (
+    React.createElement('Card', { className: "p-4 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800" }, 
+      <h3 className="text-lg font-semibold text-red-800 dark:text-red-400">Error</h3>
+      <p className="text-red-600 dark:text-red-300 mb-4">{error}</p>
+      <button
+        onClick={handleRetry}
+        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+        aria-label="Intentar cargar nuevamente los datos del dashboard"
+      >
+        Intentar nuevamente
+      </button>
+    )
+  ), [error, handleRetry]);
+
+  // Componente de datos vacíos
+  const emptyComponent = useMemo(() => (
+    React.createElement('Card', { className: "p-4" }, 
+      <p className="text-gray-500 dark:text-gray-400">No hay datos disponibles para mostrar.</p>
+    )
+  ), []);
+
+  // Componente principal con datos cargados
+  const dashboardContent = useMemo(() => {
+    if (!data) return null;
+
     return (
-      <Card className="p-4">
-        <p className="text-gray-500">No hay datos disponibles</p>
-      </Card>
-    );
-  }
+      <>
+        React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4" }, 
+          React.createElement('EvidenceSummaryCard', { summary: data.evidenceSummary })
+          React.createElement('SourceVerificationsCard', { stats: data.sourceVerifications })
+        )
+
+        React.createElement('RecentEvaluationsCard', { evaluations: data.recentEvaluations })
+
+        React.createElement('TopMedicalTopicsCard', { topics: data.topMedicalTopics })
+      </>
+    null
+  );
+  }, [data]);
 
   return (
-    <div className="clinical-dashboard space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">Dashboard de Información Clínica</h2>
+    React.createElement('div', { className: "clinical-dashboard space-y-6" }, 
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        Dashboard de Información Clínica
+      </h2>
 
-      {/* Tarjetas de resumen */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <EvidenceSummaryCard summary={data.evidenceSummary} />
-        <SourceVerificationsCard stats={data.sourceVerifications} />
-      </div>
-
-      {/* Evaluaciones recientes */}
-      <RecentEvaluationsCard evaluations={data.recentEvaluations} />
-
-      {/* Temas médicos principales */}
-      <TopMedicalTopicsCard topics={data.topMedicalTopics} />
-    </div>
+      {loading ? loadingComponent : error ? errorComponent : !data ? emptyComponent : dashboardContent}
+    )
+    null
   );
 };
 

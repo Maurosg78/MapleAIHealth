@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './styles.css';
+import './index.css';
 
 // Validación para asegurarnos de que el elemento existe
 const rootElement = document.getElementById('root');

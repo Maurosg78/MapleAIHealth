@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 export interface AvatarProps {
   src?: string;
@@ -6,10 +6,10 @@ export interface AvatarProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export const Avatar: React.FC<AvatarProps> = ({ 
-  src, 
+export const Avatar: React.FC<AvatarProps> = ({
+  src,
   alt = 'Avatar',
-  size = 'md' 
+  size = 'md',
 }) => {
   return (
     <div className={`avatar avatar-${size}`}>

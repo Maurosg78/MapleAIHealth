@@ -1,4 +1,10 @@
-import { PatientData, EMRConsultation, EMRTreatment, EMRUnstructuredNote, CompleteEMRData } from './types';
+import {
+  PatientData,
+  EMRConsultation,
+  EMRTreatment,
+  EMRUnstructuredNote,
+  CompleteEMRData,
+} from './types';
 
 /**
  * Interfaz base para todos los adaptadores de EMR
@@ -16,14 +22,20 @@ export interface EMRAdapter {
    * @param criteria Criterios de búsqueda
    * @param limit Límite de resultados
    */
-  searchPatients(criteria: Record<string, unknown>, limit?: number): Promise<PatientData[]>;
+  searchPatients(
+    criteria: Record<string, unknown>,
+    limit?: number
+  ): Promise<PatientData[]>;
 
   /**
    * Obtiene consultas médicas del paciente
    * @param patientId ID del paciente
    * @param limit Límite de resultados
    */
-  getConsultations(patientId: string, limit?: number): Promise<EMRConsultation[]>;
+  getConsultations(
+    patientId: string,
+    limit?: number
+  ): Promise<EMRConsultation[]>;
 
   /**
    * Obtiene tratamientos asociados a una consulta
@@ -41,7 +53,10 @@ export interface EMRAdapter {
    * @param patientId ID del paciente
    * @param limit Límite de resultados
    */
-  getUnstructuredNotes(patientId: string, limit?: number): Promise<EMRUnstructuredNote[]>;
+  getUnstructuredNotes(
+    patientId: string,
+    limit?: number
+  ): Promise<EMRUnstructuredNote[]>;
 
   /**
    * Obtiene datos clínicos completos del paciente en un formato estandarizado

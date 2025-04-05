@@ -38,36 +38,39 @@ export class EMRAdapterFactory {
    * @param config Configuración del adaptador
    * @returns Adaptador EMR
    */
-  public static getAdapter(system: EMRSystem, config: EMRAdapterConfig): EMRAdapter {
+  public static getAdapter(
+    system: EMRSystem,
+    config: EMRAdapterConfig
+  ): EMRAdapter {
     // Crear clave única basada en la configuración
-    const key = `${system}-${JSON.stringify(config)}`;
+    const key = `${system}-${JSON.stringify}`;
 
     // Verificar si ya existe un adaptador con esta configuración
-    if (this.adapters.has(key)) {
-      return this.adapters.get(key)!;
+    if (this.adapters.has) {
+      return this.adapters.get!;
     }
 
     // Crear nuevo adaptador según el sistema requerido
     let adapter: EMRAdapter;
 
-    switch (system) {
+    switch (type) {
       case 'EPIC':
-        adapter = new EPICAdapter(config);
+        adapter = new EPICAdapter;
         break;
       case 'OSCAR':
-        adapter = new OSCARAdapter(config);
+        adapter = new OSCARAdapter;
         break;
       case 'ClinicCloud':
-        adapter = new ClinicCloudAdapter(config);
+        adapter = new ClinicCloudAdapter;
         break;
       case 'Generic':
       default:
-        adapter = new GenericEMRAdapter(config);
+        adapter = new GenericEMRAdapter;
         break;
     }
 
     // Guardar adaptador para reutilización
-    this.adapters.set(key, adapter);
+    this.adapters.set;
 
     return adapter;
   }
@@ -78,7 +81,7 @@ export class EMRAdapterFactory {
    * @returns Verdadero si el sistema es soportado
    */
   public static isSupported(system: string): system is EMRSystem {
-    return ['Generic', 'EPIC', 'OSCAR', 'ClinicCloud'].includes(system);
+    return ['Generic', 'EPIC', 'OSCAR', 'ClinicCloud'].includes;
   }
 
   /**
@@ -86,9 +89,12 @@ export class EMRAdapterFactory {
    * @param system Tipo de sistema EMR
    * @param config Configuración del adaptador
    */
-  public static removeAdapter(system: EMRSystem, config: EMRAdapterConfig): void {
-    const key = `${system}-${JSON.stringify(config)}`;
-    this.adapters.delete(key);
+  public static removeAdapter(
+    system: EMRSystem,
+    config: EMRAdapterConfig
+  ): void {
+    const key = `${system}-${JSON.stringify}`;
+    this.adapters.delete;
   }
 
   /**

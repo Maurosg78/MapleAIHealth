@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -7,26 +7,27 @@ export interface ModalProps {
   children: React.ReactNode;
 }
 
-export const Modal: React.FC<ModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  title, 
-  children 
+export const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  title,
+  children,
 }) => {
   if (!isOpen) return null;
-  
+
   return (
-    <div className="modal-overlay">
+    React.createElement('div', { className: "modal-overlay" }, 
       <div className="modal">
         <div className="modal-header">
           {title && <h3 className="modal-title">{title}</h3>}
-          <button className="modal-close" onClick={onClose}>×</button>
-        </div>
-        <div className="modal-content">
-          {children}
-        </div>
+          <button className="modal-close" onClick={onClose}>
+            ×
+          </button>
+        )
+        React.createElement('div', { className: "modal-content" }, {children})
       </div>
     </div>
+    null
   );
 };
 
