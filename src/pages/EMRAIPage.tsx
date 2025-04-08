@@ -94,7 +94,8 @@ const EMRAIPage: React.FC = () => {
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
         Esta página demuestra la integración entre sistemas EMR (Registro Médico
-        Electrónico) y servicios de IA para análisis médico.
+        Electrónico) y servicios de IA para análisis médico. Utiliza detección de
+        intenciones para mejorar el formato de respuestas según el tipo de consulta.
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit}>
