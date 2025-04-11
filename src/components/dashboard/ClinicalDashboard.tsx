@@ -17,7 +17,7 @@ import {
   Alert
 } from '@mui/material';
 import { CheckCircle, Warning } from '@mui/icons-material';
-import { EMRAIIntegrationService } from '../../services/integration/EMRAIIntegrationService';
+import { emrAIIntegrationService } from '../../services/integration/EMRAIIntegrationService';
 import { CompleteEMRData } from '../../services/emr/types';
 import { formatDate } from '../../utils/dateUtils';
 import { EMRSystem } from '../../services/emr/types';
@@ -65,7 +65,7 @@ const ClinicalDashboard: React.FC<DashboardProps> = ({ patientId, emrSystem }) =
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [stats, setStats] = useState<RecommendationStats | null>(null);
 
-  const integrationService = new EMRAIIntegrationService();
+  const integrationService = emrAIIntegrationService;
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -91,8 +91,8 @@ const ClinicalDashboard: React.FC<DashboardProps> = ({ patientId, emrSystem }) =
         const statsData = await integrationService.getRecommendationStats();
         setStats(statsData);
 
-      } catch (err: Error) {
-        setError(err.message || 'Error cargando datos del dashboard');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error cargando datos del dashboard');
         console.error('Error del dashboard:', err);
       } finally {
         setLoading(false);
@@ -116,8 +116,8 @@ const ClinicalDashboard: React.FC<DashboardProps> = ({ patientId, emrSystem }) =
           : rec
         )
       );
-    } catch (err: Error) {
-      setError(`Error al sincronizar la recomendación: ${err.message}`);
+    } catch (err) {
+      setError(`Error al sincronizar la recomendación: ${err instanceof Error ? err.message : 'Error desconocido'}`);
     }
   };
 

@@ -666,5 +666,12 @@ export class EMRAIIntegrationService {
   }
 }
 
-// Exportar la instancia única
+/**
+ * Instancia única del servicio de integración EMR-AI
+ * Usar esta instancia en lugar de crear nuevas instancias mediante 'new'
+ * Ejemplo: import { emrAIIntegrationService } from '...';
+ */
 export const emrAIIntegrationService = EMRAIIntegrationService.getInstance();
+
+// Nota: También puedes usar directamente esta instancia en importaciones
+// Ejemplo: import { emrAIIntegrationService as integrationService } from '...';
