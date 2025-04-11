@@ -121,7 +121,6 @@ const NoteInput: React.FC<NoteInputProps> = memo(({
         </div>
       </div>
     </div>
-    null
   );
 });
 

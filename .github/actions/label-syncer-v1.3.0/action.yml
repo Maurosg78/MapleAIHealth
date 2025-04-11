@@ -1,0 +1,13 @@
+name: 'Label Syncer'
+description: 'Sync labels between repositories'
+inputs:
+  manifest:
+    description: 'Path to the manifest file'
+    required: true
+  prune:
+    description: 'Whether to prune labels that are not in the manifest'
+    required: false
+    default: 'false'
+runs:
+  using: 'node16'
+  main: 'index.js'

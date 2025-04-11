@@ -1,5 +1,39 @@
 import * as React from 'react';
-import { useMemo, memo } from 'react';
+import { useMemo, memo, useState } from 'react';
+import {
+  Box,
+  Paper,
+  Typography,
+  Divider,
+  Chip,
+  Card,
+  CardContent,
+  CardActionArea,
+  List,
+  ListItem,
+  LinearProgress,
+  Alert,
+  Grid,
+  Tooltip,
+  TextField,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack
+} from '@mui/material';
+import {
+  LocalHospital as DiagnosisIcon,
+  Healing as TreatmentIcon,
+  Medication as MedicationIcon,
+  Science as TestIcon,
+  Info as ObservationIcon,
+  FilterList as FilterIcon,
+  Search as SearchIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon
+} from '@mui/icons-material';
 
 interface AnalysisItem {
   id: string;
@@ -29,16 +63,37 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = memo(({
   onItemClick,
   className = '',
 }) => {
+  // Estados para filtrado y búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [expandedTypes, setExpandedTypes] = useState<Record<string, boolean>>({});
+
+  // Filtrar resultados por búsqueda y tipo
+  const filteredResults = useMemo(() => {
+    return results.filter(item => {
+      // Filtrar por tipo
+      const typeMatch = typeFilter === 'all' || item.type === typeFilter;
+
+      // Filtrar por término de búsqueda
+      const searchMatch = searchTerm === '' ||
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.relatedTerms?.some(term => term.toLowerCase().includes(searchTerm.toLowerCase())));
+
+      return typeMatch && searchMatch;
+    });
+  }, [results, searchTerm, typeFilter]);
+
   // Agrupar resultados por tipo
   const groupedResults = useMemo(() => {
-    return results.reduce<Record<string, AnalysisItem[]>>((acc, item) => {
+    return filteredResults.reduce<Record<string, AnalysisItem[]>>((acc, item) => {
       if (!acc[item.type]) {
         acc[item.type] = [];
       }
       acc[item.type].push(item);
       return acc;
     }, {});
-  }, [results]);
+  }, [filteredResults]);
 
   // Traducir tipos de análisis
   const getTypeLabel = (type: string): string => {
@@ -52,118 +107,227 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = memo(({
     return typeMap[type] || type;
   };
 
-  // Formatear nivel de confianza
-  const getConfidenceLabel = (confidence: number): { text: string; color: string } => {
-    if (confidence >= 0.9) {
-      return { text: 'Alta', color: 'text-green-600' };
-    } else if (confidence >= 0.7) {
-      return { text: 'Media', color: 'text-yellow-600' };
-    } else {
-      return { text: 'Baja', color: 'text-red-600' };
-    }
-  };
-
-  // Renderizar icono según el tipo
-  const renderIcon = (type: string) => {
+  // Obtener ícono según el tipo
+  const getTypeIcon = (type: string) => {
     switch (type) {
       case 'diagnosis':
-        return <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>;
+        return <DiagnosisIcon color="primary" />;
       case 'treatment':
-        return <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>;
+        return <TreatmentIcon color="secondary" />;
       case 'medication':
-        return <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>;
+        return <MedicationIcon sx={{ color: 'purple' }} />;
       case 'test':
-        return <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>;
+        return <TestIcon color="success" />;
       default:
-        return <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+        return <ObservationIcon color="action" />;
     }
   };
 
+  // Obtener color según nivel de confianza
+  const getConfidenceColor = (confidence: number): string => {
+    if (confidence >= 0.9) return 'success.main';
+    if (confidence >= 0.7) return 'warning.main';
+    return 'error.main';
+  };
+
+  // Manejar expansión de categorías
+  const toggleTypeExpansion = (type: string) => {
+    setExpandedTypes(prev => ({
+      ...prev,
+      [type]: !prev[type]
+    }));
+  };
+
+  // Verificar si una categoría está expandida
+  const isTypeExpanded = (type: string): boolean => {
+    return expandedTypes[type] !== false; // Por defecto está expandido
+  };
+
+  // Estado de carga
   if (isLoading) {
     return (
-      <div className={`bg-white rounded-lg shadow p-4 ${className}`}>
-        <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-          <div className="space-y-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-20 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    null
-  );
+      <Paper elevation={3} sx={{ p: 3, width: '100%' }} className={className}>
+        <Typography variant="h6" sx={{ mb: 2 }}>Cargando resultados</Typography>
+        <LinearProgress sx={{ my: 2 }} />
+        <Box sx={{ pt: 1 }}>
+          {[1, 2, 3].map(i => (
+            <Card key={i} sx={{ mb: 2, opacity: 0.6 }}>
+              <CardContent sx={{ height: 80 }}></CardContent>
+            </Card>
+          ))}
+        </Box>
+      </Paper>
+    );
   }
 
+  // Sin resultados
   if (results.length === 0) {
     return (
-      <div className={`bg-white rounded-lg shadow p-4 text-center ${className}`}>
-        <p className="text-gray-500">No hay resultados de análisis disponibles</p>
-      </div>
-    null
-  );
+      <Paper elevation={3} sx={{ p: 3, width: '100%' }} className={className}>
+        <Alert severity="info">No hay resultados de análisis disponibles</Alert>
+      </Paper>
+    );
   }
 
+  // Renderizado del componente con resultados
   return (
-    <div className={`bg-white rounded-lg shadow ${className}`}>
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="text-lg font-medium">Resultados del análisis</h3>
-        <p className="text-sm text-gray-500">Basado en la información proporcionada</p>
-      </div>
+    <Paper elevation={3} sx={{ width: '100%' }} className={className}>
+      <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Typography variant="h6">Resultados del análisis</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Basado en la información médica proporcionada
+        </Typography>
 
-      <div className="divide-y divide-gray-200">
-        {Object.entries(groupedResults).map(([type, items]) => (
-          <div key={type} className="p-4">
-            <h4 className="font-medium mb-3 flex items-center">
-              {renderIcon(type)}
-              <span className="ml-2">{getTypeLabel(type)}</span>
-              <span className="ml-auto text-sm text-gray-500">{items.length}</span>
-            </h4>
+        {/* Filtros y búsqueda */}
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid item xs={12} md={7}>
+            <TextField
+              fullWidth
+              placeholder="Buscar en resultados"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              size="small"
+            />
+          </Grid>
+          <Grid item xs={12} md={5}>
+            <FormControl fullWidth size="small">
+              <InputLabel id="type-filter-label">Filtrar por tipo</InputLabel>
+              <Select
+                labelId="type-filter-label"
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <FilterIcon fontSize="small" />
+                  </InputAdornment>
+                }
+                label="Filtrar por tipo"
+              >
+                <MenuItem value="all">Todos los tipos</MenuItem>
+                <MenuItem value="diagnosis">Diagnósticos</MenuItem>
+                <MenuItem value="treatment">Tratamientos</MenuItem>
+                <MenuItem value="medication">Medicamentos</MenuItem>
+                <MenuItem value="test">Pruebas</MenuItem>
+                <MenuItem value="observation">Observaciones</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Box>
 
-            <ul className="space-y-3">
-              {items.map((item) => {
-                const confidence = getConfidenceLabel(item.confidence);
+      {Object.keys(groupedResults).length === 0 ? (
+        <Box sx={{ p: 3 }}>
+          <Alert severity="info">No se encontraron resultados con los filtros actuales</Alert>
+        </Box>
+      ) : (
+        <List sx={{ p: 0 }} disablePadding>
+          {Object.entries(groupedResults).map(([type, items]) => (
+            <Box key={type} sx={{ mb: 0.5 }}>
+              {/* Encabezado de categoría */}
+              <ListItem
+                button
+                onClick={() => toggleTypeExpansion(type)}
+                sx={{
+                  px: 3,
+                  py: 1.5,
+                  bgcolor: 'background.default'
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                  {getTypeIcon(type)}
+                  <Typography variant="subtitle1" sx={{ ml: 1, fontWeight: 500 }}>
+                    {getTypeLabel(type)}
+                  </Typography>
+                  <Chip
+                    label={items.length}
+                    size="small"
+                    sx={{ ml: 1 }}
+                    color="primary"
+                    variant="outlined"
+                  />
+                  <Box sx={{ flexGrow: 1 }} />
+                  {isTypeExpanded(type) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </Box>
+              </ListItem>
 
-                return (
-                  <li
-                    key={item.id}
-                    className="p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition cursor-pointer"
-                    onClick={() => onItemClick && onItemClick(item)}
-                  >
-                    <div className="flex justify-between items-start">
-                      <h5 className="font-medium">{item.title}</h5>
-                      <span className={`text-xs font-medium ${confidence.color}`}>
-                        Confianza: {confidence.text} ({Math.round(item.confidence * 100)}%)
-                      </span>
-                    </div>
+              <Divider />
 
-                    <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+              {/* Lista de elementos */}
+              {isTypeExpanded(type) && (
+                <Box sx={{ px: 3, pt: 1, pb: 2 }}>
+                  <Stack spacing={2}>
+                    {items.map((item) => (
+                      <Card
+                        key={item.id}
+                        variant="outlined"
+                      >
+                        <CardActionArea onClick={() => onItemClick && onItemClick(item)}>
+                          <CardContent>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                              <Typography variant="subtitle1" component="h3" fontWeight={500}>
+                                {item.title}
+                              </Typography>
+                              <Tooltip title={`Nivel de confianza: ${Math.round(item.confidence * 100)}%`}>
+                                <Chip
+                                  label={`${Math.round(item.confidence * 100)}%`}
+                                  size="small"
+                                  sx={{
+                                    color: getConfidenceColor(item.confidence),
+                                    borderColor: getConfidenceColor(item.confidence),
+                                    fontWeight: 'bold'
+                                  }}
+                                  variant="outlined"
+                                />
+                              </Tooltip>
+                            </Box>
 
-                    {item.relatedTerms && item.relatedTerms.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {item.relatedTerms.map((term, i) => (
-                          <span key={i} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                            {term}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                            <Typography variant="body2" color="text.secondary">
+                              {item.description}
+                            </Typography>
 
-                    {item.sources && item.sources.length > 0 && (
-                      <div className="mt-2 text-xs text-gray-500">
-                        <span>Fuentes: {item.sources.length}</span>
-                      </div>
-                    )}
-                  </li>
-    null
-  );
-              })}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </div>
-    null
+                            {item.relatedTerms && item.relatedTerms.length > 0 && (
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1.5 }}>
+                                {item.relatedTerms.map((term, i) => (
+                                  <Chip
+                                    key={i}
+                                    label={term}
+                                    size="small"
+                                    color="info"
+                                    variant="outlined"
+                                  />
+                                ))}
+                              </Box>
+                            )}
+
+                            {item.sources && item.sources.length > 0 && (
+                              <Box sx={{ mt: 1.5 }}>
+                                <Chip
+                                  size="small"
+                                  label={`${item.sources.length} fuentes`}
+                                  color="secondary"
+                                  variant="outlined"
+                                />
+                              </Box>
+                            )}
+                          </CardContent>
+                        </CardActionArea>
+                      </Card>
+                    ))}
+                  </Stack>
+                </Box>
+              )}
+            </Box>
+          ))}
+        </List>
+      )}
+    </Paper>
   );
 });
 

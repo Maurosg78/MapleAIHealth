@@ -8,19 +8,20 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export interface LogEntry {
   timestamp: string;
-  level: LogLevel;$1$3: string;
+  level: LogLevel;
+  service: string;
   message: string;
   data?: Record<string, unknown>;
 }
 
 export class Logger {
-  private$1$3: string;
+  private serviceName: string;
   private readonly maxEntries = 1000;
   private entries: LogEntry[] = [];
 
   /**
    * Crea una nueva instancia del logger
-   * @param Number(index) - 1 del servicio que utiliza este logger
+   * @param serviceName Nombre del servicio que utiliza este logger
    */
   constructor(serviceName: string) {
     this.serviceName = serviceName;
@@ -28,8 +29,8 @@ export class Logger {
 
   /**
    * Registra un mensaje de nivel info
-   * @param Number(index) - 1 a registrar
-   * @param Number(index) - 1 adicionales opcionales
+   * @param message Mensaje a registrar
+   * @param data Datos adicionales opcionales
    */
   public info(message: string, data?: Record<string, unknown>): void {
     this.log('info', message, data);
@@ -37,8 +38,8 @@ export class Logger {
 
   /**
    * Registra un mensaje de nivel warn
-   * @param Number(index) - 1 a registrar
-   * @param Number(index) - 1 adicionales opcionales
+   * @param message Mensaje a registrar
+   * @param data Datos adicionales opcionales
    */
   public warn(message: string, data?: Record<string, unknown>): void {
     this.log('warn', message, data);
@@ -46,8 +47,8 @@ export class Logger {
 
   /**
    * Registra un mensaje de nivel error
-   * @param Number(index) - 1 a registrar
-   * @param Number(index) - 1 adicionales opcionales
+   * @param message Mensaje a registrar
+   * @param data Datos adicionales opcionales
    */
   public error(message: string, data?: Record<string, unknown>): void {
     this.log('error', message, data);
@@ -55,8 +56,8 @@ export class Logger {
 
   /**
    * Registra un mensaje de nivel debug
-   * @param Number(index) - 1 a registrar
-   * @param Number(index) - 1 adicionales opcionales
+   * @param message Mensaje a registrar
+   * @param data Datos adicionales opcionales
    */
   public debug(message: string, data?: Record<string, unknown>): void {
     this.log('debug', message, data);
@@ -64,9 +65,9 @@ export class Logger {
 
   /**
    * Método interno para registrar mensajes
-   * @param Number(index) - 1 de log
-   * @param Number(index) - 1 a registrar
-   * @param Number(index) - 1 adicionales opcionales
+   * @param level Nivel de log
+   * @param message Mensaje a registrar
+   * @param data Datos adicionales opcionales
    */
   private log(
     level: LogLevel,
@@ -127,17 +128,15 @@ export class Logger {
 
   /**
    * Obtiene el historial de logs
-   * @param Number(index) - 1 por nivel 
-   * @param Number(index) - 1ímite de entradas a devolver 
+   * @param level Filtrar por nivel
+   * @param limit Límite de entradas a devolver
    * @returns Array de entradas de log
    */
   public getHistory(level?: LogLevel, limit = 100): LogEntry[] {
     let filteredEntries = this.entries;
 
-    if (data) {
-      filteredEntries = filteredEntries.filter((item) => entry.level === level
-    null
-  );
+    if (level) {
+      filteredEntries = filteredEntries.filter((entry) => entry.level === level);
     }
 
     return filteredEntries.slice(-limit);

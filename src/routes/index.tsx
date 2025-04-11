@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import EMRDemo from '../pages/EMRDemo';
+import EMRPage from '../pages/EMRPage';
 import AlertsDemoPage from '../components/examples/AlertsDemoPage';
 import AlertsAdvancedPage from '../pages/alerts/AlertsAdvancedPage';
 import MainLayout from '../components/layout/MainLayout';
@@ -13,6 +14,16 @@ const AppRoutes: React.FC = () => {
   return (
     <Router>
       <Routes>
+        {/* Ruta para el sistema EMR */}
+        <Route
+          path="/emr"
+          element={
+            <MainLayout>
+              <EMRPage />
+            </MainLayout>
+          }
+        />
+
         {/* Ruta para la página de demostración del EMR */}
         <Route
           path="/emr-demo"
@@ -44,10 +55,10 @@ const AppRoutes: React.FC = () => {
         />
 
         {/* Redirección a la página principal por defecto */}
-        <Route path="/" element={<Navigate to="/emr-demo" replace />} />
+        <Route path="/" element={<Navigate to="/emr" replace />} />
 
         {/* Redirección para cualquier ruta no encontrada */}
-        <Route path="*" element={<Navigate to="/emr-demo" replace />} />
+        <Route path="*" element={<Navigate to="/emr" replace />} />
       </Routes>
     </Router>
   );

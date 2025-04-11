@@ -5,7 +5,8 @@
         "strings": true
     },
     "files.associations": {
-        "*.css": "tailwindcss"
+        "*.css": "tailwindcss",
+        ".github/workflows/*.yml": "github-actions-workflow"
     },
     "sonarlint.rules": {
         "css:S4667": "OFF"
@@ -13,7 +14,9 @@
     "sonarlint.output.showVerboseLogs": true,
     "editor.formatOnSave": false,
     "editor.defaultFormatter": null,
-    "editor.codeActionsOnSave": null,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit"
+    },
     "eslint.validate": [
         "javascript",
         "javascriptreact",
@@ -26,5 +29,38 @@
     "editor.tabSize": 2,
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "yaml.customTags": [
+        "!reference sequence",
+        "!And",
+        "!If",
+        "!Not",
+        "!Equals",
+        "!Or",
+        "!FindInMap sequence",
+        "!Base64",
+        "!Cidr",
+        "!Ref",
+        "!Sub",
+        "!GetAtt",
+        "!GetAZs",
+        "!ImportValue",
+        "!Select",
+        "!Split",
+        "!Join sequence"
+    ],
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": [
+            ".github/workflows/*.yml"
+        ],
+        "https://json.schemastore.org/github-action.json": [
+            "action.yml"
+        ]
+    },
+    "yaml.validate": false,
+    "[yaml]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "yaml.disableAdditionalProperties": false
 }

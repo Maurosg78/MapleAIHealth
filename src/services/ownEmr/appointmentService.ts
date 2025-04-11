@@ -71,13 +71,11 @@ export class AppointmentService {
           const patient = await databaseService.getById(
             'patients',
             appointment.patientId
-    null
-  );
+          );
           const provider = await databaseService.getById(
             'providers',
             appointment.providerId
-    null
-  );
+          );
 
           return {
             ...appointment,
@@ -89,14 +87,12 @@ export class AppointmentService {
               : 'Proveedor desconocido',
           };
         })
-    null
-  );
+      );
 
       // Ordenamos por fecha, más recientes primero
       return detailedAppointments.sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    null
-  );
+      );
     } catch (error) {
       console.error('Error al obtener citas:', error);
       throw new Error('No se pudieron obtener las citas');
@@ -134,13 +130,11 @@ export class AppointmentService {
           const patient = await databaseService.getById(
             'patients',
             appointment.patientId
-    null
-  );
+          );
           const provider = await databaseService.getById(
             'providers',
             appointment.providerId
-    null
-  );
+          );
 
           return {
             ...appointment,
@@ -152,20 +146,17 @@ export class AppointmentService {
               : 'Proveedor desconocido',
           };
         })
-    null
-  );
+      );
 
       // Ordenamos por fecha
       return detailedAppointments.sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    null
-  );
+      );
     } catch (error) {
       console.error('Error al obtener citas del proveedor:', error);
       throw new Error(
         `No se pudieron obtener las citas para el proveedor con ID ${providerId}`
-    null
-  );
+      );
     }
   }
 
@@ -191,13 +182,11 @@ export class AppointmentService {
           const patient = await databaseService.getById(
             'patients',
             appointment.patientId
-    null
-  );
+          );
           const provider = await databaseService.getById(
             'providers',
             appointment.providerId
-    null
-  );
+          );
 
           return {
             ...appointment,
@@ -209,20 +198,17 @@ export class AppointmentService {
               : 'Proveedor desconocido',
           };
         })
-    null
-  );
+      );
 
       // Ordenamos por fecha
       return detailedAppointments.sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    null
-  );
+      );
     } catch (error) {
       console.error('Error al obtener citas del paciente:', error);
       throw new Error(
         `No se pudieron obtener las citas para el paciente con ID ${patientId}`
-    null
-  );
+      );
     }
   }
 
@@ -242,26 +228,22 @@ export class AppointmentService {
       const patient = await databaseService.getById(
         'patients',
         appointmentData.patientId
-    null
-  );
+      );
       const provider = await databaseService.getById(
         'providers',
         appointmentData.providerId
-    null
-  );
+      );
 
       if (!patient) {
         throw new Error(
           `No existe el paciente con ID ${appointmentData.patientId}`
-    null
-  );
+        );
       }
 
       if (!provider) {
         throw new Error(
           `No existe el proveedor con ID ${appointmentData.providerId}`
-    null
-  );
+        );
       }
 
       // Verificamos disponibilidad
@@ -269,8 +251,7 @@ export class AppointmentService {
         appointmentData.providerId,
         appointmentData.date,
         appointmentData.duration
-    null
-  );
+      );
 
       if (!isAvailable) {
         throw new Error('El horario seleccionado no está disponible');
@@ -280,8 +261,7 @@ export class AppointmentService {
       const newAppointment = await databaseService.create(
         'appointments',
         appointmentData
-    null
-  );
+      );
       return newAppointment;
     } catch (error) {
       console.error('Error al crear cita:', error);
@@ -308,8 +288,7 @@ export class AppointmentService {
       const appointment = await databaseService.getById(
         'appointments',
         appointmentId
-    null
-  );
+      );
 
       if (!appointment) {
         throw new Error(`No existe la cita con ID ${appointmentId}`);
@@ -331,8 +310,7 @@ export class AppointmentService {
           date,
           duration,
           appointmentId
-    null
-  );
+        );
 
         if (!isAvailable) {
           throw new Error('El horario seleccionado no está disponible');
@@ -344,8 +322,7 @@ export class AppointmentService {
         'appointments',
         appointmentId,
         appointmentData
-    null
-  );
+      );
       return updatedAppointment;
     } catch (error) {
       console.error('Error al actualizar cita:', error);
@@ -374,8 +351,7 @@ export class AppointmentService {
           status: 'cancelled',
           notes: reason ? `Cancelada: ${reason}` : 'Cancelada',
         }
-    null
-  );
+      );
 
       return updatedAppointment;
     } catch (error) {
@@ -405,8 +381,7 @@ export class AppointmentService {
           status: 'completed',
           notes: notes ?? '',
         }
-    null
-  );
+      );
 
       return updatedAppointment;
     } catch (error) {
@@ -434,8 +409,7 @@ export class AppointmentService {
         {
           status: 'no-show',
         }
-    null
-  );
+      );
 
       return updatedAppointment;
     } catch (error) {
@@ -466,11 +440,11 @@ export class AppointmentService {
         (appointment) =>
           appointment.status === 'scheduled' &&
           (excludeAppointmentId ? appointment.id !== excludeAppointmentId : true)
-    null
-  );
+      );
 
       // Verificamos si hay conflictos
-      for (let i = 0; i < items.length; i++const existingAppointment of scheduledAppointments) {
+      for (let i = 0; i < scheduledAppointments.length; i++) {
+        const existingAppointment = scheduledAppointments[i];
         const existingAppointmentDate = new Date(existingAppointment.date);
 
         // Calculamos los tiempos de inicio y fin
@@ -566,21 +540,20 @@ export class AppointmentService {
         // Filtramos citas del día
         const dayAppointments = appointments.filter(
           (appointment) => appointment.date.substring(0, 10) === dateString
-    null
-  );
+        );
 
         // Generamos slots (Number(index) - 1 un sistema real sería más complejo)
         const slots: AppointmentSlot[] = [];
-        for (let i = 0; i < items.length; i++let hour = 8; hour < 18; hour++) {
+
+        // Creamos slots para cada hora entre 8am y 6pm
+        for (let hour = 8; hour < 18; hour++) {
           const slotTime = `${dateString}T${hour.toString().padStart(2, '0')}:00:00.000Z`;
 
-          // Verificamos disponibilidad
           const isAvailable = await this.checkAvailability(
             providerId,
             slotTime,
             30
-    null
-  );
+          );
 
           slots.push({
             date: slotTime,

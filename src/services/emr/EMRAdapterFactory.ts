@@ -1,107 +1,68 @@
-import { EMRAdapter } from './EMRAdapter';
-import { GenericEMRAdapter } from './implementations/GenericEMRAdapter';
-import { EPICAdapter } from './implementations/EPICAdapter';
-import { OSCARAdapter } from './implementations/OSCARAdapter';
-import { ClinicCloudAdapter } from './implementations/ClinicCloudAdapter';
+import { EMRAdapter } from './interfaces/EMRAdapter';
+import { EMRSystem } from './types';
 
 /**
- * Tipo de EMR soportados
- */
-export type EMRSystem = 'Generic' | 'EPIC' | 'OSCAR' | 'ClinicCloud';
-
-/**
- * Opciones de configuración para adaptadores EMR
+ * Configuración para inicializar adaptadores EMR
  */
 export interface EMRAdapterConfig {
-  apiKey?: string;
   baseUrl?: string;
-  username?: string;
-  password?: string;
+  timeout?: number;
+  apiKey?: string;
   useCache?: boolean;
   cacheTTL?: number;
-  timeout?: number;
   [key: string]: unknown;
 }
 
 /**
- * Fábrica para crear adaptadores EMR según el sistema requerido
+ * Fábrica para crear adaptadores EMR según el sistema
+ * Desacopla la creación de adaptadores del resto del código
  */
 export class EMRAdapterFactory {
+  private static adapters: Map<EMRSystem, new () => EMRAdapter> = new Map();
+
   /**
-   * Registro de adaptadores creados para reutilización
+   * Registra un adaptador para un sistema EMR específico
+   * @param system Sistema EMR
+   * @param adapterClass Clase del adaptador
    */
-  private static adapters: Map<string, EMRAdapter> = new Map();
+  static registerAdapter(system: EMRSystem, adapterClass: new () => EMRAdapter): void {
+    EMRAdapterFactory.adapters.set(system, adapterClass);
+  }
 
   /**
    * Obtiene un adaptador para el sistema EMR especificado
-   * @param system Tipo de sistema EMR
-   * @param config Configuración del adaptador
-   * @returns Adaptador EMR
+   * @param system Sistema EMR
+   * @param config Configuración para inicializar el adaptador
+   * @returns Instancia del adaptador
+   * @throws Error si el sistema no tiene adaptador registrado
    */
-  public static getAdapter(
-    system: EMRSystem,
-    config: EMRAdapterConfig
-  ): EMRAdapter {
-    // Crear clave única basada en la configuración
-    const key = `${system}-${JSON.stringify}`;
+  static async getAdapter(system: EMRSystem, config: EMRAdapterConfig): Promise<EMRAdapter> {
+    const AdapterClass = EMRAdapterFactory.adapters.get(system);
 
-    // Verificar si ya existe un adaptador con esta configuración
-    if (this.adapters.has) {
-      return this.adapters.get!;
+    if (!AdapterClass) {
+      throw new Error(`No adapter registered for EMR system: ${system}`);
     }
 
-    // Crear nuevo adaptador según el sistema requerido
-    let adapter: EMRAdapter;
-
-    switch (type) {
-      case 'EPIC':
-        adapter = new EPICAdapter;
-        break;
-      case 'OSCAR':
-        adapter = new OSCARAdapter;
-        break;
-      case 'ClinicCloud':
-        adapter = new ClinicCloudAdapter;
-        break;
-      case 'Generic':
-      default:
-        adapter = new GenericEMRAdapter;
-        break;
-    }
-
-    // Guardar adaptador para reutilización
-    this.adapters.set;
+    const adapter = new AdapterClass();
+    await adapter.initialize(config);
 
     return adapter;
   }
 
   /**
-   * Verifica si un sistema EMR es soportado
-   * @param system Tipo de sistema EMR
-   * @returns Verdadero si el sistema es soportado
+   * Verifica si existe un adaptador para el sistema EMR especificado
+   * @param system Sistema EMR
+   * @returns true si existe un adaptador registrado
    */
-  public static isSupported(system: string): system is EMRSystem {
-    return ['Generic', 'EPIC', 'OSCAR', 'ClinicCloud'].includes;
+  static hasAdapter(system: EMRSystem): boolean {
+    return EMRAdapterFactory.adapters.has(system);
   }
 
   /**
-   * Elimina un adaptador de la caché
-   * @param system Tipo de sistema EMR
-   * @param config Configuración del adaptador
+   * Obtiene la lista de sistemas EMR con adaptadores registrados
+   * @returns Lista de sistemas EMR disponibles
    */
-  public static removeAdapter(
-    system: EMRSystem,
-    config: EMRAdapterConfig
-  ): void {
-    const key = `${system}-${JSON.stringify}`;
-    this.adapters.delete;
-  }
-
-  /**
-   * Obtiene los sistemas EMR soportados
-   * @returns Lista de sistemas EMR soportados
-   */
-  public static getSupportedSystems(): EMRSystem[] {
-    return ['Generic', 'EPIC', 'OSCAR', 'ClinicCloud'];
+  static getAvailableSystems(): EMRSystem[] {
+    return Array.from(EMRAdapterFactory.adapters.keys());
   }
 }

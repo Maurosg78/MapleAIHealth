@@ -36,7 +36,7 @@ const EMRAIPaper = styled(Paper)(({ theme }) => ({
 
 const EMRAIPage: React.FC = () => {
   const [patientId, setPatientId] = useState('P12345');
-  const [emrSystem, setEmrSystem] = useState<EMRSystem>('Generic');
+  const [emrSystem, setEmrSystem] = useState<EMRSystem>('GenericEMR');
   const [availableSystems, setAvailableSystems] = useState<EMRSystem[]>([]);
   const [query, setQuery] = useState('');
   const [analysisType, setAnalysisType] = useState<'notes' | 'complete' | 'custom'>('notes');

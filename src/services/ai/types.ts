@@ -24,6 +24,7 @@ export interface EvidenceSource {
   year?: number;
   doi?: string;
   url?: string;
+  citation?: string;
   verified: boolean;
   verificationSource?: string;
   reliability: 'high' | 'moderate' | 'low' | 'unknown';
@@ -49,10 +50,30 @@ export interface EMRData {
   medicalHistory: {
     conditions: string[];
     allergies: string[];
-    medications: Medication[];
-    procedures: Procedure[];
+    medications: Array<{
+      name: string;
+      dosage: string;
+      frequency: string;
+      startDate: string;
+      endDate?: string;
+      active: boolean;
+      prescribedBy?: string;
+    }>;
+    procedures: Array<{
+      name: string;
+      date: string;
+      provider?: string;
+      notes?: string;
+    }>;
   };
-  vitalSigns?: VitalSigns[];
+  vitalSigns?: Array<{
+    date: string;
+    bloodPressure?: string;
+    heartRate?: number;
+    respiratoryRate?: number;
+    temperature?: number;
+    oxygenSaturation?: number;
+  }>;
 }
 
 export interface Medication {
@@ -98,6 +119,7 @@ export type ContextType = 'emr' | 'appointment' | 'general';
 export interface AIContext {
   type: ContextType;
   data: EMRData | Record<string, unknown>;
+  content: string;
 }
 
 export interface AIQuery {
@@ -217,4 +239,36 @@ export interface AIServiceInternals {
   simulationMode: boolean;
   retryCount: number;
   retryDelay: number;
+}
+
+// Tipos para la detección de intenciones médicas
+export type IntentType =
+  | 'MEDICATION_INFO'
+  | 'SYMPTOMS_ANALYSIS'
+  | 'TREATMENT_RECOMMENDATION'
+  | 'DIAGNOSIS_QUERY'
+  | 'PREVENTIVE_CARE'
+  | 'LAB_RESULTS'
+  | 'FOLLOW_UP'
+  | 'MEDICAL_PROCEDURE'
+  | 'EMERGENCY_ASSESSMENT'
+  | 'GENERAL_QUERY';
+
+export type ConceptType =
+  | 'MEDICATION'
+  | 'CONDITION'
+  | 'ANATOMICAL_LOCATION'
+  | 'SYMPTOM'
+  | 'LAB_TEST';
+
+export interface MedicalConcept {
+  type: ConceptType;
+  value: string;
+  position: number;
+}
+
+export interface MedicalIntent {
+  type: IntentType;
+  confidence: number;
+  concepts: MedicalConcept[];
 }

@@ -84,7 +84,7 @@ const AIAssistant: React.FC<AIAssistantProps> = memo(({
       let currentText = '';
       const words = response.split(' ');
 
-      for (let i = 0; i < items.length; i++let i = 0; i < words.length; i++) {
+      for (let i = 0; i < words.length; i++) {
         currentText += words[i] + ' ';
         setTypingEffect(currentText);
         // Simular velocidad de escritura variable
@@ -239,7 +239,6 @@ const AIAssistant: React.FC<AIAssistantProps> = memo(({
         />
       </div>
     </div>
-    null
   );
 });
 

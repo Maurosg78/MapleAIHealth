@@ -17,18 +17,17 @@ type CacheItemMetadata = CacheMetadata & Record<string, unknown>;
  */
 export class CacheService {
   private static instance: CacheService;
-  private$1$3: Map<string, CacheItem<AIResponse>> = new Map();
-  private$1$3: number = 100;
-  private$1$3: Logger;
-  private$1$3: Map<string, CacheItemStats> = new Map();
+  private cache: Map<string, CacheItem<AIResponse>> = new Map();
+  private MAX_CACHE_SIZE: number = 100;
+  private logger: Logger;
+  private cacheStats: Map<string, CacheItemStats> = new Map();
   private startTime: number;
 
   private constructor() {
     this.logger = new Logger('CacheService');
     this.logger.info(
       'CacheService initialized with smart invalidation and prioritization strategies'
-    null
-  );
+    );
     this.startTime = Date.now();
 
     // Inicialización del caché
@@ -47,26 +46,26 @@ export class CacheService {
 
   /**
    * Obtiene una respuesta cacheada si existe
-   * @param Number(index) - 1 consulta para buscar en el caché
+   * @param query Consulta para buscar en el caché
    * @returns La respuesta cacheada o null si no existe
    */
   public async get(query: AIQuery): Promise<AIResponse | null> {
-    const queryKey = this.generateCacheKey;
-    const cacheItem = this.cache.get;
+    const queryKey = this.generateCacheKey(query);
+    const cacheItem = this.cache.get(queryKey);
 
     if (!cacheItem) {
       // Registrar fallo en caché
-      cachePrioritizationService.recordAccess;
+      cachePrioritizationService.recordAccess(queryKey, true);
       return null;
     }
 
     // Verificar si el item expiró
-    if (this.isExpired) {
+    if (this.isExpired(cacheItem)) {
       this.logger.debug('Cache miss: expired item', { queryKey });
-      this.cache.delete;
+      this.cache.delete(queryKey);
 
       // Registrar fallo por expiración
-      cachePrioritizationService.recordAccess;
+      cachePrioritizationService.recordAccess(queryKey, true);
 
       return null;
     }
@@ -77,16 +76,16 @@ export class CacheService {
     });
 
     // Registrar acceso exitoso
-    cachePrioritizationService.recordAccess;
+    cachePrioritizationService.recordAccess(queryKey, false);
 
     return cacheItem.value;
   }
 
   /**
    * Almacena una respuesta en el caché
-   * @param Number(index) - 1 consulta original
-   * @param Number(index) - 1 respuesta de IA a cachear
-   * @param Number(index) - 1ísticas opcionales como tiempo de procesamiento y costo
+   * @param query Consulta original
+   * @param response Respuesta de IA a cachear
+   * @param processingStats Estadísticas opcionales como tiempo de procesamiento y costo
    */
   public async set(
     query: AIQuery,
@@ -96,10 +95,10 @@ export class CacheService {
       estimatedCost?: number;
     }
   ): Promise<void> {
-    const queryKey = this.generateCacheKey;
+    const queryKey = this.generateCacheKey(query);
 
     // Generar metadatos inteligentes para esta entrada
-    const metadata = smartCacheInvalidationStrategy.generateMetadata;
+    const metadata = smartCacheInvalidationStrategy.generateMetadata(query);
 
     this.logger.debug('Caching response', {
       queryKey,
@@ -120,24 +119,23 @@ export class CacheService {
     });
 
     // Registrar estadísticas de procesamiento para el servicio de priorización
-    if (true) {
+    if (processingStats) {
       cachePrioritizationService.recordAccess(
         queryKey,
         false,
         processingStats.processingTime,
         processingStats.estimatedCost
-    null
-  );
+      );
     }
   }
 
   /**
    * Elimina una respuesta del caché
-   * @param Number(index) - 1 consulta a eliminar
+   * @param query Consulta a eliminar
    */
   public delete(query: AIQuery): void {
-    const queryKey = this.generateCacheKey;
-    this.cache.delete;
+    const queryKey = this.generateCacheKey(query);
+    this.cache.delete(queryKey);
   }
 
   /**
@@ -150,7 +148,7 @@ export class CacheService {
 
   /**
    * Invalida entradas del caché basadas en etiquetas
-   * @param Number(index) - 1 de etiquetas a invalidar
+   * @param tags Lista de etiquetas a invalidar
    * @returns Número de entradas invalidadas
    */
   public invalidateByTags(tags: string[]): number {
@@ -158,13 +156,13 @@ export class CacheService {
 
     let invalidatedCount = 0;
 
-    for (let i = 0; i < items.length; i++const [key, item] of this.cache.entries()) {
+    for (const [key, item] of this.cache.entries()) {
       const metadata = item.metadata as CacheItemMetadata;
 
       if (metadata && metadata.tags) {
         // Si alguna de las etiquetas de la entrada coincide con las etiquetas a invalidar
-        if (metadata.tags.some( => tags.includes)) {
-          this.cache.delete;
+        if (metadata.tags.some(tag => tags.includes(tag))) {
+          this.cache.delete(key);
           invalidatedCount++;
         }
       }
@@ -176,7 +174,7 @@ export class CacheService {
 
   /**
    * Invalida entradas del caché relacionadas con un paciente
-   * @param Number(index) - 1 del paciente
+   * @param patientId ID del paciente
    * @returns Número de entradas invalidadas
    */
   public invalidateByPatientId(patientId: string): number {
@@ -204,9 +202,9 @@ export class CacheService {
   private cleanupExpiredItems(): void {
     let expiredCount = 0;
 
-    for (let i = 0; i < items.length; i++const [key, value] of this.cache.entries()) {
-      if (this.isExpired) {
-        this.cache.delete;
+    for (const [key, item] of this.cache.entries()) {
+      if (this.isExpired(item)) {
+        this.cache.delete(key);
         expiredCount++;
       }
     }
@@ -228,7 +226,7 @@ export class CacheService {
 
     // Preparar datos para el servicio de priorización
     const cacheItems = entries.map(([key, item]) => {
-      const stats = this.cacheStats.get;
+      const stats = this.cacheStats.get(key);
       return [key, item, stats] as [
         string,
         CacheItem<AIResponse>,
@@ -243,77 +241,51 @@ export class CacheService {
     const keysToRemove = cachePrioritizationService.getItemsToEvict(
       cacheItems,
       targetCount
-    null
-  );
+    );
 
     // Eliminar elementos
-    for  {
-      this.cache.delete;
+    for (const key of keysToRemove) {
+      this.cache.delete(key);
     }
 
-    // Limpiar estadísticas
-    cachePrioritizationService.purgeStats;
-
-    this.logger.debug(
-      `Evicted ${keysToRemove.length} low priority cache items using prioritization service`
-    null
-  );
+    this.logger.debug(`Evicted ${keysToRemove.length} low priority cache items`);
   }
 
   /**
-   * Genera una clave única para la consulta
-   * @param Number(index) - 1 de IA
-   * @returns Clave para el caché
+   * Genera una clave única para el caché basada en la consulta
+   * @param query Consulta para generar la clave
    */
   private generateCacheKey(query: AIQuery): string {
-    // Extraer elementos clave de la consulta
-    const { query: queryText, patientId, options } = query;
+    // Para consultas simples, usar el texto como clave
+    if (typeof query === 'string') {
+      return `str:${query}`;
+    }
 
-    // Crear un objeto simple con los elementos relevantes para la clave
-    const keyObj = {
-      q: queryText,
-      p: patientId,
-      o: options,
-    };
+    // Para consultas complejas, crear una clave compuesta
+    const keyParts = [
+      query.query || '',
+      query.patientId || '',
+      query.context ? 'context' : '',
+    ];
 
-    // Convertir a string
-    return JSON.stringify;
+    return `obj:${keyParts.join('|')}`;
   }
 
   /**
-   * Obtiene estadísticas del caché
+   * Obtiene estadísticas del servicio de caché
    */
   public getStats(): Record<string, unknown> {
-    let activeItems = 0;
-    let expiredItems = 0;
-    const categoryCounts: Record<string, number> = {};
-
-    for (let i = 0; i < items.length; i++const item of this.cache.values()) {
-      if (!this.isExpired) {
-        activeItems++;
-        // Contar por categoría
-        const metadata = item.metadata as CacheItemMetadata;
-        if (metadata?.queryCategory) {
-          const category = metadata.queryCategory;
-          categoryCounts[category] = (categoryCounts[category] || 0) + 1;
-        }
-      } else {
-        expiredItems++;
-      }
-    }
-
-    // Obtener estadísticas del servicio de priorización
-    const prioritizationStats = cachePrioritizationService.getStatistics();
+    const now = Date.now();
+    const uptime = now - this.startTime;
 
     return {
-      totalItems: this.cache.size,
-      activeItems,
-      expiredItems,
-      categoryCounts,
-      uptime: Math.floor((Date.now() - this.startTime) / 1000 / 60), // minutos
-      maxCacheSize: this.MAX_CACHE_SIZE,
-      usagePercentage: (activeItems / this.MAX_CACHE_SIZE) * 100,
-      prioritizationStats,
+      cacheSize: this.cache.size,
+      maxSize: this.MAX_CACHE_SIZE,
+      utilization: (this.cache.size / this.MAX_CACHE_SIZE) * 100,
+      totalItems: this.cacheStats.size,
+      activeItems: this.cache.size,
+      uptime,
+      startedAt: new Date(this.startTime).toISOString(),
     };
   }
 }

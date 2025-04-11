@@ -8,3 +8,10 @@ export * from './useResizeObserver';
 
 // Exportaciones de módulos organizados
 export * from './list';
+
+export { default as useClinicalRecommendations } from './useClinicalRecommendations';
+export type {
+  PatientContext,
+  UseClinicalRecommendationsOptions,
+  UseClinicalRecommendationsResult
+} from './useClinicalRecommendations';

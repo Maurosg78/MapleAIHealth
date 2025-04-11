@@ -49,17 +49,16 @@ const EvidenceBadge: React.FC<EvidenceBadgeProps> = ({
   };
 
   return (
-    React.createElement('div', {
-      className: `inline-flex items-center rounded-full font-semibold m-1 transition-all duration-200 hover:shadow-md ${sizeClasses[size] ${colorClasses[level]}`}
-      title: showTooltip ? tooltips[level] : undefined
-      aria-label: labels[level]
-      role: "status"
-    }, 
+    <div
+      className={`inline-flex items-center rounded-full font-semibold m-1 transition-all duration-200 hover:shadow-md ${sizeClasses[size]} ${colorClasses[level]}`}
+      title={showTooltip ? tooltips[level] : undefined}
+      aria-label={labels[level]}
+      role="status"
+    >
       <span className="text-base font-bold mr-1">{level}</span>
       {showLabel && <span className="text-sm font-medium">{labels[level]}</span>}
-    )
-    null
+    </div>
   );
 };
 
-export default EvidenceBadge;
+export { EvidenceBadge };

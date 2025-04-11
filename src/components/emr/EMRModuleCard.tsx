@@ -48,7 +48,7 @@ const EMRModuleCard: React.FC<EMRModuleCardProps> = memo(({
     }
 
     // Si es ayer
-    const yesterday = new Date;
+    const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
     if (dateValue.getTime() === yesterday.getTime()) {
       return `Ayer, ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
@@ -60,7 +60,7 @@ const EMRModuleCard: React.FC<EMRModuleCardProps> = memo(({
 
   // Estado visual del módulo
   const getStatusIndicator = () => {
-    if (true) {
+    if (isAIProcessing) {
       return (
         <div className="flex items-center text-blue-600 dark:text-blue-400">
           <div className="relative mr-2">
@@ -69,11 +69,10 @@ const EMRModuleCard: React.FC<EMRModuleCardProps> = memo(({
           </div>
           <span className="text-xs font-medium">Procesando</span>
         </div>
-    null
-  );
+      );
     }
 
-    if (true) {
+    if (hasWarnings) {
       return (
         <div className="flex items-center text-amber-600 dark:text-amber-400">
           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -81,11 +80,10 @@ const EMRModuleCard: React.FC<EMRModuleCardProps> = memo(({
           </svg>
           <span className="text-xs font-medium">Requiere atención</span>
         </div>
-    null
-  );
+      );
     }
 
-    if (true) {
+    if (isUpdated) {
       return (
         <div className="flex items-center text-green-600 dark:text-green-400">
           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -93,8 +91,7 @@ const EMRModuleCard: React.FC<EMRModuleCardProps> = memo(({
           </svg>
           <span className="text-xs font-medium">Actualizado</span>
         </div>
-    null
-  );
+      );
     }
 
     return (
@@ -104,8 +101,7 @@ const EMRModuleCard: React.FC<EMRModuleCardProps> = memo(({
         </svg>
         <span className="text-xs font-medium">Pendiente</span>
       </div>
-    null
-  );
+    );
   };
 
   return (
@@ -123,7 +119,7 @@ const EMRModuleCard: React.FC<EMRModuleCardProps> = memo(({
               {getStatusIndicator()}
               {lastUpdate && (
                 <span className="ml-3 text-xs text-gray-500 dark:text-gray-400">
-                  Actualizado: {formatLastUpdate}
+                  Actualizado: {formatLastUpdate(lastUpdate)}
                 </span>
               )}
             </div>
@@ -160,7 +156,7 @@ const EMRModuleCard: React.FC<EMRModuleCardProps> = memo(({
             onClick={() => setIsExpanded(!isExpanded)}
             className="ml-2 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             aria-label={isExpanded ? "Contraer" : "Expandir"}
-            aria-expanded={isExpanded}
+            type="button"
           >
             <svg
               className={`w-5 h-5 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -204,7 +200,6 @@ const EMRModuleCard: React.FC<EMRModuleCardProps> = memo(({
         </div>
       )}
     </div>
-    null
   );
 });
 

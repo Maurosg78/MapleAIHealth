@@ -1,0 +1,9 @@
+name: 'Checkpoint'
+description: 'Una acción local para evitar errores de linter'
+inputs:
+  file:
+    description: 'Archivo para procesar'
+    required: true
+runs:
+  using: 'node16'
+  main: 'index.js'

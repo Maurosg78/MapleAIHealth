@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useMemo, memo } from 'react';
 import { EvidenceSummary } from '../../types/dashboard';
 import { Card } from '../common/Card';
-import EvidenceBadge from '../evidence/EvidenceBadge';
+import { EvidenceBadge } from '../evidence/EvidenceBadge';
 
 interface EvidenceSummaryCardProps {
   summary: EvidenceSummary;
@@ -20,7 +20,7 @@ const EvidenceSummaryCard: React.FC<EvidenceSummaryCardProps> = memo(({
   // Calcular porcentajes para la visualización de forma memoizada
   const levelPercentages = useMemo(() => {
     const levels = ['A', 'B', 'C', 'D'] as const;
-    return levels.reduce(param) => {
+    return levels.reduce((acc, level) => {
       acc[level] = Math.round((byLevel[level] / totalEvaluations) * 100);
       return acc;
     }, {} as Record<'A' | 'B' | 'C' | 'D', number>);
@@ -48,35 +48,35 @@ const EvidenceSummaryCard: React.FC<EvidenceSummaryCardProps> = memo(({
 
   // Renderizado de las barras de evidencia memoizado
   const evidenceLevelBars = useMemo(() => (
-    (['A', 'B', 'C', 'D'] as const).map((item) => (
-      React.createElement('div', { key: level, className: "flex items-center" }, 
+    (['A', 'B', 'C', 'D'] as const).map((level) => (
+      <div key={level} className="flex items-center">
         <div className="w-16">
-          React.createElement('EvidenceBadge', { level: level showLabel: false size: "small" })
-        )
-        React.createElement('div', { className: "flex-1 ml-2" }, 
+          <EvidenceBadge level={level} showLabel={false} size="small" />
+        </div>
+        <div className="flex-1 ml-2">
           <div
             className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5"
             role="presentation"
           >
-            React.createElement('div', {
-              className: `h-2.5 rounded-full ${levelConfig[level].color`}
-              style: { width: `${levelPercentages[level]%` }}
-              aria-hidden: "true"
-            })
-          )
+            <div
+              className={`h-2.5 rounded-full ${levelConfig[level].color}`}
+              style={{ width: `${levelPercentages[level]}%` }}
+              aria-hidden="true"
+            />
+          </div>
         </div>
-        React.createElement('div', { className: "ml-2 text-sm text-gray-700 dark:text-gray-300 w-16 text-right" }, 
+        <div className="ml-2 text-sm text-gray-700 dark:text-gray-300 w-16 text-right">
           {byLevel[level]} ({levelPercentages[level]}%)
-        )
-        React.createElement('span', { className: "sr-only" }, 
+        </div>
+        <span className="sr-only">
           {levelConfig[level].description}: {byLevel[level]} evaluaciones, {levelPercentages[level]}% del total
-        )
+        </span>
       </div>
     ))
   ), [byLevel, levelPercentages, levelConfig]);
 
   return (
-    React.createElement('Card', { className: "p-4 shadow-sm hover:shadow-md transition-shadow duration-200" }, 
+    <Card className="p-4 shadow-sm hover:shadow-md transition-shadow duration-200">
       <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">
         Resumen de Evidencia Clínica
       </h3>
@@ -103,12 +103,11 @@ const EvidenceSummaryCard: React.FC<EvidenceSummaryCardProps> = memo(({
       <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
         <p>A: Alta, B: Moderada, C: Limitada, D: Insuficiente</p>
       </div>
-    )
-    null
+    </Card>
   );
 });
 
 // Asignar displayName para mejor depuración
 EvidenceSummaryCard.displayName = 'EvidenceSummaryCard';
 
-export default EvidenceSummaryCard;
+export { EvidenceSummaryCard };

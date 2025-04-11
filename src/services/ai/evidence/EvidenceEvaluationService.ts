@@ -48,13 +48,13 @@ export interface IEvidenceEvaluationService {
  */
 export class EvidenceEvaluationService implements IEvidenceEvaluationService {
   private static instance: EvidenceEvaluationService;
-  private$1$3: Logger;
+  private logger: Logger;
 
   // Conectores a bases de datos médicas
-  private$1$3: Map<string, DatabaseConnector>;
+  private databaseConnectors: Map<string, DatabaseConnector>;
 
   // Factores de confiabilidad por fuente
-  private$1$3: Record<string, number> = {
+  private reliabilityFactors: Record<string, number> = {
     pubmed: 0.9,
     cochrane: 0.95,
     who: 0.9,
@@ -90,19 +90,19 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
    * Inicializa los conectores a bases de datos médicas
    */
   private initDatabaseConnectors(): void {
-    // Simulación de Number(index) - 1 producción serían implementaciones reales
+    // Simulación: en producción serían implementaciones reales
     this.databaseConnectors.set('pubmed', {
       name: 'PubMed',
       connect: async () => true,
-      search: async  => this.simulateSearch('pubmed', query),
-      verify: async  => this.simulateVerification('pubmed', source),
+      search: async (query) => this.simulateSearch('pubmed', query),
+      verify: async (source) => this.simulateVerification('pubmed', source),
     });
 
     this.databaseConnectors.set('cochrane', {
       name: 'Cochrane Library',
       connect: async () => true,
-      search: async  => this.simulateSearch('cochrane', query),
-      verify: async  => this.simulateVerification('cochrane', source),
+      search: async (query) => this.simulateSearch('cochrane', query),
+      verify: async (source) => this.simulateVerification('cochrane', source),
     });
 
     this.logger.debug('Database connectors initialized', {
@@ -124,43 +124,41 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
 
     try {
       // Extraer posibles fuentes del contenido
-      const sources = await this.extractSources;
+      const sources = await this.extractSources(content);
 
       if (sources.length === 0) {
         this.logger.warn('No sources found in content');
         return this.generateLowEvidenceResult(
           'No se encontraron fuentes en el contenido'
-    null
-  );
+        );
       }
 
       // Verificar las fuentes
-      const verifiedSources = await this.verifySources;
+      const verifiedSources = await this.verifySources(sources);
 
       // Calcular confiabilidad basada en fuentes verificadas
-      const reliabilityScore = this.calculateReliabilityScore;
+      const reliabilityScore = this.calculateReliabilityScore(verifiedSources);
 
       // Generar detalles de evidencia
       const details: EvidenceDetails = {
-        level: this.determineEvidenceLevel,
-        description: this.generateEvidenceDescription,
-        criteria: this.generateCriteria,
-        reliability: this.mapScoreToReliability,
+        level: this.determineEvidenceLevel(reliabilityScore),
+        description: this.generateEvidenceDescription(reliabilityScore),
+        criteria: this.generateCriteria(reliabilityScore, verifiedSources),
+        reliability: this.mapScoreToReliability(reliabilityScore),
         sources: verifiedSources,
       };
 
       // Clasificar el nivel final de evidencia
-      const evidenceLevel = this.classifyEvidenceLevel;
+      const evidenceLevel = this.classifyEvidenceLevel(details);
 
       return {
         evidenceLevel,
         details,
         confidenceScore: Math.round(reliabilityScore * 100),
-        limitationsNotes: this.generateLimitationsNotes,
+        limitationsNotes: this.generateLimitationsNotes(details),
       };
-    } catch (err) {
-      this.logger.error('Error evaluating evidence', { error 
-    });
+    } catch (error) {
+      this.logger.error('Error evaluating evidence', { error });
       return this.generateLowEvidenceResult('Error al evaluar la evidencia');
     }
   }
@@ -184,10 +182,10 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
         recommendation.description,
         recommendation.rationale,
       ]
-        .filter
+        .filter(Boolean)
         .join(' ');
 
-      const evaluationResult = await this.evaluateEvidence;
+      const evaluationResult = await this.evaluateEvidence(content);
 
       // Actualizar la recomendación con la evaluación
       return {
@@ -195,12 +193,11 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
         evidenceLevel: evaluationResult.evidenceLevel,
         evidenceDetails: evaluationResult.details,
       };
-    } catch (err) {
+    } catch (error) {
       this.logger.error('Error evaluating recommendation', {
         error,
         recommendation: recommendation.title,
-      
-    });
+      });
 
       // En caso de error, mantener la recomendación original
       return recommendation;
@@ -217,11 +214,11 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
   ): Promise<EvidenceSource[]> {
     this.logger.info('Verifying sources', { count: sources.length });
 
-    const verificationPromises = sources.map(async  => {
+    const verificationPromises = sources.map(async (source) => {
       // Intentar verificar en múltiples bases de datos
-      for (let i = 0; i < items.length; i++const [dbName, connector] of this.databaseConnectors.entries()) {
+      for (const [dbName, connector] of this.databaseConnectors.entries()) {
         try {
-          const verificationResult = await connector.verify;
+          const verificationResult = await connector.verify(source);
 
           if (verificationResult.verified) {
             return {
@@ -232,9 +229,8 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
                 verificationResult.reliability || ('unknown' as const),
             };
           }
-        } catch (err) {
-      this.logger.warn(`Error verifying source in ${dbName
-    }`, {
+        } catch (error) {
+          this.logger.warn(`Error verifying source in ${dbName}`, {
             error,
             sourceId: source.id,
           });
@@ -249,7 +245,7 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
       };
     });
 
-    return Promise.all;
+    return Promise.all(verificationPromises);
   }
 
   /**
@@ -276,9 +272,9 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
     if (verifiedCount >= 2 && reliableCount >= 2) {
       return 'A'; // Evidencia fuerte (múltiples fuentes verificadas y confiables)
     } else if (verifiedCount >= 1 && reliableCount >= 1) {
-      return 'B'; // Evidencia moderada 
+      return 'B'; // Evidencia moderada
     } else if (verifiedCount >= 1) {
-      return 'C'; // Evidencia limitada 
+      return 'C'; // Evidencia limitada
     } else {
       return 'D'; // Evidencia muy limitada o no verificable
     }
@@ -335,39 +331,43 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
     // Calcular score basado en verificación y confiabilidad
     let totalScore = 0;
 
-    for  {
+    for (const source of sources) {
       let sourceScore = 0;
 
       // Puntaje base por verificación
       sourceScore += source.verified ? 0.5 : 0.1;
 
-      // Modificador por confiabilidad
-      switch (source.reliability) {
-        case 'high':
-          sourceScore += 0.4;
-          break;
-        case 'moderate':
-          sourceScore += 0.3;
-          break;
-        case 'low':
-          sourceScore += 0.1;
-          break;
-        default:
-          break;
+      // Ajuste según la fuente de verificación
+      if (source.verified && source.verificationSource) {
+        sourceScore *=
+          this.reliabilityFactors[source.verificationSource] ||
+          this.reliabilityFactors.other;
       }
 
-      // Modificador por fuente de verificación
-      if (source.verificationSource) {
-        sourceScore *=
-          this.sourceReliabilityFactors[source.verificationSource] ||
-          this.sourceReliabilityFactors.other;
+      // Ajuste según la categoría de confiabilidad
+      switch (source.reliability) {
+        case 'high':
+          sourceScore *= 1.3;
+          break;
+        case 'moderate':
+          sourceScore *= 1.1;
+          break;
+        case 'low':
+          sourceScore *= 0.8;
+          break;
+        default:
+          sourceScore *= 0.6;
+          break;
       }
 
       totalScore += sourceScore;
     }
 
-    // Normalizar score (máximo posible por fuente es ~0.9)
-    const normalizedScore = Math.min(totalScore / (sources.length * 0.9), 1);
+    // Normalizar score (0-1)
+    const normalizedScore = Math.min(
+      totalScore / (sources.length * 0.8),
+      1.0
+    );
 
     return normalizedScore;
   }
@@ -535,7 +535,7 @@ export class EvidenceEvaluationService implements IEvidenceEvaluationService {
     // SimulacióNumber(index) - 1 producción verificaría contra APIs reales
     const randomSuccess = Math.random() > 0.3; // 70% de éxito
 
-    if (true) {
+    if (randomSuccess) {
       const reliabilities: Array<'high' | 'moderate' | 'low'> = [
         'high',
         'moderate',

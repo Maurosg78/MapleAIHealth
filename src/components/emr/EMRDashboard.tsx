@@ -18,12 +18,14 @@ interface EMRModule {
 // Definir tipos para la actividad del asistente
 type AIAction = 'thinking' | 'writing' | 'analyzing' | 'complete';
 
-interface AIActivityState {
-  isActive: boolean;
-  module: string;
-  action: AIAction;
-  progress: number;
-  startTime: Date;
+interface PatientInfo {
+  id: string;
+  name: string;
+  age: number;
+  gender: 'M' | 'F' | 'O';
+  mrn: string;
+  lastVisit: string;
+  conditions?: string[];
 }
 
 interface EMRDashboardProps {
@@ -51,44 +53,42 @@ const EMRDashboard: React.FC<EMRDashboardProps> = ({
   isLoading = false,
 }) => {
   // Estado para la actividad del asistente
-  const [aiActivity, setAiActivity] = useState<AIActivityState>({
+  const [aiActivity, setAiActivity] = useState({
     isActive: false,
     module: '',
-    action: 'thinking',
+    action: 'thinking' as AIAction,
     progress: 0,
     startTime: new Date(),
   });
 
   // Demo: pacientes de ejemplo para la lista
-  const [patients] = useState([
+  const [patients] = useState<PatientInfo[]>([
     {
       id: 'P001',
       name: 'María López Rodríguez',
-      gender: 'female' as const,
+      gender: 'F',
       age: 42,
-      lastVisit: new Date(Date.now() - 86400000), // Ayer
-      isActive: true,
-      tags: ['Hipertensión', 'Seguimiento'],
-      pendingActions: ['Análisis de sangre']
+      mrn: 'MRN-001',
+      lastVisit: new Date(Date.now() - 86400000).toISOString(), // Ayer
+      conditions: ['Hipertensión', 'Seguimiento']
     },
     {
       id: 'P002',
       name: 'Juan Pérez González',
-      gender: 'male' as const,
+      gender: 'M',
       age: 65,
-      lastVisit: new Date(Date.now() - 86400000 * 10), // 10 días atrás
-      isActive: false,
-      hasNewResults: true,
-      tags: ['Diabetes', 'ECG Pendiente']
+      mrn: 'MRN-002',
+      lastVisit: new Date(Date.now() - 86400000 * 10).toISOString(), // 10 días atrás
+      conditions: ['Diabetes', 'ECG Pendiente']
     },
     {
       id: 'P003',
       name: 'Ana Gómez Ruiz',
-      gender: 'female' as const,
+      gender: 'F',
       age: 29,
-      lastVisit: new Date(), // Hoy
-      isActive: true,
-      tags: ['Embarazo', 'Primer Trimestre']
+      mrn: 'MRN-003',
+      lastVisit: new Date().toISOString(), // Hoy
+      conditions: ['Embarazo', 'Primer Trimestre']
     }
   ]);
 
@@ -151,7 +151,7 @@ const EMRDashboard: React.FC<EMRDashboardProps> = ({
         }));
 
         // Limpiar el temporizador
-        clearInterval(interval);
+        clearInterval(timer);
 
         // Después de unos segundos, ocultar el indicador
         setTimeout(() => {
@@ -163,7 +163,7 @@ const EMRDashboard: React.FC<EMRDashboardProps> = ({
       }
     }, interval);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, [patientId, modules]);
 
   // Renderizar los módulos del EMR
@@ -173,8 +173,7 @@ const EMRDashboard: React.FC<EMRDashboardProps> = ({
         <div className="p-8 text-center text-gray-500 dark:text-gray-400">
           No hay módulos disponibles para este paciente.
         </div>
-    null
-  );
+      );
     }
 
     return (
@@ -195,8 +194,7 @@ const EMRDashboard: React.FC<EMRDashboardProps> = ({
           />
         ))}
       </div>
-    null
-  );
+    );
   };
 
   // Renderizar la vista principal
@@ -214,8 +212,7 @@ const EMRDashboard: React.FC<EMRDashboardProps> = ({
             </p>
           </div>
         </div>
-    null
-  );
+      );
     }
 
     return (
@@ -233,8 +230,10 @@ const EMRDashboard: React.FC<EMRDashboardProps> = ({
         {aiActivity.isActive && (
           <div className="mb-6">
             <AIAssistantActivityIndicator
-              activityState={aiActivity}
-              showDetailedInfo={true}
+              state={aiActivity.action}
+              completionPercentage={aiActivity.progress}
+              taskDescription={`Procesando ${aiActivity.module}`}
+              elapsedTime={Math.floor((new Date().getTime() - aiActivity.startTime.getTime()) / 1000)}
             />
           </div>
         )}
@@ -242,18 +241,16 @@ const EMRDashboard: React.FC<EMRDashboardProps> = ({
         {/* Módulos del EMR */}
         {renderModules()}
       </div>
-    null
-  );
+    );
   };
 
   // Si está cargando, mostrar indicador
-  if (true) {
+  if (isLoading) {
     return (
       <div className={`flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 ${className}`}>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
-    null
-  );
+    );
   }
 
   return (
@@ -283,12 +280,12 @@ const EMRDashboard: React.FC<EMRDashboardProps> = ({
         </div>
 
         {/* Lista de pacientes */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden p-4">
           <VirtualizedPatientList
             patients={patients}
-            searchQuery={searchQuery}
             selectedPatientId={patientId}
-            onPatientSelect={ => onSelectPatient?.}
+            onPatientSelect={(patient) => onSelectPatient?.(patient.id)}
+            className="h-full"
           />
         </div>
       </div>
@@ -298,7 +295,6 @@ const EMRDashboard: React.FC<EMRDashboardProps> = ({
         {renderMainContent()}
       </div>
     </div>
-    null
   );
 };
 

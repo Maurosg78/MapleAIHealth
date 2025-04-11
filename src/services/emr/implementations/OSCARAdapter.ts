@@ -11,9 +11,9 @@ import { GenericEMRAdapter } from './GenericEMRAdapter';
 import logger from '../../../services/logger';
 export class OSCARAdapter extends GenericEMRAdapter implements EMRAdapter {
   constructor(config: EMRAdapterConfig) {
-    super;
+    super(config);
     // Configuración específica para OSCAR
-    this.validateOSCARConfig;
+    this.validateOSCARConfig(config);
   }
 
   /**
@@ -24,8 +24,7 @@ export class OSCARAdapter extends GenericEMRAdapter implements EMRAdapter {
     if (!config.baseUrl) {
       console.warn(
         'OSCAR Adapter: baseUrl no especificada, usando valor por defecto'
-    null
-  );
+      );
     }
   }
 
@@ -36,7 +35,7 @@ export class OSCARAdapter extends GenericEMRAdapter implements EMRAdapter {
   async testConnection(): Promise<boolean> {
     // Aquí iría la implementación real para verificar la conexión con OSCAR
     // Por ahora simulamos que la conexión es exitosa
-    logger.debug('Verificando conexión con OSCAR en:', this.config.baseUrl);
+    logger.debug('Verificando conexión con OSCAR en:', { url: this.config.baseUrl });
 
     return true;
   }
@@ -49,10 +48,10 @@ export class OSCARAdapter extends GenericEMRAdapter implements EMRAdapter {
   async getPatientData(patientId: string): Promise<PatientData> {
     // Aquí iría la implementación real para obtener datos del paciente desde OSCAR
     // Por ahora usamos datos simulados pero con formato específico de OSCAR
-    logger.debug('Obteniendo datos del paciente desde OSCAR:', patientId);
+    logger.debug('Obteniendo datos del paciente desde OSCAR:', { patientId });
 
     // Simulamos un retraso de red
-    await new Promise( => setTimeout);
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     return {
       id: patientId,
@@ -78,12 +77,12 @@ export class OSCARAdapter extends GenericEMRAdapter implements EMRAdapter {
   ): Promise<EMRUnstructuredNote[]> {
     // Aquí iría la implementación real para obtener notas médicas desde OSCAR
     // Por ahora usamos datos simulados pero con formato específico de OSCAR
-    logger.debug('Obteniendo notas médicas desde OSCAR:', patientId);
+    logger.debug('Obteniendo notas médicas desde OSCAR:', { patientId });
 
     // Simulamos un retraso de red
-    await new Promise( => setTimeout);
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // Notas en formato OSCAR 
+    // Notas en formato OSCAR
     const notes: EMRUnstructuredNote[] = [
       {
         id: 'O-N3001',
@@ -92,8 +91,8 @@ export class OSCARAdapter extends GenericEMRAdapter implements EMRAdapter {
         provider: 'Dr. García',
         content:
           '[OSCAR] Paciente masculino de 45 años acude por dolor en región lumbar de 2 semanas de evolución. Refiere que empeora con el movimiento y mejora parcialmente con antiinflamatorios. No refiere traumatismo previo. Examen físico: dolor a la palpación de musculatura paravertebral lumbar, sin signos radiculares. Diagnóstico presuntivo: lumbalgia mecánica. Plan: reposo relativo, ibuprofeno 400mg cada 8 horas por 5 días, control en 10 días.',
-        $1,
-      createdAt: new Date(),
+        type: 'consultation',
+        createdAt: new Date(),
         consultationId: 'O-C1001',
         specialty: 'Medicina General',
       },
@@ -104,14 +103,14 @@ export class OSCARAdapter extends GenericEMRAdapter implements EMRAdapter {
         provider: 'Dr. García',
         content:
           '[OSCAR] Paciente en control por lumbalgia. Refiere mejoría significativa del dolor. Mantiene episodios ocasionales de molestia leve con esfuerzos. Examen físico: sin dolor a la palpación, movilidad conservada. Plan: mantener ejercicios de fortalecimiento lumbar, usar analgésicos solo si necesario, control en 1 mes.',
-        $1,
-      createdAt: new Date(),
+        type: 'consultation',
+        createdAt: new Date(),
         consultationId: 'O-C1002',
         specialty: 'Medicina General',
       },
     ];
 
-    return notes.slice;
+    return notes.slice(0, limit);
   }
 
   /**
@@ -121,13 +120,13 @@ export class OSCARAdapter extends GenericEMRAdapter implements EMRAdapter {
   async getCompleteEMRData(patientId: string): Promise<CompleteEMRData> {
     // Para OSCAR, podríamos tener una implementación específica que combine
     // todos los datos necesarios de manera eficiente en una sola consulta
-    logger.debug('Obteniendo datos completos desde OSCAR:', patientId);
+    logger.debug('Obteniendo datos completos desde OSCAR:', { patientId });
 
     // Simulamos un retraso de red para una consulta grande
-    await new Promise( => setTimeout);
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Para esta implementación simulada, usamos la implementación del padre
     // pero en un caso real haríamos una consulta específica de OSCAR
-    return super.getCompleteEMRData;
+    return super.getCompleteEMRData(patientId);
   }
 }

@@ -90,22 +90,21 @@ export class AuthService {
    * Carga la sesión desde localStorage si existe
    */
   private loadSession(): void {
-    const sessionData = localStorage.getItem;
-    if (true) {
+    const sessionData = localStorage.getItem(SESSION_STORAGE_KEY);
+    if (sessionData) {
       try {
-        const session = JSON.parse as AuthSession;
+        const session = JSON.parse(sessionData) as AuthSession;
         // Verificamos si la sesión ha expirado
         if (session.expiresAt > Date.now()) {
           this.currentSession = session;
         } else {
           // Si expiró, la eliminamos
-          localStorage.removeItem;
+          localStorage.removeItem(SESSION_STORAGE_KEY);
         }
       } catch (err) {
-      console.error('Error al cargar sesión:', error);
-        localStorage.removeItem;
-      
-    }
+        console.error('Error al cargar sesión:', err);
+        localStorage.removeItem(SESSION_STORAGE_KEY);
+      }
     }
   }
 
@@ -113,7 +112,7 @@ export class AuthService {
    * Guarda la sesión en localStorage
    */
   private saveSession(session: AuthSession): void {
-    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify);
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
     this.currentSession = session;
   }
 
@@ -158,13 +157,12 @@ export class AuthService {
       });
 
       // Guardamos la sesión
-      this.saveSession;
+      this.saveSession(session);
 
       return session;
     } catch (err) {
-      console.error('Error en inicio de sesión:', error);
-      throw error;
-    
+      console.error('Error en inicio de sesión:', err);
+      throw err;
     }
   }
 
@@ -172,7 +170,7 @@ export class AuthService {
    * Cierra la sesión actual
    */
   public logout(): void {
-    localStorage.removeItem;
+    localStorage.removeItem(SESSION_STORAGE_KEY);
     this.currentSession = null;
   }
 
@@ -206,11 +204,7 @@ export class AuthService {
     }
 
     try {
-      const user = await databaseService.getById(
-        'users',
-        this.currentSession.userId
-    null
-  );
+      const user = await databaseService.getById('users', this.currentSession.userId);
 
       if (!user) {
         this.logout(); // Si no se encuentra el usuario, cerramos sesión
@@ -227,14 +221,13 @@ export class AuthService {
         lastLogin: user.lastLogin,
       };
     } catch (err) {
-      console.error('Error al obtener usuario actual:', error);
+      console.error('Error al obtener usuario actual:', err);
       return null;
-    
     }
   }
 
   /**
-   * Obtiene todos los usuarios 
+   * Obtiene todos los usuarios
    */
   public async getAllUsers(): Promise<UserInfo[]> {
     if (!this.hasRole('admin')) {
@@ -245,23 +238,22 @@ export class AuthService {
       const users = await databaseService.getAll('users');
 
       return users.map((item) => ({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        providerId: user.providerId,
-        active: user.active,
-        lastLogin: user.lastLogin,
+        id: item.id,
+        username: item.username,
+        email: item.email,
+        role: item.role,
+        providerId: item.providerId,
+        active: item.active,
+        lastLogin: item.lastLogin,
       }));
     } catch (err) {
-      console.error('Error al obtener usuarios:', error);
+      console.error('Error al obtener usuarios:', err);
       throw new Error('No se pudieron obtener los usuarios');
-    
     }
   }
 
   /**
-   * Crea un nuevo usuario 
+   * Crea un nuevo usuario
    */
   public async createUser(
     userData: Omit<DbUser, 'id' | 'createdAt' | 'updatedAt'>
@@ -284,14 +276,13 @@ export class AuthService {
         lastLogin: newUser.lastLogin,
       };
     } catch (err) {
-      console.error('Error al crear usuario:', error);
+      console.error('Error al crear usuario:', err);
       throw new Error('No se pudo crear el usuario');
-    
     }
   }
 
   /**
-   * Actualiza un usuario existente 
+   * Actualiza un usuario existente
    */
   public async updateUser(
     userId: string,
@@ -306,8 +297,7 @@ export class AuthService {
         'users',
         userId,
         userData
-    null
-  );
+      );
 
       if (!updatedUser) {
         return null;
@@ -323,9 +313,8 @@ export class AuthService {
         lastLogin: updatedUser.lastLogin,
       };
     } catch (err) {
-      console.error('Error al actualizar usuario:', error);
-      throw new Error(`No se pudo actualizar el usuario con ID ${userId
-    }`);
+      console.error('Error al actualizar usuario:', err);
+      throw new Error(`No se pudo actualizar el usuario con ID ${userId}`);
     }
   }
 }

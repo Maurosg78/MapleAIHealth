@@ -35,6 +35,7 @@ export interface Recommendation {
   metadata?: Record<string, unknown>;
   // Compatibilidad con AIRecommendation
   type?: string;
+  evidenceLevel?: string;
 }
 
 // Mock del servicio de evaluación de evidencia

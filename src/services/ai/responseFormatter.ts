@@ -3,8 +3,8 @@
  * según el tipo de intención médica detectada
  */
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AIResponse, EMRData } from './types';
-import { MedicalIntent } from './intentDetector';
 
 /**
  * Formatea la respuesta de IA según la intención detectada
@@ -15,31 +15,30 @@ import { MedicalIntent } from './intentDetector';
  */
 export function formatResponse(
   response: AIResponse,
-  intent: MedicalIntent,
+  intent: string | undefined,
   patientData?: EMRData
 ): AIResponse {
-  // Crear una copia para no modificar el original
-  const formattedResponse = { ...response };
+  let formattedResponse = { ...response };
 
-  // Modificar el formato según la intención
+  // Personalización según la intención
   switch (intent) {
     case 'medication':
-      formattedResponse.summary = formatMedicationResponse(response.summary, patientData);
+      formattedResponse = formatMedicationResponse(response, patientData);
       break;
-    case 'diagnosis':
-      formattedResponse.summary = formatDiagnosisResponse(response.summary, patientData);
+    case 'diagnostic':
+      formattedResponse = formatDiagnosticResponse(response, patientData);
       break;
-    case 'followup':
-      formattedResponse.summary = formatFollowupResponse(response.summary);
+    case 'procedure':
+      formattedResponse = formatProcedureResponse(response, patientData);
       break;
-    case 'lab':
-      formattedResponse.summary = formatLabResponse(response.summary);
+    case 'follow-up':
+      formattedResponse = formatFollowUpResponse(response, patientData);
       break;
-    case 'referral':
-      formattedResponse.summary = formatReferralResponse(response.summary);
+    case 'prevention':
+      formattedResponse = formatPreventionResponse(response, patientData);
       break;
     default:
-      // Mantener el formato original para consultas generales
+      formattedResponse = formatGeneralResponse(response, patientData);
       break;
   }
 
@@ -47,99 +46,185 @@ export function formatResponse(
 }
 
 /**
- * Formatea respuestas sobre medicamentos
- */
-function formatMedicationResponse(summary: string, patientData?: EMRData): string {
-  // Extraer alergias del paciente si están disponibles
-  const allergies = patientData?.medicalHistory.allergies || [];
-  const allergiesWarning = allergies.length > 0
-    ? `\n\n⚠️ **PRECAUCIÓN DE ALERGIAS**: El paciente tiene registradas las siguientes alergias: ${allergies.join(', ')}.`
-    : '';
-
-  // Extraer medicamentos actuales si están disponibles
-  const currentMedications = patientData?.medicalHistory.medications
-    .filter(m => m.active)
-    .map(m => m.name) || [];
-  const medicationsWarning = currentMedications.length > 0
-    ? `\n\n⚠️ **MEDICAMENTOS ACTUALES**: El paciente está tomando: ${currentMedications.join(', ')}.`
-    : '';
-
-  return `## 💊 INFORMACIÓN DE MEDICAMENTO\n\n${summary}${allergiesWarning}${medicationsWarning}`;
-}
-
-/**
- * Formatea respuestas sobre diagnósticos
- */
-function formatDiagnosisResponse(summary: string, patientData?: EMRData): string {
-  // Extraer condiciones existentes si están disponibles
-  const conditions = patientData?.medicalHistory.conditions || [];
-  const conditionsContext = conditions.length > 0
-    ? `\n\n📋 **HISTORIAL MÉDICO RELEVANTE**: ${conditions.join(', ')}.`
-    : '';
-
-  return `## 🩺 SUGERENCIA DIAGNÓSTICA\n\n${summary}${conditionsContext}`;
-}
-
-/**
- * Formatea respuestas sobre seguimiento
- */
-function formatFollowupResponse(summary: string): string {
-  return `## 📅 PLAN DE SEGUIMIENTO\n\n${summary}`;
-}
-
-/**
- * Formatea respuestas sobre resultados de laboratorio
- */
-function formatLabResponse(summary: string): string {
-  return `## 🧪 INTERPRETACIÓN DE RESULTADOS\n\n${summary}`;
-}
-
-/**
- * Formatea respuestas sobre derivaciones
- */
-function formatReferralResponse(summary: string): string {
-  return `## 👩‍⚕️ DERIVACIÓN A ESPECIALISTA\n\n${summary}`;
-}
-
-/**
- * Detecta si la respuesta contiene instrucciones o advertencias importantes
- * y las resalta
- * @param response Respuesta de IA
+ * Destaca advertencias e instrucciones importantes en la respuesta
+ * @param response Respuesta a procesar
  * @returns Respuesta con advertencias destacadas
  */
 export function highlightWarningsAndInstructions(response: AIResponse): AIResponse {
-  const updatedResponse = { ...response };
+  // Clonar respuesta para no modificar la original
+  const enhancedResponse = { ...response };
 
-  // Patrones para detectar advertencias e instrucciones
+  // Procesamiento del resumen para resaltar advertencias
+  let summary = response.summary;
+
+  // Patrones para identificar advertencias e instrucciones importantes
   const warningPatterns = [
-    /precaución/i,
-    /advertencia/i,
-    /cuidado/i,
-    /peligro/i,
-    /contraindicación/i,
-    /no (debe|debería|puede|recomendado)/i
+    /ADVERTENCIA:.*?(?=\.|$)/gi,
+    /PRECAUCIÓN:.*?(?=\.|$)/gi,
+    /ATENCIÓN:.*?(?=\.|$)/gi,
+    /contraindicado.*?(?=\.|$)/gi,
+    /no (?:debe|debería|se recomienda).*?(?=\.|$)/gi,
+    /evitar.*?(?=\.|$)/gi
   ];
 
   const instructionPatterns = [
-    /debe[n]? (tomar|aplicar|usar)/i,
-    /es importante/i,
-    /es necesario/i,
-    /es recomendable/i,
-    /tiene[n]? que/i
+    /INSTRUCCIONES:.*?(?=\.|$)/gi,
+    /debe (?:tomar|aplicar|usar).*?(?=\.|$)/gi,
+    /es importante (?:que|recordar).*?(?=\.|$)/gi,
+    /se recomienda.*?(?=\.|$)/gi
   ];
 
-  let summary = response.summary;
-
-  // Resaltar advertencias
+  // Aplicar resaltado a advertencias
   warningPatterns.forEach(pattern => {
-    summary = summary.replace(pattern, match => `⚠️ **${match.toUpperCase()}**`);
+    summary = summary.replace(pattern, match => `⚠️ **${match}**`);
   });
 
-  // Resaltar instrucciones
+  // Aplicar resaltado a instrucciones
   instructionPatterns.forEach(pattern => {
-    summary = summary.replace(pattern, match => `✅ **${match}**`);
+    summary = summary.replace(pattern, match => `📋 **${match}**`);
   });
 
-  updatedResponse.summary = summary;
-  return updatedResponse;
+  enhancedResponse.summary = summary;
+
+  return enhancedResponse;
+}
+
+// Funciones auxiliares para formatear según el tipo de intención
+
+/**
+ * Formatea respuesta para consultas sobre medicamentos
+ */
+function formatMedicationResponse(response: AIResponse, patientData?: EMRData): AIResponse {
+  const formattedResponse = { ...response };
+
+  // Añadir título para medicamentos
+  formattedResponse.summary = `💊 **INFORMACIÓN DE MEDICAMENTOS**\n\n${response.summary}`;
+
+  // Si hay datos del paciente, verificar alergias e interacciones
+  if (patientData && patientData.medicalHistory.allergies.length > 0) {
+    formattedResponse.summary += `\n\n⚠️ **ALERGIAS DEL PACIENTE**: ${patientData.medicalHistory.allergies.join(', ')}. Verificar contraindicaciones.`;
+  }
+
+  // Organizar recomendaciones específicas para medicamentos
+  if (formattedResponse.recommendations) {
+    formattedResponse.recommendations = formattedResponse.recommendations.map(rec => {
+      if (rec.type === 'medication') {
+        return {
+          ...rec,
+          title: `💊 ${rec.title}`,
+          description: `**Medicamento**: ${rec.description}`
+        };
+      }
+      return rec;
+    });
+  }
+
+  return formattedResponse;
+}
+
+/**
+ * Formatea respuesta para consultas sobre diagnósticos
+ */
+function formatDiagnosticResponse(response: AIResponse, _patientData?: EMRData): AIResponse {
+  const formattedResponse = { ...response };
+
+  // Añadir título para diagnósticos
+  formattedResponse.summary = `🔍 **EVALUACIÓN DIAGNÓSTICA**\n\n${response.summary}`;
+
+  // Organizar insights específicos para diagnósticos
+  if (formattedResponse.insights) {
+    formattedResponse.insights = formattedResponse.insights.map(insight => {
+      if (insight.type === 'clinical-pattern' || insight.type === 'missing-information') {
+        return {
+          ...insight,
+          title: `🔍 ${insight.title}`,
+          description: `**Hallazgo**: ${insight.description}`
+        };
+      }
+      return insight;
+    });
+  }
+
+  return formattedResponse;
+}
+
+/**
+ * Formatea respuesta para consultas sobre procedimientos
+ */
+function formatProcedureResponse(response: AIResponse, _patientData?: EMRData): AIResponse {
+  const formattedResponse = { ...response };
+
+  // Añadir título para procedimientos
+  formattedResponse.summary = `🔬 **INFORMACIÓN DE PROCEDIMIENTO**\n\n${response.summary}`;
+
+  // Añadir estructura temporal si existe
+  if (formattedResponse.timeline && formattedResponse.timeline.length > 0) {
+    formattedResponse.summary += '\n\n**CRONOLOGÍA DEL PROCEDIMIENTO**:\n';
+    formattedResponse.timeline.forEach(event => {
+      formattedResponse.summary += `\n• ${event.date}: ${event.title} - ${event.description}`;
+    });
+  }
+
+  return formattedResponse;
+}
+
+/**
+ * Formatea respuesta para consultas sobre seguimiento
+ */
+function formatFollowUpResponse(response: AIResponse, _patientData?: EMRData): AIResponse {
+  const formattedResponse = { ...response };
+
+  // Añadir título para seguimiento
+  formattedResponse.summary = `📅 **PLAN DE SEGUIMIENTO**\n\n${response.summary}`;
+
+  // Destacar recomendaciones de seguimiento
+  if (formattedResponse.recommendations) {
+    formattedResponse.recommendations = formattedResponse.recommendations.map(rec => {
+      if (rec.type === 'follow-up') {
+        return {
+          ...rec,
+          title: `📅 ${rec.title}`,
+          description: `**Seguimiento**: ${rec.description}${rec.timeframe ? ` (${rec.timeframe})` : ''}`
+        };
+      }
+      return rec;
+    });
+  }
+
+  return formattedResponse;
+}
+
+/**
+ * Formatea respuesta para consultas sobre prevención
+ */
+function formatPreventionResponse(response: AIResponse, _patientData?: EMRData): AIResponse {
+  const formattedResponse = { ...response };
+
+  // Añadir título para prevención
+  formattedResponse.summary = `🛡️ **MEDIDAS PREVENTIVAS**\n\n${response.summary}`;
+
+  // Destacar factores de riesgo si existen
+  if (formattedResponse.insights) {
+    const riskFactors = formattedResponse.insights.filter(i => i.type === 'risk-factor');
+    if (riskFactors.length > 0) {
+      formattedResponse.summary += '\n\n**FACTORES DE RIESGO IDENTIFICADOS**:\n';
+      riskFactors.forEach(risk => {
+        formattedResponse.summary += `\n• ⚠️ ${risk.title}: ${risk.description}`;
+      });
+    }
+  }
+
+  return formattedResponse;
+}
+
+/**
+ * Formatea respuesta general cuando no se detecta una intención específica
+ */
+function formatGeneralResponse(response: AIResponse, _patientData?: EMRData): AIResponse {
+  const formattedResponse = { ...response };
+
+  // Añadir título general
+  formattedResponse.summary = `📋 **INFORMACIÓN MÉDICA**\n\n${response.summary}`;
+
+  return formattedResponse;
 }

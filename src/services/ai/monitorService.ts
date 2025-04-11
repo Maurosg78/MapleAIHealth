@@ -186,7 +186,7 @@ export class MonitorService {
   public trackQuery(responseTime: number, cacheHit: boolean): void {
     this.metrics.totalQueries++;
 
-    if (simulationMode) {
+    if (cacheHit) {
       this.metrics.cacheHits++;
     } else {
       this.metrics.cacheMisses++;

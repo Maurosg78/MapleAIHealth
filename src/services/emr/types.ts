@@ -14,14 +14,14 @@ export interface EMRConsultation {
   patientId: string;
   date: string;
   notes: string;
-  status: 'active' | 'inactive' | 'pending' | 'cancelled' | 'completed';
+  status: EMRStatus;
 }
 
 export interface EMRTreatment {
   id: string;
   consultationId: string;
   description: string;
-  status: 'active' | 'inactive' | 'pending' | 'cancelled' | 'completed';
+  status: EMRStatus;
 }
 
 export type EMRStatus =
@@ -119,6 +119,17 @@ export interface EMRCondition {
 }
 
 /**
+ * Representa una alergia en el historial médico
+ */
+export interface EMRAllergy {
+  substance: string;
+  reaction?: string;
+  severity?: 'mild' | 'moderate' | 'severe';
+  onsetDate?: string;
+  status: 'active' | 'inactive';
+}
+
+/**
  * Representa el historial médico completo del paciente
  */
 export interface EMRMedicalHistory {
@@ -145,3 +156,25 @@ export interface CompleteEMRData {
   unstructuredNotes?: EMRUnstructuredNote[];
   lastUpdated: string;
 }
+
+/**
+ * Representa los datos que se utilizan en las interfaces de EMR
+ */
+export interface EMRUIData {
+  patient: PatientData;
+  emrData: CompleteEMRData;
+  lastUpdated: Date;
+  status: 'loading' | 'loaded' | 'error';
+  error?: string;
+}
+
+/**
+ * Sistemas EMR soportados
+ */
+export type EMRSystem =
+  | 'EPIC'
+  | 'OSCAR'
+  | 'ClinicCloud'
+  | 'Cerner'
+  | 'MedTrack'
+  | 'GenericEMR';

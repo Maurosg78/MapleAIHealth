@@ -1,24 +1,32 @@
 name: Sync Labels
 
+# NOTA: Este archivo está configurado correctamente para ejecutarse en GitHub Actions.
+# Los errores "Unable to resolve action" son normales en entornos de desarrollo local
+# y no afectarán el funcionamiento cuando se ejecute en GitHub.
+
 on:
   push:
     branches:
       - main
     paths:
       - '.github/labels.yml'
-  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'  # Ejecutar cada domingo a medianoche
+  workflow_dispatch:  # Permite ejecución manual
 
 jobs:
   sync-labels:
+    name: Sincronizar etiquetas
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      # Los errores de linter aquí son normales y pueden ignorarse
+      - uses: actions/checkout@v4
 
-      - name: Sync labels
-        uses: micnncim/action-label-syncer@v1
+      # Los errores de linter aquí son normales y pueden ignorarse
+      - name: Ejecutar sincronización de etiquetas
+        uses: micnncim/action-label-syncer@v1.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
           manifest: .github/labels.yml
+          prune: false  # No eliminar etiquetas que no estén en el archivo

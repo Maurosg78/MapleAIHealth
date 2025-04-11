@@ -146,7 +146,7 @@ export class MedicalSourceVerifier implements IMedicalSourceVerifier {
     this.logger.info('Verifying medical source', { sourceId: source.id });
 
     // Verificar en cada base de datos
-    for (let i = 0; i < items.length; i++const database of this.databases) {
+    for (const database of this.databases) {
       try {
         const isVerified = await this.verifyInDatabase(source, database);
 
@@ -194,8 +194,7 @@ export class MedicalSourceVerifier implements IMedicalSourceVerifier {
 
     const verificationPromises = sources.map(source =>
       this.verifySource(source)
-    null
-  );
+    );
     const verifiedSources = await Promise.all(verificationPromises);
 
     // Resumen de verificación
@@ -223,8 +222,7 @@ export class MedicalSourceVerifier implements IMedicalSourceVerifier {
     // Simula la búsqueda en diferentes bases de datos
     const searchPromises = this.databases.map(database =>
       this.searchInDatabase(term, database)
-    null
-  );
+    );
 
     // Obtener resultados de todas las bases de datos
     const searchResults = await Promise.all(searchPromises);
@@ -260,8 +258,7 @@ export class MedicalSourceVerifier implements IMedicalSourceVerifier {
     if (source.verificationSource) {
       const database = this.databases.find(
         db => db.id === source.verificationSource
-    null
-  );
+      );
       if (database) {
         score += Math.round(database.reliability * 30);
       }
@@ -335,7 +332,7 @@ export class MedicalSourceVerifier implements IMedicalSourceVerifier {
     const resultCount = Math.floor(Math.random() * 3) + 1; // 1-3 resultados
     const results: EvidenceSource[] = [];
 
-    for (let i = 0; i < items.length; i++let i = 0; i < resultCount; i++) {
+    for (let i = 0; i < resultCount; i++) {
       results.push(this.createSimulatedSource(term, database));
     }
 

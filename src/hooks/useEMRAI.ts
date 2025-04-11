@@ -35,7 +35,7 @@ export const useEMRAI = () => {
         // Obtener datos del paciente si es posible para enriquecer el análisis
         try {
           const currentSystem = emrSystem || emrConfigService.getCurrentSystem();
-          const adapter = EMRAdapterFactory.getAdapter(currentSystem, emrConfigService.getConfig(currentSystem));
+          const adapter = await EMRAdapterFactory.getAdapter(currentSystem, emrConfigService.getConfig(currentSystem));
 
           const data = await adapter.getPatientData(patientId);
           // Convertir PatientData a CompleteEMRData para nuestro uso
@@ -72,7 +72,7 @@ export const useEMRAI = () => {
         const emrDataForFormat = patientData ? convertCompleteEMRToAIFormat(patientData) : undefined;
 
         // Aplicar formato según la intención detectada
-        const formattedResponse = formatResponse(response, intent, emrDataForFormat);
+        const formattedResponse = formatResponse(response, intent.type, emrDataForFormat);
 
         // Resaltar advertencias e instrucciones importantes
         const enhancedResponse = highlightWarningsAndInstructions(formattedResponse);
@@ -110,7 +110,7 @@ export const useEMRAI = () => {
         // Obtener datos del paciente si es posible
         try {
           const currentSystem = emrSystem || emrConfigService.getCurrentSystem();
-          const adapter = EMRAdapterFactory.getAdapter(currentSystem, emrConfigService.getConfig(currentSystem));
+          const adapter = await EMRAdapterFactory.getAdapter(currentSystem, emrConfigService.getConfig(currentSystem));
 
           const data = await adapter.getPatientData(patientId);
           // Convertir PatientData a CompleteEMRData para nuestro uso
@@ -146,7 +146,7 @@ export const useEMRAI = () => {
         // Convertir CompleteEMRData a EMRData para formateo
         const emrDataForFormat = patientData ? convertCompleteEMRToAIFormat(patientData) : undefined;
 
-        const formattedResponse = formatResponse(response, intent, emrDataForFormat);
+        const formattedResponse = formatResponse(response, intent.type, emrDataForFormat);
         const enhancedResponse = highlightWarningsAndInstructions(formattedResponse);
 
         setResult(enhancedResponse);
@@ -186,7 +186,7 @@ export const useEMRAI = () => {
         // Obtener datos del paciente si es posible
         try {
           const currentSystem = emrSystem || emrConfigService.getCurrentSystem();
-          const adapter = EMRAdapterFactory.getAdapter(currentSystem, emrConfigService.getConfig(currentSystem));
+          const adapter = await EMRAdapterFactory.getAdapter(currentSystem, emrConfigService.getConfig(currentSystem));
 
           const data = await adapter.getPatientData(patientId);
           // Convertir PatientData a CompleteEMRData para nuestro uso
@@ -230,7 +230,7 @@ export const useEMRAI = () => {
         );
 
         // Aplicar formato según la intención
-        const formattedResponse = formatResponse(response, intent, emrDataForQuery);
+        const formattedResponse = formatResponse(response, intent.type, emrDataForQuery);
         const enhancedResponse = highlightWarningsAndInstructions(formattedResponse);
 
         setResult(enhancedResponse);

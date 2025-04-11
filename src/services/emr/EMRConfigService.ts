@@ -1,4 +1,5 @@
-import { EMRSystem, EMRAdapterConfig } from './EMRAdapterFactory';
+import { EMRSystem } from './types';
+import { EMRAdapterConfig } from './EMRAdapterFactory';
 
 /**
  * Servicio para gestionar la configuración de los sistemas EMR
@@ -7,7 +8,7 @@ import { EMRSystem, EMRAdapterConfig } from './EMRAdapterFactory';
 export class EMRConfigService {
   private static instance: EMRConfigService;
   private configs: Map<EMRSystem, EMRAdapterConfig>;
-  private currentSystem: EMRSystem = 'Generic';
+  private currentSystem: EMRSystem = 'GenericEMR';
 
   /**
    * Constructor privado (patrón Singleton)
@@ -16,7 +17,7 @@ export class EMRConfigService {
     this.configs = new Map();
 
     // Inicializar con configuraciones por defecto
-    this.configs.set('Generic', {
+    this.configs.set('GenericEMR', {
       baseUrl: 'https://api.example.com/emr/generic',
       timeout: 30000,
       useCache: true,
@@ -62,7 +63,7 @@ export class EMRConfigService {
    */
   public setConfig(system: EMRSystem, config: EMRAdapterConfig): void {
     // Combinar con configuración existente si existe
-    const existingConfig = this.configs.get || {};
+    const existingConfig = this.configs.get(system) || {};
     this.configs.set(system, { ...existingConfig, ...config });
   }
 
@@ -72,7 +73,7 @@ export class EMRConfigService {
    * @returns Configuración del sistema
    */
   public getConfig(system: EMRSystem): EMRAdapterConfig {
-    return this.configs.get || {};
+    return this.configs.get(system) || {};
   }
 
   /**
@@ -114,7 +115,7 @@ export class EMRConfigService {
    * @returns Verdadero si hay configuración para el sistema
    */
   public hasConfig(system: EMRSystem): boolean {
-    return this.configs.has;
+    return this.configs.has(system);
   }
 
   /**
@@ -122,7 +123,7 @@ export class EMRConfigService {
    * @param system Sistema EMR
    */
   public deleteConfig(system: EMRSystem): void {
-    this.configs.delete;
+    this.configs.delete(system);
   }
 
   /**
@@ -131,6 +132,14 @@ export class EMRConfigService {
    */
   public getConfiguredSystems(): EMRSystem[] {
     return Array.from(this.configs.keys());
+  }
+
+  /**
+   * Obtiene todas las configuraciones
+   * @returns Mapa con todas las configuraciones de sistemas EMR
+   */
+  public getAllConfigs(): Map<EMRSystem, EMRAdapterConfig> {
+    return new Map(this.configs);
   }
 }
 

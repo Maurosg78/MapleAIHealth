@@ -37,7 +37,6 @@ const VirtualizedPatientList: React.FC<VirtualizedPatientListProps> = memo(({
     patient.conditions?.some(condition =>
       condition.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    null
   );
 
   // Manejar cambios en la búsqueda
@@ -134,7 +133,6 @@ const VirtualizedPatientList: React.FC<VirtualizedPatientListProps> = memo(({
         )}
       </div>
     </div>
-    null
   );
 });
 

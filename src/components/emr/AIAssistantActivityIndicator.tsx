@@ -114,7 +114,6 @@ const AIAssistantActivityIndicator: React.FC<AIAssistantActivityIndicatorProps> 
         </div>
       )}
     </div>
-    null
   );
 });
 

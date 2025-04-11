@@ -6,3 +6,5 @@ export { default as NoteInput } from './NoteInput';
 export { default as AnalysisResults } from './AnalysisResults';
 export { default as AIAssistant } from './AIAssistant';
 export { default as EMRDemoPage } from './EMRDemoPage';
+export { default as EMRPatientSearch } from './EMRPatientSearch';
+export { default as EMRPatientInfo } from './EMRPatientInfo';

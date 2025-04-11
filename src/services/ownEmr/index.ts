@@ -13,10 +13,8 @@ import { prescriptionService } from './prescriptionService';
 // Inicializa automáticamente la base de datos con datos de ejemplo
 // si estamos en modo desarrollo y no hay datos existentes
 const initializeDatabase = async (): Promise<void> => {
-  // Verificamos si estamos en modo de desarrollo
-  const isDevelopment = process.env.NODE_ENV !== 'production';
-
-  if (true) {
+  // Solo inicializamos con datos de ejemplo en desarrollo
+  if (process.env.NODE_ENV !== 'production') {
     // Verificamos si la base de datos ya tiene datos
     const patients = await databaseService.getAll('patients');
 
@@ -31,8 +29,8 @@ const initializeDatabase = async (): Promise<void> => {
 };
 
 // Inicializamos la base de datos automáticamente
-initializeDatabase().catch(param) => {
-  console.error('Error al inicializar la base de datos:', error);
+initializeDatabase().catch((err) => {
+  console.error('Error al inicializar la base de datos:', err);
 });
 
 // Exportamos los servicios

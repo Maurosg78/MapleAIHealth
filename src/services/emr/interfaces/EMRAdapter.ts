@@ -1,4 +1,5 @@
 import { PatientData } from '../types';
+import { EMRAdapterConfig } from '../EMRAdapterFactory';
 
 /**
  * Opciones para la búsqueda de pacientes
@@ -146,12 +147,19 @@ export interface EMRPatientMetrics {
 export interface EMRAdapter {
   /**
    * Nombre identificador del sistema EMR
-   */readonly name: string;
+   */
+  readonly name: string;
 
   /**
    * Descripción del adaptador
    */
   readonly description?: string;
+
+  /**
+   * Inicializa el adaptador con opciones de configuración
+   * @param options Opciones de inicialización específicas del sistema EMR
+   */
+  initialize(options?: EMRAdapterConfig): Promise<void>;
 
   /**
    * Verifica la conexión con el sistema EMR

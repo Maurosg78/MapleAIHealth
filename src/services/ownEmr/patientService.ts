@@ -65,7 +65,7 @@ export interface PatientMedicalHistory {
 // Funciones auxiliares
 const calculateAge = (dateOfBirth: string): number => {
   const today = new Date();
-  const birthDate = new Date;
+  const birthDate = new Date(dateOfBirth);
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDifference = today.getMonth() - birthDate.getMonth();
 
@@ -106,7 +106,7 @@ export class PatientService {
 
       // Para cada paciente, buscamos su última visita y próxima cita
       const results = await Promise.all(
-        patients.map(async  => {
+        patients.map(async (patient) => {
           const consultations = await databaseService.findBy('consultations', {
             patientId: patient.id,
           });
@@ -117,17 +117,15 @@ export class PatientService {
 
           // Ordenamos por fecha descendente para obtener la más reciente
           consultations.sort(
-             => new Date(b.date).getTime() - new Date(a.date).getTime()
-    null
-  );
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
 
           // Ordenamos las citas futuras por fecha ascendente para obtener la próxima
           const futureAppointments = appointments
-            .filter((item) => new Date(app.date) > new Date())
+            .filter((appointment) => new Date(appointment.date) > new Date())
             .sort(
-               => new Date(a.date).getTime() - new Date(b.date).getTime()
-    null
-  );
+              (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+            );
 
           return {
             id: patient.id,
@@ -139,14 +137,12 @@ export class PatientService {
               futureAppointments.length > 0 ? futureAppointments[0].date : null,
           };
         })
-    null
-  );
+      );
 
       return results;
     } catch (err) {
-      console.error('Error al obtener pacientes:', error);
+      console.error('Error al obtener pacientes:', err);
       throw new Error('No se pudieron obtener los pacientes');
-    
     }
   }
 
@@ -180,17 +176,15 @@ export class PatientService {
 
       // Ordenamos por fecha descendente para obtener la más reciente
       consultations.sort(
-         => new Date(b.date).getTime() - new Date(a.date).getTime()
-    null
-  );
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
 
       // Ordenamos las citas futuras
       const futureAppointments = appointments
-        .filter((item) => new Date(app.date) > new Date())
+        .filter((appointment) => new Date(appointment.date) > new Date())
         .sort(
-           => new Date(a.date).getTime() - new Date(b.date).getTime()
-    null
-  );
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
 
       // Preparamos la respuesta
       return {
@@ -206,30 +200,29 @@ export class PatientService {
         lastVisit: consultations.length > 0 ? consultations[0].date : null,
         upcomingAppointment:
           futureAppointments.length > 0 ? futureAppointments[0].date : null,
-        appointments: appointments.map((item) => ({
-          id: app.id,
-          date: app.date,
-          status: app.status,
-          reason: app.reason ?? '',
+        appointments: appointments.map((appointment) => ({
+          id: appointment.id,
+          date: appointment.date,
+          status: appointment.status,
+          reason: appointment.reason ?? '',
         })),
-        conditions: conditions.map((item) => ({
-          id: cond.id,
-          name: cond.name,
-          status: cond.status,
-          severity: cond.severity ?? 'mild',
+        conditions: conditions.map((condition) => ({
+          id: condition.id,
+          name: condition.name,
+          status: condition.status,
+          severity: condition.severity ?? 'mild',
         })),
-        medications: medications.map((item) => ({
-          id: med.id,
-          name: med.name,
-          dosage: med.dosage,
-          frequency: med.frequency,
-          active: med.active,
+        medications: medications.map((medication) => ({
+          id: medication.id,
+          name: medication.name,
+          dosage: medication.dosage,
+          frequency: medication.frequency,
+          active: medication.active,
         })),
       };
     } catch (err) {
-      console.error('Error al obtener paciente por ID:', error);
-      throw new Error(`No se pudo obtener el paciente con ID ${patientId
-    }`);
+      console.error('Error al obtener paciente por ID:', err);
+      throw new Error(`No se pudo obtener el paciente con ID ${patientId}`);
     }
   }
 
@@ -243,9 +236,8 @@ export class PatientService {
       const newPatient = await databaseService.create('patients', patientData);
       return newPatient;
     } catch (err) {
-      console.error('Error al crear paciente:', error);
+      console.error('Error al crear paciente:', err);
       throw new Error('No se pudo crear el paciente');
-    
     }
   }
 
@@ -261,13 +253,11 @@ export class PatientService {
         'patients',
         patientId,
         patientData
-    null
-  );
+      );
       return updatedPatient;
     } catch (err) {
-      console.error('Error al actualizar paciente:', error);
-      throw new Error(`No se pudo actualizar el paciente con ID ${patientId
-    }`);
+      console.error('Error al actualizar paciente:', err);
+      throw new Error(`No se pudo actualizar el paciente con ID ${patientId}`);
     }
   }
 
@@ -306,65 +296,64 @@ export class PatientService {
       });
 
       // Convertimos a los formatos esperados
-      const mappedConditions: EMRCondition[] = conditions.map((item) => ({
-        name: cond.name,
-        diagnosisDate: cond.diagnosisDate,
-        status: cond.status,
-        severity: cond.severity,
-        notes: cond.notes,
+      const mappedConditions: EMRCondition[] = conditions.map((condition) => ({
+        name: condition.name,
+        diagnosisDate: condition.diagnosisDate,
+        status: condition.status,
+        severity: condition.severity,
+        notes: condition.notes,
       }));
 
-      const mappedVitalSigns: EMRVitalSign[] = vitalSigns.map((item) => ({
-        date: vital.date,
-        bloodPressure: vital.bloodPressure,
-        heartRate: vital.heartRate,
-        respiratoryRate: vital.respiratoryRate,
-        temperature: vital.temperature,
-        oxygenSaturation: vital.oxygenSaturation,
+      const mappedVitalSigns: EMRVitalSign[] = vitalSigns.map((vitalSign) => ({
+        date: vitalSign.date,
+        bloodPressure: vitalSign.bloodPressure,
+        heartRate: vitalSign.heartRate,
+        respiratoryRate: vitalSign.respiratoryRate,
+        temperature: vitalSign.temperature,
+        oxygenSaturation: vitalSign.oxygenSaturation,
       }));
 
-      const mappedLabResults: EMRLabResult[] = labResults.map((item) => ({
-        name: lab.name,
-        date: lab.date,
-        value: lab.value,
-        unit: lab.unit,
-        normalRange: lab.normalRange,
-        isAbnormal: lab.isAbnormal,
-        notes: lab.notes,
+      const mappedLabResults: EMRLabResult[] = labResults.map((labResult) => ({
+        name: labResult.name,
+        date: labResult.date,
+        value: labResult.value,
+        unit: labResult.unit,
+        normalRange: labResult.normalRange,
+        isAbnormal: labResult.isAbnormal,
+        notes: labResult.notes,
       }));
 
-      const mappedMedications: EMRMedication[] = medications.map((item) => ({
-        name: med.name,
-        dosage: med.dosage,
-        frequency: med.frequency,
-        startDate: med.startDate,
-        endDate: med.endDate,
-        active: med.active,
-        prescribedBy: med.prescribedBy,
+      const mappedMedications: EMRMedication[] = medications.map((medication) => ({
+        name: medication.name,
+        dosage: medication.dosage,
+        frequency: medication.frequency,
+        startDate: medication.startDate,
+        endDate: medication.endDate,
+        active: medication.active,
+        prescribedBy: medication.prescribedBy,
       }));
 
-      const mappedProcedures: EMRProcedure[] = procedures.map((item) => ({
-        name: proc.name,
-        date: proc.date,
-        provider: proc.providerId,
-        notes: proc.notes,
-        status: proc.status,
+      const mappedProcedures: EMRProcedure[] = procedures.map((procedure) => ({
+        name: procedure.name,
+        date: procedure.date,
+        provider: procedure.providerId,
+        notes: procedure.notes,
+        status: procedure.status,
       }));
 
-      // Preparamos los datos demográficos
+      // Creamos el objeto de demografía
       const demographics: EMRDemographics = {
         name: `${patient.firstName} ${patient.lastName}`,
         age: calculateAge(patient.dateOfBirth),
-        sex:
-          patient.gender === 'male'
-            ? 'male'
-            : patient.gender === 'female'
-              ? 'female'
-              : 'other',
+        sex: patient.gender === 'male'
+          ? 'male'
+          : patient.gender === 'female'
+            ? 'female'
+            : 'other',
         dob: patient.dateOfBirth,
-        // Estos campos podrían ampliarse con más información en el futuro
-        ethnicity: '',
-        language: '',
+        // Campos opcionales
+        ethnicity: undefined,
+        language: undefined,
       };
 
       return {
@@ -379,12 +368,10 @@ export class PatientService {
         lastUpdated: new Date().toISOString(),
       };
     } catch (err) {
-      console.error('Error al obtener historial médico:', error);
+      console.error('Error al obtener historial médico:', err);
       throw new Error(
-        `No se pudo obtener el historial médico del paciente con ID ${patientId
-    }`
-    null
-  );
+        `No se pudo obtener el historial médico del paciente con ID ${patientId}`
+      );
     }
   }
 
@@ -394,23 +381,23 @@ export class PatientService {
   public async searchPatients(searchTerm: string): Promise<PatientBasicInfo[]> {
     try {
       // Obtenemos todos los pacientes para buscar en memoria
-      // En una implementación real esto sería una búsqueda en la base de datos
       const patients = await databaseService.getAll('patients');
+      const term = searchTerm.toLowerCase();
 
-      // Filtramos por término de búsqueda 
-      const filteredPatients = patients.filter(param) => {
-        const term = searchTerm.toLowerCase();
+      // Filtramos por término de búsqueda
+      const filteredPatients = patients.filter((patient) => {
         return (
-          patient.firstName.toLowerCase().includes ||
-          patient.lastName.toLowerCase().includes ||
-          (patient.email && patient.email.toLowerCase().includes)
-    null
-  );
+          patient.firstName.toLowerCase().includes(term) ||
+          patient.lastName.toLowerCase().includes(term) ||
+          `${patient.firstName} ${patient.lastName}`.toLowerCase().includes(term) ||
+          (patient.email && patient.email.toLowerCase().includes(term)) ||
+          (patient.phone && patient.phone.includes(term))
+        );
       });
 
       // Convertimos al formato esperado
       const results = await Promise.all(
-        filteredPatients.map(async  => {
+        filteredPatients.map(async (patient) => {
           const consultations = await databaseService.findBy('consultations', {
             patientId: patient.id,
           });
@@ -421,15 +408,13 @@ export class PatientService {
 
           // Ordenamos por fecha
           consultations.sort(
-             => new Date(b.date).getTime() - new Date(a.date).getTime()
-    null
-  );
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
           const futureAppointments = appointments
-            .filter((item) => new Date(app.date) > new Date())
+            .filter((appointment) => new Date(appointment.date) > new Date())
             .sort(
-               => new Date(a.date).getTime() - new Date(b.date).getTime()
-    null
-  );
+              (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+            );
 
           return {
             id: patient.id,
@@ -441,17 +426,14 @@ export class PatientService {
               futureAppointments.length > 0 ? futureAppointments[0].date : null,
           };
         })
-    null
-  );
+      );
 
       return results;
     } catch (err) {
-      console.error('Error al buscar pacientes:', error);
+      console.error('Error al buscar pacientes:', err);
       throw new Error(
-        `No se pudieron buscar pacientes con el término "${searchTerm
-    }"`
-    null
-  );
+        `No se pudieron buscar pacientes con el término "${searchTerm}"`
+      );
     }
   }
 }

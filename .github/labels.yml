@@ -1,0 +1,35 @@
+- name: "bug"
+  color: "d73a4a"
+  description: "Algo no funciona como se espera"
+
+- name: "feature"
+  color: "0075ca"
+  description: "Nueva funcionalidad o mejora"
+
+- name: "documentation"
+  color: "0075ca"
+  description: "Mejoras o adiciones a la documentación"
+
+- name: "enhancement"
+  color: "a2eeef"
+  description: "Mejora de funcionalidad existente"
+
+- name: "good first issue"
+  color: "7057ff"
+  description: "Ideal para contribuyentes por primera vez"
+
+- name: "help wanted"
+  color: "008672"
+  description: "Se necesita ayuda extra"
+
+- name: "priority: high"
+  color: "d93f0b"
+  description: "Requiere atención urgente"
+
+- name: "priority: medium"
+  color: "fbca04"
+  description: "Requiere atención próxima"
+
+- name: "priority: low"
+  color: "0e8a16"
+  description: "Puede ser atendido más tarde"
