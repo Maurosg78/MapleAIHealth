@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIDUX - Asistente Clínico de Prueba</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .chat-container {
+            height: 65vh;
+            overflow-y: auto;
+        }
+        .assistant-message {
+            background-color: #e8f4fd;
+            border: 1px solid #b6d9f5;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            margin-right: 2rem;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #e9f6ee;
+            border: 1px solid #b7e1c7;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            margin-left: 2rem;
+            max-width: 80%;
+            align-self: flex-end;
+        }
+        .suggestion-btn {
+            background-color: #f0f7ff;
+            border: 1px solid #cce3ff;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .suggestion-btn:hover {
+            background-color: #e0eeff;
+        }
+        .warning-message {
+            background-color: #fff8e6;
+            border: 1px solid #ffedc2;
+        }
+        .info-badge {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: #4f6af0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+        }
+        .user-badge {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+        .missing-element {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+        .present-element {
+            color: #38a169;
+            font-weight: 600;
+        }
+        .highlight-text {
+            background-color: rgba(252, 211, 77, 0.3);
+            padding: 0 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="bg-white shadow rounded-lg p-4 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="h-10 w-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                        A
+                    </div>
+                    <h1 class="ml-3 text-xl font-semibold text-gray-800">AIDUX EMR - Asistente Clínico</h1>
+                </div>
+                <div class="flex items-center">
+                    <div>
+                        <select id="professional-type" class="mr-4 text-sm rounded border border-gray-300 p-1" aria-label="Tipo de profesional médico">
+                            <option value="physician">Médico</option>
+                            <option value="therapist">Fisioterapeuta</option>
+                            <option value="nurse">Enfermero/a</option>
+                            <option value="psychologist">Psicólogo/a</option>
+                        </select>
+                    </div>
+                    <span class="text-sm text-gray-600 mr-3">Dr. Mauricio Sobarzo</span>
+                    <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium">
+                        MS
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Panel principal - Asistente Conversacional -->
+            <div class="md:col-span-2">
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <div class="bg-blue-600 text-white px-4 py-3 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+                            </svg>
+                            <h2 class="text-lg font-medium">Asistente Clínico AIDUX</h2>
+                        </div>
+                        <div class="text-sm text-blue-100">
+                            Caso: Carlos Méndez - #PAC-2024-071
+                        </div>
+                    </div>
+                    
+                    <!-- Área de la conversación -->
+                    <div id="chat-container" class="chat-container p-4 space-y-4 bg-gray-50">
+                        <!-- Aquí se agregarán los mensajes dinámicamente -->
+                    </div>
+                    
+                    <!-- Barra de entrada -->
+                    <div class="border-t border-gray-200 p-4 bg-white">
+                        <div class="flex items-center rounded-full border border-gray-300 bg-white px-3 py-1">
+                            <input 
+                                id="user-input" 
+                                type="text" 
+                                placeholder="Escribe aquí como lo harías en tu consulta..." 
+                                class="flex-1 outline-none text-sm py-2 px-1"
+                            >
+                            <button 
+                                id="send-button" 
+                                class="ml-2 rounded-full p-2 text-blue-600 hover:bg-blue-50"
+                                aria-label="Enviar mensaje"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Botones de sugerencia -->
+                        <div class="mt-3">
+                            <p class="text-xs text-gray-500 mb-2">Escribe como lo harías normalmente o usa estas sugerencias:</p>
+                            <div class="flex flex-wrap" id="suggestion-container">
+                                <button class="suggestion-btn" data-text="Paciente de 47 años con dolor lumbar desde hace 3 días, sin irradiación">
+                                    Motivo consulta
+                                </button>
+                                <button class="suggestion-btn" data-text="Niega traumatismos. Dolor aumenta con movimiento y disminuye en reposo">
+                                    Características dolor
+                                </button>
+                                <button class="suggestion-btn" data-text="Hipertensión arterial controlada con losartán. Niega DM, cirugías o alergias">
+                                    Antecedentes
+                                </button>
+                                <button class="suggestion-btn" data-text="¿Qué datos críticos faltan para evaluar este caso?">
+                                    Datos faltantes
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 text-xs text-center text-red-600 font-medium">
+                            ADVERTENCIA: Este asistente nunca proporcionará recomendaciones sin datos mínimos de seguridad.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Panel lateral - Información del paciente y elementos críticos -->
+            <div class="md:col-span-1">
+                <div class="bg-white shadow rounded-lg p-4 mb-6">
+                    <h2 class="text-lg font-medium text-gray-800 mb-3">
+                        Datos del Paciente
+                    </h2>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Nombre:</p>
+                            <p class="font-medium">Carlos Méndez Vega</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Edad:</p>
+                            <p class="font-medium">47 años</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Motivo de consulta:</p>
+                            <p class="font-medium">Dolor lumbar</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white shadow rounded-lg p-4 mb-6">
+                    <h2 class="text-lg font-medium text-gray-800 mb-3">
+                        Elementos Críticos de Seguridad
+                    </h2>
+                    <div class="space-y-2 text-sm" id="critical-elements">
+                        <div class="flex justify-between">
+                            <span>Motivo de consulta</span>
+                            <span class="present-element">✓ Presente</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Tiempo de evolución</span>
+                            <span class="missing-element">✗ Falta</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Factores de riesgo/Banderas rojas</span>
+                            <span class="missing-element">✗ Falta</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Examen físico básico</span>
+                            <span class="missing-element">✗ Falta</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Antecedentes médicos relevantes</span>
+                            <span class="missing-element">✗ Falta</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white shadow rounded-lg p-4">
+                    <h2 class="text-lg font-medium text-gray-800 mb-3">
+                        Estado de documentación
+                    </h2>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-3">
+                        <div id="documentation-progress" class="bg-blue-600 h-2.5 rounded-full" style="width: 20%"></div>
+                    </div>
+                    <p id="documentation-text" class="text-sm text-gray-600 mb-4">Documentación completa al 20%</p>
+                    
+                    <button 
+                        id="generate-doc-button" 
+                        class="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed" 
+                        disabled
+                    >
+                        Generar documento clínico
+                    </button>
+                    <p class="text-xs text-gray-500 mt-2 text-center">
+                        Completa los elementos mínimos de seguridad para habilitar recomendaciones
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración inicial
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const suggestionButtons = document.querySelectorAll('.suggestion-btn');
+        const generateDocButton = document.getElementById('generate-doc-button');
+        const professionalTypeSelect = document.getElementById('professional-type');
+        const criticalElements = document.getElementById('critical-elements');
+        const documentationProgress = document.getElementById('documentation-progress');
+        const documentationText = document.getElementById('documentation-text');
+        const suggestionContainer = document.getElementById('suggestion-container');
+        
+        // Estado del paciente y la conversación
+        const patientCase = {
+            professionalType: "physician", // Por defecto médico
+            data: {
+                mainComplaint: "Dolor lumbar", // Ya tenemos el motivo de consulta inicial
+                evolution: null,
+                pastMedicalHistory: null,
+                physicalExam: null,
+                redFlags: null,
+                medicationAndAllergies: null
+            },
+            safetyElementsDetected: {
+                evolution: false,
+                redFlags: false,
+                physicalExam: false,
+                relevantHistory: false
+            },
+            conversationState: {
+                lastTopic: null,
+                suggestedTopics: [],
+                minimumSafetyMet: false,
+                recentDetections: []
+            }
+        };
+        
+        // Patrones para detectar información crítica en el texto
+        const patternMatchers = {
+            evolution: [
+                /hace\s+(\d+)\s+(día|días|semana|semanas|mes|meses|año|años)/i,
+                /comenzó\s+hace\s+(\d+)/i,
+                /inicio\s+hace\s+(\d+)/i,
+                /evolución\s+de\s+(\d+)/i,
+                /desde\s+hace\s+(\d+)/i
+            ],
+            redFlags: [
+                /traumatismo/i, /caída/i, /accidente/i, /fiebre/i,
+                /pérdida de peso/i, /adelgazamiento/i, /incontinencia/i,
+                /debilidad/i, /hormigueo/i, /parestesia/i, /paresia/i,
+                /cáncer/i, /inmunosupresión/i, /dolor nocturno/i,
+                /dolor que no cede/i, /banderas rojas/i
+            ],
+            physicalExam: [
+                /examen físico/i, /exploración/i, /examen/i,
+                /palpación/i, /auscultación/i, /percusión/i,
+                /inspección/i, /limitación/i, /movilidad/i,
+                /ROM/i, /range of motion/i, /fuerza/i,
+                /dolor a la/i, /irradiación/i, /lasegue/i,
+                /schober/i, /contractura/i, /espasmo/i
+            ],
+            relevantHistory: [
+                /antecedentes/i, /historia médica/i, /patologías previas/i,
+                /comorbilidad/i, /hipertensión/i, /diabetes/i,
+                /HTA/i, /DM/i, /cirugía/i, /operación/i,
+                /alergia/i, /medicamento/i, /medicación/i,
+                /tratamiento actual/i, /medicación actual/i
+            ]
+        };
+        
+        // Mensajes iniciales del asistente
+        addAssistantMessage("Hola Dr. Sobarzo, estoy listo para ayudarle con su paciente.", "info");
+        addAssistantMessage("Veo que se trata de Carlos Méndez, 47 años, que consulta por dolor lumbar.", "info");
+        addAssistantMessage("Puede comenzar a escribir la historia clínica como lo haría normalmente. Iré analizando la información y sugiriendo elementos importantes.", "info");
+        
+        // Actualizar interfaz según el tipo de profesional
+        professionalTypeSelect.addEventListener('change', function() {
+            patientCase.professionalType = this.value;
+            updateSuggestions();
+        });
+        
+        // Función para agregar mensaje del asistente
+        function addAssistantMessage(text, type = "info") {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start';
+            
+            let messageClass = 'assistant-message';
+            if (type === 'warning') {
+                messageClass += ' warning-message';
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="info-badge">AI</div>
+                <div class="${messageClass}">
+                    <p>${text}</p>
+                </div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Función para agregar mensaje del usuario
+        function addUserMessage(text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start justify-end';
+            
+            messageDiv.innerHTML = `
+                <div class="user-message">
+                    <p>${text}</p>
+                </div>
+                <div class="user-badge">MS</div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Función para detectar elementos críticos de seguridad en el texto
+        function detectCriticalElements(text) {
+            const detections = [];
+            
+            // Comprobar cada patrón
+            Object.keys(patternMatchers).forEach(element => {
+                if (!patientCase.safetyElementsDetected[element]) {
+                    const patterns = patternMatchers[element];
+                    const found = patterns.some(pattern => pattern.test(text));
+                    
+                    if (found) {
+                        patientCase.safetyElementsDetected[element] = true;
+                        detections.push(element);
+                        
+                        // Actualizar interfaz
+                        const elementRow = Array.from(criticalElements.children).find(child => 
+                            child.textContent.toLowerCase().includes(translateElement(element).toLowerCase())
+                        );
+                        
+                        if (elementRow) {
+                            const statusSpan = elementRow.querySelector('span:last-child');
+                            statusSpan.className = 'present-element';
+                            statusSpan.textContent = '✓ Presente';
+                        }
+                    }
+                }
+            });
+            
+            // Actualizar progreso
+            updateProgress();
+            
+            return detections;
+        }
+        
+        // Traducir nombres de elementos para la interfaz
+        function translateElement(element) {
+            switch(element) {
+                case 'evolution': return 'Tiempo de evolución';
+                case 'redFlags': return 'Factores de riesgo/Banderas rojas';
+                case 'physicalExam': return 'Examen físico básico';
+                case 'relevantHistory': return 'Antecedentes médicos relevantes';
+                default: return element;
+            }
+        }
+        
+        // Actualizar progreso de documentación
+        function updateProgress() {
+            const totalElements = Object.keys(patientCase.safetyElementsDetected).length + 1; // +1 por el motivo de consulta
+            const completedElements = Object.values(patientCase.safetyElementsDetected).filter(val => val).length + 1;
+            const percentage = Math.round((completedElements / totalElements) * 100);
+            
+            documentationProgress.style.width = `${percentage}%`;
+            documentationText.textContent = `Documentación completa al ${percentage}%`;
+            
+            // Verificar si se cumplieron los mínimos de seguridad
+            const allSafetyElementsMet = Object.values(patientCase.safetyElementsDetected).every(val => val);
+            patientCase.conversationState.minimumSafetyMet = allSafetyElementsMet;
+            
+            // Habilitar el botón si se cumplieron los mínimos
+            generateDocButton.disabled = !allSafetyElementsMet;
+        }
+        
+        // Sugerir información relevante según el contexto
+        function suggestRelevantInformation() {
+            // Determinar qué elementos faltan
+            const missingElements = [];
+            Object.keys(patientCase.safetyElementsDetected).forEach(element => {
+                if (!patientCase.safetyElementsDetected[element]) {
+                    missingElements.push(element);
+                }
+            });
+            
+            if (missingElements.length === 0) {
+                return "Ya ha completado todos los elementos mínimos de seguridad. Puede generar sugerencias clínicas.";
+            }
+            
+            // Elegir uno de los elementos faltantes para sugerir
+            const elementToSuggest = missingElements[Math.floor(Math.random() * missingElements.length)];
+            
+            switch(elementToSuggest) {
+                case 'evolution':
+                    return "No he detectado información sobre el tiempo de evolución del dolor. ¿Desde cuándo presenta este dolor lumbar?";
+                case 'redFlags':
+                    return "Para evaluar la gravedad, necesitaría saber si hay señales de alerta como: trauma reciente, fiebre, pérdida de peso inexplicable, incontinencia, debilidad en extremidades, o dolor que no cede con reposo.";
+                case 'physicalExam':
+                    return "¿Podría proporcionar hallazgos del examen físico? Especialmente sobre movilidad, dolor a la palpación, signos radiculares o neurológicos.";
+                case 'relevantHistory':
+                    return "¿El paciente tiene antecedentes médicos relevantes como hipertensión, diabetes, cirugías previas o traumatismos lumbares anteriores?";
+                default:
+                    return "Necesito más información para evaluar adecuadamente este caso.";
+            }
+        }
+        
+        // Generar recomendaciones basadas en la información disponible
+        function generateRecommendations() {
+            if (!patientCase.conversationState.minimumSafetyMet) {
+                addAssistantMessage("Aún no tengo suficiente información para ofrecer recomendaciones seguras.", "warning");
+                setTimeout(() => {
+                    addAssistantMessage(suggestRelevantInformation(), "info");
+                }, 1000);
+                return;
+            }
+            
+            // Si tenemos los mínimos de seguridad, podemos dar recomendaciones
+            addAssistantMessage("Basado en la información proporcionada, puedo sugerir:", "info");
+            
+            // Las recomendaciones varían según el tipo de profesional
+            if (patientCase.professionalType === "physician") {
+                // Recomendaciones concisas para médicos
+                setTimeout(() => {
+                    addAssistantMessage("1. Considerar diagnóstico de lumbalgia mecánica no específica basado en presentación clínica y ausencia de banderas rojas.\n2. Tratamiento inicial: AINE por 5-7 días, reposo relativo 48h, luego retomar actividad gradualmente.\n3. Reevaluar en 2 semanas si no hay mejoría o antes si hay empeoramiento de síntomas.", "info");
+                }, 1000);
+            } else {
+                // Recomendaciones más detalladas para otros profesionales
+                setTimeout(() => {
+                    addAssistantMessage("1. Diagnóstico funcional:\n   • Dolor lumbar de características mecánicas\n   • Limitación funcional para actividades de flexión y rotación\n   • Posible componente miofascial asociado", "info");
+                    
+                    setTimeout(() => {
+                        addAssistantMessage("2. Plan de tratamiento sugerido:\n   • Fase inicial (1-2 semanas): Terapia manual para alivio de dolor, educación en ergonomía y postura, ejercicios básicos de estabilización\n   • Fase media (2-4 semanas): Progresión a ejercicios de core, movilidad controlada y trabajo propioceptivo\n   • Fase avanzada (4+ semanas): Integración funcional, ejercicios específicos para actividades habituales del paciente", "info");
+                        
+                        setTimeout(() => {
+                            addAssistantMessage("3. Recomendaciones domiciliarias:\n   • Aplicación de calor local 15-20 minutos, 2-3 veces/día\n   • Evitar posiciones estáticas prolongadas\n   • Ejercicios de autopresión para puntos gatillo\n   • Modificación temporal de actividades que exacerban los síntomas", "info");
+                        }, 1000);
+                    }, 1000);
+                }, 1000);
+            }
+        }
+        
+        // Actualizar sugerencias según el tipo de profesional
+        function updateSuggestions() {
+            // Limpiar sugerencias existentes
+            suggestionContainer.innerHTML = '';
+            
+            // Agregar nuevas sugerencias según el tipo de profesional
+            if (patientCase.professionalType === "physician") {
+                // Sugerencias concisas para médicos
+                addSuggestionButton("Paciente 47a, dolor lumbar 3 días sin irradiación, sin trauma previo", "Motivo consulta");
+                addSuggestionButton("No fiebre, no pérdida peso, no debilidad EEII, no incontinencia", "Banderas rojas");
+                addSuggestionButton("EF: contractura paravertebral, dolor palpación L4-L5, no irradiación", "Examen físico");
+                addSuggestionButton("AP: HTA controlada con losartán. No DM. No alergias", "Antecedentes");
+            } else if (patientCase.professionalType === "therapist") {
+                // Sugerencias más detalladas para fisioterapeutas
+                addSuggestionButton("Paciente masculino de 47 años acude por dolor lumbar de 3 días de evolución, posterior a jornada de jardinería. Dolor localizado en región lumbar central, EVA 7/10", "Motivo consulta");
+                addSuggestionButton("Niega trauma directo. Dolor aumenta con flexión de tronco y al incorporarse desde sedestación. Alivia ligeramente en posición supina", "Características dolor");
+                addSuggestionButton("EF: Postura antiálgica con ligera inclinación derecha. Contractura palpable en musculatura paravertebral bilateral, mayor a derecha. Schober 3cm. FABERE y SLR negativos bilateralmente", "Exploración");
+                addSuggestionButton("Antecedentes de HTA controlada con losartán, episodio similar hace 2 años que resolvió con terapia manual y ejercicios", "Historia previa");
+            } else {
+                // Sugerencias genéricas para otros profesionales
+                addSuggestionButton("Paciente de 47 años con dolor lumbar desde hace 3 días, sin irradiación", "Motivo consulta");
+                addSuggestionButton("Niega traumatismos. Dolor aumenta con movimiento y disminuye en reposo", "Características");
+                addSuggestionButton("Hipertensión arterial controlada con losartán. Niega DM, cirugías o alergias", "Antecedentes");
+                addSuggestionButton("¿Qué datos críticos faltan para evaluar este caso?", "Datos faltantes");
+            }
+        }
+        
+        // Agregar un botón de sugerencia
+        function addSuggestionButton(text, label) {
+            const button = document.createElement('button');
+            button.className = 'suggestion-btn';
+            button.dataset.text = text;
+            button.textContent = label;
+            
+            button.addEventListener('click', () => {
+                addUserMessage(text);
+                processUserInput(text);
+            });
+            
+            suggestionContainer.appendChild(button);
+        }
+        
+        // Procesar la entrada del usuario
+        function processUserInput(text) {
+            // Detectar elementos críticos en el texto
+            const newDetections = detectCriticalElements(text);
+            patientCase.conversationState.recentDetections = newDetections;
+            
+            // Reaccionar a lo que el usuario ha escrito
+            setTimeout(() => {
+                if (newDetections.length > 0) {
+                    // Si se detectó nueva información crítica, reconocerla
+                    const detectedElementsText = newDetections.map(elem => translateElement(elem).toLowerCase()).join(', ');
+                    addAssistantMessage(`He registrado información sobre ${detectedElementsText}.`, "info");
+                    
+                    // Si cumplimos todos los mínimos de seguridad, podemos hacer recomendaciones
+                    if (patientCase.conversationState.minimumSafetyMet && newDetections.length > 0) {
+                        setTimeout(() => {
+                            addAssistantMessage("Ya tengo los datos mínimos necesarios para ofrecer recomendaciones seguras. Puede generar el documento clínico o solicitarme sugerencias de tratamiento.", "info");
+                        }, 1000);
+                    } else if (newDetections.length > 0) {
+                        // Sugerir el siguiente elemento a completar
+                        setTimeout(() => {
+                            addAssistantMessage(suggestRelevantInformation(), "info");
+                        }, 1000);
+                    }
+                } else if (text.toLowerCase().includes("recomendaciones") || 
+                          text.toLowerCase().includes("tratamiento") || 
+                          text.toLowerCase().includes("sugerencias") ||
+                          text.toLowerCase().includes("que hacer")) {
+                    // El usuario está pidiendo recomendaciones, verificar si tenemos suficiente información
+                    generateRecommendations();
+                } else if (text.toLowerCase().includes("falta") || 
+                          text.toLowerCase().includes("datos") || 
+                          text.toLowerCase().includes("que necesitas")) {
+                    // El usuario pregunta qué falta
+                    addAssistantMessage(suggestRelevantInformation(), "info");
+                } else {
+                    // Respuesta genérica si no detectamos nada específico
+                    addAssistantMessage("Continúe proporcionando la información clínica. " + suggestRelevantInformation(), "info");
+                }
+            }, 800);
+            
+            userInput.value = '';
+        }
+        
+        // Manejador de eventos para el botón de enviar
+        sendButton.addEventListener('click', () => {
+            const text = userInput.value.trim();
+            if (text) {
+                addUserMessage(text);
+                processUserInput(text);
+            }
+        });
+        
+        // Permitir enviar con Enter
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+        
+        // Manejar botón de generar documento
+        generateDocButton.addEventListener('click', () => {
+            if (patientCase.conversationState.minimumSafetyMet) {
+                addAssistantMessage("Generando documento clínico basado en la información proporcionada...", "info");
+                
+                setTimeout(() => {
+                    if (patientCase.professionalType === "physician") {
+                        // Formato conciso para médicos
+                        addAssistantMessage("📋 DOCUMENTO CLÍNICO GENERADO\n\nPaciente: Carlos Méndez, 47 años\nMotivo: Dolor lumbar\nPresenta información mínima de seguridad completa.\n\nImpresión diagnóstica: Lumbalgia mecánica\n\nPlan:\n1. AINE por 5-7 días\n2. Reposo relativo 48h, luego retomar actividad gradual\n3. Control en 2 semanas\n\nID: DOC-2024-071-CM", "info");
+                    } else {
+                        // Formato detallado para otros profesionales
+                        addAssistantMessage("📋 DOCUMENTO CLÍNICO GENERADO\n\nPaciente: Carlos Méndez, 47 años\nMotivo de consulta: Dolor lumbar\nPresenta información mínima de seguridad completa.\n\nDiagnóstico funcional: Dolor lumbar de características mecánicas con limitación funcional para actividades específicas.\n\nPlan de tratamiento individualizado documentado en el sistema.\n\nRecomendaciones específicas generadas según los datos proporcionados.\n\nID: DOC-2024-071-CM", "info");
+                    }
+                }, 1500);
+            } else {
+                addAssistantMessage("Para generar el documento clínico, primero debe completar los elementos mínimos de seguridad.", "warning");
+            }
+        });
+        
+        // Inicializar sugerencias según el tipo de profesional por defecto
+        updateSuggestions();
+    </script>
+</body>
+</html> 

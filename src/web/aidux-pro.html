@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIDUX Pro - Asistente Clínico Inteligente</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #f5f7fa;
+            --dark-bg: #34495e;
+            --text-color: #333;
+            --light-text: #ecf0f1;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            grid-template-rows: 60px 1fr;
+            grid-template-areas: 
+                "header header"
+                "sidebar main";
+            height: 100vh;
+            max-width: 1600px;
+            margin: 0 auto;
+            box-shadow: var(--box-shadow);
+        }
+        
+        header {
+            grid-area: header;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .sidebar {
+            grid-area: sidebar;
+            background-color: white;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .patient-info {
+            background-color: var(--light-bg);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+        
+        .patient-info h2 {
+            font-size: 16px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .patient-data {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .patient-data .label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .medical-history {
+            margin-top: 20px;
+        }
+        
+        .medical-history h3 {
+            font-size: 16px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .medical-history h3 button {
+            font-size: 12px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .history-section {
+            background-color: var(--light-bg);
+            padding: 10px;
+            border-radius: var(--border-radius);
+            margin-bottom: 12px;
+        }
+        
+        .history-section h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .history-section ul {
+            font-size: 13px;
+            padding-left: 20px;
+        }
+        
+        .main-content {
+            grid-area: main;
+            display: grid;
+            grid-template-rows: 1fr 180px;
+            overflow: hidden;
+        }
+        
+        .chat-container {
+            background-color: white;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .message {
+            max-width: 80%;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            position: relative;
+        }
+        
+        .user-message {
+            background-color: var(--secondary-color);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        
+        .assistant-message {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+        
+        .system-message {
+            background-color: var(--primary-color);
+            color: white;
+            font-style: italic;
+            font-size: 14px;
+            max-width: 100%;
+            text-align: center;
+            padding: 5px 10px;
+        }
+        
+        .input-area {
+            background-color: white;
+            border-top: 1px solid #ddd;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tools-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .tool-button {
+            background-color: var(--light-bg);
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tool-button:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            resize: none;
+        }
+        
+        #send-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 12px 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        #send-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .recommendation {
+            background-color: #f1f8ff;
+            border-left: 4px solid var(--secondary-color);
+            padding: 10px 15px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .evidence {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .evidence span {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        /* Estilos adicionales para análisis clínico */
+        .analysis-container {
+            display: none;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .analysis-header h3 {
+            font-size: 16px;
+            color: var(--primary-color);
+        }
+        
+        .close-analysis {
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .analysis-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .analysis-section {
+            background-color: var(--light-bg);
+            padding: 10px;
+            border-radius: var(--border-radius);
+        }
+        
+        .analysis-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .analysis-section ul {
+            font-size: 13px;
+            padding-left: 20px;
+        }
+        
+        .confidence-level {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .high {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .medium {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .low {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3Z" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 12H15" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 9V15" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>AIDUX Pro</h1>
+            </div>
+            <div class="user-info">
+                <span>Dr. Mauricio Sobarzo</span>
+            </div>
+        </header>
+        
+        <aside class="sidebar">
+            <div class="patient-info">
+                <h2>Información del Paciente</h2>
+                <div class="patient-data">
+                    <div class="label">Nombre:</div>
+                    <div class="value">Carlos Gutiérrez</div>
+                    <div class="label">Edad:</div>
+                    <div class="value">45 años</div>
+                    <div class="label">Género:</div>
+                    <div class="value">Masculino</div>
+                    <div class="label">RUT:</div>
+                    <div class="value">12.345.678-9</div>
+                    <div class="label">Admisión:</div>
+                    <div class="value">15/06/2023</div>
+                </div>
+            </div>
+            
+            <div class="medical-history">
+                <h3>
+                    Historia Clínica
+                    <button id="update-history">Actualizar</button>
+                </h3>
+                
+                <div class="history-section">
+                    <h4>Diagnósticos</h4>
+                    <ul>
+                        <li>Diabetes Mellitus tipo 2 (2018)</li>
+                        <li>Hipertensión arterial (2019)</li>
+                        <li>Sobrepeso (IMC 28.5)</li>
+                    </ul>
+                </div>
+                
+                <div class="history-section">
+                    <h4>Medicamentos actuales</h4>
+                    <ul>
+                        <li>Metformina 850mg BID</li>
+                        <li>Losartán 50mg QD</li>
+                        <li>AAS 100mg QD</li>
+                    </ul>
+                </div>
+                
+                <div class="history-section">
+                    <h4>Alergias</h4>
+                    <ul>
+                        <li>Penicilina (urticaria, dificultad respiratoria)</li>
+                    </ul>
+                </div>
+                
+                <div class="history-section">
+                    <h4>Antecedentes familiares</h4>
+                    <ul>
+                        <li>Padre: Infarto del miocardio (65 años)</li>
+                        <li>Madre: Diabetes tipo 2</li>
+                    </ul>
+                </div>
+                
+                <div class="history-section">
+                    <h4>Hábitos</h4>
+                    <ul>
+                        <li>Tabaquismo: 1 paquete/día (25 años)</li>
+                        <li>Alcohol: Ocasional (fines de semana)</li>
+                        <li>Actividad física: Sedentario</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <div class="chat-container" id="chat">
+                <div class="message system-message">
+                    Iniciando consulta con Carlos Gutiérrez - 15/06/2023
+                </div>
+                
+                <div class="message assistant-message">
+                    Bienvenido a la consulta, Dr. Sobarzo. Estoy listo para ayudarle con el paciente Carlos Gutiérrez. 
+                    Veo que tiene antecedentes de diabetes tipo 2, hipertensión y tabaquismo activo.
+                    ¿En qué puedo asistirle hoy?
+                </div>
+                
+                <div class="message user-message">
+                    El paciente consulta por dolor torácico que comenzó hace 3 días, de carácter opresivo, irradiado a brazo izquierdo. Intensidad 7/10. Se intensifica con el ejercicio y mejora en reposo.
+                </div>
+                
+                <div class="message assistant-message">
+                    Gracias por la información. Dado el cuadro de dolor torácico con características sugerentes de origen cardíaco, junto con los factores de riesgo del paciente (HTA, DM2, tabaquismo, antecedente familiar de IAM), es prioritario descartar un síndrome coronario agudo.
+                    
+                    <div class="recommendation">
+                        Recomiendo realizar de inmediato:
+                        <ul>
+                            <li>ECG de 12 derivaciones</li>
+                            <li>Biomarcadores cardíacos (Troponina ultrasensible)</li>
+                            <li>Evaluación de signos vitales con énfasis en presión arterial</li>
+                        </ul>
+                        <div class="evidence">
+                            <span>Evidencia:</span> Guías AHA/ACC 2021 para evaluación de dolor torácico, Nivel de recomendación I, Evidencia A.
+                        </div>
+                    </div>
+                    
+                    ¿Desea que profundice en algún aspecto del manejo inicial o tiene alguna pregunta adicional?
+                </div>
+                
+                <div id="analysis-container" class="analysis-container">
+                    <div class="analysis-header">
+                        <h3>Análisis Clínico</h3>
+                        <button class="close-analysis">×</button>
+                    </div>
+                    <div class="analysis-content">
+                        <div class="analysis-section">
+                            <h4>Diagnósticos diferenciales</h4>
+                            <ul>
+                                <li>Síndrome coronario agudo <span class="confidence-level high">Alta</span></li>
+                                <li>Disección aórtica <span class="confidence-level medium">Media</span></li>
+                                <li>Pericarditis <span class="confidence-level low">Baja</span></li>
+                                <li>Espasmo esofágico <span class="confidence-level low">Baja</span></li>
+                            </ul>
+                        </div>
+                        <div class="analysis-section">
+                            <h4>Factores de riesgo</h4>
+                            <ul>
+                                <li>Tabaquismo activo (25 años)</li>
+                                <li>Diabetes tipo 2</li>
+                                <li>Hipertensión arterial</li>
+                                <li>Antecedente familiar de IAM</li>
+                                <li>Sobrepeso</li>
+                                <li>Sedentarismo</li>
+                            </ul>
+                        </div>
+                        <div class="analysis-section">
+                            <h4>Banderas rojas</h4>
+                            <ul>
+                                <li>Dolor opresivo irradiado a brazo izquierdo</li>
+                                <li>Intensificación con ejercicio</li>
+                                <li>Intensidad moderada-severa (7/10)</li>
+                                <li>Múltiples factores de riesgo cardiovascular</li>
+                            </ul>
+                        </div>
+                        <div class="analysis-section">
+                            <h4>Recomendaciones</h4>
+                            <ul>
+                                <li>Evaluación cardíaca urgente</li>
+                                <li>Monitorización continua</li>
+                                <li>Evaluación por cardiología</li>
+                                <li>Considerar prueba de esfuerzo tras descartar SCA</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <div class="tools-container">
+                    <button class="tool-button" id="show-analysis">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Análisis
+                    </button>
+                    <button class="tool-button">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9.09 9C9.3251 8.33167 9.78915 7.76811 10.4 7.40913C11.0108 7.05016 11.7289 6.91894 12.4272 7.03871C13.1255 7.15848 13.7588 7.52152 14.2151 8.06353C14.6713 8.60553 14.9211 9.29152 14.92 10C14.92 12 11.92 13 11.92 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Guías
+                    </button>
+                    <button class="tool-button">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Medicamentos
+                    </button>
+                    <button class="tool-button">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 3.13C16.8604 3.3503 17.623 3.8507 18.1676 4.55231C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Especialistas
+                    </button>
+                    <button class="tool-button">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Preguntas
+                    </button>
+                </div>
+                
+                <div class="input-container">
+                    <textarea id="user-input" placeholder="Escriba su consulta o hallazgos clínicos..."></textarea>
+                    <button id="send-button">Enviar</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const chatContainer = document.getElementById("chat");
+            const userInput = document.getElementById("user-input");
+            const sendButton = document.getElementById("send-button");
+            const analysisContainer = document.getElementById("analysis-container");
+            const showAnalysisButton = document.getElementById("show-analysis");
+            const closeAnalysisButton = document.querySelector(".close-analysis");
+            
+            // Función para añadir mensajes al chat
+            function addMessage(text, type) {
+                const messageDiv = document.createElement("div");
+                messageDiv.className = `message ${type}-message`;
+                messageDiv.innerHTML = text;
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            // Evento para enviar mensajes
+            sendButton.addEventListener("click", function() {
+                if (userInput.value.trim() !== "") {
+                    // Añadir mensaje del usuario
+                    addMessage(userInput.value, "user");
+                    
+                    // Simular procesamiento
+                    setTimeout(() => {
+                        processUserInput(userInput.value);
+                    }, 1000);
+                    
+                    userInput.value = "";
+                }
+            });
+            
+            // Evento para enviar con Enter
+            userInput.addEventListener("keypress", function(e) {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendButton.click();
+                }
+            });
+            
+            // Mostrar/ocultar análisis clínico
+            showAnalysisButton.addEventListener("click", function() {
+                analysisContainer.style.display = "block";
+            });
+            
+            closeAnalysisButton.addEventListener("click", function() {
+                analysisContainer.style.display = "none";
+            });
+            
+            // Procesar la entrada del usuario y generar respuestas contextuales
+            function processUserInput(input) {
+                let response = "";
+                const inputLower = input.toLowerCase();
+                
+                // Respuestas basadas en patrones de entrada
+                if (inputLower.includes("resultado") && inputLower.includes("ecg")) {
+                    response = `
+                        Gracias por compartir los resultados del ECG. La elevación del segmento ST en derivaciones V2-V4 junto con inversión de onda T es altamente sugestiva de un síndrome coronario agudo, específicamente un infarto de miocardio con elevación del ST (IAMCEST) de localización anterior.
+                        
+                        <div class="recommendation">
+                            Recomendaciones urgentes:
+                            <ul>
+                                <li>Activar código infarto si está disponible en su centro</li>
+                                <li>Administrar carga de AAS 300mg VO</li>
+                                <li>Considerar angioplastia primaria si está disponible en menos de 120 minutos</li>
+                                <li>Alternativa: terapia fibrinolítica si no hay contraindicaciones y la angioplastia no está disponible oportunamente</li>
+                            </ul>
+                            <div class="evidence">
+                                <span>Evidencia:</span> Guías ESC 2023 para IAMCEST, Nivel de recomendación I, Evidencia A.
+                            </div>
+                        </div>
+                        
+                        ¿Desea que le proporcione el protocolo completo de manejo del IAMCEST según las últimas guías?
+                    `;
+                } else if (inputLower.includes("troponina")) {
+                    response = `
+                        El valor elevado de Troponina I (0.45 ng/mL) confirma el daño miocárdico en curso. En conjunto con las características clínicas y el ECG, estamos frente a un infarto agudo de miocardio.
+                        
+                        <div class="recommendation">
+                            Consideraciones adicionales para el manejo:
+                            <ul>
+                                <li>Antiagregación dual: añadir inhibidor P2Y12 (ticagrelor o clopidogrel)</li>
+                                <li>Anticoagulación: heparina de bajo peso molecular o heparina no fraccionada</li>
+                                <li>Control del dolor: considere opiáceos si el dolor persiste</li>
+                                <li>Oxigenoterapia si saturación <94%</li>
+                            </ul>
+                            <div class="evidence">
+                                <span>Evidencia:</span> Guías AHA/ACC 2022, Nivel de recomendación I, Evidencia A.
+                            </div>
+                        </div>
+                        
+                        Es importante monitorizar estrechamente al paciente por posibles complicaciones como arritmias, insuficiencia cardíaca o shock cardiogénico.
+                    `;
+                } else if (inputLower.includes("antecedentes") || inputLower.includes("factores de riesgo")) {
+                    response = `
+                        Analizando los factores de riesgo cardiovascular del paciente:
+                        
+                        <div class="recommendation">
+                            Factores de riesgo modificables:
+                            <ul>
+                                <li>Tabaquismo activo (25 años, 1 paquete/día): aumenta 2-4 veces el riesgo de SCA</li>
+                                <li>Diabetes Mellitus tipo 2: aumenta 2-3 veces el riesgo cardiovascular</li>
+                                <li>Hipertensión arterial: factor de riesgo mayor para cardiopatía isquémica</li>
+                                <li>Sobrepeso (IMC 28.5): asociado a mayor resistencia a la insulina y dislipidemia</li>
+                                <li>Sedentarismo: factor independiente de riesgo cardiovascular</li>
+                            </ul>
+                            <div class="evidence">
+                                <span>Evidencia:</span> Framingham Heart Study, INTERHEART Study.
+                            </div>
+                        </div>
+                        
+                        Para prevención secundaria, será fundamental abordar todos estos factores con:
+                        <ul>
+                            <li>Cesación tabáquica (terapia farmacológica + apoyo conductual)</li>
+                            <li>Control intensivo de diabetes (meta HbA1c <7%)</li>
+                            <li>Control estricto de PA (<130/80 mmHg)</li>
+                            <li>Estatinas de alta intensidad</li>
+                            <li>Programa de rehabilitación cardíaca</li>
+                        </ul>
+                    `;
+                } else if (inputLower.includes("alta") || inputLower.includes("domicilio")) {
+                    response = `
+                        Para el plan de alta después de completar el manejo agudo del SCA, recomiendo:
+                        
+                        <div class="recommendation">
+                            Medicamentos al alta:
+                            <ul>
+                                <li>AAS 100mg/día indefinidamente</li>
+                                <li>Inhibidor P2Y12 por 12 meses (ticagrelor 90mg BID o clopidogrel 75mg/día)</li>
+                                <li>Estatina de alta intensidad (atorvastatina 40-80mg o rosuvastatina 20-40mg)</li>
+                                <li>IECA/ARA-II (ramipril o losartán)</li>
+                                <li>Betabloqueante (bisoprolol, metoprolol o carvedilol)</li>
+                            </ul>
+                            <div class="evidence">
+                                <span>Evidencia:</span> Guías AHA/ACC/ESC para prevención secundaria post-IAM, Nivel I, Evidencia A.
+                            </div>
+                        </div>
+                        
+                        Seguimiento:
+                        <ul>
+                            <li>Control con cardiología en 7-14 días</li>
+                            <li>Ecocardiograma para evaluar función ventricular (4-6 semanas)</li>
+                            <li>Incorporación a programa de rehabilitación cardíaca</li>
+                            <li>Educación sobre signos de alarma y adherencia a medicamentos</li>
+                            <li>Ajuste de medicamentos para diabetes e hipertensión</li>
+                        </ul>
+                    `;
+                } else {
+                    // Respuesta genérica contextual
+                    response = `
+                        Basado en la presentación clínica del paciente y los hallazgos disponibles, estamos ante un caso altamente sugestivo de un síndrome coronario agudo, con múltiples factores de riesgo cardiovascular predisponentes.
+                        
+                        <div class="recommendation">
+                            Próximos pasos recomendados:
+                            <ul>
+                                <li>Confirmar el diagnóstico con biomarcadores seriados y ECG de seguimiento</li>
+                                <li>Iniciar tratamiento antitrombótico con AAS 300mg y anticoagulación (HBPM)</li>
+                                <li>Estratificar el riesgo utilizando escalas validadas (GRACE, TIMI)</li>
+                                <li>Definir estrategia invasiva vs. conservadora según hallazgos</li>
+                            </ul>
+                            <div class="evidence">
+                                <span>Evidencia:</span> Guías ESC 2020 para SCASEST, Nivel de recomendación I, Evidencia A.
+                            </div>
+                        </div>
+                        
+                        ¿Necesita información adicional sobre el manejo farmacológico inicial o desea consultar sobre algún aspecto específico del caso?
+                    `;
+                }
+                
+                // Añadir respuesta del asistente
+                addMessage(response, "assistant");
+            }
+        });
+    </script>
+</body>
+</html> 
