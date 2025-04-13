@@ -1,7 +1,8 @@
 import React from 'react';
-import { RouteObject } from 'react-router-dom';
+import { RouteObject, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AiduxLayout } from './components/layout/AiduxLayout';
 import ClinicalAssistantPage from './pages/ClinicalAssistantPage';
+import { ProgressPage } from './components/emr/progress';
 
 // Página de inicio que redirigirá a la sección adecuada
 const HomePage = () => (
@@ -47,6 +48,10 @@ const routes: RouteObject[] = [
         element: <ClinicalAssistantPage />
       },
       {
+        path: 'progreso',
+        element: <ProgressPage />
+      },
+      {
         path: 'agenda',
         element: <UnderDevelopmentPage title="Agenda Médica" />
       },
@@ -61,5 +66,11 @@ const routes: RouteObject[] = [
     ]
   }
 ];
+
+// Crear el router con las rutas definidas
+const router = createBrowserRouter(routes);
+
+// Componente que provee el enrutador a la aplicación
+export const AppRouter = () => <RouterProvider router={router} />;
 
 export default routes; 

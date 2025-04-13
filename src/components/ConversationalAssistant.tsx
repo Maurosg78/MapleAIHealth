@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChatBubbleLeftRightIcon, PaperAirplaneIcon, PlusCircleIcon, UserCircleIcon } from '@heroicons/react/solid';
+import { ChatAltIcon, PaperAirplaneIcon, PlusCircleIcon, UserCircleIcon } from '@heroicons/react/solid';
 import { VerificationRequest } from '../services/ClinicalBlindSpotService';
 
 interface Message {
@@ -277,9 +277,9 @@ export const ConversationalAssistant: React.FC<ConversationalAssistantProps> = (
   
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-      <div className="bg-primary-600 text-white px-4 py-3 flex items-center">
-        <ChatBubbleLeftRightIcon className="h-5 w-5 mr-2" />
-        <h2 className="text-lg font-medium">Asistente Clínico AIDUX</h2>
+      <div className="flex items-center p-4 bg-primary-700 text-white">
+        <ChatAltIcon className="h-5 w-5 mr-2" />
+        <h3 className="text-lg font-medium">Asistente Clínico</h3>
       </div>
       
       {/* Área de la conversación */}

@@ -221,6 +221,20 @@ export function AiduxLayout() {
                         </li>
                         <li>
                             <FeatureTooltip 
+                                title="Progreso" 
+                                description="Visualice el progreso de sus pacientes a través del tiempo"
+                            >
+                                <Link
+                                    to="/progreso"
+                                    className={`flex items-center px-4 py-3 text-sm ${isActive('/progreso') ? 'bg-primary-50 text-primary-700 border-r-4 border-primary-600' : 'text-gray-700 hover:bg-gray-100'}`}
+                                >
+                                    <ChartBarIcon className="h-5 w-5" />
+                                    {sidebarOpen && <span className="ml-3">Progreso</span>}
+                                </Link>
+                            </FeatureTooltip>
+                        </li>
+                        <li>
+                            <FeatureTooltip 
                                 title="Agenda" 
                                 description="Gestione citas, horarios y disponibilidad"
                             >
