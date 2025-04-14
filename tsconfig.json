@@ -17,9 +17,11 @@
         "noFallthroughCasesInSwitch": true,
         "forceConsistentCasingInFileNames": true,
         "baseUrl": ".",
+        "esModuleInterop": true,
         "paths": {
             "@/*": ["src/*"]
-        }
+        },
+        "types": ["jest", "node", "@testing-library/jest-dom"]
     },
     "include": ["src"],
     "references": [{ "path": "./tsconfig.node.json" }]

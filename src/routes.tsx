@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteObject, createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { RouteObject, createBrowserRouter } from 'react-router-dom';
 import { AiduxLayout } from './components/layout/AiduxLayout';
 import ClinicalAssistantPage from './pages/ClinicalAssistantPage';
 import { ProgressPage } from './components/emr/progress';
@@ -68,9 +68,6 @@ const routes: RouteObject[] = [
 ];
 
 // Crear el router con las rutas definidas
-const router = createBrowserRouter(routes);
-
-// Componente que provee el enrutador a la aplicación
-export const AppRouter = () => <RouterProvider router={router} />;
+export const router = createBrowserRouter(routes);
 
 export default routes; 

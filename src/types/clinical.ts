@@ -290,4 +290,15 @@ export interface ClinicalDocument {
   createdAt: string;
   updatedAt: string;
   metadata?: Record<string, string | number | boolean | null>;
+}
+
+/**
+ * Estructura de datos para almacenar toda la información SOAP completa
+ */
+export interface SOAPData {
+  patientId: string;
+  subjective: SubjectiveData | null;
+  objective: ObjectiveData | null;
+  assessment: AssessmentData | null;
+  plan: PlanData | null;
 } 

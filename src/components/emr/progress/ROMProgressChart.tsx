@@ -1,72 +1,194 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import clsx from 'clsx';
 import { RangeOfMotionData } from '../../../types/clinical';
 import { ImprovementIndicator } from './ImprovementIndicator';
+import { validateROMValues } from '../../../utils/validation';
 
 interface ROMProgressChartProps {
-  data: {
+  data: Array<{
     date: string;
     rom: RangeOfMotionData;
-  }[];
+  }>;
   joint: string;
   className?: string;
   showNormal?: boolean;
 }
 
-const MAX_BAR_HEIGHT = 200;
 const MIN_BAR_HEIGHT = 10;
 
-export const ROMProgressChart = ({ 
-  data, 
-  joint, 
-  className, 
-  showNormal = true 
+// Componente de barra individual memoizado
+const BarComponent = React.memo(({ 
+  value, 
+  maxValue, 
+  color, 
+  label 
+}: { 
+  value?: number; 
+  maxValue: number; 
+  color: string; 
+  label: string;
+}) => {
+  // Calcular la altura de la barra basada en el valor y el valor máximo
+  const height = useMemo(() => {
+    if (value === undefined) return 0;
+    const calculatedHeight = (value / maxValue) * 150;
+    return Math.max(calculatedHeight, MIN_BAR_HEIGHT);
+  }, [value, maxValue]);
+
+  if (!value && value !== 0) return null;
+
+  return (
+    <div 
+      className={`w-5 bg-${color}-500 rounded-t`}
+      style={{ height: `${height}px` }}
+    >
+      <div className="opacity-0 group-hover:opacity-100 absolute -top-6 bg-blue-700 text-white px-1 rounded text-xs whitespace-nowrap">
+        {label}: {value || 0}°
+      </div>
+    </div>
+  );
+});
+
+BarComponent.displayName = 'BarComponent';
+
+// Componente para la línea normal
+const NormalLine = React.memo(({ value, maxValue }: { value?: number; maxValue: number }) => {
+  const height = useMemo(() => {
+    if (value === undefined) return 0;
+    return (value / maxValue) * 150;
+  }, [value, maxValue]);
+
+  if (!value) return null;
+
+  return (
+    <div 
+      className="absolute w-12 border-t border-gray-400 border-dashed"
+      style={{ bottom: `${height}px` }}
+    />
+  );
+});
+
+NormalLine.displayName = 'NormalLine';
+
+// Componente para una barra de datos (conjunto de active, passive, normal)
+const DataBar = React.memo(({ 
+  item, 
+  maxValue, 
+  showNormal
+}: { 
+  item: { date: string; rom: RangeOfMotionData }; 
+  maxValue: number; 
+  showNormal: boolean;
+}) => {
+  const formattedDate = useMemo(() => {
+    return new Date(item.date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+  }, [item.date]);
+
+  return (
+    <div className="flex flex-col items-center group w-16">
+      <div className="relative flex items-end space-x-1 mb-2">
+        {showNormal && item.rom.normal && item.rom.normal > 0 && (
+          <NormalLine value={item.rom.normal} maxValue={maxValue} />
+        )}
+        
+        <BarComponent 
+          value={item.rom.active} 
+          maxValue={maxValue} 
+          color="blue" 
+          label="Activo" 
+        />
+        
+        <BarComponent 
+          value={item.rom.passive} 
+          maxValue={maxValue} 
+          color="green" 
+          label="Pasivo" 
+        />
+      </div>
+      
+      <span className="text-xs text-gray-500 transform -rotate-45 origin-top-left mt-2">
+        {formattedDate}
+      </span>
+    </div>
+  );
+});
+
+DataBar.displayName = 'DataBar';
+
+// Componente principal optimizado con React.memo
+export const ROMProgressChart = React.memo(({
+  data,
+  joint,
+  className,
+  showNormal = true
 }: ROMProgressChartProps) => {
-  // Procesar los datos para la visualización
-  const { chartData, maxValue, initialValues, latestValues } = useMemo(() => {
+  // Procesar los datos para la visualización de manera optimizada
+  const { chartData, maxValue, initialValues, latestValues, hasValidData } = useMemo(() => {
+    // Definir valores por defecto
+    const defaultResult = { 
+      chartData: [] as Array<{date: string; rom: RangeOfMotionData}>, 
+      maxValue: 100, 
+      initialValues: { active: undefined, passive: undefined, normal: undefined } as RangeOfMotionData, 
+      latestValues: { active: undefined, passive: undefined, normal: undefined } as RangeOfMotionData,
+      hasValidData: false
+    };
+    
     if (!data || data.length === 0) {
-      return { chartData: [], maxValue: 100, initialValues: {}, latestValues: {} };
+      return defaultResult;
+    }
+
+    // Filtramos datos con valores válidos en una sola pasada
+    const validData = data.filter(item => item.rom && validateROMValues(item.rom));
+    
+    if (validData.length === 0) {
+      return defaultResult;
     }
 
     // Ordenar los datos por fecha
-    const sortedData = [...data].sort((a, b) => 
+    const sortedData = [...validData].sort((a, b) => 
       new Date(a.date).getTime() - new Date(b.date).getTime()
     );
 
-    // Guardar valores iniciales y actuales para cálculo de mejora
-    const initialValues = sortedData[0].rom;
-    const latestValues = sortedData[sortedData.length - 1].rom;
+    // Extraer valores iniciales y finales para comparación
+    const initialValues: RangeOfMotionData = {...sortedData[0].rom};
+    const latestValues: RangeOfMotionData = {...sortedData[sortedData.length - 1].rom};
 
-    // Encontrar el valor máximo para escalar las barras
-    let max = 0;
-    data.forEach(item => {
-      if (item.rom.active && item.rom.active > max) max = item.rom.active;
-      if (item.rom.passive && item.rom.passive > max) max = item.rom.passive;
-      if (showNormal && item.rom.normal && item.rom.normal > max) max = item.rom.normal;
-    });
-
-    // Asegurar un valor máximo razonable
-    const maxValue = Math.max(max, 90);
+    // Encontrar el valor máximo para escalar las barras en una sola pasada
+    const max = validData.reduce((maxVal, item) => {
+      const { active, passive, normal } = item.rom;
+      let localMax = maxVal;
+      
+      if (active !== undefined && active > localMax) localMax = active;
+      if (passive !== undefined && passive > localMax) localMax = passive;
+      if (showNormal && normal !== undefined && normal > localMax) localMax = normal;
+      
+      return localMax;
+    }, 0);
 
     return {
       chartData: sortedData,
-      maxValue,
+      maxValue: max || 100, // Asegurar un valor mínimo de 100 si no hay datos
       initialValues,
-      latestValues
+      latestValues,
+      hasValidData: true
     };
   }, [data, showNormal]);
 
-  // Calcular la altura de la barra basada en el valor y el valor máximo
-  const calculateBarHeight = (value: number | undefined) => {
-    if (!value) return MIN_BAR_HEIGHT;
-    const height = (value / maxValue) * MAX_BAR_HEIGHT;
-    return Math.max(height, MIN_BAR_HEIGHT);
-  };
+  // Generar valores de referencia en función del máximo
+  const referenceValues = useMemo(() => {
+    return [0, 25, 50, 75, 100].map(percent => ({
+      percent,
+      value: Math.round(maxValue * (percent / 100))
+    }));
+  }, [maxValue]);
 
-  if (!data || data.length === 0) {
+  // Si no hay datos válidos, mostrar mensaje apropiado
+  if (!hasValidData) {
     return (
-      <div className="flex items-center justify-center h-40 bg-gray-50 rounded-lg">
-        <p className="text-gray-500">No hay datos disponibles para {joint}</p>
+      <div className="text-center p-4 text-gray-500">
+        {!data || data.length === 0 
+          ? `No hay datos de progreso disponibles para ${joint}` 
+          : `Los datos de ROM no son válidos para ${joint}`}
       </div>
     );
   }
@@ -76,7 +198,7 @@ export const ROMProgressChart = ({
       <div className="flex justify-between items-start mb-4">
         <h3 className="font-medium text-gray-900">Progreso ROM: {joint}</h3>
         
-        {data.length > 1 && (
+        {hasValidData && (
           <div className="flex flex-col space-y-1">
             <div className="flex items-center">
               <span className="text-xs text-gray-500 mr-2">Activo:</span>
@@ -119,14 +241,14 @@ export const ROMProgressChart = ({
         <div className="relative h-[250px]">
           {/* Líneas de referencia */}
           <div className="absolute left-0 right-0 top-0 bottom-0">
-            {[0, 25, 50, 75, 100].map((percent) => (
+            {referenceValues.map(({ percent, value }) => (
               <div 
                 key={percent} 
                 className="absolute left-0 right-0 border-t border-gray-200" 
                 style={{ top: `${100 - percent}%` }}
               >
                 <span className="absolute -left-7 -translate-y-1/2 text-xs text-gray-500">
-                  {Math.round(maxValue * (percent / 100))}°
+                  {value}°
                 </span>
               </div>
             ))}
@@ -135,47 +257,16 @@ export const ROMProgressChart = ({
           {/* Barras del gráfico */}
           <div className="absolute left-0 right-0 bottom-0 flex items-end justify-around h-full">
             {chartData.map((item, index) => (
-              <div key={index} className="flex flex-col items-center group w-16">
-                {/* Barras de datos */}
-                <div className="relative flex items-end space-x-1 mb-2">
-                  {/* Valor Normal (línea) */}
-                  {showNormal && item.rom.normal && item.rom.normal > 0 && (
-                    <div 
-                      className="absolute w-12 border-t border-gray-400 border-dashed"
-                      style={{ bottom: `${calculateBarHeight(item.rom.normal)}px` }}
-                    />
-                  )}
-                  
-                  {/* Valor Activo */}
-                  <div 
-                    className="w-5 bg-blue-500 rounded-t"
-                    style={{ height: `${calculateBarHeight(item.rom.active)}px` }}
-                  >
-                    <div className="opacity-0 group-hover:opacity-100 absolute -top-6 left-0 bg-blue-700 text-white px-1 rounded text-xs whitespace-nowrap">
-                      Activo: {item.rom.active || 0}°
-                    </div>
-                  </div>
-                  
-                  {/* Valor Pasivo */}
-                  <div 
-                    className="w-5 bg-green-500 rounded-t"
-                    style={{ height: `${calculateBarHeight(item.rom.passive)}px` }}
-                  >
-                    <div className="opacity-0 group-hover:opacity-100 absolute -top-6 right-0 bg-green-700 text-white px-1 rounded text-xs whitespace-nowrap">
-                      Pasivo: {item.rom.passive || 0}°
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Fecha */}
-                <span className="text-xs text-gray-500 transform -rotate-45 origin-top-left mt-2">
-                  {new Date(item.date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}
-                </span>
-              </div>
+              <DataBar 
+                key={`${item.date}-${index}`}
+                item={item}
+                maxValue={maxValue}
+                showNormal={showNormal}
+              />
             ))}
           </div>
         </div>
       </div>
     </div>
   );
-}; 
+}); 

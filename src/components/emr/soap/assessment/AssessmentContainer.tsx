@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AssessmentData, SpecialtyType } from '../../../../types/clinical';
 import { useForm, Controller } from 'react-hook-form';
+import { ValidationContainer } from '../validation';
+import { debounce } from '../../../../utils/debounce';
 
 interface AssessmentContainerProps {
   patientId: string;
   specialty: SpecialtyType;
   visitId?: string;
   readOnly?: boolean;
+  onDataChange?: (data: AssessmentData) => void;
 }
 
 /**
@@ -18,15 +21,18 @@ export default function AssessmentContainer({
   patientId, // Incluido para coherencia con otros componentes SOAP
   specialty,
   visitId,
-  readOnly = false
+  readOnly = false,
+  onDataChange
 }: AssessmentContainerProps) {
   const [loading, setLoading] = useState(false);
   // const [error, setError] = useState<string | null>(null); // No utilizado por ahora
   const [error] = useState<string | null>(null);
+  const [showValidation, setShowValidation] = useState(false);
+  const [formData, setFormData] = useState<AssessmentData | null>(null);
+  const [autoValidateAfterEdit, setAutoValidateAfterEdit] = useState(false);
   
   // Configuración dinámica según especialidad
   // La función está definida para uso futuro
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getSpecialtyConfig = () => {
     switch(specialty) {
       case 'physiotherapy':
@@ -69,7 +75,7 @@ export default function AssessmentContainer({
   
   const specialtyConfig = getSpecialtyConfig(); // Necesario para las nuevas secciones
   
-  const { control, handleSubmit, formState: { errors }, setValue } = useForm<AssessmentData>({
+  const { control, handleSubmit, formState: { errors }, setValue, watch } = useForm<AssessmentData>({
     defaultValues: {
       diagnosis: '',
       clinicalFindings: '',
@@ -118,9 +124,42 @@ export default function AssessmentContainer({
     }
   }, [visitId, setValue]);
   
+  // Función debounce para actualizar los datos después de que el usuario deje de escribir
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const updateFormData = useCallback(
+    debounce((data: AssessmentData) => {
+      setFormData(data);
+      
+      if (onDataChange) {
+        onDataChange(data);
+      }
+      
+      // Si autoValidateAfterEdit está activado, mostrar validación
+      if (autoValidateAfterEdit) {
+        setShowValidation(true);
+      }
+    }, 500),
+    [onDataChange, autoValidateAfterEdit]
+  );
+  
+  // Observar los cambios en el formulario para validación en tiempo real
+  useEffect(() => {
+    const subscription = watch((data) => {
+      updateFormData(data as AssessmentData);
+    });
+    
+    return () => subscription.unsubscribe();
+  }, [watch, updateFormData]);
+  
   const onSubmit = (data: AssessmentData) => {
     // Aquí iría la lógica para guardar los datos
     console.log('Formulario Evaluación:', data);
+    setFormData(data);
+    setShowValidation(true);
+    
+    if (onDataChange) {
+      onDataChange(data);
+    }
   };
   
   if (loading) return <div className="flex justify-center p-4">Cargando datos del paciente...</div>;
@@ -128,6 +167,16 @@ export default function AssessmentContainer({
   
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Mostrar errores de validación */}
+      {formData && (
+        <ValidationContainer 
+          data={formData}
+          specialty={specialty}
+          section="assessment"
+          showValidation={showValidation}
+        />
+      )}
+      
       <div className="bg-white shadow-sm rounded-lg divide-y">
         {/* Diagnóstico */}
         <div className="p-4">
@@ -538,12 +587,43 @@ export default function AssessmentContainer({
         
         {/* Botones de acción */}
         {!readOnly && (
-          <div className="p-4 flex justify-end">
+          <div className="flex justify-between mt-6">
+            <div className="flex items-center space-x-2">
+              <button
+                type="button"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                onClick={() => {
+                  setShowValidation(true);
+                  // Forzar validación con los datos actuales
+                  const currentData = watch();
+                  setFormData(currentData);
+                  if (onDataChange) {
+                    onDataChange(currentData);
+                  }
+                }}
+              >
+                Validar
+              </button>
+              
+              <div className="flex items-center space-x-2 ml-4">
+                <input
+                  type="checkbox"
+                  id="autoValidate"
+                  checked={autoValidateAfterEdit}
+                  onChange={(e) => setAutoValidateAfterEdit(e.target.checked)}
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                />
+                <label htmlFor="autoValidate" className="text-sm text-gray-700">
+                  Validar automáticamente
+                </label>
+              </div>
+            </div>
+            
             <button
               type="submit"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
-              Guardar evaluación
+              Guardar
             </button>
           </div>
         )}

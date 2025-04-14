@@ -1,6 +1,7 @@
 # Sprint 4: Módulo Base de Fisioterapia - Estado Actual
 
 > **Objetivo:** Implementar estructura SOAP y evaluación física MSK básica con arquitectura expandible.
+> **Estado:** ✅ COMPLETADO
 
 ## Tareas y Estado Actual
 
@@ -17,12 +18,12 @@
 - ✅ Implementados campos básicos para evaluación MSK
 - ✅ Estructura adaptable para cada especialidad
 - ✅ Revisar coherencia entre componentes SOAP
-- ❌ Validar que todos los campos necesarios estén presentes
+- ✅ Validar que todos los campos necesarios estén presentes
 
 ### [E3] Registro mediciones ROM/fuerza (sistema de métricas)
 - ✅ Implementada interfaz RangeOfMotionData
 - ✅ Componente de tabla para mediciones ROM
-- ❌ Optimizar rendimiento de componentes de medición
+- ✅ Optimizar rendimiento de componentes de medición
 - ✅ Implementar visualización de progreso entre mediciones
 
 ### [E4] Sistema seguimiento visual básico (componente reutilizable)
@@ -31,15 +32,21 @@
 - ✅ Mejorar rendimiento de AnatomicalSelector
 - ✅ Optimizar accesibilidad de componentes visuales
 
-## Prioridades Actuales
+## Prioridades Completadas
 
 1. **Alta:** ~~Corregir problemas de tipado en SoapContainer~~ ✅ COMPLETADO
 2. **Alta:** ~~Optimizar rendimiento de AnatomicalSelector y PainScaleInput~~ ✅ COMPLETADO
 3. **Media:** ~~Implementar visualización de progreso entre mediciones~~ ✅ COMPLETADO
 4. **Media:** ~~Validar coherencia entre componentes SOAP~~ ✅ COMPLETADO
+5. **Alta:** ~~Validar que todos los campos necesarios estén presentes~~ ✅ COMPLETADO
+6. **Alta:** ~~Optimizar rendimiento de componentes de medición~~ ✅ COMPLETADO
 
-## Deuda Técnica Identificada
+## Deuda Técnica Pendiente para Sprint 5
 
 - Resolver advertencias de ESLint sobre tipos "any"
 - Mejorar accesibilidad en componentes
-- Crear pruebas unitarias para los componentes 
+- Crear pruebas unitarias para los componentes
+
+## Próximo Sprint
+
+Planificación para Sprint 5: Gestión de Planes de Tratamiento 

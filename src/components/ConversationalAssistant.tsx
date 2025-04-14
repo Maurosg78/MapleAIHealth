@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChatAltIcon, PaperAirplaneIcon, PlusCircleIcon, UserCircleIcon } from '@heroicons/react/solid';
 import { VerificationRequest } from '../services/ClinicalBlindSpotService';
 
@@ -36,33 +36,15 @@ export const ConversationalAssistant: React.FC<ConversationalAssistantProps> = (
   onUpdateCase,
   onRequestFullForm
 }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [userInput, setUserInput] = useState('');
-  const [currentField, setCurrentField] = useState<string | null>(null);
-  const [activeConversation, setActiveConversation] = useState(false);
-  
   const chatEndRef = useRef<HTMLDivElement>(null);
   
-  // Scroll al final de la conversación cuando se agregan mensajes
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [userInput, setUserInput] = useState('');
+  const [activeConversation, setActiveConversation] = useState(false);
+  const [currentField, setCurrentField] = useState<string | null>(null);
   
-  // Iniciar conversación cuando se carga el componente
-  useEffect(() => {
-    if (messages.length === 0) {
-      startConversation();
-    }
-  }, []);
-  
-  // Actualizar el asistente cuando cambian los campos faltantes
-  useEffect(() => {
-    if (activeConversation && missingFields.length > 0 && !currentField) {
-      suggestNextField();
-    }
-  }, [missingFields, activeConversation]);
-  
-  const startConversation = () => {
+  // Definir funciones con useCallback antes de usarlas en useEffect
+  const startConversation = useCallback(() => {
     const initialMessages: Message[] = [];
     
     // Mensaje de bienvenida inicial
@@ -122,9 +104,27 @@ export const ConversationalAssistant: React.FC<ConversationalAssistantProps> = (
     
     setMessages(initialMessages);
     setActiveConversation(true);
-  };
-  
-  const suggestNextField = () => {
+  }, [isNewPatient, patientName, missingFields]);
+
+  const addMessage = useCallback((
+    sender: 'assistant' | 'user', 
+    text: string, 
+    type?: 'suggestion' | 'question' | 'warning' | 'info',
+    field?: string
+  ) => {
+    const newMessage: Message = {
+      id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      sender,
+      text,
+      timestamp: new Date(),
+      type,
+      field
+    };
+    
+    setMessages(prev => [...prev, newMessage]);
+  }, []);
+
+  const suggestNextField = useCallback(() => {
     if (missingFields.length === 0 || currentField) return;
     
     // Seleccionar el siguiente campo faltante
@@ -177,7 +177,26 @@ export const ConversationalAssistant: React.FC<ConversationalAssistantProps> = (
     
     // Agregar la pregunta a la conversación
     addMessage('assistant', question, 'question', nextField);
-  };
+  }, [missingFields, currentField, patientName, addMessage]);
+  
+  // Scroll al final de la conversación cuando se agregan mensajes
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+  
+  // Iniciar conversación cuando se carga el componente
+  useEffect(() => {
+    if (messages.length === 0) {
+      startConversation();
+    }
+  }, [messages.length, startConversation]);
+  
+  // Actualizar el asistente cuando cambian los campos faltantes
+  useEffect(() => {
+    if (activeConversation && missingFields.length > 0 && !currentField) {
+      suggestNextField();
+    }
+  }, [missingFields, activeConversation, currentField, suggestNextField]);
   
   const handleUserResponse = () => {
     if (!userInput.trim()) return;
@@ -232,24 +251,6 @@ export const ConversationalAssistant: React.FC<ConversationalAssistantProps> = (
     
     // Limpiar la entrada del usuario
     setUserInput('');
-  };
-  
-  const addMessage = (
-    sender: 'assistant' | 'user', 
-    text: string, 
-    type?: 'suggestion' | 'question' | 'warning' | 'info',
-    field?: string
-  ) => {
-    const newMessage: Message = {
-      id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-      sender,
-      text,
-      timestamp: new Date(),
-      type,
-      field
-    };
-    
-    setMessages(prevMessages => [...prevMessages, newMessage]);
   };
   
   const getMessageClasses = (message: Message): string => {

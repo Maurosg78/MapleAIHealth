@@ -140,7 +140,7 @@ class PatientStatusService {
   }
   
   /**
-   * Marca un paciente como nuevo para una condición específica
+   * Marca un nuevo episodio para un paciente
    * 
    * @param patientId ID del paciente
    * @param diagnosisCodes Códigos de diagnóstico a registrar
@@ -149,14 +149,15 @@ class PatientStatusService {
   async markAsNewEpisode(
     patientId: string,
     diagnosisCodes: string[]
-  ): Promise<{success: boolean, patientId: string, episodeId: string}> {
+  ): Promise<{success: boolean, patientId: string, episodeId: string, diagnoses: string[]}> {
     // En un entorno real, esto crearía un nuevo episodio en la base de datos
     // Para esta simulación, solo devolvemos un resultado exitoso
     
     return {
       success: true,
       patientId,
-      episodeId: `EP-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`
+      episodeId: `EP-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`,
+      diagnoses: diagnosisCodes
     };
   }
 }

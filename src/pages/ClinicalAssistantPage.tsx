@@ -56,27 +56,24 @@ const ClinicalAssistantPage: React.FC = () => {
   
   // Verificar si es un paciente nuevo o recurrente
   useEffect(() => {
-    // Sólo verificar si hay un ID de paciente
     if (clinicalCase.patientInfo?.id) {
       const checkPatientStatus = async () => {
         try {
-          // Obtener diagnósticos actuales (si existen)
+          const patientId = clinicalCase.patientInfo?.id || '';
           const currentDiagnoses = clinicalCase.medicalPlan?.pendingDiagnosis || [];
           
-          // Verificar estado del paciente
           const statusResult = await patientStatusService.checkPatientStatus(
-            clinicalCase.patientInfo!.id!,
+            patientId,
             currentDiagnoses
           );
           
-          // Actualizar estados
           setIsNewPatient(statusResult.isNew);
           setIsNewCondition(statusResult.isNewForCondition);
           
-          // Si no es un paciente nuevo, obtener sugerencias del historial
+          // Si el paciente tiene historial, cargar sugerencias relevantes
           if (!statusResult.isNew) {
             const suggestions = await patientStatusService.getSuggestedHistoryItems(
-              clinicalCase.patientInfo!.id!,
+              patientId,
               currentDiagnoses
             );
             setHistorySuggestions(suggestions);
@@ -91,7 +88,7 @@ const ClinicalAssistantPage: React.FC = () => {
       
       checkPatientStatus();
     }
-  }, [clinicalCase.patientInfo?.id, clinicalCase.medicalPlan?.pendingDiagnosis]);
+  }, [clinicalCase.patientInfo, clinicalCase.medicalPlan?.pendingDiagnosis]);
   
   // Ejecutar la verificación al cargar o cuando cambia el caso clínico
   useEffect(() => {
