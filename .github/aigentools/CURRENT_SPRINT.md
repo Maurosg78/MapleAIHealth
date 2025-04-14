@@ -23,7 +23,7 @@
 - ✅ Implementada interfaz RangeOfMotionData
 - ✅ Componente de tabla para mediciones ROM
 - ❌ Optimizar rendimiento de componentes de medición
-- ❌ Implementar visualización de progreso entre mediciones
+- ✅ Implementar visualización de progreso entre mediciones
 
 ### [E4] Sistema seguimiento visual básico (componente reutilizable)
 - ✅ Implementado componente AnatomicalSelector
@@ -35,7 +35,7 @@
 
 1. **Alta:** ~~Corregir problemas de tipado en SoapContainer~~ ✅ COMPLETADO
 2. **Alta:** ~~Optimizar rendimiento de AnatomicalSelector y PainScaleInput~~ ✅ COMPLETADO
-3. **Media:** Implementar visualización de progreso entre mediciones
+3. **Media:** ~~Implementar visualización de progreso entre mediciones~~ ✅ COMPLETADO
 4. **Media:** Validar coherencia entre componentes SOAP
 
 ## Deuda Técnica Identificada
