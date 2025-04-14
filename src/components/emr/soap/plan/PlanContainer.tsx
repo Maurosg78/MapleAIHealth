@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PlanData, SpecialtyType } from '../../../../types/clinical';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -19,17 +19,17 @@ const ensureItemsHaveIds = (items: string[] = []): ItemWithId[] => {
     if (typeof value === 'string') {
       return { id: generateId(), value };
     }
-    return value as unknown as ItemWithId;
+    return value as ItemWithId;
   });
 };
 
 interface PlanContainerProps {
-  readonly patientId?: string;
-  readonly visitId?: string;
-  readonly specialty: SpecialtyType;
-  readonly onDataChange?: (data: PlanData) => void;
-  readonly initialData?: PlanData;
-  readonly readOnly?: boolean;
+  patientId: string; // Ahora es obligatorio para ser coherente con los otros componentes
+  specialty: SpecialtyType;
+  visitId?: string;
+  onDataChange?: (data: PlanData) => void;
+  initialData?: PlanData;
+  readOnly?: boolean;
 }
 
 /**
@@ -37,14 +37,13 @@ interface PlanContainerProps {
  * Diseñado para ser adaptable a diferentes especialidades médicas
  */
 export default function PlanContainer({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  patientId, // Incluido para coherencia con otros componentes SOAP
+  patientId, // Ahora ya no es opcional y se elimina el comentario de no uso
   visitId,
   specialty,
   onDataChange,
   initialData,
   readOnly = false,
-}: Readonly<PlanContainerProps>) {
+}: PlanContainerProps) { // Se elimina el Readonly para ser coherente con otros componentes
   const [loading, setLoading] = useState(false);
   const [error] = useState<string | null>(null);
   
@@ -119,7 +118,7 @@ export default function PlanContainer({
   const specialtyConfig = getSpecialtyConfig();
   
   const { control, handleSubmit, formState: { errors }, setValue, watch } = useForm<PlanData>({
-    defaultValues: {
+    defaultValues: initialData || {
       goals: [],
       shortTermGoals: [],
       longTermGoals: [],
@@ -149,7 +148,17 @@ export default function PlanContainer({
   const [longTermGoalItems, setLongTermGoalItems] = useState<ItemWithId[]>([]);
   const [contraindicationItems, setContraindicationItems] = useState<ItemWithId[]>([]);
   
-  // Inicializar las listas con ID cuando se cargan los datos del formulario
+  // Simplificado: inicializar las listas con ID desde los datos iniciales
+  useEffect(() => {
+    if (initialData) {
+      setGoalItems(ensureItemsHaveIds(initialData.goals || []));
+      setShortTermGoalItems(ensureItemsHaveIds(initialData.shortTermGoals || []));
+      setLongTermGoalItems(ensureItemsHaveIds(initialData.longTermGoals || []));
+      setContraindicationItems(ensureItemsHaveIds(initialData.contraindications || []));
+    }
+  }, [initialData]);
+  
+  // Efecto para sincronizar las listas cuando cambian los valores del formulario
   useEffect(() => {
     const goals = watch('goals');
     const shortTermGoals = watch('shortTermGoals');
@@ -168,78 +177,84 @@ export default function PlanContainer({
     if (contraindications?.length) {
       setContraindicationItems(ensureItemsHaveIds(contraindications));
     }
-  }, [watch('goals'), watch('shortTermGoals'), watch('longTermGoals'), watch('contraindications')]);
+  }, [watch]);
   
-  // Gestión del estado inicial con los datos proporcionados
+  // Cargar datos existentes si hay un visitId (coherente con otros componentes)
   useEffect(() => {
-    if (initialData) {
-      // Inicializar el estado con los datos proporcionados
-      setGoalItems(ensureItemsHaveIds(initialData.goals || []));
-      setShortTermGoalItems(ensureItemsHaveIds(initialData.shortTermGoals || []));
-      setLongTermGoalItems(ensureItemsHaveIds(initialData.longTermGoals || []));
-      setContraindicationItems(ensureItemsHaveIds(initialData.contraindications || []));
+    if (visitId && !initialData) {
+      setLoading(true);
+      // Aquí iría la lógica para cargar datos existentes desde la API
+      // Por ahora solo simulamos un delay
+      setTimeout(() => {
+        const mockData: PlanData = {
+          goals: ['Reducir dolor lumbar', 'Mejorar movilidad'],
+          shortTermGoals: ['Aumentar ROM lumbar 10°', 'Disminuir dolor 2/10'],
+          longTermGoals: ['Retornar a actividades deportivas', 'Trabajar sin dolor'],
+          treatment: 'Terapia manual combinada con ejercicios propioceptivos',
+          recommendations: 'Evitar sedestación prolongada',
+          homeExerciseProgram: 'Programa de 3 ejercicios diarios de estabilización',
+          followUpPlan: 'Reevaluación en 2 semanas',
+          expectedOutcomes: 'Reducción del dolor y mejora de la función en 4-6 semanas',
+          referrals: '',
+          treatmentFrequency: '2_semana',
+          treatmentDuration: '6 semanas',
+          interventions: {
+            manual: ['movilizacion', 'tejido_blando'],
+            exercises: ['estabilizacion', 'fortalecimiento'],
+            modalities: ['calor'],
+            education: ['postura', 'ergonomia'],
+          },
+          reevaluationPlan: 'Reevaluar cada 6 sesiones',
+          precautions: ['sintomas_neurologicos'],
+          contraindications: ['Ejercicios de flexión intensa']
+        };
+        
+        // Establecer los valores en el formulario
+        Object.entries(mockData).forEach(([key, value]) => {
+          setValue(key as keyof PlanData, value);
+        });
+        
+        // Actualizar las listas de elementos con ID
+        setGoalItems(ensureItemsHaveIds(mockData.goals));
+        setShortTermGoalItems(ensureItemsHaveIds(mockData.shortTermGoals));
+        setLongTermGoalItems(ensureItemsHaveIds(mockData.longTermGoals));
+        setContraindicationItems(ensureItemsHaveIds(mockData.contraindications || []));
+        
+        setLoading(false);
+      }, 500);
     }
-  }, [initialData]);
+  }, [visitId, initialData, setValue]);
   
-  // Referencia para almacenar la última versión de los datos observados
-  const watchedValuesRef = useRef({
-    treatment: '',
-    recommendations: '',
-    homeExerciseProgram: '',
-    followUpPlan: '',
-    expectedOutcomes: '',
-    referrals: '',
-    treatmentFrequency: undefined as string | undefined,
-    treatmentDuration: undefined as string | undefined,
-    interventions: undefined as PlanData['interventions'],
-    reevaluationPlan: undefined as string | undefined,
-    precautions: [] as string[]
-  });
-  
-  // Actualizar la referencia cuando cambian los valores observados
-  useEffect(() => {
-    watchedValuesRef.current = {
-      treatment: watch('treatment') || '',
-      recommendations: watch('recommendations') || '',
-      homeExerciseProgram: watch('homeExerciseProgram') || '',
-      followUpPlan: watch('followUpPlan') || '',
-      expectedOutcomes: watch('expectedOutcomes') || '',
-      referrals: watch('referrals') || '',
-      treatmentFrequency: watch('treatmentFrequency'),
-      treatmentDuration: watch('treatmentDuration'),
-      interventions: watch('interventions'),
-      reevaluationPlan: watch('reevaluationPlan'),
-      precautions: watch('precautions') || []
-    };
-  }, [
-    watch('treatment'),
-    watch('recommendations'),
-    watch('homeExerciseProgram'),
-    watch('followUpPlan'),
-    watch('expectedOutcomes'),
-    watch('referrals'),
-    watch('treatmentFrequency'),
-    watch('treatmentDuration'),
-    watch('interventions'),
-    watch('reevaluationPlan'),
-    watch('precautions')
-  ]);
-  
-  // Notificar cambios al componente padre
+  // Efecto simplificado para notificar cambios
   useEffect(() => {
     if (onDataChange) {
-      // Extraer los valores de los items con ID
-      const planData: PlanData = {
-        goals: goalItems.map(item => item.value),
-        shortTermGoals: shortTermGoalItems.map(item => item.value),
-        longTermGoals: longTermGoalItems.map(item => item.value),
-        contraindications: contraindicationItems.map(item => item.value),
-        // Usar los valores de la referencia para evitar re-renderizados
-        ...watchedValuesRef.current
-      };
-      onDataChange(planData);
+      const currentValues = watch();
+      onDataChange(currentValues);
     }
-  }, [goalItems, shortTermGoalItems, longTermGoalItems, contraindicationItems, onDataChange]);
+  }, [watch, onDataChange]);
+  
+  const onSubmit = (data: PlanData) => {
+    // Aquí iría la lógica para guardar los datos
+    console.log('Formulario Plan:', data);
+    if (onDataChange) {
+      onDataChange(data);
+    }
+  };
+  
+  const handleCheckboxChange = (
+    field: { value: string[] | undefined; onChange: (value: string[]) => void },
+    value: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const checked = e.target.checked;
+    const currentValues = field.value || [];
+    
+    if (checked) {
+      field.onChange([...currentValues, value]);
+    } else {
+      field.onChange(currentValues.filter(v => v !== value));
+    }
+  };
   
   // Manejador para añadir un nuevo elemento con ID
   const handleAddItemWithId = useCallback((
@@ -279,64 +294,6 @@ export default function PlanContainer({
     setItems(newItems);
     field.onChange(newItems.map(item => item.value));
   }, []);
-  
-  // Cargar datos existentes si hay un visitId
-  useEffect(() => {
-    if (visitId) {
-      setLoading(true);
-      // Aquí iría la lógica para cargar datos existentes desde la API
-      // Por ahora solo simulamos un delay
-      setTimeout(() => {
-        const mockData: PlanData = {
-          goals: ['Recuperar rango de movilidad lumbar', 'Reducir dolor'],
-          shortTermGoals: ['Reducir dolor en 50% en 2 semanas', 'Mejorar tolerancia a sedestación 30 min'],
-          longTermGoals: ['Retorno a actividades deportivas en 2 meses', 'Prevenir recidivas'],
-          treatment: 'Terapia manual combinada con ejercicio terapéutico progresivo',
-          recommendations: 'Evitar posiciones estáticas prolongadas. Realizar pausas activas cada hora.',
-          homeExerciseProgram: 'Programa de ejercicios adjunto para realizar 2 veces al día.',
-          followUpPlan: 'Reevaluación en 2 semanas. Ajuste de plan según evolución.',
-          expectedOutcomes: 'Se espera resolución de síntomas en 4-6 semanas con adecuada adherencia.',
-          referrals: 'No se requieren al momento.',
-          treatmentFrequency: '2_semana',
-          treatmentDuration: '4 semanas',
-          interventions: {
-            manual: ['movilizacion', 'tejido_blando'],
-            exercises: ['estiramiento', 'fortalecimiento', 'estabilizacion'],
-            modalities: ['calor'],
-            education: ['ergonomia', 'higiene_postural'],
-          },
-          reevaluationPlan: 'Reevaluar después de 5 sesiones',
-          precautions: ['dolor_severo'],
-          contraindications: ['No realizar manipulación en fase aguda']
-        };
-        
-        // Establecer los valores en el formulario
-        Object.entries(mockData).forEach(([key, value]) => {
-          setValue(key as keyof PlanData, value);
-        });
-        
-        setLoading(false);
-      }, 500);
-    }
-  }, [visitId, setValue]);
-  
-  const onSubmit = (data: PlanData) => {
-    // Aquí iría la lógica para guardar los datos
-    console.log('Formulario Plan:', data);
-  };
-  
-  // Manejador para checkboxes
-  const handleCheckboxChange = (
-    field: { value: string[] | undefined; onChange: (value: string[]) => void },
-    value: string,
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const checked = e.target.checked;
-    const newValue = checked
-      ? [...(field.value || []), value]
-      : (field.value || []).filter((v: string) => v !== value);
-    field.onChange(newValue);
-  };
   
   if (loading) return <div className="flex justify-center p-4">Cargando datos del paciente...</div>;
   if (error) return <div className="text-red-500 p-4">{error}</div>;

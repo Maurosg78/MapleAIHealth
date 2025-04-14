@@ -16,7 +16,7 @@
 ### [E2] Campos evaluación física MSK (framework genérico)
 - ✅ Implementados campos básicos para evaluación MSK
 - ✅ Estructura adaptable para cada especialidad
-- ❌ Revisar coherencia entre componentes SOAP
+- ✅ Revisar coherencia entre componentes SOAP
 - ❌ Validar que todos los campos necesarios estén presentes
 
 ### [E3] Registro mediciones ROM/fuerza (sistema de métricas)
@@ -36,7 +36,7 @@
 1. **Alta:** ~~Corregir problemas de tipado en SoapContainer~~ ✅ COMPLETADO
 2. **Alta:** ~~Optimizar rendimiento de AnatomicalSelector y PainScaleInput~~ ✅ COMPLETADO
 3. **Media:** ~~Implementar visualización de progreso entre mediciones~~ ✅ COMPLETADO
-4. **Media:** Validar coherencia entre componentes SOAP
+4. **Media:** ~~Validar coherencia entre componentes SOAP~~ ✅ COMPLETADO
 
 ## Deuda Técnica Identificada
 
