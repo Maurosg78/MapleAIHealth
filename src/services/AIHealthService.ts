@@ -7,6 +7,7 @@ import {
 import { aiHealthConfig, AIHealthServiceConfig } from '../config/aiHealthConfig';
 import { CacheManager } from './cache/CacheManager';
 import { CacheStats } from './cache/types';
+import { clinicalRules, EvidenceLevel, ClinicalRelevance } from './clinicalRules';
 
 /**
  * Tipos de sugerencias que puede generar la IA
@@ -36,7 +37,16 @@ export interface AISuggestion {
   priority: AIPriorityLevel;
   confidence?: number; // Nivel de confianza de 0 a 1
   source?: 'rule' | 'model' | 'guideline'; // Origen de la sugerencia
-  metadata?: Record<string, unknown>; // Metadatos adicionales, útil para sugerencias específicas
+  metadata?: {
+    evidenceLevel?: EvidenceLevel;
+    clinicalRelevance?: ClinicalRelevance;
+    specialtySpecific?: boolean;
+  };
+  contextFactors?: {
+    age?: number[];
+    gender?: string[];
+    conditions?: string[];
+  };
 }
 
 /**
@@ -289,134 +299,96 @@ export class AIHealthService {
     options: AIAnalysisOptions
   ): Promise<AISuggestion[]> {
     const suggestions: AISuggestion[] = [];
-    const { subjective, objective } = soapData;
-    const { activeSection } = options;
-    // specialty está disponible para uso futuro en reglas específicas por especialidad
-    // const { specialty } = options;
+    const { specialty = 'physiotherapy', patientContext } = options;
 
-    // Solo procesamos reglas para la sección activa si está especificada
-    if (activeSection && activeSection !== 'subjective' && activeSection !== 'objective') {
-      return suggestions;
-    }
+    // Obtener reglas específicas de la especialidad
+    const specialtyRules = clinicalRules[specialty] || [];
+    const generalRules = clinicalRules.general || [];
 
-    // Reglas para sección subjetiva
-    if ((!activeSection || activeSection === 'subjective') && subjective) {
-      // Verificar si se menciona prótesis
-      const hasProsthesisMention = this.checkForProsthesisMention(subjective);
-      
-      if (hasProsthesisMention) {
-        // Verificar fecha de cirugía
-        if (!subjective.onsetDate) {
-          suggestions.push({
-            id: 'missing_surgery_date',
-            type: 'required',
-            title: 'Fecha de cirugía faltante',
-            description: 'Documenta la fecha exacta de la cirugía de prótesis para mejor seguimiento clínico.',
-            section: 'subjective',
-            field: 'onsetDate',
-            priority: 'high',
+    // Aplicar reglas de la especialidad
+    for (const rule of specialtyRules) {
+      if (rule.condition(soapData)) {
+        const score = this.calculateSuggestionScore(
+          {
+            id: rule.id,
+            type: rule.suggestion.type,
+            title: rule.suggestion.title,
+            description: rule.suggestion.description,
+            section: rule.suggestion.section,
+            field: rule.suggestion.field,
+            priority: rule.suggestion.priority,
             source: 'rule',
-            confidence: 0.95
+            confidence: rule.suggestion.confidence
+          },
+          patientContext,
+          rule.suggestion.evidenceLevel,
+          rule.suggestion.clinicalRelevance
+        );
+
+        if (score >= this.config.localRules.minConfidence) {
+          suggestions.push({
+            id: rule.id,
+            type: rule.suggestion.type,
+            title: rule.suggestion.title,
+            description: rule.suggestion.description,
+            section: rule.suggestion.section,
+            field: rule.suggestion.field,
+            priority: rule.suggestion.priority,
+            source: 'rule',
+            confidence: score,
+            metadata: {
+              evidenceLevel: rule.suggestion.evidenceLevel,
+              clinicalRelevance: rule.suggestion.clinicalRelevance,
+              specialtySpecific: rule.suggestion.specialtySpecific
+            }
           });
         }
-        
-        // Verificar medicación actual
-        if (!subjective.currentMedications) {
-          suggestions.push({
-            id: 'missing_medication',
-            type: 'warning',
-            title: 'Medicación actual no documentada',
-            description: 'Verifica si el paciente toma anticoagulantes u otros medicamentos relevantes post-cirugía.',
-            section: 'subjective',
-            field: 'currentMedications',
-            priority: 'high',
+      }
+    }
+
+    // Aplicar reglas generales
+    for (const rule of generalRules) {
+      if (rule.condition(soapData)) {
+        const score = this.calculateSuggestionScore(
+          {
+            id: rule.id,
+            type: rule.suggestion.type,
+            title: rule.suggestion.title,
+            description: rule.suggestion.description,
+            section: rule.suggestion.section,
+            field: rule.suggestion.field,
+            priority: rule.suggestion.priority,
             source: 'rule',
-            confidence: 0.9
+            confidence: rule.suggestion.confidence
+          },
+          patientContext,
+          rule.suggestion.evidenceLevel,
+          rule.suggestion.clinicalRelevance
+        );
+
+        if (score >= this.config.localRules.minConfidence) {
+          suggestions.push({
+            id: rule.id,
+            type: rule.suggestion.type,
+            title: rule.suggestion.title,
+            description: rule.suggestion.description,
+            section: rule.suggestion.section,
+            field: rule.suggestion.field,
+            priority: rule.suggestion.priority,
+            source: 'rule',
+            confidence: score,
+            metadata: {
+              evidenceLevel: rule.suggestion.evidenceLevel,
+              clinicalRelevance: rule.suggestion.clinicalRelevance,
+              specialtySpecific: rule.suggestion.specialtySpecific
+            }
           });
         }
       }
-      
-      // Verificar si falta información sobre el dolor
-      if (subjective.chiefComplaint && !subjective.painDescription && !subjective.painIntensity) {
-        suggestions.push({
-          id: 'missing_pain_data',
-          type: 'recommendation',
-          title: 'Información sobre dolor incompleta',
-          description: 'Considera documentar características e intensidad del dolor para una evaluación más completa.',
-          section: 'subjective',
-          field: 'painDescription',
-          priority: 'medium',
-          source: 'rule',
-          confidence: 0.85
-        });
-      }
     }
-    
-    // Reglas para sección objetiva
-    if ((!activeSection || activeSection === 'objective') && objective && subjective) {
-      // Verificar evaluación bilateral si se menciona rodilla
-      const hasKneeMention = this.checkForKneeMention(subjective);
-      const hasKneeData = Boolean(objective.rangeOfMotion?.['knee_right'] || objective.rangeOfMotion?.['knee_left']);
-      const hasBothKnees = Boolean(objective.rangeOfMotion?.['knee_right'] && objective.rangeOfMotion?.['knee_left']);
-      
-      if (hasKneeMention && hasKneeData && !hasBothKnees) {
-        suggestions.push({
-          id: 'missing_contralateral_knee',
-          type: 'recommendation',
-          title: 'Evaluación de rodilla contralateral',
-          description: 'Considera evaluar el estado de la rodilla contralateral para comparación y detección de factores compensatorios.',
-          section: 'objective',
-          priority: 'medium',
-          source: 'rule',
-          confidence: 0.8
-        });
-      }
-      
-      // Verificar si se mencionan imágenes en caso de prótesis
-      const hasProsthesisMention = this.checkForProsthesisMention(subjective);
-      const hasImagesReference = this.checkForImagesReference(subjective, objective);
-      
-      if (hasProsthesisMention && !hasImagesReference) {
-        suggestions.push({
-          id: 'missing_images',
-          type: 'recommendation',
-          title: 'Solicitud de imágenes',
-          description: 'Considera solicitar radiografías de control para verificar el estado y alineación de la prótesis.',
-          section: 'objective',
-          priority: 'medium',
-          source: 'rule',
-          confidence: 0.85
-        });
-      }
-    }
-    
-    // Aplicar umbral de confianza mínima de la configuración
-    const filteredSuggestions = suggestions.filter(
-      suggestion => (suggestion.confidence || 0) >= this.config.localRules.minConfidence
-    );
-    
-    // Limitar número de sugerencias según configuración o parámetros
-    const maxSuggestions = options.maxSuggestions || 
-      this.config.localRules.maxSuggestionsPerSection;
-    
-    if (maxSuggestions && filteredSuggestions.length > maxSuggestions) {
-      // Ordenar por prioridad y luego por confianza
-      return filteredSuggestions
-        .sort((a, b) => {
-          const priorityOrder = { high: 3, medium: 2, low: 1 };
-          const aPriority = priorityOrder[a.priority] || 0;
-          const bPriority = priorityOrder[b.priority] || 0;
-          
-          if (aPriority !== bPriority) {
-            return bPriority - aPriority;
-          }
-          
-          return (b.confidence || 0) - (a.confidence || 0);
-        })
-        .slice(0, maxSuggestions);
-    }
-    
-    return filteredSuggestions;
+
+    // Ordenar sugerencias por score
+    return suggestions.sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
   }
   
   // Helpers para las reglas
@@ -534,5 +506,63 @@ export class AIHealthService {
     if (this.config.logging.level === 'debug' || this.config.logging.level === 'info') {
       console.log(`[AIHealthService] Feedback para sugerencia ${suggestionId}: ${isHelpful ? 'útil' : 'no útil'}`);
     }
+  }
+
+  private calculateSuggestionScore(
+    suggestion: AISuggestion,
+    patientContext: AIAnalysisOptions['patientContext'] = {},
+    evidenceLevel: EvidenceLevel,
+    clinicalRelevance: ClinicalRelevance
+  ): number {
+    let score = 1.0;
+
+    // Factor de evidencia
+    score *= evidenceLevel;
+
+    // Factor de relevancia clínica
+    score *= clinicalRelevance;
+
+    // Factor de edad
+    if (patientContext.age) {
+      const ageFactor = this.calculateAgeFactor(patientContext.age, suggestion.contextFactors?.age);
+      score *= ageFactor;
+    }
+
+    // Factor de género
+    if (patientContext.gender && suggestion.contextFactors?.gender) {
+      const genderFactor = suggestion.contextFactors.gender.includes(patientContext.gender) ? 1.0 : 0.5;
+      score *= genderFactor;
+    }
+
+    // Factor de condiciones
+    if (patientContext.knownConditions && suggestion.contextFactors?.conditions) {
+      const conditionFactor = this.calculateConditionFactor(
+        patientContext.knownConditions,
+        suggestion.contextFactors.conditions
+      );
+      score *= conditionFactor;
+    }
+
+    return score;
+  }
+
+  private calculateAgeFactor(patientAge: number, ageRange?: number[]): number {
+    if (!ageRange) return 1.0;
+    const [minAge, maxAge] = ageRange;
+    if (patientAge >= minAge && patientAge <= maxAge) return 1.0;
+    return 0.7; // Penalización por edad fuera del rango recomendado
+  }
+
+  private calculateConditionFactor(
+    patientConditions: string[],
+    relevantConditions: string[]
+  ): number {
+    const matches = patientConditions.filter(condition =>
+      relevantConditions.some(relevant => 
+        condition.toLowerCase().includes(relevant.toLowerCase())
+      )
+    ).length;
+    
+    return 0.5 + (matches / relevantConditions.length) * 0.5;
   }
 } 

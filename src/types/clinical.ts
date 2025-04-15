@@ -90,11 +90,48 @@ export interface StrengthMeasurementData {
  */
 export interface ObjectiveData {
   observation: string;
-  inspection: string;
-  palpation: string;
-  rangeOfMotion: Record<string, RangeOfMotionData>;
-  muscleStrength: Record<string, number>;
-  specialTests: Record<string, string>;
+  rangeOfMotion?: Record<string, number>;
+  strength?: Record<string, number>;
+  specialTests?: Record<string, string>;
+  functionalTests?: Record<string, string>;
+  vitalSigns?: {
+    temperature?: number;
+    heartRate?: number;
+    bloodPressure?: string;
+    respiratoryRate?: number;
+    oxygenSaturation?: number;
+    height?: number;
+    weight?: number;
+  };
+  posture?: string;
+  gait?: string;
+  palpation?: string;
+  neurologicalTests?: Record<string, string>;
+  edema?: string;
+  skinCondition?: string;
+  scars?: string;
+  swelling?: string;
+  deformity?: string;
+  muscleTone?: string;
+  reflexes?: Record<string, string>;
+  sensation?: Record<string, string>;
+  coordination?: string;
+  balance?: string;
+  functionalMobility?: string;
+  activitiesOfDailyLiving?: string;
+  workRelatedActivities?: string;
+  sportsSpecificTests?: Record<string, string>;
+  otherTests?: Record<string, string>;
+  balanceTests?: {
+    romberg?: boolean;
+    tandemStance?: boolean;
+    functionalReach?: boolean;
+  };
+  strengthTests?: {
+    manualMuscleTesting?: boolean;
+    functionalStrength?: boolean;
+    enduranceTesting?: boolean;
+  };
 }
 
 // Estructura para datos subjetivos
@@ -301,4 +338,6 @@ export interface SOAPData {
   objective: ObjectiveData | null;
   assessment: AssessmentData | null;
   plan: PlanData | null;
-} 
+}
+
+export type SOAPSection = 'subjective' | 'objective' | 'assessment' | 'plan'; 

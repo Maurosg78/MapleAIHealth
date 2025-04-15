@@ -1,113 +1,183 @@
-import { CacheEntry, CacheConfig, CacheStats } from './types';
+import { CacheConfig, CacheStats, CacheMetadata } from './types';
 
 export class CacheManager<T> {
-  private store: Map<string, CacheEntry<T>>;
+  private cache: Map<string, { data: T; timestamp: number; metadata?: CacheMetadata }>;
   private config: CacheConfig;
+  private stats: CacheStats;
   private cleanupInterval: NodeJS.Timeout;
-  private accessCount: number = 0;
-  private hitCount: number = 0;
+  private accessCount: Map<string, number>;
+  private lastAccess: Map<string, number>;
 
   constructor(config: CacheConfig) {
-    this.store = new Map();
     this.config = config;
-    this.cleanupInterval = setInterval(() => this.cleanup(), config.cleanupInterval);
-  }
-
-  public set(key: string, data: T, metadata: Partial<CacheEntry<T>['metadata']> = {}): void {
-    const entry: CacheEntry<T> = {
-      data,
-      timestamp: Date.now(),
-      metadata: {
-        lastAccessed: Date.now(),
-        accessCount: 0,
-        ...metadata
-      }
+    this.cache = new Map();
+    this.accessCount = new Map();
+    this.lastAccess = new Map();
+    this.stats = {
+      hits: 0,
+      misses: 0,
+      size: 0,
+      lastCleared: new Date()
     };
-
-    this.store.set(key, entry);
-    this.ensureSizeLimit();
-  }
-
-  public get(key: string): T | null {
-    this.accessCount++;
-    const entry = this.store.get(key);
-    if (!entry) return null;
-
-    this.hitCount++;
-
-    // Actualizar metadatos de acceso
-    entry.metadata.lastAccessed = Date.now();
-    entry.metadata.accessCount++;
-
-    // Verificar TTL
-    if (Date.now() - entry.timestamp > this.config.ttlMs) {
-      this.store.delete(key);
-      return null;
-    }
-
-    return entry.data;
-  }
-
-  private ensureSizeLimit(): void {
-    if (this.store.size <= this.config.maxSize) return;
-
-    // Ordenar entradas por último acceso y frecuencia
-    const entries = Array.from(this.store.entries())
-      .sort(([, a], [, b]) => {
-        const aScore = a.metadata.accessCount / (Date.now() - a.metadata.lastAccessed);
-        const bScore = b.metadata.accessCount / (Date.now() - b.metadata.lastAccessed);
-        return aScore - bScore;
-      });
-
-    // Eliminar las entradas menos utilizadas
-    const entriesToRemove = entries.slice(0, entries.length - this.config.maxSize);
-    entriesToRemove.forEach(([key]) => this.store.delete(key));
+    this.cleanupInterval = setInterval(() => this.cleanup(), config.cleanupInterval || 60000);
   }
 
   private cleanup(): void {
     const now = Date.now();
-    for (const [key, entry] of this.store.entries()) {
-      if (now - entry.timestamp > this.config.ttlMs) {
-        this.store.delete(key);
+    let entriesRemoved = 0;
+
+    // Limpiar entradas expiradas
+    for (const [key, value] of this.cache.entries()) {
+      if (now - value.timestamp > this.config.ttlMs) {
+        this.removeEntry(key);
+        entriesRemoved++;
       }
+    }
+
+    // Limitar tamaño máximo usando LRU (Least Recently Used)
+    if (this.cache.size > this.config.maxSize) {
+      const entriesToRemove = this.cache.size - this.config.maxSize;
+      const sortedEntries = Array.from(this.cache.entries())
+        .sort((a, b) => {
+          const aLastAccess = this.lastAccess.get(a[0]) || 0;
+          const bLastAccess = this.lastAccess.get(b[0]) || 0;
+          return aLastAccess - bLastAccess;
+        });
+      
+      for (let i = 0; i < entriesToRemove; i++) {
+        this.removeEntry(sortedEntries[i][0]);
+        entriesRemoved++;
+      }
+    }
+
+    if (entriesRemoved > 0) {
+      this.stats.size = this.cache.size;
     }
   }
 
-  public clear(): void {
-    this.store.clear();
-    this.accessCount = 0;
-    this.hitCount = 0;
+  private removeEntry(key: string): void {
+    this.cache.delete(key);
+    this.accessCount.delete(key);
+    this.lastAccess.delete(key);
   }
 
-  public getStats(): CacheStats {
-    return {
-      hits: this.hitCount,
-      misses: this.accessCount - this.hitCount,
-      size: this.store.size,
+  public get(key: string): T | undefined {
+    const entry = this.cache.get(key);
+    
+    if (!entry) {
+      this.stats.misses++;
+      return undefined;
+    }
+
+    if (Date.now() - entry.timestamp > this.config.ttlMs) {
+      this.removeEntry(key);
+      this.stats.misses++;
+      this.stats.size = this.cache.size;
+      return undefined;
+    }
+
+    // Actualizar contadores de acceso
+    this.accessCount.set(key, (this.accessCount.get(key) || 0) + 1);
+    this.lastAccess.set(key, Date.now());
+    
+    this.stats.hits++;
+    return entry.data;
+  }
+
+  public set(key: string, value: T, metadata?: CacheMetadata): void {
+    // Verificar si la entrada ya existe y actualizar si es necesario
+    if (this.cache.has(key)) {
+      const existingEntry = this.cache.get(key)!;
+      if (this.shouldUpdateEntry(existingEntry, metadata)) {
+        this.cache.set(key, {
+          data: value,
+          timestamp: Date.now(),
+          metadata
+        });
+        this.lastAccess.set(key, Date.now());
+      }
+      return;
+    }
+
+    // Verificar si hay espacio disponible
+    if (this.cache.size >= this.config.maxSize) {
+      this.cleanup();
+    }
+
+    this.cache.set(key, {
+      data: value,
+      timestamp: Date.now(),
+      metadata
+    });
+    this.accessCount.set(key, 0);
+    this.lastAccess.set(key, Date.now());
+    this.stats.size = this.cache.size;
+  }
+
+  private shouldUpdateEntry(
+    existingEntry: { data: T; timestamp: number; metadata?: CacheMetadata },
+    newMetadata?: CacheMetadata
+  ): boolean {
+    // Actualizar si los metadatos son diferentes
+    if (JSON.stringify(existingEntry.metadata) !== JSON.stringify(newMetadata)) {
+      return true;
+    }
+
+    // Actualizar si la entrada es muy antigua
+    if (Date.now() - existingEntry.timestamp > this.config.ttlMs / 2) {
+      return true;
+    }
+
+    return false;
+  }
+
+  public clear(): void {
+    this.cache.clear();
+    this.accessCount.clear();
+    this.lastAccess.clear();
+    this.stats = {
+      hits: 0,
+      misses: 0,
+      size: 0,
       lastCleared: new Date()
     };
   }
 
-  public invalidateByPatient(patientId: string): void {
-    for (const [key, entry] of this.store.entries()) {
-      if (entry.metadata.patientId === patientId) {
-        this.store.delete(key);
-      }
-    }
-  }
-
-  public invalidateBySection(section: string): void {
-    for (const [key, entry] of this.store.entries()) {
-      if (entry.metadata.section === section) {
-        this.store.delete(key);
-      }
-    }
+  public getStats(): CacheStats {
+    return { ...this.stats };
   }
 
   public updateConfig(config: Partial<CacheConfig>): void {
-    this.config = {
-      ...this.config,
-      ...config
-    };
+    this.config = { ...this.config, ...config };
+    if (config.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = setInterval(() => this.cleanup(), config.cleanupInterval);
+    }
+  }
+
+  public invalidateByPatient(patientId: string): void {
+    for (const [key, value] of this.cache.entries()) {
+      if (value.metadata?.patientId === patientId) {
+        this.removeEntry(key);
+      }
+    }
+    this.stats.size = this.cache.size;
+  }
+
+  public invalidateBySection(section: string): void {
+    for (const [key, value] of this.cache.entries()) {
+      if (value.metadata?.section === section) {
+        this.removeEntry(key);
+      }
+    }
+    this.stats.size = this.cache.size;
+  }
+
+  public getAccessCount(key: string): number {
+    return this.accessCount.get(key) || 0;
+  }
+
+  public getLastAccess(key: string): number {
+    return this.lastAccess.get(key) || 0;
   }
 } 

@@ -1,7 +1,8 @@
 {
     "env": {
         "browser": true,
-        "es2021": true
+        "es2021": true,
+        "node": true
     },
     "extends": [
         "eslint:recommended",
@@ -18,10 +19,13 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "plugins": ["react", "@typescript-eslint", "prettier"],
+    "plugins": ["@typescript-eslint", "react", "react-hooks"],
+    "root": true,
     "rules": {
         "react/react-in-jsx-scope": "off",
-        "prettier/prettier": "error"
+        "react/prop-types": "off",
+        "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+        "@typescript-eslint/no-explicit-any": "warn"
     },
     "settings": {
         "react": {

@@ -1,19 +1,14 @@
 export interface CacheEntry<T> {
   data: T;
   timestamp: number;
-  metadata: {
-    patientId?: string;
-    section?: string;
-    lastAccessed: number;
-    accessCount: number;
-  };
+  metadata?: CacheMetadata;
 }
 
 export interface CacheConfig {
   ttlMs: number;
   maxSize: number;
-  cleanupInterval: number;
-  patientBased: boolean;
+  cleanupInterval?: number;
+  patientBased?: boolean;
 }
 
 export interface CacheStats {
@@ -21,4 +16,10 @@ export interface CacheStats {
   misses: number;
   size: number;
   lastCleared: Date;
+}
+
+export interface CacheMetadata {
+  patientId?: string;
+  section?: string;
+  [key: string]: unknown;
 } 
