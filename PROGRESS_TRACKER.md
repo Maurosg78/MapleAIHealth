@@ -6,7 +6,7 @@ Este documento rastrea el estado de los sprints para los componentes AIDUX EMR y
 
 > **Nota Importante**: Aunque el MVP se centra en fisioterapia MSK, toda la arquitectura se diseña para ser expandible a múltiples especialidades médicas y adaptable a diferentes regiones (España inicialmente, luego Canadá/EE.UU).
 
-**Última Actualización:** [Fecha - por favor actualizar manualmente]
+**Última Actualización:** 18 de Mayo de 2024
 
 ---
 
@@ -16,16 +16,16 @@ Este documento rastrea el estado de los sprints para los componentes AIDUX EMR y
 
 **Sprint 4: Módulo Base de Fisioterapia**
 *   **Objetivo:** Implementar estructura SOAP y evaluación física MSK básica con arquitectura expandible.
-*   **Estado:** ⏳ No Iniciado
+*   **Estado:** ✅ COMPLETADO
 *   **Tareas Clave:**
-    *   [ ] E1: Estructura SOAP específica MSK (arquitectura adaptable a otras especialidades)
-    *   [ ] E2: Campos evaluación física MSK (framework genérico de evaluación)
-    *   [ ] E3: Registro mediciones ROM/fuerza (sistema de métricas extensible)
-    *   [ ] E4: Sistema seguimiento visual básico (componente reutilizable)
+    *   [x] E1: Estructura SOAP específica MSK (arquitectura adaptable a otras especialidades)
+    *   [x] E2: Campos evaluación física MSK (framework genérico de evaluación)
+    *   [x] E3: Registro mediciones ROM/fuerza (sistema de métricas extensible)
+    *   [x] E4: Sistema seguimiento visual básico (componente reutilizable)
 
 **Sprint 5: Gestión de Planes de Tratamiento**
 *   **Objetivo:** Implementar biblioteca de ejercicios y planificación de sesiones.
-*   **Estado:** ⏳ No Iniciado
+*   **Estado:** 🔄 EN PROGRESO
 *   **Tareas Clave:**
     *   [ ] E5: Biblioteca ejercicios básicos MSK (arquitectura para expansión)
     *   [ ] E6: Planificación de sesiones (framework genérico de planificación)

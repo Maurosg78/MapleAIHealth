@@ -1,0 +1,83 @@
+name: Bug Report
+description: Reportar un problema o error
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportar este bug. Por favor, proporciona toda la información posible.
+        
+  - type: dropdown
+    id: component
+    attributes:
+      label: Componente Afectado
+      description: ¿Qué parte del sistema está afectada?
+      options:
+        - EMR Core
+        - AI Assistant
+        - Clinical Assessment
+        - Treatment Planning
+        - Documentation
+        - Billing
+        - Other
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción del Bug
+      description: ¿Qué está sucediendo?
+      placeholder: Describe el problema de forma clara y concisa
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Pasos para Reproducir
+      description: ¿Cómo podemos reproducir este bug?
+      placeholder: |
+        1. Ir a '...'
+        2. Click en '....'
+        3. Scroll hasta '....'
+        4. Ver error
+    validations:
+      required: true
+      
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamiento Esperado
+      description: ¿Qué debería suceder?
+    validations:
+      required: true
+      
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Si aplica, añade screenshots para ayudar a explicar el problema
+    validations:
+      required: false
+      
+  - type: textarea
+    id: environment
+    attributes:
+      label: Entorno
+      description: ¿En qué entorno ocurre el bug?
+      placeholder: |
+        - OS: [e.g. Windows 10]
+        - Browser: [e.g. Chrome 91]
+        - Version: [e.g. 1.0.0]
+    validations:
+      required: true
+      
+  - type: textarea
+    id: additional
+    attributes:
+      label: Información Adicional
+      description: Cualquier otra información relevante sobre el problema
+    validations:
+      required: false 

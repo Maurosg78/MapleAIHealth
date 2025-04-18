@@ -1,4 +1,4 @@
-import { SOAPData, SpecialtyType, SOAPSection } from '../types/clinical';
+import { SoapData, SpecialtyType, SOAPSection as SoapSection } from '../types/clinical';
 
 // Niveles de evidencia para las reglas clínicas
 export enum EvidenceLevel {
@@ -18,12 +18,12 @@ export enum ClinicalRelevance {
 
 export interface ClinicalRule {
   id: string;
-  condition: (data: SOAPData) => boolean;
+  condition: (data: SoapData) => boolean;
   suggestion: {
     type: 'required' | 'warning' | 'recommendation';
     title: string;
     description: string;
-    section: SOAPSection;
+    section: SoapSection;
     field?: string;
     priority: 'high' | 'medium' | 'low';
     confidence: number;

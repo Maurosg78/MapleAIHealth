@@ -90,9 +90,13 @@ export interface StrengthMeasurementData {
  */
 export interface ObjectiveData {
   observation: string;
-  rangeOfMotion?: Record<string, number>;
+  rangeOfMotion?: Record<string, number | RangeOfMotionData>;
   strength?: Record<string, number>;
-  specialTests?: Record<string, string>;
+  specialTests?: Record<string, string> | {
+    name: string;
+    result: 'positive' | 'negative' | 'inconclusive';
+    notes?: string;
+  }[];
   functionalTests?: Record<string, string>;
   vitalSigns?: {
     temperature?: number;
@@ -106,6 +110,7 @@ export interface ObjectiveData {
   posture?: string;
   gait?: string;
   palpation?: string;
+  inspection?: string;
   neurologicalTests?: Record<string, string>;
   edema?: string;
   skinCondition?: string;
@@ -132,11 +137,16 @@ export interface ObjectiveData {
     functionalStrength?: boolean;
     enduranceTesting?: boolean;
   };
+  muscleStrength?: Record<string, {
+    right: number;
+    left: number;
+  }>;
 }
 
 // Estructura para datos subjetivos
 export interface SubjectiveData {
   chiefComplaint: string;
+  painScale?: number;
   painLevel?: number;
   painIntensity?: number;
   painDescription?: string;
@@ -146,8 +156,10 @@ export interface SubjectiveData {
   relievingFactors?: string[];
   previousTreatments?: string[];
   patientGoals?: string[];
-  symptoms?: string;
+  symptoms?: string | string[];
+  onset?: string;
   onsetDate?: string;
+  history?: string;
   medicalHistory: string;
   currentMedications?: string;
   functionalLimitations?: string;
@@ -160,7 +172,7 @@ export interface PlanData {
   shortTermGoals: string[];
   longTermGoals: string[];
   treatment: string;
-  recommendations: string;
+  recommendations: string | string[];
   homeExerciseProgram: string;
   followUpPlan: string;
   expectedOutcomes: string;
@@ -172,15 +184,37 @@ export interface PlanData {
     exercises?: string[];
     modalities?: string[];
     education?: string[];
+    type?: string;
+    description?: string;
+    frequency?: string;
+    duration?: string;
+  }[] | {
+    manual?: string[];
+    exercises?: string[];
+    modalities?: string[];
+    education?: string[];
   };
   reevaluationPlan?: string;
   precautions?: string[];
   contraindications?: string[];
+  homeExercises?: {
+    name: string;
+    sets: number;
+    reps: number;
+    frequency: string;
+    instructions: string;
+  }[];
+  nextVisit?: Date;
 }
 
 // Estructura para datos de evaluación
 export interface AssessmentData {
   diagnosis: string;
+  diagnoses?: {
+    primary: string;
+    differential: string[];
+  };
+  clinicalReasoning?: string;
   clinicalFindings: string;
   impression: string;
   problemList: string[];
@@ -188,6 +222,7 @@ export interface AssessmentData {
   reasoning: string;
   prognosis: string;
   functionalDiagnosis?: string;
+  functionalLimitations?: string[];
   clinicalClassification?: string[];
   riskFactors?: string[];
   prognosticFactors?: string[];
@@ -340,4 +375,149 @@ export interface SOAPData {
   plan: PlanData | null;
 }
 
-export type SOAPSection = 'subjective' | 'objective' | 'assessment' | 'plan'; 
+export type SOAPSection = 'subjective' | 'objective' | 'assessment' | 'plan';
+
+export interface SOAPNote {
+  subjective: {
+    chiefComplaint: string;
+    painScale: number;
+    symptoms: string[];
+    onset: string;
+    history: string;
+    aggravatingFactors: string[];
+    relievingFactors: string[];
+  };
+  
+  objective: {
+    observation: string;
+    palpation: string;
+    rangeOfMotion: {
+      [joint: string]: {
+        active: {
+          flexion?: number;
+          extension?: number;
+          rotation?: number;
+          abduction?: number;
+          adduction?: number;
+        };
+        passive: {
+          flexion?: number;
+          extension?: number;
+          rotation?: number;
+          abduction?: number;
+          adduction?: number;
+        };
+      };
+    };
+    muscleStrength: {
+      [muscle: string]: {
+        right: number;
+        left: number;
+      };
+    };
+    specialTests: {
+      name: string;
+      result: 'positive' | 'negative' | 'inconclusive';
+      notes?: string;
+    }[];
+  };
+  
+  assessment: {
+    diagnoses: {
+      primary: string;
+      differential: string[];
+    };
+    clinicalReasoning: string;
+    functionalLimitations: string[];
+    prognosis: string;
+  };
+  
+  plan: {
+    shortTermGoals: string[];
+    longTermGoals: string[];
+    interventions: {
+      type: string;
+      description: string;
+      frequency: string;
+      duration: string;
+    }[];
+    homeExercises: {
+      name: string;
+      sets: number;
+      reps: number;
+      frequency: string;
+      instructions: string;
+    }[];
+    nextVisit: Date;
+    recommendations: string[];
+  };
+  
+  metadata: {
+    createdAt: Date;
+    updatedAt: Date;
+    therapistId: string;
+    patientId: string;
+    visitNumber: number;
+  };
+}
+
+export interface PhysicalAssessment {
+  posture: {
+    anterior: string;
+    posterior: string;
+    lateral: string;
+    notes: string;
+  };
+  
+  gait: {
+    pattern: string;
+    deviations: string[];
+    assistiveDevices: string[];
+    notes: string;
+  };
+  
+  balance: {
+    static: {
+      score: number;
+      notes: string;
+    };
+    dynamic: {
+      score: number;
+      notes: string;
+    };
+  };
+  
+  neurological: {
+    dermatomes: {
+      [level: string]: {
+        right: 'normal' | 'altered' | 'absent';
+        left: 'normal' | 'altered' | 'absent';
+      };
+    };
+    reflexes: {
+      [reflex: string]: {
+        right: number;
+        left: number;
+      };
+    };
+    notes: string;
+  };
+  
+  painAssessment: {
+    vas: number;
+    location: string[];
+    quality: string[];
+    behavior: 'constant' | 'intermittent' | 'mechanical' | 'chemical';
+    aggravatingFactors: string[];
+    relievingFactors: string[];
+  };
+}
+
+export type MuscleStrengthGrade = 0 | 1 | 2 | 3 | 4 | 5;
+
+export interface ROMAssessment {
+  value: number;
+  endFeel?: 'normal' | 'empty' | 'firm' | 'hard' | 'spasm';
+  pain?: boolean;
+  notes?: string;
+} 

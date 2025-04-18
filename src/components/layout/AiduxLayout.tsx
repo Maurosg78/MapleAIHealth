@@ -235,6 +235,28 @@ export function AiduxLayout() {
                         </li>
                         <li>
                             <FeatureTooltip 
+                                title="Evaluación Funcional" 
+                                description="Visualice una evaluación detallada de la funcionalidad y evolución de sus pacientes"
+                            >
+                                <Link
+                                    to="/evaluacion-funcional"
+                                    className={`flex items-center px-4 py-3 text-sm ${isActive('/evaluacion-funcional') ? 'bg-primary-50 text-primary-700 border-r-4 border-primary-600' : 'text-gray-700 hover:bg-gray-100'}`}
+                                >
+                                    <svg 
+                                        className="h-5 w-5" 
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        fill="none" 
+                                        viewBox="0 0 24 24" 
+                                        stroke="currentColor"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                    {sidebarOpen && <span className="ml-3">Evaluación Funcional</span>}
+                                </Link>
+                            </FeatureTooltip>
+                        </li>
+                        <li>
+                            <FeatureTooltip 
                                 title="Agenda" 
                                 description="Gestione citas, horarios y disponibilidad"
                             >
@@ -283,6 +305,8 @@ export function AiduxLayout() {
                         <h1 className="text-xl font-semibold text-gray-800">
                             {location.pathname === '/pacientes' && 'Pacientes'}
                             {location.pathname === '/consultas' && 'Consultas'}
+                            {location.pathname === '/progreso' && 'Progreso'}
+                            {location.pathname.startsWith('/evaluacion-funcional') && 'Evaluación Funcional'}
                             {location.pathname === '/agenda' && 'Agenda'}
                             {location.pathname === '/analisis' && 'Análisis'}
                         </h1>

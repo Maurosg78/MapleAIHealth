@@ -1,49 +1,61 @@
 import { EventEmitter } from 'events';
 import { Transcript } from '../../types/voice';
 
-declare global {
-  interface Window {
-    SpeechRecognition: new () => SpeechRecognition;
-  }
-}
-
-declare class SpeechRecognition extends EventTarget {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  start(): void;
-  stop(): void;
-  onstart: (() => void) | null;
-  onend: (() => void) | null;
-  onerror: ((event: SpeechRecognitionError) => void) | null;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-}
-
-interface SpeechRecognitionError extends Event {
+// Definir interfaces para la Web Speech API
+interface SpeechRecognitionErrorEvent extends Event {
   error: string;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+  isFinal?: boolean;
+}
+
+interface SpeechRecognitionResult {
+  [index: number]: SpeechRecognitionAlternative;
+  isFinal: boolean;
+  length: number;
+}
+
+interface SpeechRecognitionResultList {
+  [index: number]: SpeechRecognitionResult;
+  length: number;
 }
 
 interface SpeechRecognitionEvent extends Event {
   results: SpeechRecognitionResultList;
 }
 
-interface SpeechRecognitionResultList {
-  [index: number]: SpeechRecognitionResult;
-  length: number;
-  item(index: number): SpeechRecognitionResult;
+// Definición completa del interfaz SpeechRecognition
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  maxAlternatives: number;
+  onaudioend: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onaudiostart: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void) | null;
+  onnomatch: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void) | null;
+  onsoundend: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onsoundstart: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onspeechend: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onspeechstart: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onstart: ((this: SpeechRecognition, ev: Event) => void) | null;
+  abort(): void;
+  start(): void;
+  stop(): void;
 }
 
-interface SpeechRecognitionResult {
-  [index: number]: SpeechRecognitionAlternative;
-  length: number;
-  item(index: number): SpeechRecognitionAlternative;
-  isFinal: boolean;
-}
-
-interface SpeechRecognitionAlternative {
-  transcript: string;
-  confidence: number;
-  isFinal: boolean;
+// Declaración global para el navegador
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition;
+    // @ts-expect-error - Los tipos son idénticos pero TypeScript muestra un falso positivo
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
 }
 
 interface VoiceConfig {
@@ -79,10 +91,21 @@ export class VoiceAssistant extends EventEmitter {
   }
 
   private initializeRecognition(): void {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (typeof window === 'undefined') {
+      this.emit('error', new Error('Speech Recognition requiere un entorno de navegador'));
+      return;
+    }
     
-    if (typeof window !== 'undefined' && SpeechRecognition) {
-      this.recognition = new SpeechRecognition();
+    // Usar la implementación nativa o la prefijada con webkit
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (SpeechRecognitionAPI) {
+      try {
+        this.recognition = new SpeechRecognitionAPI();
+      } catch {
+        this.emit('error', new Error('Error al inicializar Speech Recognition'));
+        return;
+      }
     } else {
       this.emit('error', new Error('Speech Recognition no está soportado en este navegador'));
       return;
@@ -106,7 +129,7 @@ export class VoiceAssistant extends EventEmitter {
         }
       };
 
-      this.recognition.onerror = (event: SpeechRecognitionError) => {
+      this.recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
         this.isListening = false;
         this.emit('error', new Error(event.error));
       };
@@ -171,15 +194,16 @@ export class VoiceAssistant extends EventEmitter {
     return this.config.lang ?? 'es-ES';
   }
 
-  public override on<K extends keyof VoiceAssistantEvents>(
-    event: K,
+  // Métodos tipados
+  public on<K extends keyof VoiceAssistantEvents>(
+    event: K, 
     listener: VoiceAssistantEvents[K]
   ): this {
     return super.on(event, listener);
   }
 
-  public override emit<K extends keyof VoiceAssistantEvents>(
-    event: K,
+  public emit<K extends keyof VoiceAssistantEvents>(
+    event: K, 
     ...args: Parameters<VoiceAssistantEvents[K]>
   ): boolean {
     return super.emit(event, ...args);

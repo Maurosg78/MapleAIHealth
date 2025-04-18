@@ -124,11 +124,15 @@ export default function ObjectiveContainer({
   
   const specialtyConfig = getSpecialtyConfig();
   
-  // Inicializar formulario con valores por defecto estructurados
-  const { control, handleSubmit, setValue, watch } = useForm<ObjectiveData>({
+  // Valores iniciales del formulario
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch
+  } = useForm<ObjectiveData>({
     defaultValues: {
       observation: '',
-      inspection: '',
       palpation: '',
       rangeOfMotion: {},
       muscleStrength: {},
@@ -145,21 +149,20 @@ export default function ObjectiveContainer({
       setTimeout(() => {
         const mockData: ObjectiveData = {
           observation: 'Paciente presenta marcha antiálgica.',
-          inspection: 'Postura asimétrica con basculación pélvica derecha.',
           palpation: 'Dolor a la palpación en zona lumbar derecha L4-L5.',
           rangeOfMotion: {
-            lumbar_flexion: { active: 30, passive: 35, normal: 60 },
-            lumbar_extension: { active: 15, passive: 20, normal: 25 },
-            hip_flexion_r: { active: 100, passive: 110, normal: 120 },
-            hip_flexion_l: { active: 120, passive: 120, normal: 120 },
+            lumbar_flexion: 30,
+            lumbar_extension: 15,
+            hip_flexion_r: 100,
+            hip_flexion_l: 120,
           },
           muscleStrength: {
-            trunk_flexors: 4,
-            trunk_extensors: 3,
-            hip_flexors_r: 4,
-            hip_flexors_l: 5,
-            knee_extensors_r: 4,
-            knee_extensors_l: 5,
+            trunk_flexors: { right: 4, left: 4 },
+            trunk_extensors: { right: 3, left: 3 },
+            hip_flexors_r: { right: 4, left: 5 },
+            hip_flexors_l: { right: 5, left: 5 },
+            knee_extensors_r: { right: 4, left: 5 },
+            knee_extensors_l: { right: 5, left: 5 },
           },
           specialTests: {
             slr: 'Positivo a 45° en pierna derecha',
@@ -309,15 +312,15 @@ export default function ObjectiveContainer({
             <h3 className="text-lg font-medium text-gray-900">Inspección</h3>
             <div className="mt-2">
               <Controller
-                name="inspection"
+                name="inspection" 
                 control={control}
                 render={({ field }) => (
                   <textarea
-                    {...field}
                     rows={3}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                     placeholder="Describa la inspección visual (asimetrías, coloración, inflamación, etc.)"
                     disabled={readOnly}
+                    {...field}
                   />
                 )}
               />
@@ -431,38 +434,74 @@ export default function ObjectiveContainer({
         <div className="bg-white shadow-sm rounded-lg p-4">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Fuerza Muscular (Escala 0-5)</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-4">
             {specialtyConfig.muscleGroups.map((muscle) => (
-              <div key={muscle.id} className="flex items-center space-x-2">
-                <label htmlFor={muscle.id} className="block text-sm font-medium text-gray-700">
-                  {muscle.label}:
-                </label>
-                <Controller
-                  name={`muscleStrength.${muscle.id}`}
-                  control={control}
-                  render={({ field }) => (
-                    <select
-                      id={muscle.id}
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        field.onChange(val === '' ? undefined : Number(val));
-                      }}
-                      className="w-24 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                      disabled={readOnly}
-                      aria-label={`Fuerza muscular para ${muscle.label}`}
-                    >
-                      <option value="">Seleccionar</option>
-                      <option value="0">0 - Ausente</option>
-                      <option value="1">1 - Vestigios</option>
-                      <option value="2">2 - Pobre</option>
-                      <option value="3">3 - Regular</option>
-                      <option value="4">4 - Buena</option>
-                      <option value="5">5 - Normal</option>
-                    </select>
-                  )}
-                />
+              <div key={muscle.id} className="flex flex-col space-y-2 mb-4">
+                <div className="font-medium text-sm text-gray-700">{muscle.label}</div>
+                <div className="flex items-center space-x-4">
+                  <div>
+                    <label htmlFor={`${muscle.id}_right`} className="block text-xs font-medium text-gray-500 mb-1">
+                      Derecho:
+                    </label>
+                    <Controller
+                      name={`muscleStrength.${muscle.id}.right`}
+                      control={control}
+                      render={({ field }) => (
+                        <select
+                          id={`${muscle.id}_right`}
+                          {...field}
+                          value={field.value ?? ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            field.onChange(val === '' ? undefined : Number(val));
+                          }}
+                          className="w-24 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                          disabled={readOnly}
+                          aria-label={`Fuerza muscular derecha para ${muscle.label}`}
+                        >
+                          <option value="">Seleccionar</option>
+                          <option value="0">0 - Ausente</option>
+                          <option value="1">1 - Vestigios</option>
+                          <option value="2">2 - Pobre</option>
+                          <option value="3">3 - Regular</option>
+                          <option value="4">4 - Buena</option>
+                          <option value="5">5 - Normal</option>
+                        </select>
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor={`${muscle.id}_left`} className="block text-xs font-medium text-gray-500 mb-1">
+                      Izquierdo:
+                    </label>
+                    <Controller
+                      name={`muscleStrength.${muscle.id}.left`}
+                      control={control}
+                      render={({ field }) => (
+                        <select
+                          id={`${muscle.id}_left`}
+                          {...field}
+                          value={field.value ?? ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            field.onChange(val === '' ? undefined : Number(val));
+                          }}
+                          className="w-24 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                          disabled={readOnly}
+                          aria-label={`Fuerza muscular izquierda para ${muscle.label}`}
+                        >
+                          <option value="">Seleccionar</option>
+                          <option value="0">0 - Ausente</option>
+                          <option value="1">1 - Vestigios</option>
+                          <option value="2">2 - Pobre</option>
+                          <option value="3">3 - Regular</option>
+                          <option value="4">4 - Buena</option>
+                          <option value="5">5 - Normal</option>
+                        </select>
+                      )}
+                    />
+                  </div>
+                </div>
               </div>
             ))}
           </div>

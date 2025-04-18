@@ -1,13 +1,12 @@
 import { 
-  SubjectiveData, 
-  ObjectiveData, 
   SpecialtyType,
-  SOAPData
+  SoapData
 } from '../types/clinical';
 import { aiHealthConfig, AIHealthServiceConfig } from '../config/aiHealthConfig';
 import { CacheManager } from './cache/CacheManager';
 import { CacheStats } from './cache/types';
-import { clinicalRules, EvidenceLevel, ClinicalRelevance } from './clinicalRules';
+import { clinicalRules, EvidenceLevel, ClinicalRelevance, ClinicalRule } from './clinicalRules';
+import { PerformanceMonitor } from './performance/PerformanceMonitor';
 
 /**
  * Tipos de sugerencias que puede generar la IA
@@ -41,6 +40,7 @@ export interface AISuggestion {
     evidenceLevel?: EvidenceLevel;
     clinicalRelevance?: ClinicalRelevance;
     specialtySpecific?: boolean;
+    ruleId?: string;
   };
   contextFactors?: {
     age?: number[];
@@ -57,6 +57,7 @@ export interface AIHealthResponse {
   processingTime?: number; // Tiempo de procesamiento en ms
   modelVersion?: string; // Versión del modelo utilizado
   requestId?: string; // ID único de la solicitud para seguimiento
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -82,9 +83,10 @@ export interface AIAnalysisOptions {
  */
 export class AIHealthService {
   private static instance: AIHealthService;
-  private suggestionCache: CacheManager<AIHealthResponse>;
-  private pendingRequests: Map<string, Promise<AIHealthResponse>> = new Map();
+  private readonly suggestionCache: CacheManager<AIHealthResponse>;
+  private readonly pendingRequests: Map<string, Promise<AIHealthResponse>> = new Map();
   private config: AIHealthServiceConfig;
+  private readonly performanceMonitor: PerformanceMonitor;
 
   private constructor(config: AIHealthServiceConfig = aiHealthConfig) {
     this.config = config;
@@ -94,6 +96,9 @@ export class AIHealthService {
       cleanupInterval: 60000, // Limpiar cada minuto
       patientBased: true
     });
+    
+    // Inicializar el monitor de rendimiento
+    this.performanceMonitor = PerformanceMonitor.getInstance();
 
     // Configuración inicial de logging
     if (config.logging.level === 'debug') {
@@ -141,9 +146,16 @@ export class AIHealthService {
    * @returns Respuesta con sugerencias clínicas
    */
   public async analyzeClinicalData(
-    soapData: SOAPData, 
+    soapData: SoapData, 
     options: AIAnalysisOptions = {}
   ): Promise<AIHealthResponse> {
+    // Iniciar medición de rendimiento
+    const perfMetricId = this.performanceMonitor.startMeasure(
+      'analyzeClinicalData',
+      'api',
+      { patientId: soapData.patientId, section: options.activeSection }
+    );
+    
     const cacheKey = this.generateRequestKey(soapData, options);
     
     // Verificar caché
@@ -152,12 +164,28 @@ export class AIHealthService {
       if (this.config.logging.level === 'debug') {
         console.debug('[AIHealthService] Respuesta obtenida de caché');
       }
+      
+      // Finalizar medición (caché hit)
+      this.performanceMonitor.endMeasure(perfMetricId);
       return cachedResponse;
     }
 
     // Verificar solicitudes pendientes
     if (this.pendingRequests.has(cacheKey)) {
-      return this.pendingRequests.get(cacheKey)!;
+      // Iniciar nueva medición para solicitud pendiente
+      const pendingMetricId = this.performanceMonitor.startMeasure(
+        'pendingRequest',
+        'api',
+        { patientId: soapData.patientId, section: options.activeSection }
+      );
+      
+      try {
+        const result = await this.pendingRequests.get(cacheKey)!;
+        return result;
+      } finally {
+        // Finalizar medición de solicitud pendiente
+        this.performanceMonitor.endMeasure(pendingMetricId);
+      }
     }
 
     const analysisPromise = this.performAnalysis(soapData, options);
@@ -175,101 +203,318 @@ export class AIHealthService {
       return result;
     } finally {
       this.pendingRequests.delete(cacheKey);
+      // Finalizar medición de rendimiento
+      this.performanceMonitor.endMeasure(perfMetricId);
     }
   }
 
   /**
-   * Realizar el análisis real de los datos
-   * Esta es la función que se reemplazaría con llamadas a APIs externas
+   * Realiza el análisis de los datos según el modo configurado
    */
   private async performAnalysis(
-    soapData: SOAPData, 
+    soapData: SoapData,
     options: AIAnalysisOptions
   ): Promise<AIHealthResponse> {
+    // Medir rendimiento específico de cada tipo de análisis
+    const analysisMetricId = this.performanceMonitor.startMeasure(
+      `analysis_${this.config.mode}`,
+      'calculation',
+      { patientId: soapData.patientId, section: options.activeSection }
+    );
+    
     try {
-      // Simulamos un tiempo de procesamiento para emular una llamada a API
-      const startTime = Date.now();
-      
-      let suggestions: AISuggestion[] = [];
-      
-      // Variables para promesas y resultados
-      let localSuggestions: AISuggestion[] = [];
-      let remoteSuggestions: AISuggestion[] = [];
-      let localPromise: Promise<AISuggestion[]>;
-      let remotePromise: Promise<AISuggestion[]>;
-      const combinedMap = new Map<string, AISuggestion>();
-      
-      // Decidir qué tipo de análisis realizar en función del modo configurado
       switch (this.config.mode) {
-        case 'local':
-          // Usar solo reglas locales
-          if (this.config.localRules.enabled) {
-            suggestions = await this.getLocalRuleSuggestions(soapData, options);
-          }
-          break;
-          
+        case 'local': {
+          const localSuggestions = await this.getLocalRuleSuggestions(soapData, options);
+          return {
+            suggestions: localSuggestions,
+            processingTime: 0,
+            modelVersion: 'rules-v1.0',
+            requestId: `local-${Date.now()}`
+          };
+        }
         case 'remote':
-          // Usar solo API remota (simulado por ahora)
-          if (this.config.remoteApi) {
-            suggestions = await this.simulateRemoteApiCall(soapData, options);
-          }
-          break;
-          
+          return await this.getAPISuggestions(soapData, options);
         case 'hybrid':
+          return await this.getHybridSuggestions(soapData, options);
         default:
-          // Combinar resultados de reglas locales y API remota
-          localPromise = this.config.localRules.enabled 
-            ? this.getLocalRuleSuggestions(soapData, options)
-            : Promise.resolve([]);
-            
-          remotePromise = this.config.remoteApi
-            ? this.simulateRemoteApiCall(soapData, options)
-            : Promise.resolve([]);
-            
-          [localSuggestions, remoteSuggestions] = await Promise.all([
-            localPromise,
-            remotePromise
-          ]);
-          
-          // Combinar y deduplicar por ID
-          
-          // Priorizar sugerencias remotas (modelo) sobre locales (reglas)
-          localSuggestions.forEach(suggestion => {
-            combinedMap.set(suggestion.id, suggestion);
-          });
-          
-          remoteSuggestions.forEach(suggestion => {
-            combinedMap.set(suggestion.id, suggestion);
-          });
-          
-          suggestions = Array.from(combinedMap.values());
-          break;
+          throw new Error(`Modo no soportado: ${this.config.mode}`);
       }
+    } finally {
+      // Finalizar medición de rendimiento del análisis
+      this.performanceMonitor.endMeasure(analysisMetricId);
+    }
+  }
+
+  /**
+   * Obtiene sugerencias mediante un enfoque híbrido (reglas + API)
+   */
+  private async getHybridSuggestions(
+    soapData: SoapData,
+    options: AIAnalysisOptions
+  ): Promise<AIHealthResponse> {
+    // Primero obtenemos sugerencias de reglas locales
+    const ruleSuggestions = await this.getLocalRuleSuggestions(soapData, options);
+    
+    try {
+      // Luego intentamos obtener sugerencias de la API
+      const apiResponse = await this.getAPISuggestions(soapData, options);
       
-      const processingTime = Date.now() - startTime;
+      // Combinar ambas fuentes de sugerencias
+      const allSuggestions = [...ruleSuggestions, ...apiResponse.suggestions];
       
-      if (this.config.logging.level === 'debug' || this.config.logging.level === 'info') {
-        console.log(`[AIHealthService] Análisis completado en ${processingTime}ms. ${suggestions.length} sugerencias generadas.`);
-      }
+      // Eliminar duplicados y ordenar por prioridad
+      const uniqueSuggestions = this.removeDuplicateSuggestions(allSuggestions);
       
       return {
-        suggestions,
-        processingTime,
-        modelVersion: this.config.mode === 'local' ? "local-rules-v1.0" : "api-model-v1.0",
-        requestId: `req_${Math.random().toString(36).substring(2, 9)}_${Date.now()}`
+        suggestions: uniqueSuggestions,
+        processingTime: apiResponse.processingTime,
+        modelVersion: apiResponse.modelVersion,
+        requestId: apiResponse.requestId,
+        metadata: {
+          ...apiResponse.metadata,
+          hybridSource: 'rules+api'
+        }
       };
     } catch (error) {
-      console.error("[AIHealthService] Error analyzing clinical data:", error);
-      // Retornar respuesta vacía en caso de error
-      return { suggestions: [] };
+      // Si la API falla, devolvemos solo las sugerencias de reglas
+      console.error('[AIHealthService] Error al obtener sugerencias de API:', error);
+      return {
+        suggestions: ruleSuggestions,
+        processingTime: 0,
+        modelVersion: 'hybrid-fallback-1.0',
+        requestId: `hybrid-fallback-${Date.now()}`,
+        metadata: {
+          hybridSource: 'rules-only',
+          fallbackReason: 'api-error'
+        }
+      };
     }
+  }
+
+  /**
+   * Obtiene sugerencias basadas en reglas locales
+   */
+  private async getRuleBasedSuggestions(
+    soapData: SoapData, 
+    options: AIAnalysisOptions
+  ): Promise<AIHealthResponse> {
+    const startTime = Date.now();
+    // Obtenemos las sugerencias desde el motor de reglas
+    const ruleSuggestions = await this.getLocalRuleSuggestions(soapData, options);
+    
+    // Creamos la respuesta con el formato AIHealthResponse
+    return {
+      suggestions: ruleSuggestions,
+      processingTime: Date.now() - startTime,
+      modelVersion: 'rules-v1.0',
+      requestId: `req-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`
+    };
+  }
+
+  /**
+   * Filtra las reglas clínicas relevantes según la especialidad y sección activa
+   */
+  private getRelevantRules(specialty: SpecialtyType, activeSection?: SOAPSection): ClinicalRule[] {
+    // Obtener las reglas para la especialidad
+    const specialtyRules = clinicalRules[specialty] ?? [];
+    const generalRules = specialty !== 'general' ? clinicalRules['general'] ?? [] : [];
+    
+    // Combinar reglas específicas de la especialidad y reglas generales
+    let combinedRules = [...specialtyRules, ...generalRules];
+    
+    // Filtrar por sección activa si se especifica
+    if (activeSection) {
+      combinedRules = combinedRules.filter(rule => 
+        rule.suggestion.section === activeSection
+      );
+    }
+    
+    return combinedRules;
+  }
+
+  /**
+   * Motor de reglas local para generar sugerencias
+   */
+  private async getLocalRuleSuggestions(
+    soapData: SoapData, 
+    options: AIAnalysisOptions
+  ): Promise<AISuggestion[]> {
+    const specialty = options.specialty ?? soapData.specialty ?? 'general';
+    const activeSection = options.activeSection;
+    
+    const relevantRules = this.getRelevantRules(specialty, activeSection);
+    
+    const suggestions: AISuggestion[] = [];
+    
+    // Aplicar cada regla al conjunto de datos
+    for (const rule of relevantRules) {
+      try {
+        if (rule.condition(soapData)) {
+          // Si la condición de la regla se cumple, crear una sugerencia
+          const suggestion: AISuggestion = {
+            id: `rule-${rule.id}-${Date.now()}`,
+            type: rule.suggestion.type as AISuggestionType,
+            title: rule.suggestion.title,
+            description: rule.suggestion.description,
+            section: rule.suggestion.section as SOAPSection,
+            field: rule.suggestion.field,
+            priority: rule.suggestion.priority as AIPriorityLevel,
+            confidence: rule.suggestion.confidence,
+            source: 'rule',
+            metadata: {
+              evidenceLevel: rule.suggestion.evidenceLevel,
+              clinicalRelevance: rule.suggestion.clinicalRelevance,
+              specialtySpecific: rule.suggestion.specialtySpecific,
+              ruleId: rule.id
+            },
+            contextFactors: rule.suggestion.contextFactors
+          };
+          
+          // Calcular puntaje basado en diversos factores
+          const score = this.calculateSuggestionScore(
+            suggestion,
+            options.patientContext,
+            rule.suggestion.evidenceLevel,
+            rule.suggestion.clinicalRelevance
+          );
+          
+          // Añadir puntaje como confianza normalizada
+          suggestion.confidence = Math.min(1, Math.max(0, score));
+          
+          // Aplicar filtro de confianza mínima
+          if (!options.minConfidence || suggestion.confidence >= options.minConfidence) {
+            suggestions.push(suggestion);
+          }
+        }
+      } catch (error) {
+        // Si una regla falla, registrar el error pero continuar con las demás
+        console.error(`Error al procesar regla ${rule.id}:`, error);
+      }
+    }
+    
+    // Ordenar por prioridad y confianza
+    return this.removeDuplicateSuggestions(suggestions)
+      .sort((a, b) => {
+        // Primero por prioridad
+        const priorityOrder = { high: 3, medium: 2, low: 1 };
+        const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+        
+        if (priorityDiff !== 0) return priorityDiff;
+        
+        // Luego por confianza
+        return (b.confidence ?? 0) - (a.confidence ?? 0);
+      })
+      .slice(0, options.maxSuggestions ?? this.config.localRules.maxSuggestionsPerSection);
+  }
+
+  /**
+   * Calcula una puntuación para una sugerencia basada en factores clínicos y contexto del paciente
+   */
+  private calculateSuggestionScore(
+    suggestion: AISuggestion,
+    patientContext: AIAnalysisOptions['patientContext'] = {},
+    evidenceLevel: EvidenceLevel,
+    clinicalRelevance: ClinicalRelevance = ClinicalRelevance.IMPORTANT
+  ): number {
+    let score = evidenceLevel * clinicalRelevance; // Base score
+
+    // Ajustar por tipo de prioridad
+    const priorityWeight = this.determineScoreByPriority(suggestion);
+    
+    score *= priorityWeight;
+
+    // Ajustar por edad si aplica
+    if (patientContext.age && suggestion.contextFactors?.age) {
+      score *= this.calculateAgeFactor(patientContext.age, suggestion.contextFactors.age);
+    }
+
+    // Ajustar por condiciones conocidas
+    if (patientContext.knownConditions?.length && suggestion.contextFactors?.conditions?.length) {
+      score *= this.calculateConditionFactor(
+        patientContext.knownConditions,
+        suggestion.contextFactors.conditions
+      );
+    }
+
+    return score;
+  }
+
+  private determineScoreByPriority(suggestion: AISuggestion): number {
+    if (suggestion.priority === 'high') {
+      return 1.5;
+    } else if (suggestion.priority === 'medium') {
+      return 1.0;
+    } else {
+      return 0.7;
+    }
+  }
+
+  private calculateAgeFactor(patientAge: number, ageRange?: number[]): number {
+    if (!ageRange) return 1.0;
+    const [minAge, maxAge] = ageRange;
+    if (patientAge >= minAge && patientAge <= maxAge) return 1.0;
+    return 0.7; // Penalización por edad fuera del rango recomendado
+  }
+
+  private calculateConditionFactor(
+    patientConditions: string[],
+    relevantConditions: string[]
+  ): number {
+    const matches = patientConditions.filter(condition =>
+      relevantConditions.some(relevant => 
+        condition.toLowerCase().includes(relevant.toLowerCase())
+      )
+    ).length;
+    
+    return 0.5 + (matches / relevantConditions.length) * 0.5;
+  }
+
+  /**
+   * Elimina sugerencias duplicadas y las ordena por prioridad
+   */
+  private removeDuplicateSuggestions(suggestions: AISuggestion[]): AISuggestion[] {
+    const uniqueMap = new Map<string, AISuggestion>();
+    
+    for (const suggestion of suggestions) {
+      const key = `${suggestion.section}-${suggestion.field || ''}-${suggestion.title}`;
+      
+      if (!uniqueMap.has(key) || this.getSuggestionWeight(suggestion) > this.getSuggestionWeight(uniqueMap.get(key)!)) {
+        uniqueMap.set(key, suggestion);
+      }
+    }
+    
+    return Array.from(uniqueMap.values())
+      .sort((a, b) => this.getSuggestionWeight(b) - this.getSuggestionWeight(a));
+  }
+
+  /**
+   * Asigna un peso a una sugerencia basado en su prioridad y confianza
+   */
+  private getSuggestionWeight(suggestion: AISuggestion): number {
+    const priorityWeight = { high: 3, medium: 2, low: 1 }[suggestion.priority] || 0;
+    const confidenceWeight = suggestion.confidence || 0.5;
+    const sourceWeight = { rule: 0.8, model: 1.0, guideline: 0.9 }[suggestion.source || 'rule'] || 0.5;
+    
+    return priorityWeight * confidenceWeight * sourceWeight;
+  }
+
+  /**
+   * Validación básica del formato SOAP
+   */
+  private validateSOAPFormat(soapData: SoapData): void {
+    if (!soapData.patientId) {
+      throw new Error('SOAP data must include patientId');
+    }
+    
+    // Podríamos agregar más validaciones aquí si es necesario
   }
 
   /**
    * Simulación de llamada a API remota (se reemplazaría por la llamada real)
    */
   private async simulateRemoteApiCall(
-    soapData: SOAPData, 
+    soapData: SoapData, 
     options: AIAnalysisOptions
   ): Promise<AISuggestion[]> {
     // Esta función es una simulación y en el futuro se reemplazaría
@@ -290,160 +535,83 @@ export class AIHealthService {
   }
 
   /**
-   * Motor de reglas local para generar sugerencias
-   * En el futuro, este método podría complementarse o reemplazarse
-   * con llamadas a modelos de IA externos
+   * Calcula el API request para obtener las sugerencias
    */
-  private async getLocalRuleSuggestions(
-    soapData: SOAPData, 
+  private async getAPISuggestions(
+    soapData: SoapData,
     options: AIAnalysisOptions
-  ): Promise<AISuggestion[]> {
-    const suggestions: AISuggestion[] = [];
-    const { specialty = 'physiotherapy', patientContext } = options;
-
-    // Obtener reglas específicas de la especialidad
-    const specialtyRules = clinicalRules[specialty] || [];
-    const generalRules = clinicalRules.general || [];
-
-    // Aplicar reglas de la especialidad
-    for (const rule of specialtyRules) {
-      if (rule.condition(soapData)) {
-        const score = this.calculateSuggestionScore(
-          {
-            id: rule.id,
-            type: rule.suggestion.type,
-            title: rule.suggestion.title,
-            description: rule.suggestion.description,
-            section: rule.suggestion.section,
-            field: rule.suggestion.field,
-            priority: rule.suggestion.priority,
-            source: 'rule',
-            confidence: rule.suggestion.confidence
-          },
-          patientContext,
-          rule.suggestion.evidenceLevel,
-          rule.suggestion.clinicalRelevance
-        );
-
-        if (score >= this.config.localRules.minConfidence) {
-          suggestions.push({
-            id: rule.id,
-            type: rule.suggestion.type,
-            title: rule.suggestion.title,
-            description: rule.suggestion.description,
-            section: rule.suggestion.section,
-            field: rule.suggestion.field,
-            priority: rule.suggestion.priority,
-            source: 'rule',
-            confidence: score,
-            metadata: {
-              evidenceLevel: rule.suggestion.evidenceLevel,
-              clinicalRelevance: rule.suggestion.clinicalRelevance,
-              specialtySpecific: rule.suggestion.specialtySpecific
-            }
-          });
-        }
+  ): Promise<AIHealthResponse> {
+    const startTime = Date.now();
+    
+    // Verificar que la configuración remota exista
+    if (!this.config.remoteApi) {
+      if (this.config.logging.level === 'warn' || this.config.logging.level === 'error') {
+        console.warn('[AIHealthService] Configuración remota no definida, usando reglas locales');
       }
+      return this.getRuleBasedSuggestions(soapData, options);
     }
-
-    // Aplicar reglas generales
-    for (const rule of generalRules) {
-      if (rule.condition(soapData)) {
-        const score = this.calculateSuggestionScore(
-          {
-            id: rule.id,
-            type: rule.suggestion.type,
-            title: rule.suggestion.title,
-            description: rule.suggestion.description,
-            section: rule.suggestion.section,
-            field: rule.suggestion.field,
-            priority: rule.suggestion.priority,
-            source: 'rule',
-            confidence: rule.suggestion.confidence
-          },
-          patientContext,
-          rule.suggestion.evidenceLevel,
-          rule.suggestion.clinicalRelevance
-        );
-
-        if (score >= this.config.localRules.minConfidence) {
-          suggestions.push({
-            id: rule.id,
-            type: rule.suggestion.type,
-            title: rule.suggestion.title,
-            description: rule.suggestion.description,
-            section: rule.suggestion.section,
-            field: rule.suggestion.field,
-            priority: rule.suggestion.priority,
-            source: 'rule',
-            confidence: score,
-            metadata: {
-              evidenceLevel: rule.suggestion.evidenceLevel,
-              clinicalRelevance: rule.suggestion.clinicalRelevance,
-              specialtySpecific: rule.suggestion.specialtySpecific
-            }
-          });
+    
+    // Medir rendimiento específico de la llamada a la API
+    const apiMetricId = this.performanceMonitor.startMeasure(
+      'api_request',
+      'api',
+      { patientId: soapData.patientId }
+    );
+    
+    try {
+      // En un entorno real, aquí se haría la llamada a la API
+      const apiSuggestions = await this.simulateRemoteApiCall(soapData, options);
+      
+      // Preparar la respuesta
+      const response: AIHealthResponse = {
+        suggestions: apiSuggestions,
+        processingTime: Date.now() - startTime,
+        modelVersion: 'api-v1.0',
+        requestId: `api-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        metadata: {
+          endpoint: this.config.remoteApi.baseUrl,
+          responseTime: Date.now() - startTime
         }
+      };
+      
+      return response;
+    } catch (err) {
+      // Log del error
+      console.error('[AIHealthService] Error en la llamada a la API:', err);
+      
+      // Usar reglas locales como fallback si está habilitado
+      if (this.config.localRules.enabled) {
+        if (this.config.logging.level === 'warn' || this.config.logging.level === 'error') {
+          console.warn('[AIHealthService] Fallback a reglas locales debido a error en API');
+        }
+        return this.getRuleBasedSuggestions(soapData, options);
       }
+      
+      // Si no hay fallback, devolver una respuesta vacía
+      return {
+        suggestions: [],
+        processingTime: Date.now() - startTime,
+        requestId: `api-error-${Date.now()}`,
+        metadata: { error: 'API call failed' }
+      };
+    } finally {
+      // Finalizar medición de rendimiento de la API
+      this.performanceMonitor.endMeasure(apiMetricId);
     }
+  }
 
-    // Ordenar sugerencias por score
-    return suggestions.sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
-  }
-  
-  // Helpers para las reglas
-  
-  private checkForProsthesisMention(subjective: SubjectiveData): boolean {
-    const textToCheck = [
-      subjective.chiefComplaint || '',
-      subjective.medicalHistory || '',
-      subjective.painDescription || ''
-    ].join(' ').toLowerCase();
-    
-    return textToCheck.includes('prótesis') || 
-           textToCheck.includes('protesis') || 
-           textToCheck.includes('ptr') ||
-           textToCheck.includes('implante') ||
-           textToCheck.includes('reemplazo articular');
-  }
-  
-  private checkForKneeMention(subjective: SubjectiveData): boolean {
-    const textToCheck = [
-      subjective.chiefComplaint || '',
-      subjective.medicalHistory || '',
-      subjective.painDescription || ''
-    ].join(' ').toLowerCase();
-    
-    return textToCheck.includes('rodilla') || 
-           textToCheck.includes('knee') || 
-           textToCheck.includes('rotulian');
-  }
-  
-  private checkForImagesReference(subjective: SubjectiveData, objective: ObjectiveData): boolean {
-    const subjectiveText = [
-      subjective.medicalHistory || ''
-    ].join(' ').toLowerCase();
-    
-    const objectiveText = [
-      objective.observation || ''
-    ].join(' ').toLowerCase();
-    
-    return subjectiveText.includes('radiograf') || 
-           subjectiveText.includes('imagen') ||
-           subjectiveText.includes('rayos x') ||
-           subjectiveText.includes('tomograf') ||
-           subjectiveText.includes('resonancia') ||
-           objectiveText.includes('radiograf') ||
-           objectiveText.includes('imagen') ||
-           objectiveText.includes('rayos x') ||
-           objectiveText.includes('tomograf') ||
-           objectiveText.includes('resonancia');
+  // Obtener recomendaciones de rendimiento
+  public getPerformanceInsights(): {
+    slowestOperations: Array<{ id: string, avgDuration: number, count: number, type: string }>;
+    recommendations: string[];
+  } {
+    return this.performanceMonitor.analyzePerformance();
   }
 
   /**
    * Genera una clave única para identificar solicitudes similares
    */
-  private generateRequestKey(soapData: SOAPData, options: AIAnalysisOptions): string {
+  private generateRequestKey(soapData: SoapData, options: AIAnalysisOptions): string {
     // Creamos una firma simplificada de los datos SOAP
     const dataSignature = {
       subjective: soapData.subjective ? {
@@ -506,63 +674,5 @@ export class AIHealthService {
     if (this.config.logging.level === 'debug' || this.config.logging.level === 'info') {
       console.log(`[AIHealthService] Feedback para sugerencia ${suggestionId}: ${isHelpful ? 'útil' : 'no útil'}`);
     }
-  }
-
-  private calculateSuggestionScore(
-    suggestion: AISuggestion,
-    patientContext: AIAnalysisOptions['patientContext'] = {},
-    evidenceLevel: EvidenceLevel,
-    clinicalRelevance: ClinicalRelevance
-  ): number {
-    let score = 1.0;
-
-    // Factor de evidencia
-    score *= evidenceLevel;
-
-    // Factor de relevancia clínica
-    score *= clinicalRelevance;
-
-    // Factor de edad
-    if (patientContext.age) {
-      const ageFactor = this.calculateAgeFactor(patientContext.age, suggestion.contextFactors?.age);
-      score *= ageFactor;
-    }
-
-    // Factor de género
-    if (patientContext.gender && suggestion.contextFactors?.gender) {
-      const genderFactor = suggestion.contextFactors.gender.includes(patientContext.gender) ? 1.0 : 0.5;
-      score *= genderFactor;
-    }
-
-    // Factor de condiciones
-    if (patientContext.knownConditions && suggestion.contextFactors?.conditions) {
-      const conditionFactor = this.calculateConditionFactor(
-        patientContext.knownConditions,
-        suggestion.contextFactors.conditions
-      );
-      score *= conditionFactor;
-    }
-
-    return score;
-  }
-
-  private calculateAgeFactor(patientAge: number, ageRange?: number[]): number {
-    if (!ageRange) return 1.0;
-    const [minAge, maxAge] = ageRange;
-    if (patientAge >= minAge && patientAge <= maxAge) return 1.0;
-    return 0.7; // Penalización por edad fuera del rango recomendado
-  }
-
-  private calculateConditionFactor(
-    patientConditions: string[],
-    relevantConditions: string[]
-  ): number {
-    const matches = patientConditions.filter(condition =>
-      relevantConditions.some(relevant => 
-        condition.toLowerCase().includes(relevant.toLowerCase())
-      )
-    ).length;
-    
-    return 0.5 + (matches / relevantConditions.length) * 0.5;
   }
 } 

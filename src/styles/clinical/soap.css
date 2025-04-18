@@ -1,0 +1,198 @@
+.soap-note-container {
+  background-color: var(--background-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+}
+
+.soap-navigation {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.soap-tab {
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--text-color);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.soap-tab:hover {
+  color: var(--primary-color);
+}
+
+.soap-tab.active {
+  color: var(--primary-color);
+}
+
+.soap-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+
+.soap-content {
+  animation: fadeIn 0.3s ease;
+}
+
+.soap-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.soap-section-title {
+  color: var(--heading-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+}
+
+.soap-input {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-sm);
+  transition: border-color 0.2s ease;
+}
+
+.soap-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.soap-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.soap-button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.soap-button:hover {
+  background-color: var(--primary-dark-color);
+}
+
+.soap-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Elementos de array y listas */
+.soap-array-item {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  align-items: center;
+}
+
+.soap-array-item .soap-input {
+  margin-bottom: 0;
+  flex-grow: 1;
+}
+
+.soap-array-item .soap-button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Estilos para pruebas especiales */
+.soap-test-item {
+  display: grid;
+  grid-template-columns: 3fr 2fr 4fr auto;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  align-items: start;
+}
+
+/* Estilos para intervenciones */
+.soap-intervention-item {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr auto;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  align-items: start;
+}
+
+/* Estilos para ejercicios */
+.soap-exercise-item {
+  background-color: var(--hover-color);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.soap-exercise-params {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Acciones SOAP */
+.soap-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos para campos de formulario */
+.soap-form-field {
+  margin-bottom: var(--spacing-md);
+}
+
+.soap-field-label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: 500;
+  color: var(--heading-color);
+}
+
+.soap-field-input {
+  width: 100%;
+}
+
+.soap-array-field {
+  margin-bottom: var(--spacing-md);
+}
+
+.soap-section-content {
+  padding: var(--spacing-sm) 0;
+} 

@@ -1,0 +1,75 @@
+name: Project Automation
+
+on:
+  issues:
+    types: [opened, closed, reopened, assigned]
+  pull_request:
+    types: [opened, closed, reopened, review_requested]
+
+jobs:
+  add_to_project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add issue or PR to project
+        uses: actions/add-to-project@v0.4.1
+        with:
+          project-url: ${{ secrets.PROJECT_URL }}
+          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+        id: add-to-project
+  
+  update_project_status:
+    runs-on: ubuntu-latest
+    needs: add_to_project
+    steps:
+      - name: Update project status
+        if: github.event_name == 'issues' || github.event_name == 'pull_request'
+        uses: github/update-project-action@v3
+        with:
+          github_token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          organization: ${{ github.repository_owner }}
+          project_number: ${{ secrets.PROJECT_NUMBER }}
+          content_id: ${{ github.event.issue.node_id || github.event.pull_request.node_id }}
+          field: Status
+          value: |
+            ${{ github.event.action == 'opened' && 'To Do' || 
+                 (github.event.action == 'assigned' || github.event.action == 'review_requested') && 'In Progress' || 
+                 github.event.action == 'closed' && 'Done' || 'To Do' }}
+
+  update_date_fields:
+    runs-on: ubuntu-latest
+    needs: update_project_status
+    steps:
+      - name: Get current date
+        id: current-date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      
+      - name: Set start date when item enters 'In Progress'
+        if: github.event.action == 'assigned' || github.event.action == 'review_requested'
+        uses: github/update-project-action@v3
+        with:
+          github_token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          organization: ${{ github.repository_owner }}
+          project_number: ${{ secrets.PROJECT_NUMBER }}
+          content_id: ${{ github.event.issue.node_id || github.event.pull_request.node_id }}
+          field: "Start Date" 
+          value: "${{ steps.current-date.outputs.date }}"
+          operation: update
+      
+      - name: Set completion date when item is closed
+        if: github.event.action == 'closed'
+        uses: github/update-project-action@v3
+        with:
+          github_token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          organization: ${{ github.repository_owner }}
+          project_number: ${{ secrets.PROJECT_NUMBER }}
+          content_id: ${{ github.event.issue.node_id || github.event.pull_request.node_id }}
+          field: "Completion Date"
+          value: "${{ steps.current-date.outputs.date }}"
+          operation: update
+      
+      - name: Calculate and update duration when item is closed
+        if: github.event.action == 'closed'
+        run: |
+          echo "Calculando duración del issue/PR..."
+          # La duración se calculará en el propio proyecto con la API de GitHub Projects
+          # Ya que necesitamos leer primero la fecha de inicio para calcular la duración 

@@ -1,47 +1,44 @@
-# Sprint 4: Módulo Base de Fisioterapia - Estado Actual
+# Sprint 5: Gestión de Planes de Tratamiento - Estado Actual
 
-> **Objetivo:** Implementar estructura SOAP y evaluación física MSK básica con arquitectura expandible.
-> **Estado:** ✅ COMPLETADO
+> **Objetivo:** Implementar biblioteca de ejercicios y planificación de sesiones.
+> **Estado:** 🔄 EN PROGRESO
 
 ## Tareas y Estado Actual
 
-### [E1] Estructura SOAP específica MSK (arquitectura adaptable)
-- ✅ Componente SoapContainer implementado con estructura de pestañas
-- ✅ Optimización de rendimiento con memoización y renderizado condicional
-- ✅ Resolver problemas de tipado en SubjectiveContainer
-- ✅ Resolver problemas de tipado en AssessmentContainer
-- ✅ Resolver problemas de tipado en PlanContainer
-- ✅ Optimización de useEffect en componentes SOAP (eliminación de setValue como dependencia)
-- ✅ Corregir problemas de tipado en SoapContainer (_patientId vs patientId, readOnly vs readonly)
+### [E5] Biblioteca ejercicios básicos MSK (arquitectura para expansión)
+- [ ] Diseñar estructura de datos para ejercicios terapéuticos
+- [ ] Implementar componente de visualización de ejercicios
+- [ ] Crear biblioteca inicial con ejercicios básicos MSK
+- [ ] Desarrollar sistema de categorización y búsqueda de ejercicios
 
-### [E2] Campos evaluación física MSK (framework genérico)
-- ✅ Implementados campos básicos para evaluación MSK
-- ✅ Estructura adaptable para cada especialidad
-- ✅ Revisar coherencia entre componentes SOAP
-- ✅ Validar que todos los campos necesarios estén presentes
+### [E6] Planificación de sesiones (framework genérico de planificación)
+- [ ] Desarrollar componente para creación de planes de tratamiento
+- [ ] Implementar interfaz para asignación de ejercicios a pacientes
+- [ ] Crear sistema de progresión de ejercicios y dosificación
+- [ ] Implementar función de planificación temporal de sesiones
 
-### [E3] Registro mediciones ROM/fuerza (sistema de métricas)
-- ✅ Implementada interfaz RangeOfMotionData
-- ✅ Componente de tabla para mediciones ROM
-- ✅ Optimizar rendimiento de componentes de medición
-- ✅ Implementar visualización de progreso entre mediciones
+### [E7] Documentación resultados funcionales (métricas adaptables)
+- [ ] Diseñar estructura para seguimiento de resultados
+- [ ] Implementar registro de progreso en ejercicios y métricas funcionales
+- [ ] Crear visualización de evolución de resultados
+- [ ] Desarrollar sistema de metas y objetivos terapéuticos medibles
 
-### [E4] Sistema seguimiento visual básico (componente reutilizable)
-- ✅ Implementado componente AnatomicalSelector
-- ✅ Implementado componente PainScaleInput
-- ✅ Mejorar rendimiento de AnatomicalSelector
-- ✅ Optimizar accesibilidad de componentes visuales
+### [E8] Componente seguimiento visual (visualización configurable)
+- [ ] Mejorar el componente AnatomicalSelector para seguimiento visual
+- [ ] Implementar visualización de progresión de ejercicios
+- [ ] Crear dashboard de evolución visual para pacientes
+- [ ] Desarrollar componente de comparación antes/después
 
-## Prioridades Completadas
+## Prioridades Para Sprint 5
 
-1. **Alta:** ~~Corregir problemas de tipado en SoapContainer~~ ✅ COMPLETADO
-2. **Alta:** ~~Optimizar rendimiento de AnatomicalSelector y PainScaleInput~~ ✅ COMPLETADO
-3. **Media:** ~~Implementar visualización de progreso entre mediciones~~ ✅ COMPLETADO
-4. **Media:** ~~Validar coherencia entre componentes SOAP~~ ✅ COMPLETADO
-5. **Alta:** ~~Validar que todos los campos necesarios estén presentes~~ ✅ COMPLETADO
-6. **Alta:** ~~Optimizar rendimiento de componentes de medición~~ ✅ COMPLETADO
+1. **Alta:** Diseñar e implementar estructura base de datos para ejercicios
+2. **Alta:** Desarrollar componente de planificación de sesiones
+3. **Media:** Implementar sistema de seguimiento de resultados funcionales
+4. **Media:** Crear visualización de progreso para pacientes
+5. **Alta:** Integrar biblioteca de ejercicios con el plan de tratamiento
+6. **Alta:** Desarrollar sistema de progresión y dosificación terapéutica
 
-## Deuda Técnica Pendiente para Sprint 5
+## Deuda Técnica Pendiente del Sprint 4
 
 - Resolver advertencias de ESLint sobre tipos "any"
 - Mejorar accesibilidad en componentes
@@ -49,4 +46,4 @@
 
 ## Próximo Sprint
 
-Planificación para Sprint 5: Gestión de Planes de Tratamiento 
+Planificación para Sprint 6: Documentación Clínica 

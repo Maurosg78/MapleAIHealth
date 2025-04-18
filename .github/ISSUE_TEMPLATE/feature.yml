@@ -1,0 +1,52 @@
+name: Feature Request
+description: Proponer una nueva funcionalidad
+title: "[FEATURE] "
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por proponer una nueva funcionalidad para MapleAI Health.
+        
+  - type: dropdown
+    id: component
+    attributes:
+      label: Componente
+      description: ¿A qué componente del sistema afecta esta funcionalidad?
+      options:
+        - EMR Core
+        - AI Assistant
+        - Clinical Assessment
+        - Treatment Planning
+        - Documentation
+        - Billing
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: Describe la funcionalidad en detalle
+      placeholder: "Como [usuario], quiero [acción] para [beneficio]"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Criterios de Aceptación
+      description: Lista los criterios que deben cumplirse
+      placeholder: |
+        - [ ] Criterio 1
+        - [ ] Criterio 2
+    validations:
+      required: true
+      
+  - type: textarea
+    id: technical
+    attributes:
+      label: Consideraciones Técnicas
+      description: Aspectos técnicos a tener en cuenta
+    validations:
+      required: false 

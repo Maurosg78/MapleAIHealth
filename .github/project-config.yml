@@ -1,0 +1,56 @@
+name: MapleAI Health
+description: Sistema EMR con Asistente IA integrado
+
+milestones:
+  - name: "MVP Ficha Clínica"
+    description: "Implementación base del sistema de registros clínicos"
+    due_date: "2024-05-01"
+
+  - name: "MVP Fisioterapia EMR"
+    description: "Desarrollo del módulo específico para fisioterapia"
+    due_date: "2024-07-01"
+
+  - name: "MVP Fisioterapia Assistant"
+    description: "Implementación del asistente IA para fisioterapia"
+    due_date: "2024-09-01"
+
+labels:
+  - name: "epic"
+    color: "6F42C1"
+    description: "Epic level issue"
+  
+  - name: "feature"
+    color: "0E8A16"
+    description: "New feature or enhancement"
+  
+  - name: "bug"
+    color: "D73A4A"
+    description: "Something isn't working"
+  
+  - name: "documentation"
+    color: "0075CA"
+    description: "Documentation updates"
+
+  - name: "AI"
+    color: "FEF2C0"
+    description: "Related to AI functionality"
+
+  - name: "EMR"
+    color: "BFD4F2"
+    description: "Related to EMR functionality"
+
+project_columns:
+  - name: "Backlog"
+    description: "Issues that are not yet ready for development"
+  
+  - name: "To Do"
+    description: "Issues ready for development"
+  
+  - name: "In Progress"
+    description: "Issues currently being worked on"
+  
+  - name: "Review"
+    description: "Issues ready for review"
+  
+  - name: "Done"
+    description: "Completed issues" 

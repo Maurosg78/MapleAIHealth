@@ -1,0 +1,28 @@
+# Este archivo de configuración está obsoleto
+# Se recomienda usar la integración GitHub for Jira
+# https://marketplace.atlassian.com/apps/1219592/github-for-jira
+
+name: Jira Sync (Deprecado)
+
+# NOTA: Se recomienda migrar a GitHub App for Jira como solución preferida
+# https://github.com/marketplace/jira-software-github
+
+on:
+  issues:
+    types: [opened, closed, reopened, edited]
+  pull_request:
+    types: [opened, closed, reopened, edited]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      # Para instrucciones sobre cómo configurar la nueva integración:
+      # 1. Instalar la app GitHub for Jira desde el marketplace de Atlassian
+      # 2. Seguir las instrucciones en: https://support.atlassian.com/jira-cloud-administration/docs/integrate-with-github/
+      
+      - name: Configuración Alternativa
+        run: |
+          echo "Este flujo de trabajo está obsoleto."
+          echo "Se recomienda usar GitHub for Jira para una integración más completa."
+          echo "Visite https://marketplace.atlassian.com/apps/1219592/github-for-jira para más información." 

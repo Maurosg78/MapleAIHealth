@@ -1,8 +1,23 @@
-import React from 'react';
-import { RouteObject, createBrowserRouter } from 'react-router-dom';
+import React, { Suspense, lazy } from 'react';
+import { RouteObject, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AiduxLayout } from './components/layout/AiduxLayout';
 import ClinicalAssistantPage from './pages/ClinicalAssistantPage';
 import { ProgressPage } from './components/emr/progress';
+import VoiceEnabledClinicalPage from './pages/VoiceEnabledClinicalPage';
+import VoiceCommandsHelpPage from './pages/VoiceCommandsHelpPage';
+import { FunctionalAssessmentContainer } from './containers/FunctionalAssessmentContainer';
+import { FunctionalAssessmentSelectionPage } from './pages/FunctionalAssessmentSelectionPage';
+
+// Importando componentes con lazy loading
+const PatientComparisonPage = lazy(() => import('./pages/PatientComparisonPage').then(module => ({ default: module.PatientComparisonPage })));
+const AssistantDemoPage = lazy(() => import('./pages/AssistantDemoPage').then(module => ({ default: module.AssistantDemoPage })));
+
+// Componente de carga
+const LoadingFallback = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    Cargando...
+  </div>
+);
 
 // Página de inicio que redirigirá a la sección adecuada
 const HomePage = () => (
@@ -33,6 +48,22 @@ const UnderDevelopmentPage = ({ title }: { title: string }) => (
 const routes: RouteObject[] = [
   {
     path: '/',
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <PatientComparisonPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/assistant',
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <AssistantDemoPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/',
     element: <AiduxLayout />,
     children: [
       {
@@ -48,8 +79,32 @@ const routes: RouteObject[] = [
         element: <ClinicalAssistantPage />
       },
       {
+        path: 'consultas-voz',
+        element: <VoiceEnabledClinicalPage />
+      },
+      {
+        path: 'consultas-voz/:patientId',
+        element: <VoiceEnabledClinicalPage />
+      },
+      {
+        path: 'consultas-voz/:patientId/:visitId',
+        element: <VoiceEnabledClinicalPage />
+      },
+      {
+        path: 'comandos-voz',
+        element: <VoiceCommandsHelpPage />
+      },
+      {
         path: 'progreso',
         element: <ProgressPage />
+      },
+      {
+        path: 'evaluacion-funcional',
+        element: <FunctionalAssessmentSelectionPage />
+      },
+      {
+        path: 'evaluacion-funcional/:patientId',
+        element: <FunctionalAssessmentContainer />
       },
       {
         path: 'agenda',
@@ -68,6 +123,11 @@ const routes: RouteObject[] = [
 ];
 
 // Crear el router con las rutas definidas
-export const router = createBrowserRouter(routes);
+const router = createBrowserRouter(routes);
+
+// Componente principal de rutas
+export const AppRouter: React.FC = () => {
+  return <RouterProvider router={router} />;
+};
 
 export default routes; 

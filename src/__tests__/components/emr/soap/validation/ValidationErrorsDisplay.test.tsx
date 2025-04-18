@@ -1,5 +1,4 @@
 /** @jsx React.createElement */
-import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ValidationErrorsDisplay } from '../../../../../components/emr/soap/validation/ValidationErrorsDisplay';

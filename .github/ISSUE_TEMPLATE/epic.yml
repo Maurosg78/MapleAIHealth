@@ -1,0 +1,56 @@
+name: Epic
+description: Crear un nuevo epic
+title: "[EPIC] "
+labels: ["epic"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Define un nuevo epic para MapleAI Health.
+        
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Milestone
+      description: ¿A qué milestone pertenece este epic?
+      options:
+        - MVP Ficha Clínica
+        - MVP Fisioterapia EMR
+        - MVP Fisioterapia Assistant
+    validations:
+      required: true
+      
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: ¿Cuál es el objetivo principal de este epic?
+    validations:
+      required: true
+      
+  - type: textarea
+    id: features
+    attributes:
+      label: Funcionalidades
+      description: Lista las principales funcionalidades que incluye
+      placeholder: |
+        - [ ] Feature 1
+        - [ ] Feature 2
+    validations:
+      required: true
+      
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencias
+      description: Lista las dependencias con otros epics o sistemas
+    validations:
+      required: false
+      
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Métricas de Éxito
+      description: ¿Cómo mediremos el éxito de este epic?
+    validations:
+      required: true 
