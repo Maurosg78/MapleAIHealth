@@ -21,5 +21,7 @@ export interface CacheStats {
 export interface CacheMetadata {
   patientId?: string;
   section?: string;
+  ttl?: number;
+  dynamic?: boolean;
   [key: string]: unknown;
 } 
