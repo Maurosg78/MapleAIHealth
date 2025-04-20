@@ -15,8 +15,6 @@
 
 ### Sprint 3
 - [ ] #48: Dashboard de Información Clínica
-- [ ] #47: Servicio de Priorización de Caché
-- [ ] #46: Estrategia de Invalidación de Caché
 - [ ] #45: Componente de Visualización de Evidencia
 - [ ] #44: Servicio de Verificación de Fuentes Médicas
 - [ ] #43: Servicio de Evaluación de Evidencia Clínica
@@ -26,6 +24,10 @@
 - [ ] #41: Documentación técnica de servicios de IA
 
 ## ✅ Completado
+
+### Sprint 3
+- [x] #47: Servicio de Priorización de Caché
+- [x] #46: Estrategia de Invalidación de Caché
 
 ### Sprint 2: Servicios de IA
 - [x] #40: Sistema de pruebas para servicios de IA
@@ -42,24 +44,24 @@
 
 ### Progreso General
 - Total de Issues: 20
-- Completados: 7 (35%)
-- En Progreso: 8 (40%)
+- Completados: 9 (45%)
+- En Progreso: 6 (30%)
 - Pendientes: 5 (25%)
 
 ### Velocidad del Sprint
-- Sprint 3: 6 issues en progreso
+- Sprint 3: 4 issues en progreso, 2 completados
 - Sprint 9: 4 issues planificados
 - Sprint 5: 1 issue pendiente
 
 ## 📅 Próximos Hitos
-1. Completar Sprint 3 (28 de Marzo)
+1. Completar issues restantes de Sprint 3 (#48, #45, #44, #43)
 2. Resolver issues de linting y documentación (#41, #42)
 3. Iniciar Sprint 9 (29 de Marzo)
 4. Revisión Sprint 9 (11 de Abril)
 5. Planificación Sprint 10 (12 de Abril)
 
 ## 🎯 Prioridades Inmediatas
-1. Completar issues de Sprint 3
-2. Resolver problemas de linting (#42)
-3. Finalizar documentación técnica (#41)
-4. Preparar estructura para Sprint 9 
+1. Implementar Dashboard de Información Clínica (#48)
+2. Desarrollar Componente de Visualización de Evidencia (#45)
+3. Resolver problemas de linting (#42)
+4. Finalizar documentación técnica (#41) 
