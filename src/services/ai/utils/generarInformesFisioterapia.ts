@@ -489,9 +489,8 @@ export function generarCalendarioEjercicios(
   const fecha = new Date().toLocaleDateString('es-ES');
   
   return `
-CALENDARIO SEMANAL DE EJERCICIOS
-==============================
-Fecha de inicio: ${fecha}
+CALENDARIO DE EJERCICIOS
+=======================
 
 INSTRUCCIONES
 -----------
@@ -523,3 +522,4 @@ Domingo:  ________________________________________________
 Fisioterapeuta: ______________________
 Nº Colegiado: _______________________
 `; 
+} 

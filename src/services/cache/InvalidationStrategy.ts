@@ -131,8 +131,8 @@ export class InvalidationStrategy {
    * Verifica si una clave tiene dependencias invalidadas
    */
   private hasDependencyInvalidation(key: string): boolean {
-    // Implementación básica, a expandir según necesidades
-    return false;
+    // Verificar si la clave está en el grafo de dependencias
+    return this.dependencyGraph.has(key) && this.dependencyGraph.get(key)?.size !== 0;
   }
   
   /**

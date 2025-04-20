@@ -1,5 +1,6 @@
 import { CacheConfig, CacheStats, CacheMetadata } from './types';
 import { InvalidationStrategy, InvalidationConfig, commonInvalidationRules } from './InvalidationStrategy';
+import { CachePrioritizationService, PrioritizationAlgorithm, CacheItemUsage } from './CachePrioritizationService';
 
 export class EnhancedCacheManager<T> {
   private cache: Map<string, { data: T; timestamp: number; metadata?: CacheMetadata }>;
@@ -9,8 +10,15 @@ export class EnhancedCacheManager<T> {
   private accessCount: Map<string, number>;
   private lastAccess: Map<string, number>;
   private invalidationStrategy: InvalidationStrategy;
+  private prioritizationService: CachePrioritizationService;
+  private memorySizeEstimator?: (data: T) => number; // Estimador de tamaño en memoria
 
-  constructor(config: CacheConfig, invalidationConfig?: InvalidationConfig) {
+  constructor(
+    config: CacheConfig, 
+    invalidationConfig?: InvalidationConfig,
+    prioritizationAlgorithm: PrioritizationAlgorithm = 'adaptive',
+    memorySizeEstimator?: (data: T) => number
+  ) {
     this.config = config;
     this.cache = new Map();
     this.accessCount = new Map();
@@ -19,8 +27,10 @@ export class EnhancedCacheManager<T> {
       hits: 0,
       misses: 0,
       size: 0,
-      lastCleared: new Date()
+      lastCleared: new Date(),
+      estimatedMemoryUsage: 0
     };
+    this.memorySizeEstimator = memorySizeEstimator;
     
     // Configurar estrategia de invalidación
     this.invalidationStrategy = new InvalidationStrategy(
@@ -33,9 +43,24 @@ export class EnhancedCacheManager<T> {
       }
     );
     
+    // Inicializar servicio de priorización
+    this.prioritizationService = new CachePrioritizationService(
+      prioritizationAlgorithm,
+      {
+        recencyWeight: 0.4,
+        frequencyWeight: 0.3,
+        sizeWeight: 0.1,
+        costWeight: 0.2,
+        patientEmphasis: Boolean(config.patientBased)
+      }
+    );
+    
     this.cleanupInterval = setInterval(() => this.cleanup(), config.cleanupInterval || 60000);
   }
 
+  /**
+   * Limpia la caché eliminando entradas inválidas y controlando el tamaño máximo
+   */
   private cleanup(): void {
     let entriesRemoved = 0;
 
@@ -64,56 +89,91 @@ export class EnhancedCacheManager<T> {
       }
     }
 
-    // Limitar tamaño máximo usando priorización
+    // Limitar tamaño máximo usando priorización avanzada
     if (this.cache.size > this.config.maxSize) {
       this.prioritizeAndEvict();
     }
 
     if (entriesRemoved > 0) {
-      this.stats.size = this.cache.size;
+      this.updateStats();
     }
   }
   
   /**
    * Prioriza y elimina las entradas menos importantes cuando se alcanza el tamaño máximo
+   * Usando el servicio de priorización para decisiones más inteligentes
    */
   private prioritizeAndEvict(): void {
     const entriesToRemove = this.cache.size - this.config.maxSize;
     
-    // Crear puntuación para cada entrada
-    const entries = Array.from(this.cache.entries()).map(([key, value]) => {
+    // Preparar datos para el servicio de priorización
+    const usageData: CacheItemUsage[] = Array.from(this.cache.entries()).map(([key, value]) => {
       const accessCount = this.accessCount.get(key) || 0;
-      const recency = Date.now() - (this.lastAccess.get(key) || 0);
-      const age = Date.now() - value.timestamp;
+      const lastAccess = this.lastAccess.get(key) || value.timestamp;
       
-      // Fórmula de priorización: más accesos y más reciente = mayor prioridad
-      // Normalizado a un valor entre 0 y 100
-      const priority = (
-        (Math.min(accessCount, 20) / 20 * 40) + // 40% basado en frecuencia de acceso
-        (Math.max(0, 1 - (recency / (24 * 60 * 60 * 1000))) * 40) + // 40% basado en recencia
-        (Math.max(0, 1 - (age / this.config.ttlMs)) * 20) // 20% basado en antigüedad
-      );
+      // Estimar tamaño en memoria si hay estimador disponible
+      const size = this.memorySizeEstimator ? this.memorySizeEstimator(value.data) : undefined;
       
-      return { key, priority };
+      return {
+        key,
+        accessCount,
+        lastAccess,
+        createdAt: value.timestamp,
+        size,
+        section: value.metadata?.section,
+        patientId: value.metadata?.patientId
+      };
     });
     
-    // Ordenar por prioridad (menor primero)
-    entries.sort((a, b) => a.priority - b.priority);
+    // Usar el servicio de priorización para determinar qué entradas eliminar
+    const keysToEvict = this.prioritizationService.selectItemsToEvict(usageData, entriesToRemove);
     
-    // Eliminar entradas de menor prioridad
-    for (let i = 0; i < entriesToRemove; i++) {
-      if (i < entries.length) {
-        this.removeEntry(entries[i].key);
-      }
+    // Eliminar entradas seleccionadas
+    for (const key of keysToEvict) {
+      this.removeEntry(key);
     }
   }
 
+  /**
+   * Elimina una entrada de la caché y actualiza estadísticas
+   */
   private removeEntry(key: string): void {
+    // Capturar tamaño estimado antes de eliminar si hay estimador
+    let sizeRemoved = 0;
+    if (this.memorySizeEstimator && this.cache.has(key)) {
+      const entry = this.cache.get(key)!;
+      sizeRemoved = this.memorySizeEstimator(entry.data);
+    }
+    
     this.cache.delete(key);
     this.accessCount.delete(key);
     this.lastAccess.delete(key);
+    
+    // Actualizar estadísticas de uso de memoria
+    if (sizeRemoved > 0 && this.stats.estimatedMemoryUsage) {
+      this.stats.estimatedMemoryUsage = Math.max(0, this.stats.estimatedMemoryUsage - sizeRemoved);
+    }
   }
 
+  /**
+   * Actualiza las estadísticas de la caché
+   */
+  private updateStats(): void {
+    this.stats.size = this.cache.size;
+    
+    // Actualizar estimación de memoria si hay estimador
+    if (this.memorySizeEstimator) {
+      let totalSize = 0;
+      for (const [, entry] of this.cache.entries()) {
+        totalSize += this.memorySizeEstimator(entry.data);
+      }
+      this.stats.estimatedMemoryUsage = totalSize;
+    }
+  }
+
+  /**
+   * Obtiene un valor de la caché
+   */
   public get(key: string): T | undefined {
     const entry = this.cache.get(key);
     
@@ -132,7 +192,7 @@ export class EnhancedCacheManager<T> {
     if (invalidationResult.invalidated) {
       this.removeEntry(key);
       this.stats.misses++;
-      this.stats.size = this.cache.size;
+      this.updateStats();
       return undefined;
     }
 
@@ -144,6 +204,9 @@ export class EnhancedCacheManager<T> {
     return entry.data;
   }
 
+  /**
+   * Almacena un valor en la caché con metadatos opcionales
+   */
   public set(key: string, value: T, metadata?: CacheMetadata): void {
     const now = Date.now();
     
@@ -163,6 +226,9 @@ export class EnhancedCacheManager<T> {
           metadata
         });
         this.lastAccess.set(key, now);
+        
+        // Actualizar estadísticas de memoria
+        this.updateMemoryStats(key, value, existingEntry.data);
       }
       return;
     }
@@ -180,7 +246,34 @@ export class EnhancedCacheManager<T> {
     });
     this.accessCount.set(key, 0);
     this.lastAccess.set(key, now);
-    this.stats.size = this.cache.size;
+    
+    // Actualizar estadísticas
+    this.updateStats();
+    this.updateMemoryStats(key, value);
+    
+    // Configurar contexto de paciente en el servicio de priorización
+    if (metadata?.patientId) {
+      this.prioritizationService.setPatientContext(metadata.patientId);
+    }
+  }
+  
+  /**
+   * Actualiza las estadísticas de uso de memoria
+   */
+  private updateMemoryStats(key: string, newValue: T, oldValue?: T): void {
+    if (!this.memorySizeEstimator) return;
+    
+    const newSize = this.memorySizeEstimator(newValue);
+    const oldSize = oldValue ? this.memorySizeEstimator(oldValue) : 0;
+    
+    // Actualizar el total
+    if (this.stats.estimatedMemoryUsage !== undefined) {
+      this.stats.estimatedMemoryUsage = Math.max(0, 
+        (this.stats.estimatedMemoryUsage - oldSize) + newSize
+      );
+    } else {
+      this.stats.estimatedMemoryUsage = newSize;
+    }
   }
 
   /**
@@ -206,7 +299,7 @@ export class EnhancedCacheManager<T> {
     }
     
     if (invalidatedCount > 0) {
-      this.stats.size = this.cache.size;
+      this.updateStats();
     }
     
     return invalidatedCount;
@@ -237,17 +330,19 @@ export class EnhancedCacheManager<T> {
       hits: 0,
       misses: 0,
       size: 0,
-      lastCleared: new Date()
+      lastCleared: new Date(),
+      estimatedMemoryUsage: 0
     };
   }
 
   /**
-   * Obtiene estadísticas de la caché
+   * Obtiene estadísticas detalladas de la caché
    */
   public getStats(): CacheStats & { 
     hitRatio: number; 
     averageAccessCount: number;
     topKeys: Array<{ key: string; accessCount: number }>;
+    memoryUsageMB?: number;
   } {
     const totalRequests = this.stats.hits + this.stats.misses;
     const hitRatio = totalRequests > 0 ? this.stats.hits / totalRequests : 0;
@@ -267,11 +362,17 @@ export class EnhancedCacheManager<T> {
       .slice(0, 5)
       .map(([key, accessCount]) => ({ key, accessCount }));
     
+    // Añadir uso de memoria en MB si está disponible
+    const memoryUsageMB = this.stats.estimatedMemoryUsage !== undefined
+      ? this.stats.estimatedMemoryUsage / (1024 * 1024)
+      : undefined;
+    
     return {
       ...this.stats,
       hitRatio,
       averageAccessCount,
-      topKeys
+      topKeys,
+      memoryUsageMB
     };
   }
 
@@ -292,6 +393,36 @@ export class EnhancedCacheManager<T> {
         defaultTTL: config.ttlMs
       });
     }
+  }
+  
+  /**
+   * Cambia el algoritmo de priorización
+   */
+  public setPrioritizationAlgorithm(algorithm: PrioritizationAlgorithm): void {
+    this.prioritizationService.setAlgorithm(algorithm);
+  }
+  
+  /**
+   * Precarga entradas comunes para mejorar la experiencia inicial
+   */
+  public async preloadCommonEntries(
+    keyValuePairs: Array<{key: string; getValue: () => Promise<T>; metadata?: CacheMetadata}>
+  ): Promise<number> {
+    let loadedCount = 0;
+    
+    for (const {key, getValue, metadata} of keyValuePairs) {
+      if (!this.cache.has(key)) {
+        try {
+          const value = await getValue();
+          this.set(key, value, metadata);
+          loadedCount++;
+        } catch (error) {
+          console.error(`Error preloading cache entry for key: ${key}`, error);
+        }
+      }
+    }
+    
+    return loadedCount;
   }
   
   /**
