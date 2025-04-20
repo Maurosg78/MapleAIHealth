@@ -197,7 +197,10 @@ export class AIHealthService {
       // Almacenar en caché con metadatos del paciente
       this.suggestionCache.set(cacheKey, result, {
         patientId: soapData.patientId,
-        section: options.activeSection
+        section: options.activeSection,
+        lastAccess: Date.now(),
+        accessCount: 1,
+        size: JSON.stringify(result).length
       });
       
       return result;
@@ -354,12 +357,12 @@ export class AIHealthService {
           // Si la condición de la regla se cumple, crear una sugerencia
           const suggestion: AISuggestion = {
             id: `rule-${rule.id}-${Date.now()}`,
-            type: rule.suggestion.type as AISuggestionType,
+            type: rule.suggestion.type,
             title: rule.suggestion.title,
             description: rule.suggestion.description,
-            section: rule.suggestion.section as SOAPSection,
+            section: rule.suggestion.section,
             field: rule.suggestion.field,
-            priority: rule.suggestion.priority as AIPriorityLevel,
+            priority: rule.suggestion.priority,
             confidence: rule.suggestion.confidence,
             source: 'rule',
             metadata: {

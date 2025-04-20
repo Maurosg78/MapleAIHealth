@@ -186,7 +186,7 @@ Objetivos conseguidos:
 ${resumenTratamiento.evolución.objetivosConseguidos.map(o => `- ${o}`).join('\n')}
 
 Objetivos pendientes:
-${resumenTratamiento.evolución.objetivosPendientes.length > 0 ? 
+${resumenTratamiento.evolución.objetivosPendientes?.length > 0 ? 
   resumenTratamiento.evolución.objetivosPendientes.map(o => `- ${o}`).join('\n') : 
   'Se han conseguido todos los objetivos propuestos'}
 
@@ -491,6 +491,7 @@ export function generarCalendarioEjercicios(
   return `
 CALENDARIO DE EJERCICIOS
 =======================
+Fecha: ${fecha}
 
 INSTRUCCIONES
 -----------

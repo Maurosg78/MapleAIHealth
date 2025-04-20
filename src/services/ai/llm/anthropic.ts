@@ -1,6 +1,6 @@
 import { ChatAnthropic } from "@langchain/anthropic";
-import { LLMProviderConfig, LLMProviderType } from "../types";
-import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
+import { LLMProviderConfig, LLMProviderType, SimpleMessage } from "../types";
+import { HumanMessage, SystemMessage, AIMessage, BaseMessage } from "@langchain/core/messages";
 
 /**
  * Crea una instancia de modelo de LangChain para Anthropic/Claude
@@ -31,26 +31,32 @@ export function createAnthropicModel(config: LLMProviderConfig) {
 
 /**
  * Helper para formatear mensajes para Anthropic
+ * @param messages Array de mensajes en formato SimpleMessage
+ * @returns Array de mensajes formateados para Anthropic
  */
-export function formatMessagesForAnthropic(messages: Array<{ role: string; content: string }>) {
+export function formatMessagesForAnthropic(messages: SimpleMessage[]): BaseMessage[] {
   return messages.map(message => {
-    if (message.role === 'system') {
-      return new SystemMessage(message.content);
-    } else if (message.role === 'user') {
-      return new HumanMessage(message.content);
-    } else if (message.role === 'assistant') {
-      return new AIMessage(message.content);
-    } else {
-      throw new Error(`Tipo de mensaje no soportado: ${message.role}`);
+    switch (message.role) {
+      case 'system':
+        return new SystemMessage(message.content);
+      case 'user':
+        return new HumanMessage(message.content);
+      case 'assistant':
+        return new AIMessage(message.content);
+      default:
+        throw new Error(`Tipo de mensaje no soportado: ${message.role}`);
     }
   });
 }
 
 /**
  * Flujo de procesamiento de mensajes para Anthropic
+ * @param messages Array de mensajes en formato SimpleMessage
+ * @param config Configuración del proveedor LLM
+ * @returns Respuesta del modelo con metadata
  */
 export async function processWithAnthropic(
-  messages: Array<{ role: string; content: string }>,
+  messages: SimpleMessage[],
   config: LLMProviderConfig
 ) {
   const model = createAnthropicModel(config);
@@ -60,25 +66,28 @@ export async function processWithAnthropic(
     const response = await model.invoke(formattedMessages);
     
     return {
-      content: response.content,
+      content: String(response.content),
       metadata: {
         provider: 'anthropic',
         model: config.modelName,
       }
     };
   } catch (error) {
-    console.error("Error al procesar con Anthropic:", error);
-    throw new Error(`Error al procesar con Anthropic: ${error instanceof Error ? error.message : String(error)}`);
+    console.error('Error al procesar mensajes con Anthropic:', error);
+    throw error;
   }
 }
 
 /**
- * Obtiene información de tokens utilizados (aproximada para Claude)
+ * Estima el uso de tokens para una entrada y salida
+ * @param input Texto de entrada
+ * @param output Texto de salida
+ * @returns Objeto con estimación de tokens
  */
 export function estimateTokenUsage(input: string, output: string) {
-  // Aproximación simple basada en tokens = palabras / 0.75
-  const inputTokens = Math.ceil(input.split(/\s+/).length / 0.75);
-  const outputTokens = Math.ceil(output.split(/\s+/).length / 0.75);
+  // Estimación aproximada: 1 token ~ 4 caracteres en promedio
+  const inputTokens = Math.ceil(input.length / 4);
+  const outputTokens = Math.ceil(output.length / 4);
   
   return {
     input: inputTokens,

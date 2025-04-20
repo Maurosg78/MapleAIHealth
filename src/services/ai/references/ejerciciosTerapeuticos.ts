@@ -404,12 +404,17 @@ export const ejerciciosRespiratorios: SpanishTherapeuticExercise[] = [
 ];
 
 /**
+ * Mapa de códigos CIE-10 a ejercicios terapéuticos
+ */
+type CIE10ExerciseMap = Record<string, SpanishTherapeuticExercise[]>;
+
+/**
  * Obtiene ejercicios recomendados según patología
  * @param codigoCIE10 Código diagnóstico CIE-10
  * @returns Ejercicios recomendados para la patología
  */
 export function obtenerEjerciciosPorPatologia(codigoCIE10: string): SpanishTherapeuticExercise[] {
-  const mapaCIE10Ejercicios: Record<string, SpanishTherapeuticExercise[]> = {
+  const mapaCIE10Ejercicios: CIE10ExerciseMap = {
     // Códigos cervicales
     'M54.2': ejerciciosCervicales,
     'M50.1': ejerciciosCervicales,
@@ -438,5 +443,11 @@ export function obtenerEjerciciosPorPatologia(codigoCIE10: string): SpanishThera
     'J45.9': ejerciciosRespiratorios
   };
   
-  return mapaCIE10Ejercicios[codigoCIE10] || [];
+  const ejercicios = mapaCIE10Ejercicios[codigoCIE10 as keyof typeof mapaCIE10Ejercicios];
+  
+  if (ejercicios) {
+    return ejercicios;
+  }
+  
+  return [];
 } 

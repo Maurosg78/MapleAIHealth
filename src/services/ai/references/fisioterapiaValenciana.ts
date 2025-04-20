@@ -379,32 +379,21 @@ type RespuestaRecomendaciones =
  * @returns Recomendaciones detalladas si existe el código, o información básica si no está registrado
  */
 export function obtenerRecomendacionesCIE10(codigoCIE10: string): RespuestaRecomendaciones {
-  if (codigoCIE10 in recomendacionesPorCIE10) {
+  const recomendaciones = recomendacionesPorCIE10[codigoCIE10 as keyof typeof recomendacionesPorCIE10];
+  
+  if (recomendaciones) {
     return {
       encontrado: true,
-      recomendaciones: recomendacionesPorCIE10[codigoCIE10]
+      recomendaciones
     };
-  }
-  
-  // Buscar en qué categoría está el código
-  let categoria = '';
-  let descripcion = 'Desconocida';
-  
-  // Comprobar cada categoría
-  for (const [cat, codigos] of Object.entries(codigosCIE10Valencianos)) {
-    if (codigoCIE10 in codigos) {
-      categoria = cat;
-      descripcion = codigos[codigoCIE10 as keyof typeof codigos] || 'Desconocida';
-      break;
-    }
   }
   
   return {
     encontrado: false,
-    mensaje: `No existen recomendaciones específicas para el código ${codigoCIE10}`,
-    categoría: categoria || 'No encontrada',
-    descripción: descripcion,
-    recomendaciónGeneral: 'Consultar con el servicio de rehabilitación para valoración individualizada'
+    mensaje: 'Código CIE-10 no encontrado',
+    categoría: 'No encontrada',
+    descripción: 'No se encontraron recomendaciones específicas para este código',
+    recomendaciónGeneral: 'Consulte con el especialista para recomendaciones específicas'
   };
 }
 

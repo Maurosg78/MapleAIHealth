@@ -89,7 +89,7 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({
     <Box>
       <Grid container spacing={3}>
         {currentExercises.map((exercise) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={exercise.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={exercise.id}>
             <ExerciseCard
               exercise={exercise}
               onEdit={onEdit}

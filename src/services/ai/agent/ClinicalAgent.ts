@@ -130,25 +130,10 @@ export class ClinicalAgent {
    * Convierte un mensaje a formato simple para el proveedor LLM
    */
   private convertToSimpleMessages(): SimpleMessage[] {
-    return this.conversationState.messages.map(msg => {
-      let role: 'system' | 'user' | 'assistant' = 'user';
-      let content = '';
-      
-      if (msg instanceof SystemMessage) {
-        role = 'system';
-        // @ts-ignore: Ignorar problemas temporalmente con los tipos de LangChain
-        content = String(msg.content);
-      } else if (msg instanceof AIMessage) {
-        role = 'assistant';
-        // @ts-ignore: Ignorar problemas temporalmente con los tipos de LangChain
-        content = String(msg.content);
-      } else {
-        // @ts-ignore: Ignorar problemas temporalmente con los tipos de LangChain
-        content = String(msg.content);
-      }
-      
-      return { role, content };
-    });
+    return this.conversationState.messages.map(msg => ({
+      role: msg._getType() === 'human' ? 'user' : 'assistant',
+      content: String(msg.content)
+    }));
   }
   
   /**
@@ -188,14 +173,13 @@ export class ClinicalAgent {
       
       // Crear respuesta del agente
       const messagesText = messages.map(m => m.content).join(' ');
-      const tokens = estimateTokenUsage(messagesText, response.content);
+      const tokens = estimateTokenUsage(messagesText, String(response.content));
       
-      // @ts-ignore: Ignorar problemas temporalmente con los tipos de LangChain
-      const aiMessage = new AIMessage(response.content);
+      const aiMessage = new AIMessage(String(response.content));
       this.conversationState.messages.push(aiMessage);
       
       return {
-        content: response.content,
+        content: String(response.content),
         messageId: uuidv4(),
         timestamp: new Date(),
         metadata: {

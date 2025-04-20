@@ -195,17 +195,24 @@ export const validatedAssessmentScales = {
 };
 
 /**
- * Función para obtener recomendaciones específicas basadas en código CIE-10
- * Enfocado en el sistema sanitario español, especialmente Comunidad Valenciana
+ * Interfaz para las recomendaciones médicas
  */
-export function getRecommendationsByICD10(icd10Code: string): {
+interface MedicalRecommendations {
   recomendaciones: string[];
   técnicasRecomendadas: string[];
   precauciones: string[];
   tiempoRecuperaciónEstimado: string;
   derivaciónRecomendada: boolean;
   especialistaRecomendado?: SpanishMedicalSpecialist;
-} {
+}
+
+/**
+ * Función para obtener recomendaciones específicas basadas en código CIE-10
+ * Enfocado en el sistema sanitario español, especialmente Comunidad Valenciana
+ * @param icd10Code Código CIE-10 para buscar recomendaciones
+ * @returns Objeto con recomendaciones y precauciones específicas
+ */
+export function getRecommendationsByICD10(icd10Code: string): MedicalRecommendations {
   // Lumbalgia
   if (icd10Code === 'M54.5') {
     return {

@@ -59,7 +59,7 @@ export const SOAPNoteForm: React.FC<Props> = ({
     }
   });
 
-  const handleSubjectiveChange = (field: keyof SubjectiveData | 'painScale' | 'onset' | 'history', value: any) => {
+  const handleSubjectiveChange = (field: keyof SubjectiveData | 'painScale' | 'onset' | 'history', value: unknown) => {
     setNote({
       ...note,
       subjective: {
@@ -69,7 +69,7 @@ export const SOAPNoteForm: React.FC<Props> = ({
     });
   };
 
-  const handleObjectiveChange = (field: keyof ObjectiveData, value: any) => {
+  const handleObjectiveChange = (field: keyof ObjectiveData, value: unknown) => {
     setNote({
       ...note,
       objective: {
@@ -79,7 +79,7 @@ export const SOAPNoteForm: React.FC<Props> = ({
     });
   };
 
-  const handleAssessmentChange = (field: keyof AssessmentData | 'diagnoses' | 'clinicalReasoning', value: any) => {
+  const handleAssessmentChange = (field: keyof AssessmentData | 'diagnoses' | 'clinicalReasoning', value: unknown) => {
     setNote({
       ...note,
       assessment: {
@@ -89,7 +89,7 @@ export const SOAPNoteForm: React.FC<Props> = ({
     });
   };
 
-  const handlePlanChange = (field: keyof PlanData | 'homeExercises' | 'nextVisit', value: any) => {
+  const handlePlanChange = (field: keyof PlanData | 'homeExercises' | 'nextVisit', value: unknown) => {
     setNote({
       ...note,
       plan: {
@@ -101,8 +101,8 @@ export const SOAPNoteForm: React.FC<Props> = ({
 
   const handleArrayChange = (section: SOAPSection, field: string, index: number, value: string) => {
     // Comprobamos que la sección existe y tiene la propiedad field como array
-    if (note[section] && Array.isArray((note[section] as any)[field])) {
-      const updatedArray = [...((note[section] as any)[field] as any[])];
+    if (note[section] && Array.isArray((note[section] as Record<string, unknown>)[field])) {
+      const updatedArray = [...((note[section] as Record<string, unknown>)[field] as string[])];
       updatedArray[index] = value;
       
       setNote({
@@ -117,12 +117,12 @@ export const SOAPNoteForm: React.FC<Props> = ({
 
   const addArrayItem = (section: SOAPSection, field: string, value: string = '') => {
     // Comprobamos que la sección existe y tiene la propiedad field como array
-    if (note[section] && Array.isArray((note[section] as any)[field])) {
+    if (note[section] && Array.isArray((note[section] as Record<string, unknown>)[field])) {
       setNote({
         ...note,
         [section]: {
           ...note[section],
-          [field]: [...((note[section] as any)[field] as any[]), value]
+          [field]: [...((note[section] as Record<string, unknown>)[field] as string[]), value]
         }
       });
     }
@@ -130,8 +130,8 @@ export const SOAPNoteForm: React.FC<Props> = ({
 
   const removeArrayItem = (section: SOAPSection, field: string, index: number) => {
     // Comprobamos que la sección existe y tiene la propiedad field como array
-    if (note[section] && Array.isArray((note[section] as any)[field])) {
-      const updatedArray = [...((note[section] as any)[field] as any[])];
+    if (note[section] && Array.isArray((note[section] as Record<string, unknown>)[field])) {
+      const updatedArray = [...((note[section] as Record<string, unknown>)[field] as string[])];
       updatedArray.splice(index, 1);
       
       setNote({

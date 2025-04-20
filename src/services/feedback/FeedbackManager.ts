@@ -1,5 +1,6 @@
 import { AISuggestion } from '../AIHealthService';
 import { EvidenceLevel, ClinicalRelevance } from '../clinicalRules';
+import { ApiClient } from '../api/ApiClient';
 
 export interface FeedbackData {
   suggestionId: string;
@@ -33,19 +34,39 @@ export interface FeedbackStats {
   }>;
 }
 
+export interface UserFeedback {
+  id: string;
+  content: string;
+  rating: number;
+  timestamp: Date;
+}
+
+export interface Metrics {
+  feedbackSent: number;
+  feedbackErrors: number;
+}
+
 export class FeedbackManager {
   private static instance: FeedbackManager;
   private feedbackData: Map<string, FeedbackData[]>;
   private feedbackStats: Map<string, FeedbackStats>;
+  private feedbackQueue: UserFeedback[] = [];
+  private apiClient: ApiClient;
+  private metrics: Metrics;
 
-  private constructor() {
+  constructor(apiClient: ApiClient) {
     this.feedbackData = new Map();
     this.feedbackStats = new Map();
+    this.apiClient = apiClient;
+    this.metrics = {
+      feedbackSent: 0,
+      feedbackErrors: 0
+    };
   }
 
   public static getInstance(): FeedbackManager {
     if (!FeedbackManager.instance) {
-      FeedbackManager.instance = new FeedbackManager();
+      FeedbackManager.instance = new FeedbackManager(new ApiClient());
     }
     return FeedbackManager.instance;
   }
@@ -150,7 +171,7 @@ export class FeedbackManager {
     let total = 0;
     let helpful = 0;
 
-    for (const [_, stats] of this.feedbackStats) {
+    for (const stats of this.feedbackStats.values()) {
       const specialtyStats = stats.specialtyBreakdown[specialty];
       if (specialtyStats) {
         total += specialtyStats.total;
@@ -165,7 +186,7 @@ export class FeedbackManager {
     let total = 0;
     let helpful = 0;
 
-    for (const [_, stats] of this.feedbackStats) {
+    for (const stats of this.feedbackStats.values()) {
       const sectionStats = stats.sectionBreakdown[section];
       if (sectionStats) {
         total += sectionStats.total;
@@ -174,5 +195,41 @@ export class FeedbackManager {
     }
 
     return total > 0 ? helpful / total : 0;
+  }
+
+  public async submitFeedback(feedback: UserFeedback): Promise<void> {
+    this.feedbackQueue.push(feedback);
+    await this.processFeedbackQueue();
+  }
+
+  private async processFeedbackQueue(): Promise<void> {
+    try {
+      const feedback = this.feedbackQueue.shift();
+      if (feedback) {
+        await this.apiClient.post('/feedback', feedback);
+        this.metrics.feedbackSent++;
+      }
+    } catch {
+      this.metrics.feedbackErrors++;
+      console.error('Error al procesar el feedback');
+    }
+  }
+
+  private async retryFailedFeedback(): Promise<void> {
+    try {
+      const feedback = this.feedbackQueue[0];
+      if (feedback) {
+        await this.apiClient.post('/feedback', feedback);
+        this.feedbackQueue.shift();
+        this.metrics.feedbackSent++;
+      }
+    } catch {
+      this.metrics.feedbackErrors++;
+      console.error('Error al reintentar el envío de feedback');
+    }
+  }
+
+  public getMetrics(): Metrics {
+    return { ...this.metrics };
   }
 } 

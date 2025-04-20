@@ -228,8 +228,8 @@ export class CachePrioritizationService {
       
       // Factor de recencia (más reciente = mayor puntuación)
       const recency = now - item.lastAccess;
-      const shortTerm = criteria.shortTermSpan || 15 * 60 * 1000;
-      const mediumTerm = criteria.mediumTermSpan || 60 * 60 * 1000;
+      const shortTerm = criteria.shortTermSpan ?? 15 * 60 * 1000;
+      const mediumTerm = criteria.mediumTermSpan ?? 60 * 60 * 1000;
       
       let recencyScore = 0;
       if (recency <= shortTerm) {
@@ -253,18 +253,27 @@ export class CachePrioritizationService {
       }
       
       // Factor de tamaño/costo
-      const complexityScore = item.cost 
-        ? 0.4 * Math.min(1, item.cost / 500) 
-        : item.size 
-          ? 0.3 * (1 - Math.min(1, item.size / (512 * 1024)))
-          : 0;
+      let complexityScore = 0;
       
-      // Calcular puntuación final
+      // Calculamos el componente basado en costo, si está disponible
+      if (item.cost) {
+        complexityScore = 0.4 * Math.min(1, item.cost / 500);
+      } 
+      // Si no hay costo pero hay tamaño, calculamos basado en tamaño
+      else if (item.size) {
+        complexityScore = 0.3 * (1 - Math.min(1, item.size / (512 * 1024)));
+      }
+      
+      // Calcular puntuación final usando pesos por defecto si no están definidos
+      const recencyWeight = criteria.recencyWeight ?? 0.4;
+      const frequencyWeight = criteria.frequencyWeight ?? 0.3;
+      const costWeight = criteria.costWeight ?? 0.2;
+      
       const score = (
-        (recencyScore * (criteria.recencyWeight || 0.4)) +
-        (frequencyScore * (criteria.frequencyWeight || 0.3)) +
+        (recencyScore * recencyWeight) +
+        (frequencyScore * frequencyWeight) +
         contextScore +
-        (complexityScore * (criteria.costWeight || 0.2))
+        (complexityScore * costWeight)
       );
       
       return {
@@ -332,7 +341,7 @@ export class CachePrioritizationService {
    * Añade una configuración de criterios específica para una sección
    */
   public addSectionCriteria(section: string, criteria: Partial<PrioritizationCriteria>): void {
-    if (!this.criteria.sectionOverrides) {
+    if (this.criteria.sectionOverrides === undefined) {
       this.criteria.sectionOverrides = {};
     }
     

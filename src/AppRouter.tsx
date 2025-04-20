@@ -1,8 +1,9 @@
-import { RouterProvider } from 'react-router-dom';
-import { router } from './routes';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import routes from './routes';
 
 // Componente que provee el enrutador a la aplicación
 const AppRouter = () => {
+  const router = createBrowserRouter(routes);
   return <RouterProvider router={router} />;
 };
 
