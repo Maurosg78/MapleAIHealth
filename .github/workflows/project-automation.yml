@@ -11,36 +11,106 @@ permissions:
   pull-requests: write
   repository-projects: write
 
+env:
+  PROJECT_ID: "PVT_kwHOCIy6ZM4A3Boe" # MapleAI Health Development
+  GH_TOKEN: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+
 jobs:
   project_automation:
     runs-on: ubuntu-latest
     steps:
-      - name: Update Issue Status
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PROJECT_NUMBER: "1"
-          ORGANIZATION: ${{ github.repository_owner }}
+      - name: Get Project Data
         run: |
-          if [[ "${{ github.event_name }}" == "issues" || "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "Procesando ${{ github.event_name }} - ${{ github.event.action }}"
+          echo "Obteniendo datos del proyecto..."
+          
+          # Query para obtener los campos del proyecto
+          QUERY='
+          query($project_id: ID!) {
+            node(id: $project_id) {
+              ... on ProjectV2 {
+                fields(first: 20) {
+                  nodes {
+                    ... on ProjectV2Field {
+                      id
+                      name
+                    }
+                    ... on ProjectV2SingleSelectField {
+                      id
+                      name
+                      options {
+                        id
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }'
+          
+          # Ejecutar query
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bearer ${{ env.GH_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/vnd.github.v4+json" \
+            https://api.github.com/graphql \
+            -d @- << EOF
+          {
+            "query": "$QUERY",
+            "variables": {
+              "project_id": "${{ env.PROJECT_ID }}"
+            }
+          }
+          EOF
+          )
+          
+          echo "Datos del proyecto obtenidos"
+          echo "$RESPONSE" | jq .
+          
+      - name: Add Item to Project
+        if: github.event_name == 'issues' || github.event_name == 'pull_request'
+        run: |
+          # Obtener ID del item
+          ITEM_ID="${{ github.event.issue.node_id || github.event.pull_request.node_id }}"
+          
+          if [[ ! -z "$ITEM_ID" ]]; then
+            # Mutation para agregar item al proyecto
+            MUTATION='
+            mutation($project_id: ID!, $item_id: ID!) {
+              addProjectV2ItemById(input: {
+                projectId: $project_id
+                contentId: $item_id
+              }) {
+                item {
+                  id
+                }
+              }
+            }'
             
-            # Obtener el ID del proyecto
-            PROJECT_ID=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/users/$ORGANIZATION/projects/$PROJECT_NUMBER" \
-              | jq -r '.id')
+            # Ejecutar mutation
+            RESPONSE=$(curl -s -X POST \
+              -H "Authorization: Bearer ${{ env.GH_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -H "Accept: application/vnd.github.v4+json" \
+              https://api.github.com/graphql \
+              -d @- << EOF
+            {
+              "query": "$MUTATION",
+              "variables": {
+                "project_id": "${{ env.PROJECT_ID }}",
+                "item_id": "$ITEM_ID"
+              }
+            }
+            EOF
+            )
             
-            # Obtener el ID del issue o PR
-            ITEM_ID="${{ github.event.issue.node_id || github.event.pull_request.node_id }}"
+            echo "Item agregado al proyecto"
+            echo "$RESPONSE" | jq .
             
-            if [[ ! -z "$ITEM_ID" ]]; then
-              # Agregar el item al proyecto
-              curl -X POST \
-                -H "Authorization: Bearer $GH_TOKEN" \
-                -H "Accept: application/vnd.github.v3+json" \
-                "https://api.github.com/projects/$PROJECT_ID/cards" \
-                -d "{\"content_id\":$ITEM_ID,\"content_type\":\"${github.event_name%s}\"}"
-              
-              echo "Item agregado al proyecto #$PROJECT_NUMBER"
+            # Actualizar estado según la acción
+            if [[ "${{ github.event.action }}" == "opened" ]]; then
+              echo "Nuevo item: Moviendo a To Do"
+            elif [[ "${{ github.event.action }}" == "closed" ]]; then
+              echo "Item cerrado: Moviendo a Done"
             fi
           fi 
