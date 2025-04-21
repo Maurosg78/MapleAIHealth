@@ -4,6 +4,9 @@ import { estimateClinicalEvidenceSize } from './cache/utils/memorySizeEstimator'
 import { CacheMetadata } from './cache/types';
 import { MongoClient, Collection, ObjectId, Filter } from 'mongodb';
 import { Client } from '@elastic/elasticsearch';
+import { CacheManager } from './cache/CacheManager';
+import { config } from '../config/config';
+import { MedicalSourceVerifier } from './medical/MedicalSourceVerifier';
 
 interface SearchResult {
   results: ClinicalEvidence[];
@@ -20,6 +23,10 @@ interface SearchConfig {
   databaseName: string;
   collectionName: string;
   indexName: string;
+  cacheConfig: {
+    ttl: number;
+    maxSize: number;
+  };
 }
 
 interface MongoQuery extends Filter<ClinicalEvidence> {
@@ -52,84 +59,63 @@ interface ElasticSearchResponse {
   };
 }
 
+interface DateRange {
+  start: Date;
+  end: Date;
+}
+
 /**
  * Servicio para búsqueda y gestión de evidencia clínica
  */
 export class EvidenceSearchService {
   private static instance: EvidenceSearchService;
-  private cacheManager = CacheManagerFactory.getInstance<SearchResult>('evidence-search');
+  private cacheManager: CacheManager<SearchResult>;
   private readonly defaultPageSize = 10;
   private mongoClient: MongoClient;
   private elasticClient: Client;
   private evidenceCollection: Collection<ClinicalEvidence>;
   private config: SearchConfig;
+  private medicalSourceVerifier: MedicalSourceVerifier;
 
-  private constructor(config: SearchConfig) {
-    this.config = config;
-    this.mongoClient = new MongoClient(config.mongoUri);
-    this.elasticClient = new Client({ node: config.elasticUri });
-    this.evidenceCollection = this.mongoClient.db(config.databaseName).collection(config.collectionName);
-
-    // Configurar el caché para evidencia clínica
-    this.cacheManager.updateConfig({
-      ttlMs: 30 * 60 * 1000, // 30 minutos
-      maxSize: 100, // Máximo 100 resultados en caché
-      cleanupInterval: 5 * 60 * 1000, // Limpiar cada 5 minutos
-      patientBased: true,
-      sizeEstimator: (data: unknown) => {
-        const result = data as SearchResult;
-        return result.results.reduce((total, item) => total + estimateClinicalEvidenceSize(item), 0);
-      }
+  private constructor(searchConfig: SearchConfig) {
+    this.config = searchConfig;
+    this.cacheManager = new CacheManager({
+      ttlMs: searchConfig.cacheConfig.ttl,
+      maxSize: searchConfig.cacheConfig.maxSize
     });
+    this.mongoClient = new MongoClient(searchConfig.mongoUri);
+    this.elasticClient = new Client({ node: searchConfig.elasticUri });
+    this.evidenceCollection = this.mongoClient.db(searchConfig.databaseName).collection(searchConfig.collectionName);
+    this.medicalSourceVerifier = MedicalSourceVerifier.getInstance();
 
-    // Inicializar índices
-    this.initializeIndexes();
+    this.initializeConnections();
   }
 
-  private async initializeIndexes() {
-    // Crear índices en MongoDB
-    await this.evidenceCollection.createIndexes([
-      { key: { relevanceScore: -1 } },
-      { key: { lastUpdated: -1 } },
-      { key: { conditionTags: 1 } },
-      { key: { treatmentTags: 1 } },
-      { key: { categoryTags: 1 } }
-    ]);
-
-    // Crear índice en Elasticsearch
-    try {
-      await this.elasticClient.indices.create({
-        index: this.config.indexName,
-        mappings: {
-          properties: {
-            title: { type: 'text', analyzer: 'spanish' },
-            summary: { type: 'text', analyzer: 'spanish' },
-            content: { type: 'text', analyzer: 'spanish' },
-            conditionTags: { type: 'keyword' },
-            treatmentTags: { type: 'keyword' },
-            categoryTags: { type: 'keyword' },
-            relevanceScore: { type: 'float' },
-            reliability: { type: 'integer' },
-            lastUpdated: { type: 'date' }
-          }
-        }
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        const errorBody = (error as { meta?: { body?: { error?: { type?: string } } } }).meta?.body;
-        if (errorBody?.error?.type === 'resource_already_exists_exception') {
-          return;
-        }
-      }
-      throw error;
+  public static getInstance(searchConfig: SearchConfig = {
+    mongoUri: config.search.mongoUri,
+    elasticUri: config.search.elasticUri,
+    databaseName: config.search.databaseName,
+    collectionName: config.search.collectionName,
+    cacheConfig: {
+      ttl: config.medical.cache.ttl,
+      maxSize: config.medical.cache.maxSize
     }
-  }
-
-  public static getInstance(config: SearchConfig): EvidenceSearchService {
+  }): EvidenceSearchService {
     if (!EvidenceSearchService.instance) {
-      EvidenceSearchService.instance = new EvidenceSearchService(config);
+      EvidenceSearchService.instance = new EvidenceSearchService(searchConfig);
     }
     return EvidenceSearchService.instance;
+  }
+
+  private async initializeConnections(): Promise<void> {
+    try {
+      await this.mongoClient.connect();
+      await this.elasticClient.ping();
+      console.log('Conexiones establecidas exitosamente');
+    } catch (error) {
+      console.error('Error al inicializar conexiones:', error);
+      throw error;
+    }
   }
 
   /**

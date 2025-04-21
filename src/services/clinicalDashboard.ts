@@ -7,6 +7,7 @@ import {
 import { CacheManager } from './cache/CacheManager';
 import { CacheMetadata, CacheStats } from './cache/types';
 import { EvidenceSearchService } from './EvidenceSearchService';
+import { config } from '../config/config';
 
 export class ClinicalDashboardService {
   private static instance: ClinicalDashboardService;
@@ -15,8 +16,8 @@ export class ClinicalDashboardService {
   
   private constructor() {
     this.cacheManager = new CacheManager<ClinicalDashboardData>({
-      ttlMs: 300000, // 5 minutos
-      maxSize: 100
+      ttlMs: config.medical.cache.ttl,
+      maxSize: config.medical.cache.maxSize
     });
     this.evidenceSearchService = EvidenceSearchService.getInstance();
   }
