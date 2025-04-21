@@ -1,0 +1,119 @@
+name: "Crear Issues para MVP"
+
+on:
+  workflow_dispatch:
+    inputs:
+      sprint:
+        description: 'Número de sprint (1-3 o "all" para todos)'
+        required: true
+        default: 'all'
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependencias
+        run: npm ci || npm install
+          
+      - name: Generar archivos de issues
+        run: node scripts/createLocalMVP.js
+        env:
+          MAPLE_HEALTH_TOKEN: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+      
+      - name: Crear issues para Sprint 1
+        if: ${{ github.event.inputs.sprint == '1' || github.event.inputs.sprint == 'all' }}
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: "[Sprint 1] Sistema de Autenticación y Autorización"
+          content-filepath: .github/ISSUE_TEMPLATE/issue-1-0-sistema-de-autenticación-y-autorización.yml
+          labels: security, high-priority, core
+          milestone: "Sprint 1: MVP Core - Infraestructura y Sistema Base"
+          token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+      
+      - name: Crear issues para Sprint 1 (cont.)
+        if: ${{ github.event.inputs.sprint == '1' || github.event.inputs.sprint == 'all' }}
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: "[Sprint 1] Configuración de APIs Médicas"
+          content-filepath: .github/ISSUE_TEMPLATE/issue-1-1-configuración-de-apis-médicas.yml
+          labels: core, high-priority, api
+          milestone: "Sprint 1: MVP Core - Infraestructura y Sistema Base"
+          token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+          
+      - name: Crear issues para Sprint 1 (cont.)
+        if: ${{ github.event.inputs.sprint == '1' || github.event.inputs.sprint == 'all' }}
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: "[Sprint 1] Sistema de Gestión de Pacientes (Base)"
+          content-filepath: .github/ISSUE_TEMPLATE/issue-1-2-sistema-de-gestión-de-pacientes-(base).yml
+          labels: feature, core, high-priority
+          milestone: "Sprint 1: MVP Core - Infraestructura y Sistema Base"
+          token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+          
+      - name: Crear issues para Sprint 2
+        if: ${{ github.event.inputs.sprint == '2' || github.event.inputs.sprint == 'all' }}
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: "[Sprint 2] Optimización de Sistema de Caché"
+          content-filepath: .github/ISSUE_TEMPLATE/issue-2-0-optimización-de-sistema-de-caché.yml
+          labels: performance, high-priority
+          milestone: "Sprint 2: MVP Clínico - Gestión de Evidencia Médica"
+          token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+          
+      - name: Crear issues para Sprint 2 (cont.)
+        if: ${{ github.event.inputs.sprint == '2' || github.event.inputs.sprint == 'all' }}
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: "[Sprint 2] Dashboard de Información Clínica"
+          content-filepath: .github/ISSUE_TEMPLATE/issue-2-1-dashboard-de-información-clínica.yml
+          labels: ui/ux, high-priority, feature
+          milestone: "Sprint 2: MVP Clínico - Gestión de Evidencia Médica"
+          token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+          
+      - name: Crear issues para Sprint 2 (cont.)
+        if: ${{ github.event.inputs.sprint == '2' || github.event.inputs.sprint == 'all' }}
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: "[Sprint 2] Componente de Visualización de Evidencia"
+          content-filepath: .github/ISSUE_TEMPLATE/issue-2-2-componente-de-visualización-de-evidencia.yml
+          labels: ui/ux, feature, medium-priority
+          milestone: "Sprint 2: MVP Clínico - Gestión de Evidencia Médica"
+          token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+          
+      - name: Crear issues para Sprint 3
+        if: ${{ github.event.inputs.sprint == '3' || github.event.inputs.sprint == 'all' }}
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: "[Sprint 3] Integración de Asistente IA"
+          content-filepath: .github/ISSUE_TEMPLATE/issue-3-0-integración-de-asistente-ia.yml
+          labels: ai, feature, high-priority
+          milestone: "Sprint 3: MVP Asistente - IA y Experiencia de Usuario"
+          token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+          
+      - name: Crear issues para Sprint 3 (cont.)
+        if: ${{ github.event.inputs.sprint == '3' || github.event.inputs.sprint == 'all' }}
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: "[Sprint 3] Sistema de Registro de Interacciones"
+          content-filepath: .github/ISSUE_TEMPLATE/issue-3-1-sistema-de-registro-de-interacciones.yml
+          labels: ai, analytics, medium-priority
+          milestone: "Sprint 3: MVP Asistente - IA y Experiencia de Usuario"
+          token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+          
+      - name: Crear issues para Sprint 3 (cont.)
+        if: ${{ github.event.inputs.sprint == '3' || github.event.inputs.sprint == 'all' }}
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: "[Sprint 3] Mejora de UX/UI General"
+          content-filepath: .github/ISSUE_TEMPLATE/issue-3-2-mejora-de-ux-ui-general.yml
+          labels: ui/ux, medium-priority
+          milestone: "Sprint 3: MVP Asistente - IA y Experiencia de Usuario"
+          token: ${{ secrets.MAPLE_HEALTH_TOKEN }} 

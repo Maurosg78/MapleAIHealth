@@ -1,0 +1,27 @@
+---
+title: "[Sprint 2] Componente de Visualización de Evidencia"
+labels: ["ui/ux","feature","medium-priority"]
+milestone: "Sprint 2: MVP Clínico - Gestión de Evidencia Médica"
+assignees: []
+---
+
+# Componente de Visualización de Evidencia
+
+## Objetivo
+Crear componentes para visualizar y comparar evidencia médica obtenida.
+
+### Tareas
+- [ ] Diseñar componente de tarjeta de evidencia
+- [ ] Implementar tabla comparativa
+- [ ] Añadir indicadores de confiabilidad
+- [ ] Crear sistema de favoritos
+- [ ] Implementar opciones de filtrado
+
+### Criterios de Aceptación
+- Visualización clara de evidencia
+- Comparación funcional
+- Indicadores de confiabilidad precisos
+- Sistema de favoritos funcionando
+
+_Sprint: Sprint 2: MVP Clínico - Gestión de Evidencia Médica_
+_Fecha estimada: 19/5/2025_

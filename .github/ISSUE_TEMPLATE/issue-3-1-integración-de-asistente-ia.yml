@@ -1,0 +1,27 @@
+---
+title: "[Sprint 3] Integración de Asistente IA"
+labels: ["ai","feature","high-priority"]
+milestone: "Sprint 3: MVP Asistente - IA y Experiencia de Usuario"
+assignees: []
+---
+
+# Integración de Asistente IA
+
+## Objetivo
+Integrar el asistente de IA para apoyar la toma de decisiones clínicas.
+
+### Tareas
+- [ ] Configurar modelo base (Claude)
+- [ ] Implementar procesamiento de consultas
+- [ ] Crear sistema de sugerencias contextuales
+- [ ] Añadir referencias a evidencias
+- [ ] Implementar feedback loop
+
+### Criterios de Aceptación
+- Asistente respondiendo consultas médicas
+- Respuestas contextuales según paciente
+- Referencias a evidencia científica
+- Sistema de feedback implementado
+
+_Sprint: Sprint 3: MVP Asistente - IA y Experiencia de Usuario_
+_Fecha estimada: 2/6/2025_

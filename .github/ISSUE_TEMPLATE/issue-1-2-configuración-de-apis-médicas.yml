@@ -1,0 +1,27 @@
+---
+title: "[Sprint 1] Configuración de APIs Médicas"
+labels: ["core","high-priority","api"]
+milestone: "Sprint 1: MVP Core - Infraestructura y Sistema Base"
+assignees: []
+---
+
+# Configuración de APIs Médicas
+
+## Objetivo
+Configurar la integración con bases de datos médicas (PubMed y Cochrane).
+
+### Tareas
+- [ ] Establecer conexión con API PubMed
+- [ ] Implementar funciones de búsqueda básicas
+- [ ] Configurar manejo de credenciales
+- [ ] Validar respuestas API
+- [ ] Documentar endpoints disponibles
+
+### Criterios de Aceptación
+- Conexión estable con PubMed API
+- Búsquedas funcionales
+- Manejo adecuado de errores
+- Documentación completa
+
+_Sprint: Sprint 1: MVP Core - Infraestructura y Sistema Base_
+_Fecha estimada: 5/5/2025_

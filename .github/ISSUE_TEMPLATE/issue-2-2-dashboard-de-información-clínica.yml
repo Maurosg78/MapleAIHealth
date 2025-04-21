@@ -1,0 +1,27 @@
+---
+title: "[Sprint 2] Dashboard de Información Clínica"
+labels: ["ui/ux","high-priority","feature"]
+milestone: "Sprint 2: MVP Clínico - Gestión de Evidencia Médica"
+assignees: []
+---
+
+# Dashboard de Información Clínica
+
+## Objetivo
+Desarrollar un dashboard principal para visualización y gestión de información clínica.
+
+### Tareas
+- [ ] Diseñar interfaz base
+- [ ] Implementar componentes de visualización
+- [ ] Integrar con sistema de búsqueda
+- [ ] Añadir filtros y ordenación
+- [ ] Implementar exportación de datos
+
+### Criterios de Aceptación
+- Dashboard funcional
+- Visualización clara de datos
+- Filtros operativos
+- Exportación funcional
+
+_Sprint: Sprint 2: MVP Clínico - Gestión de Evidencia Médica_
+_Fecha estimada: 19/5/2025_
