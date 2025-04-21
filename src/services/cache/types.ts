@@ -1,8 +1,8 @@
 export interface CacheEntry<T> {
-  data: T;
+  key: string;
+  value: T;
   metadata: CacheMetadata;
-  expiresAt: number;
-  timestamp: number;
+  score?: number;
 }
 
 export interface CacheConfig {
@@ -17,11 +17,11 @@ export interface CacheStats {
   hits: number;
   misses: number;
   evictions: number;
-  currentSize: number;
-  maxSize: number;
-  estimatedMemoryUsage?: number;
-  lastCleared: Date;
-  size: number;
+  totalEntries: number;
+  totalSize: number;
+  maxEntrySize: number;
+  maxAccessCount: number;
+  totalEntryLifetime: number;
 }
 
 export interface CacheMetadata {
@@ -30,6 +30,5 @@ export interface CacheMetadata {
   size: number;
   patientId?: string;
   section?: string;
-  ttl?: number;
-  dynamic?: boolean;
+  isCritical?: boolean;
 } 

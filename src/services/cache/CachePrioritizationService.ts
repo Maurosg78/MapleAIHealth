@@ -61,290 +61,132 @@ export interface PriorityScore {
  * para optimizar qué contenido se mantiene en caché
  */
 export class CachePrioritizationService {
-  private criteria: PrioritizationCriteria;
-  private algorithm: PrioritizationAlgorithm;
-  private currentPatientContext?: string;
-  
-  constructor(
-    algorithm: PrioritizationAlgorithm = 'adaptive',
-    criteria: PrioritizationCriteria = {
-      recencyWeight: 0.4,
-      frequencyWeight: 0.3,
-      sizeWeight: 0.1,
-      costWeight: 0.2,
-      shortTermSpan: 15 * 60 * 1000, // 15 minutos
-      mediumTermSpan: 60 * 60 * 1000, // 1 hora
-      patientEmphasis: true
+  private static instance: CachePrioritizationService<any>;
+  private readonly weights = {
+    frequency: 0.4,
+    recency: 0.3,
+    size: 0.1,
+    relevance: 0.2
+  };
+
+  private constructor() {}
+
+  public static getInstance<T>(): CachePrioritizationService<T> {
+    if (!CachePrioritizationService.instance) {
+      CachePrioritizationService.instance = new CachePrioritizationService<T>();
     }
-  ) {
-    this.algorithm = algorithm;
-    this.criteria = criteria;
+    return CachePrioritizationService.instance;
   }
-  
-  /**
-   * Establece el contexto actual del paciente
-   * @param patientId ID del paciente actual
-   */
-  public setPatientContext(patientId?: string): void {
-    this.currentPatientContext = patientId;
+
+  public calculateEntryScore(entry: CacheEntry<T>, stats: CacheStats): number {
+    const frequencyScore = this.calculateFrequencyScore(entry.metadata.accessCount, stats);
+    const recencyScore = this.calculateRecencyScore(entry.metadata.lastAccess);
+    const sizeScore = this.calculateSizeScore(entry.metadata.size, stats);
+    const relevanceScore = this.calculateRelevanceScore(entry.metadata);
+
+    return (
+      frequencyScore * this.weights.frequency +
+      recencyScore * this.weights.recency +
+      sizeScore * this.weights.size +
+      relevanceScore * this.weights.relevance
+    );
   }
-  
-  /**
-   * Calcula la puntuación de prioridad para una lista de elementos
-   * @param items Lista de elementos a priorizar
-   * @returns Lista ordenada por prioridad (mayor primero)
-   */
-  public prioritize(items: CacheItemUsage[]): PriorityScore[] {
+
+  private calculateFrequencyScore(accessCount: number, stats: CacheStats): number {
+    const maxAccesses = stats.maxAccessCount || 1;
+    return (accessCount / maxAccesses) * 100;
+  }
+
+  private calculateRecencyScore(lastAccess: number): number {
     const now = Date.now();
+    const hoursSinceLastAccess = (now - lastAccess) / (1000 * 60 * 60);
+    return Math.max(0, 100 - (hoursSinceLastAccess * 2)); // -2 puntos por hora
+  }
+
+  private calculateSizeScore(size: number, stats: CacheStats): number {
+    const maxSize = stats.maxEntrySize || 1;
+    // Penalizar entradas grandes
+    return 100 - ((size / maxSize) * 100);
+  }
+
+  private calculateRelevanceScore(metadata: CacheMetadata): number {
+    let score = 0;
+
+    // Priorizar por sección
+    if (metadata.section === 'clinical-dashboard') score += 30;
+    if (metadata.section === 'evidence-search') score += 25;
     
-    // Aplicar algoritmo seleccionado
-    let scores: PriorityScore[] = [];
+    // Priorizar datos de pacientes activos
+    if (metadata.patientId) score += 20;
     
-    switch (this.algorithm) {
-      case 'lru':
-        scores = this.calculateLRUScores(items, now);
-        break;
-      case 'lfu':
-        scores = this.calculateLFUScores(items);
-        break;
-      case 'fifo':
-        scores = this.calculateFIFOScores(items, now);
-        break;
-      case 'weighted':
-        scores = this.calculateWeightedScores(items, now);
-        break;
-      case 'adaptive':
-      default:
-        scores = this.calculateAdaptiveScores(items, now);
-        break;
+    // Priorizar datos críticos
+    if (metadata.isCritical) score += 25;
+
+    return score;
+  }
+
+  public selectEntriesForEviction(
+    entries: CacheEntry<T>[],
+    stats: CacheStats,
+    targetSize: number
+  ): string[] {
+    // Calcular scores actualizados
+    const scoredEntries = entries.map(entry => ({
+      ...entry,
+      score: this.calculateEntryScore(entry, stats)
+    }));
+
+    // Ordenar por score (menor a mayor)
+    scoredEntries.sort((a, b) => a.score - b.score);
+
+    let currentSize = stats.totalSize;
+    const keysToEvict: string[] = [];
+
+    // Seleccionar entradas para evicción hasta alcanzar el tamaño objetivo
+    for (const entry of scoredEntries) {
+      if (currentSize <= targetSize) break;
+      keysToEvict.push(entry.key);
+      currentSize -= entry.metadata.size;
     }
-    
-    // Ordenar por puntuación (mayor primero)
-    return scores.sort((a, b) => b.score - a.score);
+
+    return keysToEvict;
   }
-  
-  /**
-   * Calcula puntuaciones usando LRU (Least Recently Used)
-   */
-  private calculateLRUScores(items: CacheItemUsage[], now: number): PriorityScore[] {
-    return items.map(item => {
-      const recencyScore = now - item.lastAccess;
-      
-      return {
-        key: item.key,
-        score: -recencyScore, // Negativo para que valores más recientes tengan mayor puntuación
-        factors: {
-          recency: 1
-        }
-      };
-    });
+
+  public getEntryPriority(entry: CacheEntry<T>, stats: CacheStats): 'high' | 'medium' | 'low' {
+    const score = this.calculateEntryScore(entry, stats);
+    if (score >= 80) return 'high';
+    if (score >= 50) return 'medium';
+    return 'low';
   }
-  
-  /**
-   * Calcula puntuaciones usando LFU (Least Frequently Used)
-   */
-  private calculateLFUScores(items: CacheItemUsage[]): PriorityScore[] {
-    return items.map(item => {
-      return {
-        key: item.key,
-        score: item.accessCount,
-        factors: {
-          frequency: 1
-        }
-      };
-    });
-  }
-  
-  /**
-   * Calcula puntuaciones usando FIFO (First In First Out)
-   */
-  private calculateFIFOScores(items: CacheItemUsage[], now: number): PriorityScore[] {
-    return items.map(item => {
-      const ageScore = now - item.createdAt;
-      
-      return {
-        key: item.key,
-        score: -ageScore, // Negativo para que elementos más nuevos tengan mayor puntuación
-        factors: {
-          recency: 1
-        }
-      };
-    });
-  }
-  
-  /**
-   * Calcula puntuaciones usando un algoritmo ponderado
-   */
-  private calculateWeightedScores(items: CacheItemUsage[], now: number): PriorityScore[] {
-    const { recencyWeight = 0.4, frequencyWeight = 0.3, sizeWeight = 0.1, costWeight = 0.2 } = this.criteria;
-    
-    return items.map(item => {
-      // Normalizar valores
-      const maxRecency = 24 * 60 * 60 * 1000; // 1 día como máximo para normalización
-      const recencyScore = 1 - Math.min(1, (now - item.lastAccess) / maxRecency);
-      
-      const maxFrequency = 100; // Asumimos 100 como máximo de accesos para normalización
-      const frequencyScore = Math.min(1, item.accessCount / maxFrequency);
-      
-      const maxSize = 1024 * 1024; // 1MB como máximo para normalización
-      const sizeScore = item.size ? 1 - Math.min(1, item.size / maxSize) : 0.5;
-      
-      const maxCost = 2000; // 2 segundos como máximo para normalización
-      const costScore = item.cost ? Math.min(1, item.cost / maxCost) : 0.5;
-      
-      // Calcular puntuación ponderada
-      const score = 
-        recencyWeight * recencyScore +
-        frequencyWeight * frequencyScore +
-        sizeWeight * sizeScore +
-        costWeight * costScore;
-      
-      return {
-        key: item.key,
-        score,
-        factors: {
-          recency: recencyScore,
-          frequency: frequencyScore,
-          size: sizeScore,
-          cost: costScore
-        }
-      };
-    });
-  }
-  
-  /**
-   * Calcula puntuaciones usando un algoritmo adaptativo
-   * que ajusta los pesos según el contexto y patrones de uso
-   */
-  private calculateAdaptiveScores(items: CacheItemUsage[], now: number): PriorityScore[] {
-    return items.map(item => {
-      // Criterios base o específicos por sección
-      let criteria = { ...this.criteria };
-      
-      // Verificar si hay criterios específicos para esta sección
-      if (item.section && criteria.sectionOverrides?.[item.section]) {
-        criteria = { ...criteria, ...criteria.sectionOverrides[item.section] };
-      }
-      
-      // Factor de recencia (más reciente = mayor puntuación)
-      const recency = now - item.lastAccess;
-      const shortTerm = criteria.shortTermSpan ?? 15 * 60 * 1000;
-      const mediumTerm = criteria.mediumTermSpan ?? 60 * 60 * 1000;
-      
-      let recencyScore = 0;
-      if (recency <= shortTerm) {
-        // Acceso reciente (últimos 15 min) - alta prioridad
-        recencyScore = 1 - (recency / shortTerm) * 0.5;
-      } else if (recency <= mediumTerm) {
-        // Acceso a medio plazo (últimos 60 min) - prioridad media
-        recencyScore = 0.5 - ((recency - shortTerm) / (mediumTerm - shortTerm)) * 0.3;
-      } else {
-        // Acceso antiguo - baja prioridad
-        recencyScore = 0.2 * Math.max(0, 1 - (recency - mediumTerm) / (24 * 60 * 60 * 1000));
-      }
-      
-      // Factor de frecuencia (más accesos = mayor puntuación)
-      const frequencyScore = Math.min(1, item.accessCount / 20) * 0.8;
-      
-      // Factor contextual (relacionado con el paciente actual)
-      let contextScore = 0;
-      if (criteria.patientEmphasis && this.currentPatientContext && item.patientId === this.currentPatientContext) {
-        contextScore = 0.6; // Aumentar prioridad para el paciente actual
-      }
-      
-      // Factor de tamaño/costo
-      let complexityScore = 0;
-      
-      // Calculamos el componente basado en costo, si está disponible
-      if (item.cost) {
-        complexityScore = 0.4 * Math.min(1, item.cost / 500);
-      } 
-      // Si no hay costo pero hay tamaño, calculamos basado en tamaño
-      else if (item.size) {
-        complexityScore = 0.3 * (1 - Math.min(1, item.size / (512 * 1024)));
-      }
-      
-      // Calcular puntuación final usando pesos por defecto si no están definidos
-      const recencyWeight = criteria.recencyWeight ?? 0.4;
-      const frequencyWeight = criteria.frequencyWeight ?? 0.3;
-      const costWeight = criteria.costWeight ?? 0.2;
-      
-      const score = (
-        (recencyScore * recencyWeight) +
-        (frequencyScore * frequencyWeight) +
-        contextScore +
-        (complexityScore * costWeight)
-      );
-      
-      return {
-        key: item.key,
-        score,
-        factors: {
-          recency: recencyScore,
-          frequency: frequencyScore,
-          contextual: contextScore,
-          cost: complexityScore
-        }
-      };
-    });
-  }
-  
-  /**
-   * Determina qué elementos deben mantenerse en caché
-   * @param items Lista de elementos
-   * @param maxItems Número máximo de elementos a mantener
-   * @returns Claves de los elementos que deben mantenerse
-   */
-  public selectItemsToKeep(items: CacheItemUsage[], maxItems: number): string[] {
-    if (items.length <= maxItems) {
-      return items.map(item => item.key);
+
+  public monitorCachePerformance(stats: CacheStats): {
+    hitRatio: number;
+    evictionRate: number;
+    avgEntryLifetime: number;
+    recommendations: string[];
+  } {
+    const hitRatio = (stats.hits / (stats.hits + stats.misses)) * 100;
+    const evictionRate = (stats.evictions / stats.totalEntries) * 100;
+    const avgEntryLifetime = stats.totalEntryLifetime / stats.totalEntries;
+
+    const recommendations: string[] = [];
+
+    // Analizar rendimiento y generar recomendaciones
+    if (hitRatio < 60) {
+      recommendations.push('Considerar aumentar el tamaño del caché');
     }
-    
-    const prioritizedItems = this.prioritize(items);
-    return prioritizedItems.slice(0, maxItems).map(item => item.key);
-  }
-  
-  /**
-   * Determina qué elementos deben eliminarse de la caché
-   * @param items Lista de elementos
-   * @param countToRemove Número de elementos a eliminar
-   * @returns Claves de los elementos que deben eliminarse
-   */
-  public selectItemsToEvict(items: CacheItemUsage[], countToRemove: number): string[] {
-    if (countToRemove <= 0) {
-      return [];
+    if (evictionRate > 20) {
+      recommendations.push('Alta tasa de evicción - revisar política de retención');
     }
-    
-    if (countToRemove >= items.length) {
-      return items.map(item => item.key);
+    if (avgEntryLifetime < 3600000) { // 1 hora
+      recommendations.push('Tiempo de vida promedio bajo - ajustar TTL');
     }
-    
-    const prioritizedItems = this.prioritize(items);
-    return prioritizedItems.slice(-countToRemove).map(item => item.key);
-  }
-  
-  /**
-   * Actualiza el algoritmo de priorización
-   */
-  public setAlgorithm(algorithm: PrioritizationAlgorithm): void {
-    this.algorithm = algorithm;
-  }
-  
-  /**
-   * Actualiza los criterios de priorización
-   */
-  public updateCriteria(criteria: Partial<PrioritizationCriteria>): void {
-    this.criteria = { ...this.criteria, ...criteria };
-  }
-  
-  /**
-   * Añade una configuración de criterios específica para una sección
-   */
-  public addSectionCriteria(section: string, criteria: Partial<PrioritizationCriteria>): void {
-    if (this.criteria.sectionOverrides === undefined) {
-      this.criteria.sectionOverrides = {};
-    }
-    
-    this.criteria.sectionOverrides[section] = criteria;
+
+    return {
+      hitRatio,
+      evictionRate,
+      avgEntryLifetime,
+      recommendations
+    };
   }
 } 
