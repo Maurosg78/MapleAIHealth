@@ -1,4 +1,4 @@
-name: "Automatización Kanban"
+name: "Automatización de Proyecto"
 
 on:
   issues:
@@ -14,22 +14,33 @@ permissions:
 jobs:
   project_automation:
     runs-on: ubuntu-latest
-    name: Automatizar Proyecto
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        
-      - name: Actualizar Estado
+      - name: Update Issue Status
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_URL: ${{ github.event.issue.html_url || github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROJECT_NUMBER: "1"
+          ORGANIZATION: ${{ github.repository_owner }}
         run: |
           if [[ "${{ github.event_name }}" == "issues" || "${{ github.event_name }}" == "pull_request" ]]; then
             echo "Procesando ${{ github.event_name }} - ${{ github.event.action }}"
             
-            if [[ "${{ github.event.action }}" == "opened" ]]; then
-              echo "Nuevo item creado: $ISSUE_URL"
-            elif [[ "${{ github.event.action }}" == "closed" ]]; then
-              echo "Item cerrado: $ISSUE_URL"
+            # Obtener el ID del proyecto
+            PROJECT_ID=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/users/$ORGANIZATION/projects/$PROJECT_NUMBER" \
+              | jq -r '.id')
+            
+            # Obtener el ID del issue o PR
+            ITEM_ID="${{ github.event.issue.node_id || github.event.pull_request.node_id }}"
+            
+            if [[ ! -z "$ITEM_ID" ]]; then
+              # Agregar el item al proyecto
+              curl -X POST \
+                -H "Authorization: Bearer $GH_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/projects/$PROJECT_ID/cards" \
+                -d "{\"content_id\":$ITEM_ID,\"content_type\":\"${github.event_name%s}\"}"
+              
+              echo "Item agregado al proyecto #$PROJECT_NUMBER"
             fi
           fi 
