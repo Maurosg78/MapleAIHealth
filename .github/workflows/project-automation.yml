@@ -6,76 +6,30 @@ on:
   pull_request:
     types: [opened, reopened, closed, review_requested]
 
+permissions:
+  issues: write
+  pull-requests: write
+  repository-projects: write
+
 jobs:
-  log_event:
-    name: "Registrar evento"
+  project_automation:
     runs-on: ubuntu-latest
+    name: Automatizar Proyecto
     steps:
-      - name: "Log de eventos"
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Actualizar Estado
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_URL: ${{ github.event.issue.html_url || github.event.pull_request.html_url }}
         run: |
-          echo "Evento: ${{ github.event_name }}"
-          echo "Acción: ${{ github.event.action }}"
-          
-          if [[ "${{ github.event_name }}" == "issues" ]]; then
-            if [[ "${{ github.event.action }}" == "opened" || "${{ github.event.action }}" == "reopened" ]]; then
-              echo "Issue abierto o reabierto - debería moverse a Backlog"
+          if [[ "${{ github.event_name }}" == "issues" || "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Procesando ${{ github.event_name }} - ${{ github.event.action }}"
+            
+            if [[ "${{ github.event.action }}" == "opened" ]]; then
+              echo "Nuevo item creado: $ISSUE_URL"
             elif [[ "${{ github.event.action }}" == "closed" ]]; then
-              echo "Issue cerrado - debería moverse a Completado"
+              echo "Item cerrado: $ISSUE_URL"
             fi
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            if [[ "${{ github.event.action }}" == "opened" || "${{ github.event.action }}" == "reopened" ]]; then
-              echo "PR abierto o reabierto - debería moverse a En Revisión"
-            elif [[ "${{ github.event.action }}" == "closed" ]]; then
-              echo "PR cerrado - debería moverse a Completado"
-            fi
-          fi
-
-  update_project_status:
-    runs-on: ubuntu-latest
-    needs: log_event
-    steps:
-      - name: Update project status
-        if: github.event_name == 'issues' || github.event_name == 'pull_request'
-        run: |
-          echo "Actualizando estado del proyecto..."
-          echo "Evento: ${{ github.event_name }}"
-          echo "Acción: ${{ github.event.action }}"
-          
-          status="To Do"
-          if [[ "${{ github.event.action }}" == "opened" ]]; then
-            status="To Do"
-          elif [[ "${{ github.event.action }}" == "assigned" || "${{ github.event.action }}" == "review_requested" ]]; then
-            status="In Progress"
-          elif [[ "${{ github.event.action }}" == "closed" ]]; then
-            status="Done"
-          fi
-          
-          echo "Estado a establecer: $status"
-          # En un caso real, aquí se invocaría la API de GitHub para actualizar el proyecto
-
-  update_date_fields:
-    runs-on: ubuntu-latest
-    needs: update_project_status
-    steps:
-      - name: Get current date
-        id: current-date
-        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-      
-      - name: Set start date when item enters 'In Progress'
-        if: github.event.action == 'assigned' || github.event.action == 'review_requested'
-        run: |
-          echo "Estableciendo fecha de inicio: ${{ steps.current-date.outputs.date }}"
-          # En un caso real, aquí se invocaría la API de GitHub para actualizar el proyecto
-      
-      - name: Set completion date when item is closed
-        if: github.event.action == 'closed'
-        run: |
-          echo "Estableciendo fecha de finalización: ${{ steps.current-date.outputs.date }}"
-          # En un caso real, aquí se invocaría la API de GitHub para actualizar el proyecto
-      
-      - name: Calculate and update duration when item is closed
-        if: github.event.action == 'closed'
-        run: |
-          echo "Calculando duración del issue/PR..."
-          # La duración se calculará en el propio proyecto con la API de GitHub Projects
-          # Ya que necesitamos leer primero la fecha de inicio para calcular la duración 
+          fi 
