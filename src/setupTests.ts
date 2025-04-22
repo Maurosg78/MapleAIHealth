@@ -1,6 +1,11 @@
 // Configuración adicional para pruebas
 import '@testing-library/jest-dom';
 import { jest } from '@jest/globals';
+import { TextEncoder, TextDecoder } from 'util';
+
+// Agregar TextEncoder y TextDecoder al objeto global
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 // Mock para objetos que no están disponibles en jsdom
 Object.defineProperty(window, 'matchMedia', {

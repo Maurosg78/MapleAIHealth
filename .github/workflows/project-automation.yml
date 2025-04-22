@@ -14,10 +14,74 @@ permissions:
 env:
   PROJECT_ID: "PVT_kwHOCIy6ZM4A3Boe" # MapleAI Health Development
   GH_TOKEN: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+  PROJECT_URL: "https://github.com/users/Maurosg78/projects/2" # URL del proyecto
 
 jobs:
+  add_to_project:
+    runs-on: ubuntu-latest
+    name: Agregar issue o PR al proyecto
+    steps:
+      - name: Add to Project
+        id: add-to-project
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+          script: |
+            const issue_number = context.payload.issue?.number || context.payload.pull_request?.number;
+            if (!issue_number) {
+              console.log('No issue or PR number found');
+              return;
+            }
+            
+            const projectId = '${{ env.PROJECT_ID }}';
+            console.log(`Adding issue/PR #${issue_number} to project ${projectId}`);
+            
+            try {
+              // Get the node ID of the issue or PR
+              let contentNodeId;
+              if (context.payload.issue) {
+                const issue = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue_number
+                });
+                contentNodeId = issue.data.node_id;
+              } else {
+                const pr = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: issue_number
+                });
+                contentNodeId = pr.data.node_id;
+              }
+              
+              // Add the item to the project
+              const addToProjectMutation = `
+                mutation($projectId: ID!, $contentId: ID!) {
+                  addProjectV2ItemById(input: {
+                    projectId: $projectId,
+                    contentId: $contentId
+                  }) {
+                    item {
+                      id
+                    }
+                  }
+                }
+              `;
+              
+              const result = await github.graphql(addToProjectMutation, {
+                projectId: projectId,
+                contentId: contentNodeId
+              });
+              
+              console.log(`Successfully added to project, item ID: ${result.addProjectV2ItemById.item.id}`);
+            } catch (error) {
+              console.log(`Error adding to project: ${error}`);
+            }
+          
   project_automation:
     runs-on: ubuntu-latest
+    needs: add_to_project
     steps:
       - name: Get Project Data
         run: |
@@ -67,46 +131,13 @@ jobs:
           echo "Datos del proyecto obtenidos"
           echo "$RESPONSE" | jq .
           
-      - name: Add Item to Project
+      - name: Update Item Status
         if: github.event_name == 'issues' || github.event_name == 'pull_request'
         run: |
           # Obtener ID del item
           ITEM_ID="${{ github.event.issue.node_id || github.event.pull_request.node_id }}"
           
           if [[ ! -z "$ITEM_ID" ]]; then
-            # Mutation para agregar item al proyecto
-            MUTATION='
-            mutation($project_id: ID!, $item_id: ID!) {
-              addProjectV2ItemById(input: {
-                projectId: $project_id
-                contentId: $item_id
-              }) {
-                item {
-                  id
-                }
-              }
-            }'
-            
-            # Ejecutar mutation
-            RESPONSE=$(curl -s -X POST \
-              -H "Authorization: Bearer ${{ env.GH_TOKEN }}" \
-              -H "Content-Type: application/json" \
-              -H "Accept: application/vnd.github.v4+json" \
-              https://api.github.com/graphql \
-              -d @- << EOF
-            {
-              "query": "$MUTATION",
-              "variables": {
-                "project_id": "${{ env.PROJECT_ID }}",
-                "item_id": "$ITEM_ID"
-              }
-            }
-            EOF
-            )
-            
-            echo "Item agregado al proyecto"
-            echo "$RESPONSE" | jq .
-            
             # Actualizar estado según la acción
             if [[ "${{ github.event.action }}" == "opened" ]]; then
               echo "Nuevo item: Moviendo a To Do"

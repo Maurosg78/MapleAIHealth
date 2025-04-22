@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { RouteObject, createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { RouteObject, createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { AiduxLayout } from './components/layout/AiduxLayout';
 import ClinicalAssistantPage from './pages/ClinicalAssistantPage';
 import { ProgressPage } from './components/emr/progress';
@@ -7,6 +7,14 @@ import VoiceEnabledClinicalPage from './pages/VoiceEnabledClinicalPage';
 import VoiceCommandsHelpPage from './pages/VoiceCommandsHelpPage';
 import { FunctionalAssessmentContainer } from './containers/FunctionalAssessmentContainer';
 import { FunctionalAssessmentSelectionPage } from './pages/FunctionalAssessmentSelectionPage';
+import PatientsPage from './pages/PatientsPage';
+import PatientDetailPage from './pages/PatientDetailPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import CreatePatientPage from './pages/CreatePatientPage';
+import EditPatientPage from './pages/EditPatientPage';
+import ClinicalDashboardPage from './pages/ClinicalDashboardPage';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 // Importando componentes con lazy loading
 const PatientComparisonPage = lazy(() => import('./pages/PatientComparisonPage').then(module => ({ default: module.PatientComparisonPage })));
@@ -47,32 +55,55 @@ const UnderDevelopmentPage = ({ title }: { title: string }) => (
 // Definición de rutas
 const routes: RouteObject[] = [
   {
-    path: '/',
-    element: (
-      <Suspense fallback={<LoadingFallback />}>
-        <PatientComparisonPage />
-      </Suspense>
-    ),
+    path: '/login',
+    element: <LoginPage />
   },
   {
-    path: '/assistant',
+    path: '/register',
+    element: <RegisterPage />
+  },
+  {
+    path: '/unauthorized',
     element: (
-      <Suspense fallback={<LoadingFallback />}>
-        <AssistantDemoPage />
-      </Suspense>
-    ),
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Acceso No Autorizado</h1>
+          <p className="text-gray-600">No tiene los permisos necesarios para acceder a esta página.</p>
+        </div>
+      </div>
+    )
   },
   {
     path: '/',
-    element: <AiduxLayout />,
+    element: (
+      <ProtectedRoute>
+        <AiduxLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
         element: <HomePage />
       },
       {
+        path: 'dashboard-clinico',
+        element: <ClinicalDashboardPage />
+      },
+      {
         path: 'pacientes',
-        element: <UnderDevelopmentPage title="Gestión de Pacientes" />
+        element: <PatientsPage />
+      },
+      {
+        path: 'pacientes/nuevo',
+        element: <CreatePatientPage />
+      },
+      {
+        path: 'pacientes/:id',
+        element: <PatientDetailPage />
+      },
+      {
+        path: 'pacientes/:id/editar',
+        element: <EditPatientPage />
       },
       {
         path: 'consultas',
@@ -119,6 +150,10 @@ const routes: RouteObject[] = [
         element: <UnderDevelopmentPage title="Configuración" />
       }
     ]
+  },
+  {
+    path: '*',
+    element: <Navigate to="/" replace />
   }
 ];
 
