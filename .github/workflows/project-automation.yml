@@ -12,28 +12,45 @@ permissions:
   repository-projects: write
 
 env:
-  PROJECT_ID: "PVT_kwHOCIy6ZM4A3Boe" # MapleAI Health Development
+  PROJECT_ID: "PVT_kwHOCIy6ZM4A1XzO" # MapleAI Health Development (actualizado)
   GH_TOKEN: ${{ secrets.MAPLE_HEALTH_TOKEN }}
-  PROJECT_URL: "https://github.com/users/Maurosg78/projects/2" # URL del proyecto
+  PROJECT_URL: "https://github.com/users/mauriciosobarzo/projects/2" # URL del proyecto actualizada
 
 jobs:
   add_to_project:
     runs-on: ubuntu-latest
     name: Agregar issue o PR al proyecto
     steps:
-      - name: Add to Project
-        id: add-to-project
-        uses: actions/add-to-project@v1.0.2
-        with:
-          project-url: ${{ env.PROJECT_URL }}
-          github-token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
-      
-      - name: Log project data
-        if: steps.add-to-project.outputs.itemId
+      - name: Add issue to project
+        if: github.event_name == 'issues'
+        env:
+          GITHUB_TOKEN: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+          ISSUE_ID: ${{ github.event.issue.node_id }}
         run: |
-          echo "Issue/PR added to project"
-          echo "Item ID: ${{ steps.add-to-project.outputs.itemId }}"
+          gh api graphql -f query='
+            mutation($project:ID!, $issue:ID!) {
+              addProjectV2ItemById(input: {projectId: $project, contentId: $issue}) {
+                item {
+                  id
+                }
+              }
+            }' -f project=${{ env.PROJECT_ID }} -f issue=$ISSUE_ID
           
+      - name: Add PR to project
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+          PR_ID: ${{ github.event.pull_request.node_id }}
+        run: |
+          gh api graphql -f query='
+            mutation($project:ID!, $pr:ID!) {
+              addProjectV2ItemById(input: {projectId: $project, contentId: $pr}) {
+                item {
+                  id
+                }
+              }
+            }' -f project=${{ env.PROJECT_ID }} -f pr=$PR_ID
+            
   update_project_status:
     runs-on: ubuntu-latest
     needs: add_to_project

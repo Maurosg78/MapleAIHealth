@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import { RouteObject, createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { AiduxLayout } from './components/layout/AiduxLayout';
 import ClinicalAssistantPage from './pages/ClinicalAssistantPage';
@@ -15,17 +15,11 @@ import CreatePatientPage from './pages/CreatePatientPage';
 import EditPatientPage from './pages/EditPatientPage';
 import ClinicalDashboardPage from './pages/ClinicalDashboardPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-
-// Importando componentes con lazy loading
-const PatientComparisonPage = lazy(() => import('./pages/PatientComparisonPage').then(module => ({ default: module.PatientComparisonPage })));
-const AssistantDemoPage = lazy(() => import('./pages/AssistantDemoPage').then(module => ({ default: module.AssistantDemoPage })));
-
-// Componente de carga
-const LoadingFallback = () => (
-  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-    Cargando...
-  </div>
-);
+import PasswordResetRequestPage from './pages/PasswordResetRequestPage';
+import PasswordResetPage from './pages/PasswordResetPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
+import CacheManagement from './pages/admin/CacheManagement';
+import { UserRole } from './services/auth/types';
 
 // Página de inicio que redirigirá a la sección adecuada
 const HomePage = () => (
@@ -61,6 +55,14 @@ const routes: RouteObject[] = [
   {
     path: '/register',
     element: <RegisterPage />
+  },
+  {
+    path: '/password-reset-request',
+    element: <PasswordResetRequestPage />
+  },
+  {
+    path: '/password-reset/:token',
+    element: <PasswordResetPage />
   },
   {
     path: '/unauthorized',
@@ -148,6 +150,18 @@ const routes: RouteObject[] = [
       {
         path: 'configuracion',
         element: <UnderDevelopmentPage title="Configuración" />
+      },
+      {
+        path: 'cambiar-password',
+        element: <ChangePasswordPage />
+      },
+      {
+        path: 'admin/cache',
+        element: (
+          <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+            <CacheManagement />
+          </ProtectedRoute>
+        )
       }
     ]
   },

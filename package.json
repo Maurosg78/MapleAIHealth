@@ -1,7 +1,7 @@
 {
-    "name": "mapleaihealth",
+    "name": "maple-ai-health",
     "private": true,
-    "version": "0.0.0",
+    "version": "1.0.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -10,7 +10,7 @@
         "format": "prettier --write .",
         "preview": "vite preview",
         "type-check": "tsc --noEmit",
-        "test": "jest",
+        "test": "node scripts/testResponses.mjs",
         "test:watch": "jest --watch"
     },
     "dependencies": {
@@ -29,6 +29,7 @@
         "@octokit/rest": "^21.1.1",
         "@tanstack/react-query": "^5.69.2",
         "@tanstack/react-query-devtools": "^5.69.2",
+        "@types/express": "^5.0.1",
         "@types/jwt-decode": "^2.2.1",
         "@types/react-router-dom": "^5.3.3",
         "@types/uuid": "^10.0.0",
@@ -36,6 +37,7 @@
         "clsx": "^2.1.1",
         "eslint-plugin-prettier": "^5.2.5",
         "eventemitter3": "^5.0.1",
+        "express": "^5.1.0",
         "jwt-decode": "^4.0.0",
         "langchain": "^0.3.22",
         "mongodb": "^6.15.0",

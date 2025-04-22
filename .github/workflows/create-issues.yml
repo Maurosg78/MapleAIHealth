@@ -1,0 +1,32 @@
+name: Create MVP Issues
+
+
+on:
+  workflow_dispatch:  # Permite ejecutar el workflow manualmente
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Generate MVP Sprint 1 Issues
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+        with:
+          filename: docs/mvp/Sprint_1_MVP.md
+          
+      - name: Generate MVP Sprint 2 Issues
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+        with:
+          filename: docs/mvp/Sprint_2_MVP.md
+          
+      - name: Generate MVP Sprint 3 Issues
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.MAPLE_HEALTH_TOKEN }}
+        with:
+          filename: docs/mvp/Sprint_3_MVP.md 

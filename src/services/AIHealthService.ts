@@ -1,11 +1,16 @@
+import { Logger } from '../utils/logger';
 import { 
-  SpecialtyType,
-  SoapData
-} from '../types/clinical';
+  SoapData, 
+  SpecialtyType, 
+  SOAPSection,
+  EvidenceLevel,
+  ClinicalRelevance,
+  AISuggestion
+} from '../types/clinical.types';
 import { aiHealthConfig, AIHealthServiceConfig } from '../config/aiHealthConfig';
 import { CacheManager } from './cache/CacheManager';
 import { CacheStats } from './cache/types';
-import { clinicalRules, EvidenceLevel, ClinicalRelevance, ClinicalRule } from './clinicalRules';
+import { clinicalRules, ClinicalRule } from './clinicalRules';
 import { PerformanceMonitor } from './performance/PerformanceMonitor';
 
 /**
@@ -17,37 +22,6 @@ export type AISuggestionType = 'info' | 'warning' | 'required' | 'recommendation
  * Niveles de prioridad para las sugerencias
  */
 export type AIPriorityLevel = 'high' | 'medium' | 'low';
-
-/**
- * Secciones SOAP donde se puede aplicar una sugerencia
- */
-export type SOAPSection = 'subjective' | 'objective' | 'assessment' | 'plan';
-
-/**
- * Interfaz para una sugerencia individual generada por IA
- */
-export interface AISuggestion {
-  id: string;
-  type: AISuggestionType;
-  title: string;
-  description: string;
-  section: SOAPSection;
-  field?: string;
-  priority: AIPriorityLevel;
-  confidence?: number; // Nivel de confianza de 0 a 1
-  source?: 'rule' | 'model' | 'guideline'; // Origen de la sugerencia
-  metadata?: {
-    evidenceLevel?: EvidenceLevel;
-    clinicalRelevance?: ClinicalRelevance;
-    specialtySpecific?: boolean;
-    ruleId?: string;
-  };
-  contextFactors?: {
-    age?: number[];
-    gender?: string[];
-    conditions?: string[];
-  };
-}
 
 /**
  * Interfaz para la respuesta del servicio de IA
@@ -71,10 +45,13 @@ export interface AIAnalysisOptions {
     gender?: string;
     knownConditions?: string[];
     medications?: string[];
+    lastVisit?: Date;
+    visitCount?: number;
   };
-  includeGuidelines?: boolean; // Si se deben incluir guías clínicas en las sugerencias
-  maxSuggestions?: number; // Número máximo de sugerencias a retornar
-  minConfidence?: number; // Nivel mínimo de confianza para incluir sugerencias
+  includeGuidelines?: boolean;
+  maxSuggestions?: number;
+  minConfidence?: number;
+  language?: 'es' | 'en';
 }
 
 /**
@@ -87,6 +64,7 @@ export class AIHealthService {
   private readonly pendingRequests: Map<string, Promise<AIHealthResponse>> = new Map();
   private config: AIHealthServiceConfig;
   private readonly performanceMonitor: PerformanceMonitor;
+  private logger: Logger;
 
   private constructor(config: AIHealthServiceConfig = aiHealthConfig) {
     this.config = config;
@@ -104,6 +82,8 @@ export class AIHealthService {
     if (config.logging.level === 'debug') {
       console.debug('[AIHealthService] Inicializado con modo:', config.mode);
     }
+
+    this.logger = new Logger('AIHealthService');
   }
 
   public static getInstance(config?: AIHealthServiceConfig): AIHealthService {
@@ -497,7 +477,7 @@ export class AIHealthService {
   private getSuggestionWeight(suggestion: AISuggestion): number {
     const priorityWeight = { high: 3, medium: 2, low: 1 }[suggestion.priority] || 0;
     const confidenceWeight = suggestion.confidence || 0.5;
-    const sourceWeight = { rule: 0.8, model: 1.0, guideline: 0.9 }[suggestion.source || 'rule'] || 0.5;
+    const sourceWeight = { rule: 0.8, model: 1.0, guideline: 0.9, patient_history: 0.7 }[suggestion.source || 'rule'] || 0.5;
     
     return priorityWeight * confidenceWeight * sourceWeight;
   }

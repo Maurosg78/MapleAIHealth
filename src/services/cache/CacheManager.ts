@@ -1,183 +1,137 @@
-import { CacheConfig, CacheStats, CacheMetadata } from './types';
+import { CacheMetadata, CacheStats, CacheOptions } from './types';
+import { compress, decompress } from '../utils/compression';
+import { Logger } from '../utils/logger';
 
-export class CacheManager<T> {
-  private cache: Map<string, { data: T; timestamp: number; metadata?: CacheMetadata }>;
-  private config: CacheConfig;
+export class CacheManager {
+  private cache: Map<string, { data: any; metadata: CacheMetadata }>;
+  private hotQueue: string[];
+  private coldQueue: string[];
   private stats: CacheStats;
-  private cleanupInterval: NodeJS.Timeout;
-  private accessCount: Map<string, number>;
-  private lastAccess: Map<string, number>;
+  private options: Required<CacheOptions>;
+  private logger: Logger;
 
-  constructor(config: CacheConfig) {
-    this.config = config;
+  constructor(options: CacheOptions = {}) {
     this.cache = new Map();
-    this.accessCount = new Map();
-    this.lastAccess = new Map();
+    this.hotQueue = [];
+    this.coldQueue = [];
+    this.options = {
+      ttlMs: options.ttlMs || 3600000, // 1 hora por defecto
+      maxSize: options.maxSize || 100 * 1024 * 1024, // 100MB por defecto
+      compressionThreshold: options.compressionThreshold || 1024, // 1KB por defecto
+      coldQueueSize: options.coldQueueSize || 1000
+    };
     this.stats = {
       hits: 0,
       misses: 0,
       size: 0,
-      lastCleared: new Date()
+      lastCleanup: Date.now(),
+      compressionRatio: 1,
+      avgAccessTime: 0,
+      totalAccesses: 0
     };
-    this.cleanupInterval = setInterval(() => this.cleanup(), config.cleanupInterval || 60000);
+    this.logger = new Logger('CacheManager');
   }
 
-  private cleanup(): void {
-    const now = Date.now();
-    let entriesRemoved = 0;
-
-    // Limpiar entradas expiradas
-    for (const [key, value] of this.cache.entries()) {
-      if (now - value.timestamp > this.config.ttlMs) {
-        this.removeEntry(key);
-        entriesRemoved++;
-      }
-    }
-
-    // Limitar tamaño máximo usando LRU (Least Recently Used)
-    if (this.cache.size > this.config.maxSize) {
-      const entriesToRemove = this.cache.size - this.config.maxSize;
-      const sortedEntries = Array.from(this.cache.entries())
-        .sort((a, b) => {
-          const aLastAccess = this.lastAccess.get(a[0]) || 0;
-          const bLastAccess = this.lastAccess.get(b[0]) || 0;
-          return aLastAccess - bLastAccess;
-        });
-      
-      for (let i = 0; i < entriesToRemove; i++) {
-        this.removeEntry(sortedEntries[i][0]);
-        entriesRemoved++;
-      }
-    }
-
-    if (entriesRemoved > 0) {
-      this.stats.size = this.cache.size;
-    }
-  }
-
-  private removeEntry(key: string): void {
-    this.cache.delete(key);
-    this.accessCount.delete(key);
-    this.lastAccess.delete(key);
-  }
-
-  public get(key: string): T | undefined {
+  public async get(key: string): Promise<any | null> {
+    const start = Date.now();
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       this.stats.misses++;
-      return undefined;
+      return null;
     }
 
-    if (Date.now() - entry.timestamp > this.config.ttlMs) {
-      this.removeEntry(key);
-      this.stats.misses++;
-      this.stats.size = this.cache.size;
-      return undefined;
-    }
-
-    // Actualizar contadores de acceso
-    this.accessCount.set(key, (this.accessCount.get(key) || 0) + 1);
-    this.lastAccess.set(key, Date.now());
-    
     this.stats.hits++;
+    entry.metadata.lastAccess = Date.now();
+    entry.metadata.accessCount++;
+
+    this.updateAccessStats(start);
+    this.updateQueues(key);
+
+    if (entry.metadata.compressed) {
+      return await decompress(entry.data);
+    }
     return entry.data;
   }
 
-  public set(key: string, value: T, metadata?: CacheMetadata): void {
-    // Verificar si la entrada ya existe y actualizar si es necesario
-    if (this.cache.has(key)) {
-      const existingEntry = this.cache.get(key)!;
-      if (this.shouldUpdateEntry(existingEntry, metadata)) {
-        this.cache.set(key, {
-          data: value,
-          timestamp: Date.now(),
-          metadata
-        });
-        this.lastAccess.set(key, Date.now());
-      }
-      return;
-    }
+  public async set(key: string, value: any, metadata: Partial<CacheMetadata> = {}): Promise<void> {
+    const size = this.calculateSize(value);
+    const shouldCompress = size > this.options.compressionThreshold;
 
-    // Verificar si hay espacio disponible
-    if (this.cache.size >= this.config.maxSize) {
-      this.cleanup();
-    }
-
-    this.cache.set(key, {
-      data: value,
-      timestamp: Date.now(),
-      metadata
-    });
-    this.accessCount.set(key, 0);
-    this.lastAccess.set(key, Date.now());
-    this.stats.size = this.cache.size;
-  }
-
-  private shouldUpdateEntry(
-    existingEntry: { data: T; timestamp: number; metadata?: CacheMetadata },
-    newMetadata?: CacheMetadata
-  ): boolean {
-    // Actualizar si los metadatos son diferentes
-    if (JSON.stringify(existingEntry.metadata) !== JSON.stringify(newMetadata)) {
-      return true;
-    }
-
-    // Actualizar si la entrada es muy antigua
-    if (Date.now() - existingEntry.timestamp > this.config.ttlMs / 2) {
-      return true;
-    }
-
-    return false;
-  }
-
-  public clear(): void {
-    this.cache.clear();
-    this.accessCount.clear();
-    this.lastAccess.clear();
-    this.stats = {
-      hits: 0,
-      misses: 0,
-      size: 0,
-      lastCleared: new Date()
+    const fullMetadata: CacheMetadata = {
+      size,
+      compressed: shouldCompress,
+      lastAccess: Date.now(),
+      accessCount: 0,
+      ...metadata
     };
+
+    let data = value;
+    if (shouldCompress) {
+      data = await compress(value);
+      fullMetadata.size = this.calculateSize(data);
+    }
+
+    await this.evictIfNeeded(fullMetadata.size);
+    
+    this.cache.set(key, { data, metadata: fullMetadata });
+    this.stats.size += fullMetadata.size;
+    this.updateQueues(key);
+  }
+
+  private updateQueues(key: string): void {
+    const hotIndex = this.hotQueue.indexOf(key);
+    const coldIndex = this.coldQueue.indexOf(key);
+
+    if (hotIndex !== -1) {
+      this.hotQueue.splice(hotIndex, 1);
+      this.hotQueue.unshift(key);
+    } else if (coldIndex !== -1) {
+      this.coldQueue.splice(coldIndex, 1);
+      this.hotQueue.unshift(key);
+      if (this.hotQueue.length > this.options.coldQueueSize) {
+        const oldestHot = this.hotQueue.pop();
+        if (oldestHot) this.coldQueue.unshift(oldestHot);
+      }
+    } else {
+      this.coldQueue.unshift(key);
+      if (this.coldQueue.length > this.options.coldQueueSize) {
+        this.coldQueue.pop();
+      }
+    }
+  }
+
+  private async evictIfNeeded(newEntrySize: number): Promise<void> {
+    while (this.stats.size + newEntrySize > this.options.maxSize && this.coldQueue.length > 0) {
+      const keyToEvict = this.coldQueue.pop();
+      if (keyToEvict) {
+        const entry = this.cache.get(keyToEvict);
+        if (entry) {
+          this.stats.size -= entry.metadata.size;
+          this.cache.delete(keyToEvict);
+        }
+      }
+    }
+  }
+
+  private calculateSize(data: any): number {
+    return Buffer.from(JSON.stringify(data)).length;
+  }
+
+  private updateAccessStats(startTime: number): void {
+    const accessTime = Date.now() - startTime;
+    this.stats.totalAccesses++;
+    this.stats.avgAccessTime = (this.stats.avgAccessTime * (this.stats.totalAccesses - 1) + accessTime) / this.stats.totalAccesses;
   }
 
   public getStats(): CacheStats {
-    return { ...this.stats };
-  }
-
-  public updateConfig(config: Partial<CacheConfig>): void {
-    this.config = { ...this.config, ...config };
-    if (config.cleanupInterval) {
-      clearInterval(this.cleanupInterval);
-      this.cleanupInterval = setInterval(() => this.cleanup(), config.cleanupInterval);
-    }
-  }
-
-  public invalidateByPatient(patientId: string): void {
-    for (const [key, value] of this.cache.entries()) {
-      if (value.metadata?.patientId === patientId) {
-        this.removeEntry(key);
-      }
-    }
-    this.stats.size = this.cache.size;
-  }
-
-  public invalidateBySection(section: string): void {
-    for (const [key, value] of this.cache.entries()) {
-      if (value.metadata?.section === section) {
-        this.removeEntry(key);
-      }
-    }
-    this.stats.size = this.cache.size;
-  }
-
-  public getAccessCount(key: string): number {
-    return this.accessCount.get(key) || 0;
-  }
-
-  public getLastAccess(key: string): number {
-    return this.lastAccess.get(key) || 0;
+    return {
+      ...this.stats,
+      hitRate: this.stats.hits / (this.stats.hits + this.stats.misses),
+      missRate: this.stats.misses / (this.stats.hits + this.stats.misses),
+      currentSize: this.stats.size,
+      hotQueueSize: this.hotQueue.length,
+      coldQueueSize: this.coldQueue.length
+    };
   }
 } 

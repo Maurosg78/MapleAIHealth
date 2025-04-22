@@ -1,7 +1,7 @@
-import { useDashboard } from '@/hooks/useDashboard';
-import { MetricCard } from '@/components/dashboard/MetricCard';
-import { RecentActivities } from '@/components/dashboard/RecentActivities';
-import { Button } from '@/components/common/Button';
+import { useDashboard } from '@/hooks/common/useDashboard';
+import { MetricCard } from '@/components/shared/dashboard/MetricCard';
+import { RecentActivities } from '@/components/shared/dashboard/RecentActivities';
+import { Button } from '@/components/shared/common/Button';
 import { Link } from 'react-router-dom';
 
 export const DashboardPage = () => {

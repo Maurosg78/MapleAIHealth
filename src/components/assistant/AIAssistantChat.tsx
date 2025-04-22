@@ -3,7 +3,7 @@ import { Box, TextField, Button, Typography, Paper, CircularProgress, IconButton
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import { clinicalAgent } from '../../services/ai/agent/ClinicalAgent';
+import { clinicalAIService } from '../../services/ai/ClinicalAIService';
 import { MedicalSpecialty } from '../../services/ai/types';
 
 // Definir tipos de mensajes para el chat
@@ -12,13 +12,18 @@ interface ChatMessage {
   content: string;
   sender: 'user' | 'assistant';
   timestamp: Date;
+  references?: {
+    title: string;
+    url: string;
+    year: number;
+  }[];
 }
 
 interface AIAssistantChatProps {
-  patientId?: string;
-  activeSection?: string;
+  patientId: string;
+  activeSection: string;
   specialty?: MedicalSpecialty;
-  onMessageProcessed?: (message: string, response: string) => void;
+  onMessageProcessed?: (query: string, response: string) => void;
 }
 
 /**
@@ -36,21 +41,15 @@ export const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Configurar el agente al montar el componente
+  // Configurar el servicio de IA al montar el componente
   useEffect(() => {
-    if (specialty) {
-      clinicalAgent.setSpecialty(specialty);
-    }
-
-    if (patientId) {
-      clinicalAgent.setContext({
-        specialty,
-        currentSection: activeSection,
-        patientContext: {
-          patientId,
-        }
-      });
-    }
+    clinicalAIService.setContext({
+      specialty,
+      currentSection: activeSection,
+      patientContext: {
+        patientId
+      }
+    });
   }, [patientId, specialty, activeSection]);
 
   // Desplazamiento automático al nuevo mensaje
@@ -74,13 +73,14 @@ export const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
     setError(null);
 
     try {
-      const response = await clinicalAgent.sendMessage(inputValue);
+      const response = await clinicalAIService.processQuery(inputValue);
 
       const assistantMessage: ChatMessage = {
-        id: response.messageId,
+        id: Date.now().toString(),
         content: response.content,
         sender: 'assistant',
-        timestamp: response.timestamp
+        timestamp: new Date(),
+        references: response.references
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -98,7 +98,6 @@ export const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
 
   const handleClearConversation = () => {
     setMessages([]);
-    clinicalAgent.clearConversation();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -109,113 +108,96 @@ export const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
   };
 
   return (
-    <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <Box sx={{ p: 2, borderBottom: '1px solid #e0e0e0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6">Asistente Clínico</Typography>
-        <Box>
-          <Chip 
-            label={specialty} 
-            color="primary" 
-            size="small" 
-            sx={{ mr: 1 }} 
-          />
-          <IconButton 
-            size="small" 
-            onClick={handleClearConversation} 
-            title="Limpiar conversación"
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </Box>
-      </Box>
-
-      <Box sx={{ p: 2, flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {messages.length === 0 && (
-          <Box sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
-            <Typography variant="body2">
-              Envía un mensaje para comenzar la conversación con el asistente clínico.
-            </Typography>
-          </Box>
-        )}
-
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Paper 
+        elevation={3} 
+        sx={{ 
+          flex: 1, 
+          mb: 2, 
+          p: 2, 
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
         {messages.map((message) => (
           <Box
             key={message.id}
             sx={{
-              alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start',
-              backgroundColor: message.sender === 'user' ? 'primary.light' : 'grey.100',
-              color: message.sender === 'user' ? 'white' : 'text.primary',
-              borderRadius: 2,
-              px: 2,
-              py: 1,
-              maxWidth: '80%'
+              display: 'flex',
+              justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
+              mb: 2
             }}
           >
-            <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-              {message.content}
-            </Typography>
-            <Typography variant="caption" sx={{ display: 'block', mt: 0.5, opacity: 0.7 }}>
-              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </Typography>
+            <Box
+              sx={{
+                maxWidth: '70%',
+                p: 2,
+                borderRadius: 2,
+                bgcolor: message.sender === 'user' ? 'primary.main' : 'grey.100',
+                color: message.sender === 'user' ? 'white' : 'text.primary'
+              }}
+            >
+              <Typography variant="body1">{message.content}</Typography>
+              {message.references && message.references.length > 0 && (
+                <Box sx={{ mt: 1 }}>
+                  {message.references.map((ref, index) => (
+                    <Chip
+                      key={index}
+                      label={`${ref.title} (${ref.year})`}
+                      size="small"
+                      component="a"
+                      href={ref.url}
+                      target="_blank"
+                      clickable
+                      sx={{ mr: 1, mt: 1 }}
+                    />
+                  ))}
+                </Box>
+              )}
+            </Box>
           </Box>
         ))}
-
-        {isLoading && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, alignSelf: 'flex-start' }}>
-            <CircularProgress size={20} />
-            <Typography variant="body2">Procesando...</Typography>
-          </Box>
-        )}
-
-        {error && (
-          <Box
-            sx={{
-              alignSelf: 'center',
-              backgroundColor: 'error.light',
-              color: 'error.contrastText',
-              borderRadius: 2,
-              px: 2,
-              py: 1,
-            }}
-          >
-            <Typography variant="body2">{error}</Typography>
-            <Button
-              size="small"
-              startIcon={<AutorenewIcon />}
-              onClick={handleSendMessage}
-              sx={{ mt: 1 }}
-            >
-              Reintentar
-            </Button>
-          </Box>
-        )}
-
         <div ref={messagesEndRef} />
-      </Box>
+      </Paper>
 
-      <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0', display: 'flex', gap: 1 }}>
+      {error && (
+        <Typography color="error" variant="body2" sx={{ mb: 2 }}>
+          {error}
+        </Typography>
+      )}
+
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <IconButton
+          onClick={handleClearConversation}
+          color="default"
+          size="small"
+          title="Limpiar conversación"
+        >
+          <DeleteIcon />
+        </IconButton>
+
         <TextField
           fullWidth
-          variant="outlined"
-          placeholder="Escribe tu mensaje aquí..."
+          multiline
+          maxRows={4}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyPress={handleKeyPress}
-          multiline
-          maxRows={4}
-          size="small"
+          placeholder="Escribe tu consulta..."
           disabled={isLoading}
+          sx={{ flex: 1 }}
         />
+
         <Button
           variant="contained"
-          color="primary"
-          endIcon={<SendIcon />}
           onClick={handleSendMessage}
           disabled={isLoading || !inputValue.trim()}
+          endIcon={isLoading ? <CircularProgress size={20} /> : <SendIcon />}
         >
           Enviar
         </Button>
       </Box>
-    </Paper>
+    </Box>
   );
 }; 

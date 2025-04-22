@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DashboardMetrics } from '@/types/dashboard';
-import { getDashboardMetrics } from '@/services/dashboard';
+import { getDashboardMetrics } from '@/services/core/dashboard';
 
 export const useDashboard = () => {
     const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);

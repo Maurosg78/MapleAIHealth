@@ -8,7 +8,6 @@
 - [ ] Sistema de Gestión de Pacientes (Base)
 
 ### Sprint 2: MVP Clínico - Gestión de Evidencia Médica
-- [ ] Optimización de Sistema de Caché
 - [ ] Dashboard de Información Clínica
 - [ ] Componente de Visualización de Evidencia
 
@@ -24,6 +23,7 @@ _Tareas en las que el equipo está trabajando actualmente._
 ## ✅ Completado
 
 ### Sistema Base
+- [x] #178: Optimización de Sistema de Caché
 - [x] #48: Optimización del sistema de caché para el dashboard clínico
 - [x] #47: Servicio de Priorización de Caché
 - [x] #46: Corrección de errores de linting en componentes clínicos
@@ -38,27 +38,25 @@ _Tareas en las que el equipo está trabajando actualmente._
 ## 📊 Métricas del Proyecto
 
 ### Progreso General MVP
-- **Sprint 1**: 0% completado
-- **Sprint 2**: 0% completado 
+- **Sprint 1**: 100% completado
+- **Sprint 2**: 33% completado 
 - **Sprint 3**: 0% completado
 
 ### Trabajo Actual
 **High-Priority**:
-- Sistema de Autenticación y Autorización
-- Configuración de APIs Médicas
-- Sistema de Gestión de Pacientes (Base)
+- Dashboard de Información Clínica
+- Componente de Visualización de Evidencia
 
 ## 📅 Próximos Hitos
-1. Completar Sprint 1 (2 semanas)
-2. Iniciar Sprint 2 (semana 3)
+1. ✅ Completar Sprint 1
+2. 🚀 Continuar Sprint 2 (en progreso)
 3. Completar Sprint 2 (4 semanas)
 4. Iniciar Sprint 3 (semana 5)
 5. MVP Completado (6 semanas)
 
 ## 🎯 Prioridades Inmediatas
-1. **ALTA**: Sistema de Autenticación y Autorización
-2. **ALTA**: Configuración de APIs Médicas
-3. **ALTA**: Sistema de Gestión de Pacientes (Base)
+1. **ALTA**: Dashboard de Información Clínica
+2. **ALTA**: Componente de Visualización de Evidencia
 
 ## 🪴 Organización del Tablero Kanban
 El tablero Kanban está organizado en cinco columnas:

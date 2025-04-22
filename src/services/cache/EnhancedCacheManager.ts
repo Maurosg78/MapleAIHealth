@@ -1,11 +1,11 @@
-import { CacheConfig, CacheEntry, CacheMetadata } from './types';
+import { CacheConfig, CacheEntry, CacheMetadata, CacheStats } from './types';
 import { CacheDependencyManager, CacheDependency } from './DependencyManager';
 import { PrioritizationAlgorithm } from './CachePrioritizationService';
 
 export class EnhancedCacheManager<T> {
   private cache: Map<string, CacheEntry<T>> = new Map();
   private dependencyManager: CacheDependencyManager;
-  private config: CacheConfig;
+  private _config: CacheConfig;
   private algorithm: PrioritizationAlgorithm;
   private cleanupInterval: NodeJS.Timeout;
 
@@ -13,7 +13,7 @@ export class EnhancedCacheManager<T> {
     config: CacheConfig,
     algorithm: PrioritizationAlgorithm = 'lru'
   ) {
-    this.config = config;
+    this._config = config;
     this.algorithm = algorithm;
     this.dependencyManager = new CacheDependencyManager();
     
@@ -27,6 +27,11 @@ export class EnhancedCacheManager<T> {
     );
   }
 
+  // Getter para acceder a la configuración
+  public get config(): CacheConfig {
+    return { ...this._config };
+  }
+
   public set(key: string, value: T, metadata: CacheMetadata): void {
     const entry: CacheEntry<T> = {
       data: value,
@@ -35,7 +40,7 @@ export class EnhancedCacheManager<T> {
         lastAccess: Date.now(),
         accessCount: (metadata.accessCount || 0) + 1
       },
-      expiresAt: Date.now() + this.config.ttlMs,
+      expiresAt: Date.now() + this._config.ttlMs,
       timestamp: Date.now()
     };
 
@@ -73,7 +78,7 @@ export class EnhancedCacheManager<T> {
   }
 
   private evictIfNeeded(): void {
-    if (this.cache.size <= this.config.maxSize) return;
+    if (this.cache.size <= this._config.maxSize) return;
 
     const entries = Array.from(this.cache.entries());
     entries.sort((a, b) => {
@@ -92,7 +97,7 @@ export class EnhancedCacheManager<T> {
       }
     });
 
-    const entriesToRemove = entries.slice(0, entries.length - this.config.maxSize);
+    const entriesToRemove = entries.slice(0, entries.length - this._config.maxSize);
     for (const [key] of entriesToRemove) {
       this.cache.delete(key);
     }
@@ -121,7 +126,7 @@ export class EnhancedCacheManager<T> {
   }
 
   public updateConfig(newConfig: Partial<CacheConfig>): void {
-    this.config = { ...this.config, ...newConfig };
+    this._config = { ...this._config, ...newConfig };
   }
 
   /**
@@ -146,13 +151,13 @@ export class EnhancedCacheManager<T> {
     this.clear();
   }
 
-  public getStats() {
-    const stats = {
-      size: this.cache.size,
-      maxSize: this.config.maxSize,
+  public getStats(): CacheStats {
+    const stats: CacheStats = {
       hitRatio: this.calculateHitRatio(),
-      memoryUsage: this.calculateMemoryUsage(),
-      lastCleanup: new Date().toISOString()
+      size: this.cache.size,
+      maxSize: this._config.maxSize,
+      evictions: 0, // No se está rastreando, se podría implementar
+      memoryUsage: this.calculateMemoryUsage()
     };
 
     // Registrar estadísticas para análisis

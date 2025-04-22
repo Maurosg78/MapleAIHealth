@@ -31,11 +31,11 @@ Este documento resume el estado actual de implementación de funcionalidades en 
 
 ## Sprint 2: MVP Clínico - Gestión de Evidencia Médica
 
-**Estado general:** 🟠 No iniciado (Fecha planificada: 22/07/2023)
+**Estado general:** 🟠 En progreso (Fecha iniciada: 22/07/2023)
 
 ### Issues planificados:
 
-1. **Optimización de Sistema de Caché** - ⚪ 0% Pendiente
+1. **Optimización de Sistema de Caché** - ✅ 100% Completado
 2. **Dashboard de Información Clínica** - ⚪ 0% Pendiente
 3. **Componente de Visualización de Evidencia** - ⚪ 0% Pendiente
 
@@ -50,11 +50,11 @@ Este documento resume el estado actual de implementación de funcionalidades en 
 
 ## Próximos pasos
 
-1. Iniciar Sprint 2 con enfoque en el Dashboard de Información Clínica
-2. Planificar las tareas detalladas para la optimización del sistema de caché
-3. Prototipar componentes de visualización de evidencia
+1. Continuar con el Sprint 2 con enfoque en el Dashboard de Información Clínica
+2. Implementar componentes de visualización de evidencia
+3. Preparar la infraestructura para la integración del asistente IA
 
 ---
 
-Última actualización: 21/07/2023  
+Última actualización: 22/04/2024  
 Responsable: Mauricio Sobarzo 
