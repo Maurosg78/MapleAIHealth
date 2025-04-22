@@ -4,7 +4,7 @@ Este documento resume el estado actual de implementación de funcionalidades en 
 
 ## Sprint 1: MVP Core - Infraestructura y Sistema Base
 
-**Estado general:** ✅ Completado (20/07/2023)
+**Estado general:** ✅ Completado (21/07/2023)
 
 ### Issues:
 
@@ -15,11 +15,12 @@ Este documento resume el estado actual de implementación de funcionalidades en 
    - Añadida validación de sesiones
    - Creadas rutas protegidas por roles
 
-2. **Configuración de APIs Médicas** - 🟡 80% Completado
+2. **Configuración de APIs Médicas** - ✅ 100% Completado
    - Integrada API de PubMed
    - Implementadas funciones de búsqueda básicas
    - Configurado manejo de credenciales
-   - **Pendiente:** Documentación completa de endpoints
+   - Creada documentación completa de endpoints
+   - Implementado manejo de errores y gestión de límites de velocidad
 
 3. **Sistema de Gestión de Pacientes (Base)** - ✅ 100% Completado
    - Creado modelo detallado de pacientes
@@ -30,7 +31,7 @@ Este documento resume el estado actual de implementación de funcionalidades en 
 
 ## Sprint 2: MVP Clínico - Gestión de Evidencia Médica
 
-**Estado general:** 🟠 No iniciado (Fecha planificada: 21/07/2023)
+**Estado general:** 🟠 No iniciado (Fecha planificada: 22/07/2023)
 
 ### Issues planificados:
 
@@ -49,11 +50,11 @@ Este documento resume el estado actual de implementación de funcionalidades en 
 
 ## Próximos pasos
 
-1. Completar la documentación de endpoints de APIs médicas
-2. Iniciar Sprint 2 con enfoque en el Dashboard de Información Clínica
-3. Planificar las tareas detalladas para la optimización del sistema de caché
+1. Iniciar Sprint 2 con enfoque en el Dashboard de Información Clínica
+2. Planificar las tareas detalladas para la optimización del sistema de caché
+3. Prototipar componentes de visualización de evidencia
 
 ---
 
-Última actualización: 20/07/2023  
+Última actualización: 21/07/2023  
 Responsable: Mauricio Sobarzo 

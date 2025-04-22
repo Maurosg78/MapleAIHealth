@@ -15,14 +15,14 @@ Configurar la integración con bases de datos médicas (PubMed y Cochrane).
 - [x] Implementar funciones de búsqueda básicas
 - [x] Configurar manejo de credenciales
 - [x] Validar respuestas API
-- [ ] Documentar endpoints disponibles
+- [x] Documentar endpoints disponibles
 
 ### Criterios de Aceptación
 - [x] Conexión estable con PubMed API
 - [x] Búsquedas funcionales
 - [x] Manejo adecuado de errores
-- [ ] Documentación completa
+- [x] Documentación completa
 
 _Sprint: Sprint 1: MVP Core - Infraestructura y Sistema Base_
 _Fecha estimada: 5/5/2025_
-_Progreso: 80% completado (20/7/2023)_
+_Completado: 21/7/2023_

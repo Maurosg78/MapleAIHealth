@@ -9,7 +9,7 @@ Actualmente el proyecto se encuentra en la fase final del Sprint 1, con las sigu
 - ✅ Sistema completo de autenticación y autorización
 - ✅ Gestión de pacientes (CRUD completo)
 - ✅ Integración con APIs médicas (PubMed)
-- 🚧 Documentación de APIs (en progreso)
+- ✅ Documentación completa de APIs
 
 Para más detalles, consulte [Estado del Proyecto](.github/STATUS.md).
 
