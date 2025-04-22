@@ -2,7 +2,7 @@
 title: "[Sprint 1] Sistema de Gestión de Pacientes (Base)"
 labels: ["feature","core","high-priority"]
 milestone: "Sprint 1: MVP Core - Infraestructura y Sistema Base"
-assignees: []
+assignees: ["Mauricio Sobarzo"]
 ---
 
 # Sistema de Gestión de Pacientes (Base)
@@ -11,17 +11,18 @@ assignees: []
 Implementar el CRUD básico para gestión de pacientes y sus datos.
 
 ### Tareas
-- [ ] Crear modelo de paciente
-- [ ] Implementar endpoints CRUD
-- [ ] Añadir validación de datos
-- [ ] Implementar búsqueda de pacientes
-- [ ] Crear interfaz básica para gestión
+- [x] Crear modelo de paciente
+- [x] Implementar endpoints CRUD
+- [x] Añadir validación de datos
+- [x] Implementar búsqueda de pacientes
+- [x] Crear interfaz básica para gestión
 
 ### Criterios de Aceptación
-- CRUD completo de pacientes
-- Validación de datos del paciente
-- Búsqueda funcional
-- Interfaz operativa
+- [x] CRUD completo de pacientes
+- [x] Validación de datos del paciente
+- [x] Búsqueda funcional
+- [x] Interfaz operativa
 
 _Sprint: Sprint 1: MVP Core - Infraestructura y Sistema Base_
 _Fecha estimada: 5/5/2025_
+_Completado: 20/7/2023_

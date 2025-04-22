@@ -2,7 +2,7 @@
 title: "[Sprint 1] Sistema de Autenticación y Autorización"
 labels: ["security","high-priority","core"]
 milestone: "Sprint 1: MVP Core - Infraestructura y Sistema Base"
-assignees: []
+assignees: ["Mauricio Sobarzo"]
 ---
 
 # Sistema de Autenticación y Autorización
@@ -11,17 +11,18 @@ assignees: []
 Implementar un sistema seguro de autenticación y autorización para médicos y personal administrativo.
 
 ### Tareas
-- [ ] Configurar autenticación con JWT
-- [ ] Implementar roles de usuario (médico, admin)
-- [ ] Crear endpoints protegidos
-- [ ] Implementar recuperación de contraseña
-- [ ] Añadir validación de sesiones
+- [x] Configurar autenticación con JWT
+- [x] Implementar roles de usuario (médico, admin)
+- [x] Crear endpoints protegidos
+- [x] Implementar recuperación de contraseña
+- [x] Añadir validación de sesiones
 
 ### Criterios de Aceptación
-- Sistema de login funcional
-- Protección de rutas según rol
-- Tokens JWT seguros
-- Proceso de recuperación de contraseña operativo
+- [x] Sistema de login funcional
+- [x] Protección de rutas según rol
+- [x] Tokens JWT seguros
+- [x] Proceso de recuperación de contraseña operativo
 
 _Sprint: Sprint 1: MVP Core - Infraestructura y Sistema Base_
 _Fecha estimada: 5/5/2025_
+_Completado: 20/7/2023_

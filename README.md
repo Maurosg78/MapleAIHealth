@@ -1,106 +1,61 @@
 # MapleAI Health
 
-## Descripción
+Sistema integrado de gestión médica con asistencia de IA para profesionales de la salud.
 
-MapleAI Health es una plataforma inteligente para profesionales de la salud que combina un sistema de registro médico electrónico (EMR) con asistencia de IA para toma de decisiones clínicas basadas en evidencia.
+## Estado del Proyecto
+
+Actualmente el proyecto se encuentra en la fase final del Sprint 1, con las siguientes funcionalidades disponibles:
+
+- ✅ Sistema completo de autenticación y autorización
+- ✅ Gestión de pacientes (CRUD completo)
+- ✅ Integración con APIs médicas (PubMed)
+- 🚧 Documentación de APIs (en progreso)
+
+Para más detalles, consulte [Estado del Proyecto](.github/STATUS.md).
+
+## Características
+
+### Implementadas
+
+- **Autenticación Segura**: Sistema de login/registro con soporte JWT
+- **Recuperación de Contraseña**: Flujo completo para restablecer contraseñas olvidadas
+- **Gestión de Pacientes**: CRUD completo con búsqueda avanzada y filtros
+- **Consumo de APIs Médicas**: Integración con PubMed para acceso a evidencia científica
+- **Roles de Usuario**: Sistema de permisos con múltiples roles (médico, admin)
+
+### Próximas Versiones
+
+- Dashboard clínico con visualización de datos relevantes
+- Asistente IA para apoyo en decisiones clínicas
+- Registro de interacciones para análisis y mejora continua
 
 ## Instalación
 
-1. Clona el repositorio:
+```bash
+# Clonar el repositorio
+git clone https://github.com/Maurosg78/MapleAIHealth.git
 
-    ```bash
-    git clone https://github.com/Maurosg78/MapleAIHealth.git
-    cd MapleAIHealth
-    ```
+# Navegar al directorio
+cd MapleAIHealth
 
-2. Instala las dependencias:
-    ```bash
-    npm install
-    ```
+# Instalar dependencias
+npm install
 
-## MVP: Reorganización del Proyecto
+# Iniciar el servidor de desarrollo
+npm run dev
+```
 
-Para la implementación del MVP se ha reorganizado el proyecto en tres sprints secuenciales:
+## Tecnologías Utilizadas
 
-1. **Sprint 1: MVP Core** - Infraestructura base y seguridad
-2. **Sprint 2: MVP Clínico** - Gestión de evidencia médica
-3. **Sprint 3: MVP Asistente** - IA y experiencia de usuario
+- **Frontend**: React, TypeScript, Material UI
+- **Autenticación**: JWT, OAuth 2.0
+- **APIs**: PubMed
+- **Caché**: React Query
 
-Para más detalles, consulta [MVP_README.md](./MVP_README.md).
+## Contribuir
 
-### Configuración del Script de Reorganización
-
-Para ejecutar el script que reorganiza los issues y sprints en GitHub:
-
-1. Crea un token de acceso personal de GitHub con permisos de repo
-2. Crea un archivo `.env` en la raíz del proyecto:
-   ```
-   GITHUB_TOKEN=tu_token_de_github
-   ```
-3. Ejecuta el script:
-   ```bash
-   node scripts/reorganizeMVPSprint.js
-   ```
-
-## Configuración de ESLint y Prettier
-
-Este proyecto utiliza ESLint y Prettier para mantener un código limpio y consistente. Asegúrate de tener las siguientes extensiones instaladas en tu editor:
-
-- ESLint
-- Prettier
-
-### Scripts
-
-- **Desarrollo**: Para iniciar el servidor de desarrollo:
-    ```bash
-    npm run dev
-    ```
-
-- **Lint**: Para verificar problemas de código:
-    ```bash
-    npm run lint
-    ```
-
-- **Format**: Para formatear el código:
-    ```bash
-    npm run format
-    ```
-
-- **Test**: Para ejecutar las pruebas:
-    ```bash
-    npm run test
-    ```
-
-## Estructura del Proyecto
-
-- `src/`: Contiene el código fuente de la aplicación.
-    - `components/`: Componentes reutilizables.
-    - `services/`: Servicios para manejar la lógica de negocio.
-    - `hooks/`: Hooks personalizados.
-    - `pages/`: Páginas de la aplicación.
-    - `types/`: Tipos TypeScript utilizados en la aplicación.
-    - `config/`: Configuración de la aplicación.
-
-## APIs Externas
-
-El proyecto utiliza las siguientes APIs externas:
-
-- **PubMed**: Para búsqueda de evidencia médica científica
-- **Cochrane Library**: Para acceso a revisiones sistemáticas
-- **MongoDB**: Para almacenamiento de datos
-- **Elasticsearch**: Para búsqueda eficiente
-
-## Contribución
-
-Si deseas contribuir a este proyecto, por favor sigue estos pasos:
-
-1. Revisa los issues abiertos o crea uno nuevo.
-2. Haz un fork del repositorio.
-3. Crea una rama específica para tu contribución (`git checkout -b feature/nueva-funcionalidad`).
-4. Realiza tus cambios siguiendo los estándares de código del proyecto.
-5. Ejecuta las pruebas y asegúrate de que pasan.
-6. Crea un Pull Request con una descripción clara de los cambios.
+Si desea contribuir, consulte nuestras [guías de contribución](CONTRIBUTING.md) y revise los issues abiertos en [nuestro tablero de proyecto](https://github.com/users/Maurosg78/projects/2).
 
 ## Licencia
 
-Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.
+Este proyecto está licenciado bajo la Licencia MIT - vea el archivo [LICENSE](LICENSE) para más detalles.
