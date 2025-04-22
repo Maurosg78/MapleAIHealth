@@ -23,63 +23,18 @@ jobs:
     steps:
       - name: Add to Project
         id: add-to-project
-        uses: actions/github-script@v6
+        uses: actions/add-to-project@v0.4.1
         with:
+          project-url: ${{ env.PROJECT_URL }}
           github-token: ${{ secrets.MAPLE_HEALTH_TOKEN }}
-          script: |
-            const issue_number = context.payload.issue?.number || context.payload.pull_request?.number;
-            if (!issue_number) {
-              console.log('No issue or PR number found');
-              return;
-            }
-            
-            const projectId = '${{ env.PROJECT_ID }}';
-            console.log(`Adding issue/PR #${issue_number} to project ${projectId}`);
-            
-            try {
-              // Get the node ID of the issue or PR
-              let contentNodeId;
-              if (context.payload.issue) {
-                const issue = await github.rest.issues.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issue_number
-                });
-                contentNodeId = issue.data.node_id;
-              } else {
-                const pr = await github.rest.pulls.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: issue_number
-                });
-                contentNodeId = pr.data.node_id;
-              }
-              
-              // Add the item to the project
-              const addToProjectMutation = `
-                mutation($projectId: ID!, $contentId: ID!) {
-                  addProjectV2ItemById(input: {
-                    projectId: $projectId,
-                    contentId: $contentId
-                  }) {
-                    item {
-                      id
-                    }
-                  }
-                }
-              `;
-              
-              const result = await github.graphql(addToProjectMutation, {
-                projectId: projectId,
-                contentId: contentNodeId
-              });
-              
-              console.log(`Successfully added to project, item ID: ${result.addProjectV2ItemById.item.id}`);
-            } catch (error) {
-              console.log(`Error adding to project: ${error}`);
-            }
+      
+      - name: Log project data
+        if: steps.add-to-project.outputs.itemId
+        run: |
+          echo "Issue/PR added to project"
+          echo "Item ID: ${{ steps.add-to-project.outputs.itemId }}"
           
-  project_automation:
+  update_project_status:
     runs-on: ubuntu-latest
     needs: add_to_project
     steps:
