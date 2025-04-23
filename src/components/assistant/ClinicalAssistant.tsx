@@ -1,34 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Box, 
-  Paper, 
-  Typography, 
-  IconButton, 
-  Tabs, 
-  Tab, 
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Chip,
-  Tooltip,
-  CircularProgress
-} from '@mui/material';
-import {
-  LightBulbIcon,
-  XIcon,
-  DocumentTextIcon,
-  SparklesIcon,
-  ClipboardCheckIcon,
-  ExclamationIcon,
-  ClockIcon
-} from '@heroicons/react/outline';
-import { clinicalAIService } from '../../services/ai/ClinicalAIService';
-import { AIAssistantChat } from './AIAssistantChat';
-import { MedicalSpecialty } from '../../services/ai/types';
+import { Box, Paper, Typography, IconButton, Tabs, Tab, List, ListItem, ListItemText, ListItemIcon, Chip, CircularProgress } from '@mui/material';;;;;
+import { LightBulbIcon, XIcon, DocumentTextIcon, SparklesIcon, ClipboardCheckIcon, ExclamationIcon, ClockIcon } from '@heroicons/react/outline';;;;;
+import { clinicalAIService } from '../../services/ai/ClinicalAIService';;;;;
+import { AIAssistantChat } from './AIAssistantChat';;;;;
+import { MedicalSpecialty } from '../../services/ai/types';;;;;
 
 interface ClinicalAssistantProps {
-  soapData: any;
+  soapData: unknown;
   specialty: MedicalSpecialty;
   activeSection: string;
   patientId: string;
@@ -84,13 +62,13 @@ export const ClinicalAssistant: React.FC<ClinicalAssistantProps> = ({
     }
   }, [isExpanded, loadSuggestions]);
 
-  const handleSuggestionClick = (suggestion: Suggestion) => {
+  const handleSuggestionClick = (suggestion: Suggestion): void => {
     if (suggestion.section && suggestion.field && onFieldFocus) {
       onFieldFocus(suggestion.section, suggestion.field);
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority: string): void => {
     switch (priority) {
       case 'high':
         return 'error';
@@ -101,7 +79,7 @@ export const ClinicalAssistant: React.FC<ClinicalAssistantProps> = ({
     }
   };
 
-  const getIconForType = (type: string) => {
+  const getIconForType = (type: string): void => {
     switch (type) {
       case 'clinical':
         return <SparklesIcon className="h-5 w-5" />;

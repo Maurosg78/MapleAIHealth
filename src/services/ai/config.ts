@@ -1,4 +1,4 @@
-import { AgentConfig, LLMProviderType, AgentExpertiseLevel, MedicalSpecialty } from './types';
+import { AgentConfig, LLMProviderType, AgentExpertiseLevel, MedicalSpecialty } from './types';;;;;
 
 /**
  * Prompts del sistema para diferentes especialidades

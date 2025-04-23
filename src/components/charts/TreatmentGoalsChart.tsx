@@ -1,17 +1,6 @@
 import React from 'react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  ReferenceLine,
-  Cell
-} from 'recharts';
-import { Box, Typography } from '@mui/material';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';;;;;
+import { Box, Typography } from '@mui/material';;;;;
 
 export interface GoalData {
   name: string;
@@ -81,7 +70,7 @@ export const TreatmentGoalsChart: React.FC<TreatmentGoalsChartProps> = ({
   showLegend = true,
 }) => {
   // Colores para las barras
-  const getBarColor = (goalData: GoalData) => {
+  const getBarColor = (goalData: GoalData): void => {
     // Si el valor actual es mayor o igual al objetivo, verde
     if (goalData.currentValue >= goalData.targetValue) {
       return '#10b981'; // Verde

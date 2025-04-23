@@ -1,16 +1,6 @@
 import React from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  ReferenceLine
-} from 'recharts';
-import { Box, Typography } from '@mui/material';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';;;;;
+import { Box, Typography } from '@mui/material';;;;;
 
 interface MovementData {
   date: string;
@@ -111,7 +101,7 @@ export const ROMProgressChart: React.FC<ROMProgressChartProps> = ({
               .map((movement, index) => (
                 <ReferenceLine
                   key={`ref-${index}-max`}
-                  y={movement.normalRange![1]}
+                  y={movement.normalRange ?? undefined[1]}
                   stroke={movement.color}
                   strokeDasharray="3 3"
                   label={`Máx. Normal ${movement.name}`}

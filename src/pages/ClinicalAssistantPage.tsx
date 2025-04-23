@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { MissingDataAlert } from '../components/MissingDataAlert';
-import { DataRequestForm } from '../components/DataRequestForm';
-import { LegalProtectionPanel } from '../components/LegalProtectionPanel';
-import { ConversationalAssistant } from '../components/ConversationalAssistant';
+import { MissingDataAlert } from '../components/MissingDataAlert';;;;;
+import { DataRequestForm } from '../components/DataRequestForm';;;;;
+import { LegalProtectionPanel } from '../components/LegalProtectionPanel';;;;;
+import { ConversationalAssistant } from '../components/ConversationalAssistant';;;;;
 import clinicalBlindSpotService, { VerificationRequest, VerificationResponse } from '../services/ClinicalBlindSpotService';
 import patientStatusService from '../services/PatientStatusService';
 
@@ -109,17 +109,17 @@ const ClinicalAssistantPage: React.FC = () => {
   }, [clinicalCase]);
   
   // Manejadores de eventos
-  const handleRequestData = () => {
+  const handleRequestData = (): void => {
     setShowDataRequestForm(true);
     setInterfaceMode('form');
   };
   
-  const handleFormCancel = () => {
+  const handleFormCancel = (): void => {
     setShowDataRequestForm(false);
     setInterfaceMode('conversational');
   };
   
-  const handleUpdateCase = (field: string, value: string) => {
+  const handleUpdateCase = (field: string, value: string): void => {
     // Actualizar el caso clínico cuando se recibe información del asistente conversacional
     const updatedCase = { ...clinicalCase };
     
@@ -189,7 +189,7 @@ const ClinicalAssistantPage: React.FC = () => {
     setClinicalCase(updatedCase);
   };
   
-  const handleFormSubmit = (formData: Record<string, string>) => {
+  const handleFormSubmit = (formData: Record<string, string>): void => {
     // Actualizar el caso clínico con los datos proporcionados
     const updatedCase = { ...clinicalCase };
     
@@ -203,7 +203,7 @@ const ClinicalAssistantPage: React.FC = () => {
     setInterfaceMode('conversational');
   };
   
-  const handleAddRecommendedFields = (fields: string[]) => {
+  const handleAddRecommendedFields = (fields: string[]): void => {
     setMissingFields(fields);
     setShowDataRequestForm(true);
     setInterfaceMode('form');
@@ -234,7 +234,7 @@ const ClinicalAssistantPage: React.FC = () => {
   };
   
   // Función para cambiar entre interfaces
-  const toggleInterfaceMode = () => {
+  const toggleInterfaceMode = (): void => {
     if (interfaceMode === 'conversational') {
       setInterfaceMode('form');
       setShowDataRequestForm(true);

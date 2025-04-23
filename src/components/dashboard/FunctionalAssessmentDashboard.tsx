@@ -1,20 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  CardContent, 
-  CardHeader,
-  Tabs,
-  Tab,
-  Paper
-} from '@mui/material';
+import { Box, Typography, Card, CardContent, CardHeader, Tabs, Tab, Paper } from '@mui/material';;;;;
 
 // Importación de componentes de gráficos
-import { FunctionalityChart, FunctionalityData } from '../charts/FunctionalityChart';
-import { TreatmentGoalsChart, GoalData } from '../charts/TreatmentGoalsChart';
-import { PainEvolutionChart } from '../charts/PainEvolutionChart';
-import { ROMProgressChart } from '../charts/ROMProgressChart';
+import { FunctionalityChart, FunctionalityData } from '../charts/FunctionalityChart';;;;;
+import { TreatmentGoalsChart, GoalData } from '../charts/TreatmentGoalsChart';;;;;
+import { PainEvolutionChart } from '../charts/PainEvolutionChart';;;;;
+import { ROMProgressChart } from '../charts/ROMProgressChart';;;;;
 
 interface FunctionalAssessmentDashboardProps {
   patientName: string;
@@ -62,7 +53,7 @@ export const FunctionalAssessmentDashboard: React.FC<FunctionalAssessmentDashboa
     ? Math.round((summary.completedGoals / summary.totalGoals) * 100) 
     : 0;
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number): void => {
     setCurrentTab(newValue);
   };
 

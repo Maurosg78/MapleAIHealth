@@ -30,12 +30,12 @@ export const DataRequestForm: React.FC<DataRequestFormProps> = ({
   const [formData, setFormData] = useState(initialFormData);
   const formId = 'clinical-data-request-form';
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     onSubmit(formData);
   };

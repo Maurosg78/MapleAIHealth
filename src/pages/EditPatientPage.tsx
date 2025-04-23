@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Paper, CircularProgress, Alert } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Container, Typography, Box, Paper, CircularProgress, Alert } from '@mui/material';;;;;
+import { useNavigate, useParams } from 'react-router-dom';;;;;
 import PatientForm from '../components/patients/PatientForm';
-import { Patient } from '../models/Patient';
-import { PatientService } from '../services/PatientService';
+import { Patient } from '../models/Patient';;;;;
+import { PatientService } from '../services/PatientService';;;;;
 
 const EditPatientPage: React.FC = () => {
   const navigate = useNavigate();
@@ -40,11 +40,11 @@ const EditPatientPage: React.FC = () => {
     fetchPatient();
   }, [id]);
   
-  const handleSave = (patient: Patient) => {
+  const handleSave = (patient: Patient): void => {
     navigate(`/pacientes/${patient.id}`);
   };
   
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     navigate(`/pacientes/${id}`);
   };
   

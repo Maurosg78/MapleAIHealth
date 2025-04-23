@@ -1,38 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  CircularProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip
-} from '@mui/material';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
-} from 'recharts';
-import { interactionService, InteractionType } from '../../services/interactions/InteractionService';
+import { Box, Paper, Typography, Grid, Card, CardContent, Select, MenuItem, FormControl, InputLabel, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';;;;;
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';;;;;
+import { interactionService, InteractionType } from '../../services/interactions/InteractionService';;;;;
 
 interface InteractionStats {
   totalInteractions: number;
@@ -51,7 +20,7 @@ export const InteractionsDashboard: React.FC = () => {
 
   useEffect(() => {
     loadStats();
-  }, [timeframe]);
+  }, [timeframe, loadStats]);
 
   const loadStats = async () => {
     try {
@@ -67,7 +36,7 @@ export const InteractionsDashboard: React.FC = () => {
     }
   };
 
-  const formatModuleData = () => {
+  const formatModuleData = (): void => {
     if (!stats) return [];
     return Object.entries(stats.moduleBreakdown).map(([name, value]) => ({
       name,
@@ -75,7 +44,7 @@ export const InteractionsDashboard: React.FC = () => {
     }));
   };
 
-  const formatTypeData = () => {
+  const formatTypeData = (): void => {
     if (!stats) return [];
     return Object.entries(stats.typeBreakdown).map(([name, value]) => ({
       name,

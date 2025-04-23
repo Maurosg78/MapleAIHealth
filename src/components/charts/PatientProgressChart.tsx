@@ -1,16 +1,5 @@
 import React from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  AreaChart,
-  Area
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';;;;;
 
 export interface MeasurementData {
   date: string;
@@ -56,7 +45,7 @@ const PatientProgressChart: React.FC<PatientProgressChartProps> = ({
   className = ''
 }) => {
   // Función para formatear fechas en el eje X
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string): void => {
     try {
       const date = new Date(dateStr);
       return `${date.getDate()}/${date.getMonth() + 1}`;
@@ -73,13 +62,13 @@ const PatientProgressChart: React.FC<PatientProgressChartProps> = ({
   }
 
   // Función para formatear valores en el tooltip
-  const formatTooltipValue = (value: number, name: string, entry: TooltipEntry) => {
+  const formatTooltipValue = (value: number, name: string, entry: TooltipEntry): void => {
     const unit = entry.payload?.unit || '';
     return [`${value} ${unit}`, name];
   };
 
   // Renderizar el tipo de gráfico seleccionado
-  const renderChart = () => {
+  const renderChart = (): void => {
     if (chartType === 'area') {
       return (
         <AreaChart

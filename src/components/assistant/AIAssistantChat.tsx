@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, TextField, Button, Typography, Paper, CircularProgress, IconButton, Chip } from '@mui/material';
+import { Box, TextField, Button, Typography, Paper, CircularProgress, IconButton, Chip } from '@mui/material';;;;;
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import { clinicalAIService } from '../../services/ai/ClinicalAIService';
-import { MedicalSpecialty } from '../../services/ai/types';
+import { clinicalAIService } from '../../services/ai/ClinicalAIService';;;;;
+import { MedicalSpecialty } from '../../services/ai/types';;;;;
 
 // Definir tipos de mensajes para el chat
 interface ChatMessage {
@@ -96,11 +96,11 @@ export const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
     }
   };
 
-  const handleClearConversation = () => {
+  const handleClearConversation = (): void => {
     setMessages([]);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent): void => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();

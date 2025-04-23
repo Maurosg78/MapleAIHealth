@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { PatientProgressContainer } from './PatientProgressContainer';
-import { RangeOfMotionData } from '../../../types/clinical';
+import { useState, useEffect } from 'react';;;;;
+import { PatientProgressContainer } from './PatientProgressContainer';;;;;
+import { RangeOfMotionData } from '../../../types/clinical';;;;;
 
 // Definir la interfaz para los datos de progreso
 interface ProgressDataItem {
@@ -48,7 +48,7 @@ const generateSampleProgressData = (): ProgressDataItem[] => {
   ];
 
   // Función para generar valor de progreso simulando una mejora gradual
-  const generateProgressiveValue = (initialValue: number, maxValue: number, index: number) => {
+  const generateProgressiveValue = (initialValue: number, maxValue: number, index: number): void => {
     // Calculamos un incremento que tienda a acercarse al valor normal
     const maxIncrement = (maxValue - initialValue) / (dates.length - 1);
     // Añadimos algo de aleatoriedad al incremento
@@ -57,7 +57,7 @@ const generateSampleProgressData = (): ProgressDataItem[] => {
   };
 
   // Función para generar datos de fuerza muscular (valores 0-5)
-  const generateStrengthValue = (initialValue: number, maxValue: number, index: number) => {
+  const generateStrengthValue = (initialValue: number, maxValue: number, index: number): void => {
     // Similar a la función anterior pero adaptada para escala 0-5
     const maxIncrement = (maxValue - initialValue) / (dates.length - 1);
     const increment = maxIncrement * (0.7 + Math.random() * 0.6);
@@ -132,7 +132,7 @@ const generateSampleProgressData = (): ProgressDataItem[] => {
   });
 };
 
-export const ProgressPage = () => {
+export const ProgressPage = (): void => {
   const [progressData, setProgressData] = useState<ProgressDataItem[]>([]);
   const [loading, setLoading] = useState(true);
 

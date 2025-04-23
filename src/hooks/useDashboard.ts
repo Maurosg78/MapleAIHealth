@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { DashboardMetrics } from '@/types/dashboard';
-import { getDashboardMetrics } from '@/services/core/dashboard';
+import { useState, useEffect } from 'react';;;;;
+import { DashboardMetrics } from '@/types/dashboard';;;;;
+import { getDashboardMetrics } from '@/services/core/dashboard';;;;;
 
-export const useDashboard = () => {
+export const useDashboard = (): void => {
     const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchMetrics = async () => {
+        const fetchMetrics = async (): Promise<unknown> => {
             try {
                 setIsLoading(true);
                 const data = await getDashboardMetrics();

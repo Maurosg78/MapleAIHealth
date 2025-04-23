@@ -1,4 +1,4 @@
-import { SpecialtyType, SubjectiveData, ObjectiveData, AssessmentData, PlanData } from '../../../../types/clinical';
+import { SpecialtyType, SubjectiveData, ObjectiveData, AssessmentData, PlanData } from '../../../../types/clinical';;;;;
 
 /**
  * Configuración de campos requeridos para los componentes SOAP

@@ -1,10 +1,10 @@
-import { Activity } from '@/types/dashboard';
+import { Activity } from '@/types/dashboard';;;;;
 
 interface RecentActivitiesProps {
     activities: Activity[];
 }
 
-export const RecentActivities = ({ activities }: RecentActivitiesProps) => {
+export const RecentActivities = ({ activities }: RecentActivitiesProps): void => {
     return (
         <div className="bg-white shadow rounded-lg">
             <div className="px-4 py-5 sm:px-6">

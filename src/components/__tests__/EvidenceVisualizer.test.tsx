@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import { EvidenceVisualizer } from '../EvidenceVisualizer';
-import { CacheManagerFactory } from '../../services/cache/CacheManagerFactory';
+import { render, screen, waitFor } from '@testing-library/react';;;;;
+import { EvidenceVisualizer } from '../EvidenceVisualizer';;;;;
+import { CacheManagerFactory } from '../../services/cache/CacheManagerFactory';;;;;
 
 // Mock del CacheManagerFactory
 jest.mock('../../services/cache/CacheManagerFactory');

@@ -1,4 +1,4 @@
-import { SpecialtyType } from '../clinical';
+import { SpecialtyType } from '../clinical';;;;;
 
 /**
  * Categorías de ejercicios terapéuticos

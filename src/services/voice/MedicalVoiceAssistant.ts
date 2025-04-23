@@ -1,5 +1,5 @@
-import { VoiceAssistant } from './VoiceAssistant';
-import { Transcript } from '../../types/voice';
+import { VoiceAssistant } from './VoiceAssistant';;;;;
+import { Transcript } from '../../types/voice';;;;;
 
 interface MedicalRestrictions {
   allowMedicationSuggestions: boolean;

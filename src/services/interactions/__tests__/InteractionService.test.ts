@@ -1,5 +1,5 @@
-import { interactionService } from '../InteractionService';
-import { User } from '../../../models/User';
+import { interactionService } from '../InteractionService';;;;;
+import { User } from '../../../models/User';;;;;
 
 describe('InteractionService', () => {
   const mockUser: User = {

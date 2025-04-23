@@ -19,7 +19,7 @@ export class ApiClient {
     return headers;
   }
 
-  async post<T>(endpoint: string, data: any): Promise<T> {
+  async post<T>(endpoint: string, data: unknown): Promise<T> {
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         method: 'POST',
@@ -28,7 +28,7 @@ export class ApiClient {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error ?? undefined status: ${response.status}`);
       }
 
       return await response.json();
@@ -46,7 +46,7 @@ export class ApiClient {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error ?? undefined status: ${response.status}`);
       }
 
       return await response.json();
@@ -56,7 +56,7 @@ export class ApiClient {
     }
   }
 
-  async put<T>(endpoint: string, data: any): Promise<T> {
+  async put<T>(endpoint: string, data: unknown): Promise<T> {
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         method: 'PUT',
@@ -65,7 +65,7 @@ export class ApiClient {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error ?? undefined status: ${response.status}`);
       }
 
       return await response.json();
@@ -83,7 +83,7 @@ export class ApiClient {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error ?? undefined status: ${response.status}`);
       }
 
       return await response.json();

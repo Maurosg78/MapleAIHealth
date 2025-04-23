@@ -1,7 +1,7 @@
-import { EvidenceSearchService } from '../EvidenceSearchService';
-import { config } from '../../config/config';
-import { MongoClient } from 'mongodb';
-import { Client } from '@elastic/elasticsearch';
+import { EvidenceSearchService } from '../EvidenceSearchService';;;;;
+import { config } from '../../config/config';;;;;
+import { MongoClient } from 'mongodb';;;;;
+import { Client } from '@elastic/elasticsearch';;;;;
 
 describe('EvidenceSearchService Integration Tests', () => {
   let searchService: EvidenceSearchService;

@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
-import { PatientROMProgress } from './PatientROMProgress';
-import { StrengthProgressChart } from './StrengthProgressChart';
-import { BeforeAfterComparison } from './BeforeAfterComparison';
-import { RangeOfMotionData, StrengthMeasurementData } from '../../../types/clinical';
+import { useState, useMemo } from 'react';;;;;
+import { PatientROMProgress } from './PatientROMProgress';;;;;
+import { StrengthProgressChart } from './StrengthProgressChart';;;;;
+import { BeforeAfterComparison } from './BeforeAfterComparison';;;;;
+import { RangeOfMotionData, StrengthMeasurementData } from '../../../types/clinical';;;;;
 
 interface PatientProgressContainerProps {
   patientId: string;

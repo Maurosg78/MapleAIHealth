@@ -12,7 +12,7 @@ export const PatientExample: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
 
   // Función para manejar la finalización del guardado
-  const handleSaveComplete = (valid: boolean) => {
+  const handleSaveComplete = (valid: boolean): void => {
     setSaving(true);
     
     // Simulamos una operación de guardado
@@ -50,7 +50,7 @@ export const PatientExample: React.FC = () => {
       
       {saveSuccess === true && (
         <div className="mb-4 p-4 bg-green-50 text-green-700 rounded-md">
-          ¡Datos guardados correctamente!
+          ¡Datos guardados correctamente ?? undefined
         </div>
       )}
       

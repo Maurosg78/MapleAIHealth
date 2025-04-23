@@ -19,7 +19,7 @@ export interface AIContext {
   currentSection: string;
   patientContext?: {
     patientId: string;
-    patientData?: any;
+    patientData?: unknown;
   };
 }
 

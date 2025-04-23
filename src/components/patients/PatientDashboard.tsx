@@ -1,14 +1,5 @@
-import { useState } from 'react';
-import { 
-    UserAddIcon, 
-    SearchIcon, 
-    FilterIcon,
-    DocumentTextIcon,
-    CalendarIcon,
-    ClockIcon,
-    ChartBarIcon,
-    AnnotationIcon
-} from '@heroicons/react/outline';
+import { useState } from 'react';;;;;
+import { UserAddIcon, SearchIcon, FilterIcon, DocumentTextIcon, CalendarIcon, ClockIcon, ChartBarIcon, AnnotationIcon } from '@heroicons/react/outline';;;;;
 
 // Tipos para los datos de pacientes
 interface Patient {
@@ -82,7 +73,7 @@ const mockPatients: Patient[] = [
 ];
 
 // Componente para el panel de resumen rápido
-const QuickActions = () => {
+const QuickActions = (): void => {
     return (
         <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
             <div className="flex justify-between items-center mb-4">
@@ -118,8 +109,8 @@ const QuickActions = () => {
 };
 
 // Componente para la lista de pacientes
-const PatientList = ({ patients }: { patients: Patient[] }) => {
-    const getRiskBadgeColor = (risk: Patient['risk']) => {
+const PatientList = ({ patients }: { patients: Patient[] }): void => {
+    const getRiskBadgeColor = (risk: Patient['risk']): void => {
         switch (risk) {
             case 'low':
                 return 'bg-green-100 text-green-800';
@@ -132,7 +123,7 @@ const PatientList = ({ patients }: { patients: Patient[] }) => {
         }
     };
     
-    const getStatusColor = (status: Patient['status']) => {
+    const getStatusColor = (status: Patient['status']): void => {
         switch (status) {
             case 'active':
                 return 'bg-green-500';
@@ -335,7 +326,7 @@ const PatientList = ({ patients }: { patients: Patient[] }) => {
 };
 
 // Componente principal del dashboard de pacientes
-export default function PatientDashboard() {
+export default function PatientDashboard(): void {
     const [patients] = useState<Patient[]>(mockPatients);
     
     return (

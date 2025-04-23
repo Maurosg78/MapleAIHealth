@@ -1,30 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  Typography, 
-  Box, 
-  Chip,
-  IconButton,
-  Tooltip,
-  useTheme,
-  alpha,
-  Collapse
-} from '@mui/material';
-import { 
-  TrendingUp as TrendingUpIcon, 
-  TrendingDown as TrendingDownIcon, 
-  TrendingFlat as TrendingFlatIcon,
-  InfoOutlined as InfoIcon,
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon
-} from '@mui/icons-material';
-import { PatientProgressData } from './PatientComparisonChart';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Chip, IconButton, Tooltip, useTheme, alpha, Collapse } from '@mui/material';;;;;
+import { TrendingUp as TrendingUpIcon, TrendingDown as TrendingDownIcon, TrendingFlat as TrendingFlatIcon, ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon } from '@mui/icons-material';;;;;
+import { PatientProgressData } from './PatientComparisonChart';;;;;
 
 interface MetricSummary {
   initial: number;
@@ -162,7 +139,7 @@ export const PatientComparisonTable: React.FC<PatientComparisonTableProps> = ({
   // Ordenar pacientes por mejora promedio
   const sortedPatients = [...patientsData].sort((a, b) => b.averageImprovement - a.averageImprovement);
 
-  const getTrendIcon = (trend: 'up' | 'down' | 'flat', desiredTrend: 'up' | 'down') => {
+  const getTrendIcon = (trend: 'up' | 'down' | 'flat', desiredTrend: 'up' | 'down'): void => {
     const isPositive = 
       (trend === 'up' && desiredTrend === 'up') || 
       (trend === 'down' && desiredTrend === 'down');
@@ -180,16 +157,16 @@ export const PatientComparisonTable: React.FC<PatientComparisonTableProps> = ({
     return <TrendingFlatIcon sx={{ color }} />;
   };
 
-  const formatValue = (value: number, unit: string) => {
+  const formatValue = (value: number, unit: string): void => {
     return `${value.toFixed(1)}${unit}`;
   };
 
-  const formatPercent = (value: number) => {
+  const formatPercent = (value: number): void => {
     const formatted = value.toFixed(1);
     return value > 0 ? `+${formatted}%` : `${formatted}%`;
   };
 
-  const getStatusChip = (percentChange: number) => {
+  const getStatusChip = (percentChange: number): void => {
     let color: 'success' | 'warning' | 'error' | 'default' = 'default';
     let label = 'Sin cambios';
     
@@ -216,7 +193,7 @@ export const PatientComparisonTable: React.FC<PatientComparisonTableProps> = ({
     return <Chip size="small" color={color} label={label} />;
   };
 
-  const toggleExpand = (patientId: string) => {
+  const toggleExpand = (patientId: string): void => {
     setExpandedPatient(expandedPatient === patientId ? null : patientId);
   };
 

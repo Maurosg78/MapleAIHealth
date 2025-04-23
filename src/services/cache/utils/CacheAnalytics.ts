@@ -1,4 +1,4 @@
-import { CacheConfig } from '../types';
+import { CacheConfig } from '../types';;;;;
 
 // Interfaz para estadísticas de la caché
 export interface CacheStats {
@@ -43,7 +43,7 @@ export class CacheAnalytics {
   private static instance: CacheAnalytics;
   private metricsHistory: Map<string, CacheMetrics[]> = new Map();
   
-  private constructor() {}
+  private constructor() { super(); }
   
   public static getInstance(): CacheAnalytics {
     if (!CacheAnalytics.instance) {

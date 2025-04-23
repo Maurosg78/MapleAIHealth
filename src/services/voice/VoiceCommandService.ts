@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'events';;;;;
 
 /**
  * Tipos de comandos de voz soportados por el sistema

@@ -1,17 +1,12 @@
-import { Logger } from '../utils/logger';
-import { 
-  SoapData, 
-  SpecialtyType, 
-  SOAPSection,
-  EvidenceLevel,
-  ClinicalRelevance,
-  AISuggestion
-} from '../types/clinical.types';
-import { aiHealthConfig, AIHealthServiceConfig } from '../config/aiHealthConfig';
-import { CacheManager } from './cache/CacheManager';
-import { CacheStats } from './cache/types';
-import { clinicalRules, ClinicalRule } from './clinicalRules';
-import { PerformanceMonitor } from './performance/PerformanceMonitor';
+import { createLogger } from '../../utils/logger';;;;
+const logger = createLogger('AIHealthService.ts');
+import { Logger } from '../utils/logger';;;;;
+import { SoapData, SpecialtyType, SOAPSection, EvidenceLevel, ClinicalRelevance, AISuggestion } from '../types/clinical.types';;;;;
+import { aiHealthConfig, AIHealthServiceConfig } from '../config/aiHealthConfig';;;;;
+import { CacheManager } from './cache/CacheManager';;;;;
+import { CacheStats } from './cache/types';;;;;
+import { clinicalRules, ClinicalRule } from './clinicalRules';;;;;
+import { PerformanceMonitor } from './performance/PerformanceMonitor';;;;;
 
 /**
  * Tipos de sugerencias que puede generar la IA
@@ -80,7 +75,7 @@ export class AIHealthService {
 
     // Configuración inicial de logging
     if (config.logging.level === 'debug') {
-      console.debug('[AIHealthService] Inicializado con modo:', config.mode);
+      logger.debug('[AIHealthService] Inicializado con modo:', config.mode);
     }
 
     this.logger = new Logger('AIHealthService');
@@ -114,7 +109,7 @@ export class AIHealthService {
     }
     
     if (config.logging.level === 'debug') {
-      console.debug('[AIHealthService] Configuración actualizada:', config.mode);
+      logger.debug('[AIHealthService] Configuración actualizada:', config.mode);
     }
   }
 
@@ -142,7 +137,7 @@ export class AIHealthService {
     const cachedResponse = this.suggestionCache.get(cacheKey);
     if (cachedResponse) {
       if (this.config.logging.level === 'debug') {
-        console.debug('[AIHealthService] Respuesta obtenida de caché');
+        logger.debug('[AIHealthService] Respuesta obtenida de caché');
       }
       
       // Finalizar medición (caché hit)
@@ -623,7 +618,7 @@ export class AIHealthService {
     this.suggestionCache.clear();
     
     if (this.config.logging.level === 'debug') {
-      console.debug('[AIHealthService] Caché limpiado');
+      logger.debug('[AIHealthService] Caché limpiado');
     }
   }
 
@@ -631,7 +626,7 @@ export class AIHealthService {
     this.suggestionCache.invalidateByPatient(patientId);
     
     if (this.config.logging.level === 'debug') {
-      console.debug(`[AIHealthService] Caché invalidado para paciente ${patientId}`);
+      logger.debug(`[AIHealthService] Caché invalidado para paciente ${patientId}`);
     }
   }
 
@@ -639,7 +634,7 @@ export class AIHealthService {
     this.suggestionCache.invalidateBySection(section);
     
     if (this.config.logging.level === 'debug') {
-      console.debug(`[AIHealthService] Caché invalidado para sección ${section}`);
+      logger.debug(`[AIHealthService] Caché invalidado para sección ${section}`);
     }
   }
 
@@ -655,7 +650,7 @@ export class AIHealthService {
     // En el futuro, esta información podría enviarse a un sistema
     // de aprendizaje para mejorar las sugerencias
     if (this.config.logging.level === 'debug' || this.config.logging.level === 'info') {
-      console.log(`[AIHealthService] Feedback para sugerencia ${suggestionId}: ${isHelpful ? 'útil' : 'no útil'}`);
+      
     }
   }
 } 

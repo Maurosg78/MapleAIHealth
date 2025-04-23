@@ -14,7 +14,7 @@ export function debounce<F extends (...args: never[]) => unknown>(
   
   // Usamos una aserción de tipo porque sabemos que la firma es compatible
   const debouncedFunction = function(this: unknown, ...args: Parameters<F>): void {
-    const later = () => {
+    const later = (): void => {
       timeout = null;
       func.apply(this, args);
     };

@@ -1,4 +1,4 @@
-import { APP_CONFIG } from '../../config/constants';
+import { APP_CONFIG } from '../../config/constants';;;;;
 
 export class BaseError extends Error {
   public readonly statusCode: number;

@@ -1,9 +1,9 @@
-import { EvidenceSource } from '../../types/clinicalDashboard';
-import { ReliabilityScorer } from './scoring/ReliabilityScorer';
-import { SourceVerificationCache } from './cache/SourceVerificationCache';
-import { PubMedSource } from './sources/PubMedSource';
-import { CochraneSource } from './sources/CochraneSource';
-import { medicalConfig } from '../../config/medicalConfig';
+import { EvidenceSource } from '../../types/clinicalDashboard';;;;;
+import { ReliabilityScorer } from './scoring/ReliabilityScorer';;;;;
+import { SourceVerificationCache } from './cache/SourceVerificationCache';;;;;
+import { PubMedSource } from './sources/PubMedSource';;;;;
+import { CochraneSource } from './sources/CochraneSource';;;;;
+import { medicalConfig } from '../../config/medicalConfig';;;;;
 
 export interface VerificationResult {
   source: EvidenceSource;

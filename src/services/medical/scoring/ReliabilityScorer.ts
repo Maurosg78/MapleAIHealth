@@ -1,4 +1,4 @@
-import { EvidenceSource } from '../../../types/clinicalDashboard';
+import { EvidenceSource } from '../../../types/clinicalDashboard';;;;;
 
 export interface ScoringFactors {
   sourceType: number;

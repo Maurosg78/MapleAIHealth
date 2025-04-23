@@ -1,5 +1,5 @@
-import { Chart as ChartJS, registerables, ChartData, ChartOptions, TooltipItem } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, registerables, ChartData, ChartOptions, TooltipItem } from 'chart.js';;;;;
+import { Line } from 'react-chartjs-2';;;;;
 
 ChartJS.register(...registerables);
 
@@ -8,7 +8,7 @@ interface TrendLineChartProps {
   normalValue?: number;
 }
 
-export const TrendLineChart = ({ data, normalValue }: TrendLineChartProps) => {
+export const TrendLineChart = ({ data, normalValue }: TrendLineChartProps): void => {
   const chartData: ChartData<'line'> = {
     ...data,
     labels: data.labels || [],

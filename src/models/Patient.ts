@@ -3,7 +3,7 @@
  * Este archivo contiene todas las interfaces relacionadas con la gestión de pacientes
  */
 
-import { SpecialtyType, MeasurementUnit } from '../types/clinical';
+import { SpecialtyType, MeasurementUnit } from '../types/clinical';;;;;
 
 /**
  * Datos básicos de un paciente

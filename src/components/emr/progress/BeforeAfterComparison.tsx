@@ -1,6 +1,6 @@
 import React from 'react';
-import { RangeOfMotionData, StrengthMeasurementData } from '../../../types/clinical';
-import { ImprovementIndicator } from './ImprovementIndicator';
+import { RangeOfMotionData, StrengthMeasurementData } from '../../../types/clinical';;;;;
+import { ImprovementIndicator } from './ImprovementIndicator';;;;;
 
 interface BeforeAfterComparisonProps {
   initialDate: string;
@@ -30,7 +30,7 @@ export const BeforeAfterComparison: React.FC<BeforeAfterComparisonProps> = ({
   className
 }) => {
   // Formatear fechas para mostrar
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string): void => {
     return new Date(dateString).toLocaleDateString('es-ES', {
       day: '2-digit',
       month: '2-digit',

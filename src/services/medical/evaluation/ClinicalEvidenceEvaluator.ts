@@ -1,5 +1,5 @@
-import { ClinicalEvidence, EvidenceSource } from '../../../types/clinicalDashboard';
-import { EvidenceLevel } from '../../clinicalRules';
+import { ClinicalEvidence, EvidenceSource } from '../../../types/clinicalDashboard';;;;;
+import { EvidenceLevel } from '../../clinicalRules';;;;;
 
 export interface EvaluationCriteria {
   sourceReliability: number;  // 0-1
@@ -20,7 +20,7 @@ export interface EvaluationResult {
 export class ClinicalEvidenceEvaluator {
   private static instance: ClinicalEvidenceEvaluator;
 
-  private constructor() {}
+  private constructor() { super(); }
 
   public static getInstance(): ClinicalEvidenceEvaluator {
     if (!ClinicalEvidenceEvaluator.instance) {

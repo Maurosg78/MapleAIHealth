@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useVoiceCommands } from '../hooks/useVoiceCommands';
-import { VoiceCommandsPanel } from '../components/voice/VoiceCommandsPanel';
-import { VoiceCommand, CommandType } from '../services/voice/VoiceCommandService';
+import { useNavigate } from 'react-router-dom';;;;;
+import { useVoiceCommands } from '../hooks/useVoiceCommands';;;;;
+import { VoiceCommandsPanel } from '../components/voice/VoiceCommandsPanel';;;;;
+import { VoiceCommand, CommandType } from '../services/voice/VoiceCommandService';;;;;
 
 /**
  * Página que muestra todos los comandos de voz disponibles en la aplicación 

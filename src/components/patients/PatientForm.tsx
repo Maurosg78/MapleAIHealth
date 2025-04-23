@@ -1,25 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  Grid,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Paper,
-  Divider,
-  Alert,
-  CircularProgress,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails
-} from '@mui/material';
-import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { Patient } from '../../models/Patient';
+import { Box, TextField, Button, Typography, Grid, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Paper, Divider, Alert, CircularProgress, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';;;;;
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';;;;;
+import { Patient } from '../../models/Patient';;;;;
 import PatientService from '../../services/PatientService';
 
 interface PatientFormProps {
@@ -109,7 +91,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ patientId, onSave, onCancel }
     fetchPatient();
   }, [patientId]);
   
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     
     // Manejar campos anidados (address, emergencyContact, insuranceInfo)

@@ -1,8 +1,8 @@
-import { useCallback } from 'react';
-import { interactionService, InteractionType } from '../services/interactions/InteractionService';
-import { useAuth } from './useAuth';
+import { useCallback } from 'react';;;;;
+import { interactionService, InteractionType } from '../services/interactions/InteractionService';;;;;
+import { useAuth } from './useAuth';;;;;
 
-export const useInteractionTracking = (module: string) => {
+export const useInteractionTracking = (module: string): void => {
   const { user } = useAuth();
 
   const trackInteraction = useCallback(

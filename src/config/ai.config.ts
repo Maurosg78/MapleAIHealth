@@ -1,4 +1,4 @@
-import { MedicalSpecialty } from '../services/ai/types';
+import { MedicalSpecialty } from '../services/ai/types';;;;;
 
 interface AIConfig {
   apiKey: string;

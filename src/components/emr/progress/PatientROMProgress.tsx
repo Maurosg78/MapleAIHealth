@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
-import { RangeOfMotionData } from '../../../types/clinical';
-import { ROMProgressChart } from './ROMProgressChart';
-import { TrendLineChart } from './TrendLineChart';
+import { useState, useMemo } from 'react';;;;;
+import { RangeOfMotionData } from '../../../types/clinical';;;;;
+import { ROMProgressChart } from './ROMProgressChart';;;;;
+import { TrendLineChart } from './TrendLineChart';;;;;
 
 interface ProgressDataItem {
   date: string;
@@ -50,7 +50,7 @@ export const PatientROMProgress = ({
   }, [availableJoints, selectedJoints]);
 
   // Preparar los datos para cada articulación seleccionada
-  const prepareJointData = (jointId: string) => {
+  const prepareJointData = (jointId: string): void => {
     return progressData
       .filter(item => jointId in item.rom && (
         item.rom[jointId].active !== undefined || 
@@ -63,7 +63,7 @@ export const PatientROMProgress = ({
   };
 
   // Preparar datos para el gráfico de tendencia
-  const prepareTrendData = (jointId: string, activeMode = true) => {
+  const prepareTrendData = (jointId: string, activeMode = true): void => {
     return progressData
       .filter(item => 
         jointId in item.rom && 
@@ -81,7 +81,7 @@ export const PatientROMProgress = ({
   };
 
   // Manejar la selección/deselección de articulaciones
-  const toggleJointSelection = (jointId: string) => {
+  const toggleJointSelection = (jointId: string): void => {
     if (selectedJoints.includes(jointId)) {
       setSelectedJoints(selectedJoints.filter(id => id !== jointId));
     } else {

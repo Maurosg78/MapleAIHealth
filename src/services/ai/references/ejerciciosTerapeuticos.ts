@@ -3,7 +3,7 @@
  * Adaptados a la práctica clínica en España
  */
 
-import { SpanishTherapeuticExercise } from '../types/spanishPhysiotherapyTypes';
+import { SpanishTherapeuticExercise } from '../types/spanishPhysiotherapyTypes';;;;;
 
 /**
  * Ejercicios terapéuticos para región cervical

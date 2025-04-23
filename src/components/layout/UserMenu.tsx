@@ -1,23 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Avatar,
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  Tooltip
-} from '@mui/material';
-import {
-  AccountCircle,
-  Settings,
-  Logout,
-  Lock
-} from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '../../contexts/AuthContext';
+import { Avatar, Box, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Divider, Tooltip } from '@mui/material';;;;;
+import { AccountCircle, Settings, Logout, Lock } from '@mui/icons-material';;;;;
+import { useNavigate } from 'react-router-dom';;;;;
+import { useAuthContext } from '../../contexts/AuthContext';;;;;
 
 export const UserMenu: React.FC = () => {
   const { user, logout } = useAuthContext();
@@ -25,11 +10,11 @@ export const UserMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     setAnchorEl(null);
   };
 
@@ -43,22 +28,22 @@ export const UserMenu: React.FC = () => {
     handleClose();
   };
 
-  const handleProfile = () => {
+  const handleProfile = (): void => {
     navigate('/perfil');
     handleClose();
   };
 
-  const handleSettings = () => {
+  const handleSettings = (): void => {
     navigate('/configuracion');
     handleClose();
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = (): void => {
     navigate('/cambiar-password');
     handleClose();
   };
 
-  const getInitials = (name: string) => {
+  const getInitials = (name: string): void => {
     return name
       .split(' ')
       .map(part => part[0])

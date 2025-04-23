@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';;;;;
 import PasswordResetForm from '../components/auth/PasswordResetForm';
-import { AuthService } from '../services/auth/AuthService';
-import { Container, Box, Typography, Paper, Alert, CircularProgress } from '@mui/material';
+import { AuthService } from '../services/auth/AuthService';;;;;
+import { Container, Box, Typography, Paper, Alert, CircularProgress } from '@mui/material';;;;;
 
 const PasswordResetPage: React.FC = () => {
   const { token } = useParams<{ token: string }>();

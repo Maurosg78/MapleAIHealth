@@ -5,7 +5,7 @@ interface MetricCardProps {
     description?: string;
 }
 
-export const MetricCard = ({ title, value, icon, description }: MetricCardProps) => {
+export const MetricCard = ({ title, value, icon, description }: MetricCardProps): void => {
     return (
         <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="p-5">

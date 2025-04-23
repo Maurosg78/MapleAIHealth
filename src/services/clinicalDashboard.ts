@@ -1,13 +1,8 @@
-import { 
-  ClinicalDashboardData, 
-  ClinicalEvidence, 
-  ClinicalDashboardFilters,
-  ClinicalMetrics
-} from '../types/clinicalDashboard';
-import { CacheManager } from './cache/CacheManager';
-import { CacheMetadata, CacheStats } from './cache/types';
-import { EvidenceSearchService } from './EvidenceSearchService';
-import { config } from '../config/config';
+import { ClinicalDashboardData, ClinicalEvidence, ClinicalDashboardFilters, ClinicalMetrics } from '../types/clinicalDashboard';;;;;
+import { CacheManager } from './cache/CacheManager';;;;;
+import { CacheMetadata, CacheStats } from './cache/types';;;;;
+import { EvidenceSearchService } from './EvidenceSearchService';;;;;
+import { config } from '../config/config';;;;;
 
 export class ClinicalDashboardService {
   private static instance: ClinicalDashboardService;

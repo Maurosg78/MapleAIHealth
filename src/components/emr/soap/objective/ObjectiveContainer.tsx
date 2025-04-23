@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
-import { ObjectiveData, SpecialtyType } from '../../../../types/clinical';
-import { useForm, Controller } from 'react-hook-form';
-import { ValidationContainer } from '../validation';
-import { debounce } from '../../../../utils/debounce';
+import { useState, useEffect, useCallback } from 'react';;;;;
+import { ObjectiveData, SpecialtyType } from '../../../../types/clinical';;;;;
+import { useForm, Controller } from 'react-hook-form';;;;;
+import { ValidationContainer } from '../validation';;;;;
+import { debounce } from '../../../../utils/debounce';;;;;
 
 interface ObjectiveContainerProps {
   readonly patientId: string;
@@ -31,7 +31,7 @@ export default function ObjectiveContainer({
   const [autoValidateAfterEdit, setAutoValidateAfterEdit] = useState(false);
   
   // Configuración dinámica según especialidad
-  const getSpecialtyConfig = () => {
+  const getSpecialtyConfig = (): void => {
     switch(specialty) {
       case 'physiotherapy':
         return {
@@ -208,9 +208,9 @@ export default function ObjectiveContainer({
     return () => subscription.unsubscribe();
   }, [watch, updateFormData]);
   
-  const onSubmit = (data: ObjectiveData) => {
+  const onSubmit = (data: ObjectiveData): void => {
     // Aquí iría la lógica para guardar los datos
-    console.log('Formulario Objetivo:', data);
+    
     setFormData(data);
     setShowValidation(true);
     

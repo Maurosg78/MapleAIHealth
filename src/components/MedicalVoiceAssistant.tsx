@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { MedicalVoiceAssistant } from '../services/voice/MedicalVoiceAssistant';
-import { Transcript } from '../types/voice';
+import { MedicalVoiceAssistant } from '../services/voice/MedicalVoiceAssistant';;;;;
+import { Transcript } from '../types/voice';;;;;
 
 interface MedicalVoiceAssistantProps {
   specialistId: string;
@@ -97,7 +97,7 @@ export const MedicalVoiceAssistantComponent: React.FC<MedicalVoiceAssistantProps
     };
   }, [specialistId, defaultLanguage, initialContext, onMedicalTranscript, onError]);
 
-  const handleConfirmation = (id: string, confirm: boolean) => {
+  const handleConfirmation = (id: string, confirm: boolean): void => {
     if (assistantRef.current) {
       if (confirm) {
         assistantRef.current.confirmSensitiveArea(id);
@@ -107,7 +107,7 @@ export const MedicalVoiceAssistantComponent: React.FC<MedicalVoiceAssistantProps
     }
   };
 
-  const toggleListening = () => {
+  const toggleListening = (): void => {
     if (!assistantRef.current) return;
 
     if (isListening) {
@@ -118,14 +118,14 @@ export const MedicalVoiceAssistantComponent: React.FC<MedicalVoiceAssistantProps
     setIsListening(!isListening);
   };
 
-  const updateContext = (context: string) => {
+  const updateContext = (context: string): void => {
     if (assistantRef.current) {
       assistantRef.current.setMedicalContext(context);
       setCurrentContext(context);
     }
   };
 
-  const updateRestrictions = (newRestrictions: Partial<typeof restrictions>) => {
+  const updateRestrictions = (newRestrictions: Partial<typeof restrictions>): void => {
     if (assistantRef.current) {
       assistantRef.current.updateRestrictions(newRestrictions);
       setRestrictions(prev => ({ ...prev, ...newRestrictions }));

@@ -2,7 +2,7 @@
  * Tipos y interfaces para el framework de agente
  */
 
-import { BaseMessage } from "@langchain/core/messages";
+import { BaseMessage } from "@langchain/core/messages";;;;;
 
 /**
  * Tipos de especialidades médicas soportadas

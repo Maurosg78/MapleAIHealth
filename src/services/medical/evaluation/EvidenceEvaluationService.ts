@@ -1,4 +1,4 @@
-import { ClinicalEvidence } from '../../../types/clinicalDashboard';
+import { ClinicalEvidence } from '../../../types/clinicalDashboard';;;;;
 
 export enum EvidenceLevel {
   A = 'A', // Alta calidad - Meta-análisis, revisiones sistemáticas
@@ -17,7 +17,7 @@ export interface EvidenceScore {
 export class EvidenceEvaluationService {
   private static instance: EvidenceEvaluationService;
 
-  private constructor() {}
+  private constructor() { super(); }
 
   public static getInstance(): EvidenceEvaluationService {
     if (!EvidenceEvaluationService.instance) {

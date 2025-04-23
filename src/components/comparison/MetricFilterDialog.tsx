@@ -1,20 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  Typography,
-  Divider,
-  Box,
-  Slider,
-  Chip
-} from '@mui/material';
-import { ComparisonMetric } from './PatientComparisonTable';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormGroup, FormControlLabel, Checkbox, Typography, Divider, Box, Slider, Chip } from '@mui/material';;;;;
+import { ComparisonMetric } from './PatientComparisonTable';;;;;
 
 interface MetricFilterDialogProps {
   open: boolean;
@@ -54,12 +40,12 @@ const MetricFilterDialog: React.FC<MetricFilterDialogProps> = ({
   const [filters, setFilters] = useState<MetricFilters>(initialFilters || defaultFilters);
 
   // Resetear filtros a los valores por defecto
-  const handleReset = () => {
+  const handleReset = (): void => {
     setFilters(defaultFilters);
   };
 
   // Manejar cambios en métricas seleccionadas
-  const handleMetricToggle = (metricId: string) => {
+  const handleMetricToggle = (metricId: string): void => {
     setFilters(prev => {
       if (prev.selectedMetrics.includes(metricId)) {
         return {
@@ -76,7 +62,7 @@ const MetricFilterDialog: React.FC<MetricFilterDialogProps> = ({
   };
 
   // Manejar cambios en rangos de valores
-  const handleRangeChange = (metricId: string, newRange: [number, number]) => {
+  const handleRangeChange = (metricId: string, newRange: [number, number]): void => {
     setFilters(prev => ({
       ...prev,
       valueRanges: {
@@ -87,7 +73,7 @@ const MetricFilterDialog: React.FC<MetricFilterDialogProps> = ({
   };
 
   // Manejar cambio en la opción de mostrar solo pacientes que mejoran
-  const handleImprovingToggle = () => {
+  const handleImprovingToggle = (): void => {
     setFilters(prev => ({
       ...prev,
       showOnlyImproving: !prev.showOnlyImproving
@@ -95,7 +81,7 @@ const MetricFilterDialog: React.FC<MetricFilterDialogProps> = ({
   };
 
   // Manejar cambio en el porcentaje mínimo de mejora
-  const handleMinImprovementChange = (_: Event, value: number | number[]) => {
+  const handleMinImprovementChange = (_: Event, value: number | number[]): void => {
     setFilters(prev => ({
       ...prev,
       minImprovementPercent: Array.isArray(value) ? value[0] : value
@@ -103,7 +89,7 @@ const MetricFilterDialog: React.FC<MetricFilterDialogProps> = ({
   };
 
   // Manejar cambio en la opción de ocultar outliers
-  const handleOutliersToggle = () => {
+  const handleOutliersToggle = (): void => {
     setFilters(prev => ({
       ...prev,
       hideOutliers: !prev.hideOutliers
@@ -111,7 +97,7 @@ const MetricFilterDialog: React.FC<MetricFilterDialogProps> = ({
   };
 
   // Aplicar filtros y cerrar
-  const handleApply = () => {
+  const handleApply = (): void => {
     onApplyFilters(filters);
     onClose();
   };

@@ -1,4 +1,4 @@
-import { VerificationResult } from '../MedicalSourceVerifier';
+import { VerificationResult } from '../MedicalSourceVerifier';;;;;
 
 interface CacheEntry {
   result: VerificationResult;

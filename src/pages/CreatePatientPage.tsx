@@ -1,17 +1,17 @@
 import React from 'react';
-import { Container, Typography, Box, Paper } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Container, Typography, Box, Paper } from '@mui/material';;;;;
+import { useNavigate } from 'react-router-dom';;;;;
 import PatientForm from '../components/patients/PatientForm';
-import { Patient } from '../models/Patient';
+import { Patient } from '../models/Patient';;;;;
 
 const CreatePatientPage: React.FC = () => {
   const navigate = useNavigate();
   
-  const handleSave = (patient: Patient) => {
+  const handleSave = (patient: Patient): void => {
     navigate(`/pacientes/${patient.id}`);
   };
   
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     navigate('/pacientes');
   };
   

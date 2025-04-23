@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { SmartSuggestionPanel, ClinicalSuggestion } from './SmartSuggestionPanel';
-import { SOAPData, SpecialtyType } from '../../../types/clinical';
+import { SmartSuggestionPanel, ClinicalSuggestion } from './SmartSuggestionPanel';;;;;
+import { SOAPData, SpecialtyType } from '../../../types/clinical';;;;;
 
 interface ClinicalAssistantProps {
   soapData: SOAPData;
@@ -59,7 +59,7 @@ export const ClinicalAssistant: React.FC<ClinicalAssistantProps> = ({
             <p className="text-blue-700 mt-2">{selectedSuggestion.description}</p>
             {selectedSuggestion.field && (
               <button
-                onClick={() => onFieldFocus && onFieldFocus(selectedSuggestion.section, selectedSuggestion.field!)}
+                onClick={() => onFieldFocus && onFieldFocus(selectedSuggestion.section, selectedSuggestion.field ?? undefined)}
                 className="mt-3 inline-flex items-center px-3 py-1.5 border border-blue-300 text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Ir al campo

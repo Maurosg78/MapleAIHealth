@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { VoiceCommand } from '../../services/voice/VoiceCommandService';
-import { Transcript } from '../../types/voice';
+import { VoiceCommand } from '../../services/voice/VoiceCommandService';;;;;
+import { Transcript } from '../../types/voice';;;;;
 
 interface VoiceCommandsPanelProps {
   commands: VoiceCommand[];

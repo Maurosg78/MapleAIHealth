@@ -24,7 +24,7 @@ interface Recommendation {
 class RecommendationService {
   private static instance: RecommendationService;
 
-  private constructor() {}
+  private constructor() { super(); }
 
   static getInstance(): RecommendationService {
     if (!RecommendationService.instance) {

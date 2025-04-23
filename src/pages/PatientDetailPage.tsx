@@ -1,25 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Container, 
-  Typography, 
-  Box, 
-  Paper, 
-  Grid, 
-  Button, 
-  Divider, 
-  CircularProgress, 
-  Alert,
-  Chip,
-  Tabs,
-  Tab
-} from '@mui/material';
-import { 
-  Edit as EditIcon, 
-  ArrowBack as ArrowBackIcon 
-} from '@mui/icons-material';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Typography, Box, Paper, Grid, Button, Divider, CircularProgress, Alert, Chip, Tabs, Tab } from '@mui/material';;;;;
+import { Edit as EditIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';;;;;
+import { useParams, useNavigate } from 'react-router-dom';;;;;
 import PatientService from '../services/PatientService';
-import { Patient, PatientVisit } from '../models/Patient';
+import { Patient, PatientVisit } from '../models/Patient';;;;;
 
 const PatientDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -61,29 +45,29 @@ const PatientDetailPage: React.FC = () => {
     }
   };
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number): void => {
     setTabValue(newValue);
   };
 
-  const handleEditPatient = () => {
+  const handleEditPatient = (): void => {
     if (id) {
       navigate(`/pacientes/${id}/editar`);
     }
   };
 
-  const handleBackToList = () => {
+  const handleBackToList = (): void => {
     navigate('/pacientes');
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string): void => {
     return new Date(dateString).toLocaleDateString('es-ES');
   };
 
-  const formatVisitDate = (dateString: string) => {
+  const formatVisitDate = (dateString: string): void => {
     return new Date(dateString).toLocaleString('es-ES');
   };
 
-  const calculateAge = (dateOfBirth: string) => {
+  const calculateAge = (dateOfBirth: string): void => {
     const birthDate = new Date(dateOfBirth);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -94,7 +78,7 @@ const PatientDetailPage: React.FC = () => {
     return age;
   };
 
-  const getGenderDisplay = (gender: string) => {
+  const getGenderDisplay = (gender: string): void => {
     switch (gender) {
       case 'male': return 'Masculino';
       case 'female': return 'Femenino';

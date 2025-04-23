@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';;;;;
 import VoiceSoapContainer from '../components/emr/soap/VoiceSoapContainer';
-import { SpecialtyType } from '../types/clinical';
+import { SpecialtyType } from '../types/clinical';;;;;
 
 interface VoiceEnabledClinicalPageProps {
   defaultSpecialty?: SpecialtyType;
@@ -45,11 +45,11 @@ const VoiceEnabledClinicalPage: React.FC<VoiceEnabledClinicalPageProps> = ({
     loadPatientData();
   }, [patientId]);
   
-  const handleSpecialtyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSpecialtyChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
     setSpecialty(event.target.value as SpecialtyType);
   };
   
-  const handleSaveComplete = (valid: boolean) => {
+  const handleSaveComplete = (valid: boolean): void => {
     if (valid) {
       // Aquí se guardarían los datos y se navegaría a otra página
       alert('Datos guardados correctamente');

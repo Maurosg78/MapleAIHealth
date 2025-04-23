@@ -1,11 +1,11 @@
-import { ChatAnthropic } from "@langchain/anthropic";
-import { LLMProviderConfig, LLMProviderType, SimpleMessage } from "../types";
-import { HumanMessage, SystemMessage, AIMessage, BaseMessage } from "@langchain/core/messages";
+import { ChatAnthropic } from "@langchain/anthropic";;;;;
+import { LLMProviderConfig, LLMProviderType, SimpleMessage } from "../types";;;;;
+import { HumanMessage, SystemMessage, AIMessage, BaseMessage } from "@langchain/core/messages";;;;;
 
 /**
  * Crea una instancia de modelo de LangChain para Anthropic/Claude
  */
-export function createAnthropicModel(config: LLMProviderConfig) {
+export function createAnthropicModel(config: LLMProviderConfig): void {
   if (config.type !== LLMProviderType.ANTHROPIC) {
     throw new Error(`Tipo de proveedor incorrecto. Se esperaba ${LLMProviderType.ANTHROPIC}, se recibió ${config.type}`);
   }
@@ -84,7 +84,7 @@ export async function processWithAnthropic(
  * @param output Texto de salida
  * @returns Objeto con estimación de tokens
  */
-export function estimateTokenUsage(input: string, output: string) {
+export function estimateTokenUsage(input: string, output: string): void {
   // Estimación aproximada: 1 token ~ 4 caracteres en promedio
   const inputTokens = Math.ceil(input.length / 4);
   const outputTokens = Math.ceil(output.length / 4);

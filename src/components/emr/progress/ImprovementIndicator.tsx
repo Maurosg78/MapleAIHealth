@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from '@heroicons/react/solid';
+import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from '@heroicons/react/solid';;;;;
 
 interface ImprovementIndicatorProps {
   initialValue: number | undefined;

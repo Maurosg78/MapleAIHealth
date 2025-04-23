@@ -1,17 +1,6 @@
 import React from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  ReferenceLine,
-  ReferenceArea
-} from 'recharts';
-import { Box, Typography, useTheme } from '@mui/material';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, ReferenceArea } from 'recharts';;;;;
+import { Box, Typography, useTheme } from '@mui/material';;;;;
 
 export interface PatientProgressData {
   patientId: string;

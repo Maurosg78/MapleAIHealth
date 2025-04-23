@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { AuthState, LoginCredentials, RegisterData, User } from '../services/auth/types';
+import { useAuth } from '../hooks/useAuth';;;;;
+import { AuthState, LoginCredentials, RegisterData, User } from '../services/auth/types';;;;;
 
 // Extendemos AuthState para incluir los métodos
 interface AuthContextType extends AuthState {
@@ -14,7 +14,7 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Hook personalizado para acceder al contexto
-export const useAuthContext = () => {
+export const useAuthContext = (): void => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuthContext debe ser usado dentro de un AuthProvider');

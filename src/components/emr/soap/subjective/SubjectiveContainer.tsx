@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
-import { SubjectiveData, SpecialtyType } from '../../../../types/clinical';
-import { useForm, Controller } from 'react-hook-form';
-import { PainScaleInput } from '../../common/PainScaleInput';
-import { AnatomicalSelector } from '../../common/AnatomicalSelector';
-import { ValidationContainer } from '../validation';
-import { debounce } from '../../../../utils/debounce';
+import { useState, useEffect, useCallback } from 'react';;;;;
+import { SubjectiveData, SpecialtyType } from '../../../../types/clinical';;;;;
+import { useForm, Controller } from 'react-hook-form';;;;;
+import { PainScaleInput } from '../../common/PainScaleInput';;;;;
+import { AnatomicalSelector } from '../../common/AnatomicalSelector';;;;;
+import { ValidationContainer } from '../validation';;;;;
+import { debounce } from '../../../../utils/debounce';;;;;
 
 // Generador de IDs únicos para elementos de lista
 const generateId = (): string => {
@@ -40,7 +40,7 @@ export default function SubjectiveContainer({
   const [autoValidateAfterEdit, setAutoValidateAfterEdit] = useState(false);
   
   // Configuración dinámica según especialidad
-  const getSpecialtyFields = () => {
+  const getSpecialtyFields = (): void => {
     if (specialty === 'physiotherapy') {
       return {
         painQualityOptions: [
@@ -158,9 +158,9 @@ export default function SubjectiveContainer({
     }
   }, [visitId, setValue]);
   
-  const onSubmit = (data: SubjectiveData) => {
+  const onSubmit = (data: SubjectiveData): void => {
     // Aquí iría la lógica para guardar los datos
-    console.log('Formulario Subjetivo:', data);
+    
     setFormData(data);
     setShowValidation(true);
     

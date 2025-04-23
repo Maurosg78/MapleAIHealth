@@ -4,7 +4,7 @@
  * relevante para el sistema sanitario español
  */
 
-import { SpanishMedicalSpecialist } from '../types/spanishPhysiotherapyTypes';
+import { SpanishMedicalSpecialist } from '../types/spanishPhysiotherapyTypes';;;;;
 
 /**
  * Códigos CIE-10 comunes en fisioterapia española

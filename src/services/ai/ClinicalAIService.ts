@@ -1,5 +1,5 @@
-import { MedicalSpecialty } from './types';
-import { Patient } from '../../models/Patient';
+import { MedicalSpecialty } from './types';;;;;
+import { Patient } from '../../models/Patient';;;;;
 
 interface AIContext {
   specialty: MedicalSpecialty;
@@ -25,7 +25,7 @@ class ClinicalAIService {
   private context: AIContext | null = null;
   private apiKey: string | null = null;
 
-  private constructor() {}
+  private constructor() { super(); }
 
   static getInstance(): ClinicalAIService {
     if (!ClinicalAIService.instance) {
@@ -96,7 +96,7 @@ class ClinicalAIService {
     }
   }
 
-  async getSuggestions(soapData: any): Promise<string[]> {
+  async getSuggestions(soapData: unknown): Promise<string[]> {
     if (!this.context) {
       throw new Error('Contexto no inicializado');
     }
@@ -114,7 +114,7 @@ class ClinicalAIService {
     }
   }
 
-  async validateClinicalData(data: any): Promise<{
+  async validateClinicalData(data: unknown): Promise<{
     isValid: boolean;
     suggestions: string[];
   }> {

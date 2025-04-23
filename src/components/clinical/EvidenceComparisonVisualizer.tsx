@@ -1,19 +1,10 @@
 import React, { useMemo } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Card, 
-  CardContent, 
-  Chip, 
-  Button,
-  IconButton
-} from '@mui/material';
+import { Box, Typography, Paper, Card, CardContent, Chip, Button, IconButton } from '@mui/material';;;;;
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useTheme } from '@mui/material/styles';
-import { ClinicalEvidence } from '../../types/clinicalDashboard';
-import { CacheManagerFactory } from '../../services/cache/CacheManagerFactory';
+import { useTheme } from '@mui/material/styles';;;;;
+import { ClinicalEvidence } from '../../types/clinicalDashboard';;;;;
+import { CacheManagerFactory } from '../../services/cache/CacheManagerFactory';;;;;
 
 interface EvidenceComparisonVisualizerProps {
   evidenceList: ClinicalEvidence[];
@@ -125,7 +116,7 @@ export const EvidenceComparisonVisualizer: React.FC<EvidenceComparisonVisualizer
     await cacheManager.set(cacheKey, ids, metadata);
   };
   
-  const handleRemove = (evidenceId: string) => {
+  const handleRemove = (evidenceId: string): void => {
     if (onEvidenceRemove) {
       onEvidenceRemove(evidenceId);
     }

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Alert, Link, InputAdornment, IconButton } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { AuthService } from '../../services/auth/AuthService';
-import { useNavigate } from 'react-router-dom';
+import { TextField, Button, Box, Alert, Link, InputAdornment, IconButton } from '@mui/material';;;;;
+import { Visibility, VisibilityOff } from '@mui/icons-material';;;;;
+import { AuthService } from '../../services/auth/AuthService';;;;;
+import { useNavigate } from 'react-router-dom';;;;;
 
 interface PasswordResetFormProps {
   token: string;
@@ -57,11 +57,11 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ token }) => {
     }
   };
 
-  const handleTogglePasswordVisibility = () => {
+  const handleTogglePasswordVisibility = (): void => {
     setShowPassword(!showPassword);
   };
 
-  const handleToggleConfirmPasswordVisibility = () => {
+  const handleToggleConfirmPasswordVisibility = (): void => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 

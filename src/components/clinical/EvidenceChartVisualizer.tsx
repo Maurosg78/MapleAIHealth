@@ -1,30 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  CircularProgress, 
-  Select, 
-  MenuItem, 
-  FormControl, 
-  InputLabel
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { 
-  BarChart, Bar, 
-  PieChart, Pie, Cell,
-  LineChart, Line, 
-  AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, 
-  Tooltip, Legend, ResponsiveContainer 
-} from 'recharts';
-import { 
-  ClinicalEvidence, 
-  EvidenceLevelData,
-  EvidenceVisualization 
-} from '../../types/clinicalDashboard';
-import { CacheManagerFactory } from '../../services/cache/CacheManagerFactory';
-import { ClinicalDashboardService } from '../../services/clinicalDashboard';
+import { Box, Typography, Paper, CircularProgress, Select, MenuItem, FormControl, InputLabel } from '@mui/material';;;;;
+import { useTheme } from '@mui/material/styles';;;;;
+import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';;;;;
+import { ClinicalEvidence, EvidenceLevelData, EvidenceVisualization } from '../../types/clinicalDashboard';;;;;
+import { CacheManagerFactory } from '../../services/cache/CacheManagerFactory';;;;;
+import { ClinicalDashboardService } from '../../services/clinicalDashboard';;;;;
 
 // Tipos de visualización disponibles
 type ChartType = 'bar' | 'pie' | 'line' | 'area' | 'comparison';
@@ -124,7 +104,7 @@ export const EvidenceChartVisualizer: React.FC<EvidenceChartVisualizerProps> = (
     }
   };
 
-  const processEvidenceData = (evidenceData: ClinicalEvidence[] | EvidenceLevelData[] | Record<string, number>) => {
+  const processEvidenceData = (evidenceData: ClinicalEvidence[] | EvidenceLevelData[] | Record<string, number>): void => {
     try {
       // Verificar si es un array de ClinicalEvidence
       if (Array.isArray(evidenceData) && evidenceData.length > 0 && 'id' in evidenceData[0]) {
@@ -235,7 +215,7 @@ export const EvidenceChartVisualizer: React.FC<EvidenceChartVisualizerProps> = (
   }, [chartType, title, chartData, cacheManager, colors, description, height, patientId]);
 
   // Renderizar el gráfico según el tipo seleccionado
-  const renderChart = () => {
+  const renderChart = (): void => {
     if (chartData.length === 0) {
       return (
         <Box display="flex" justifyContent="center" alignItems="center" height={height}>

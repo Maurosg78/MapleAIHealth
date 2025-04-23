@@ -1,28 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  ListItemButton,
-  Avatar,
-  Checkbox,
-  TextField,
-  InputAdornment,
-  Typography,
-  Box,
-  Divider,
-  Chip
-} from '@mui/material';
-import {
-  Search as SearchIcon,
-  Person as PersonIcon
-} from '@mui/icons-material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListItem, ListItemText, ListItemAvatar, ListItemButton, Avatar, Checkbox, TextField, InputAdornment, Typography, Box, Divider, Chip } from '@mui/material';;;;;
+import { Search as SearchIcon, Person as PersonIcon } from '@mui/icons-material';;;;;
 
 // Interfaces
 interface Patient {
@@ -68,7 +46,7 @@ const PatientSelectionModal: React.FC<PatientSelectionModalProps> = ({
   // Actualizar selecciones cuando cambian las props
   useEffect(() => {
     setSelectedPatientIds(currentPatientIds);
-  }, [currentPatientIds]);
+  }, [currentPatientIds, setSelectedPatientIds]);
 
   // Filtrar pacientes basado en el término de búsqueda
   const filteredPatients = mockAvailablePatients.filter(patient => {
@@ -81,7 +59,7 @@ const PatientSelectionModal: React.FC<PatientSelectionModalProps> = ({
   });
 
   // Manejar el cambio en la selección de un paciente
-  const handleTogglePatient = (patientId: string) => {
+  const handleTogglePatient = (patientId: string): void => {
     setSelectedPatientIds(prev => {
       if (prev.includes(patientId)) {
         return prev.filter(id => id !== patientId);
@@ -92,13 +70,13 @@ const PatientSelectionModal: React.FC<PatientSelectionModalProps> = ({
   };
 
   // Manejar cancelación
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setSelectedPatientIds(currentPatientIds);
     onClose();
   };
 
   // Manejar confirmación
-  const handleConfirm = () => {
+  const handleConfirm = (): void => {
     onSelectPatients(selectedPatientIds);
     onClose();
   };

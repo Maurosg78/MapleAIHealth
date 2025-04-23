@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
-import {
-  Grid,
-  Box,
-  Typography,
-  Alert,
-  CircularProgress,
-  Pagination
-} from '@mui/material';
+import { Grid, Box, Typography, Alert, CircularProgress, Pagination } from '@mui/material';;;;;
 import ExerciseCard from './ExerciseCard';
-import { TherapeuticExercise } from '../../../../types/treatment/exercises';
+import { TherapeuticExercise } from '../../../../types/treatment/exercises';;;;;
 
 // Interfaz para las props del componente
 interface ExerciseGridProps {
@@ -39,14 +32,14 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({
   const [page, setPage] = useState(1);
 
   // Manejar el cambio de página
-  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number): void => {
     setPage(value);
     // Resetear la tarjeta expandida al cambiar de página
     setExpandedId(null);
   };
 
   // Manejar la expansión de tarjetas
-  const handleExpandCard = (exerciseId: string) => {
+  const handleExpandCard = (exerciseId: string): void => {
     setExpandedId(prev => (prev === exerciseId ? null : exerciseId));
   };
 

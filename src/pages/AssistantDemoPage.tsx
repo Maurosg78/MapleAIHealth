@@ -1,19 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Grid, 
-  Paper, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem,
-  TextField, 
-  SelectChangeEvent
-} from '@mui/material';
-import { AIAssistantChat } from '../components/assistant/AIAssistantChat';
-import { MedicalSpecialty } from '../services/ai/types';
+import { Box, Container, Typography, Grid, Paper, FormControl, InputLabel, Select, MenuItem, TextField, SelectChangeEvent } from '@mui/material';;;;;
+import { AIAssistantChat } from '../components/assistant/AIAssistantChat';;;;;
+import { MedicalSpecialty } from '../services/ai/types';;;;;
 
 /**
  * Página de demostración para probar el asistente clínico
@@ -23,11 +11,11 @@ export const AssistantDemoPage: React.FC = () => {
   const [patientId, setPatientId] = useState('DEMO-001');
   const [activeSection, setActiveSection] = useState('SOAP - Subjective');
   
-  const handleSpecialtyChange = (event: SelectChangeEvent) => {
+  const handleSpecialtyChange = (event: SelectChangeEvent): void => {
     setSpecialty(event.target.value as MedicalSpecialty);
   };
   
-  const handleSectionChange = (event: SelectChangeEvent) => {
+  const handleSectionChange = (event: SelectChangeEvent): void => {
     setActiveSection(event.target.value);
   };
   

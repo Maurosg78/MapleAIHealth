@@ -1,14 +1,4 @@
-import { 
-  TherapeuticExercise, 
-  ExerciseFilter, 
-  ExercisePlan,
-  AnatomicalRegion,
-  ExerciseCategoryType,
-  ExerciseDifficultyLevel,
-  ExerciseExecutionType,
-  MovementDirection,
-  ExerciseEquipment
-} from '../types/treatment/exercises';
+import { TherapeuticExercise, ExerciseFilter, ExercisePlan, AnatomicalRegion, ExerciseCategoryType, ExerciseDifficultyLevel, ExerciseExecutionType, MovementDirection, ExerciseEquipment } from '../types/treatment/exercises';;;;;
 
 // Clave para almacenar los ejercicios en localStorage
 const EXERCISES_STORAGE_KEY = 'mapleHealth_exercises';

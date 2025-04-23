@@ -1,5 +1,5 @@
-import { clinicalAIService } from '../ClinicalAIService';
-import { MedicalSpecialty, AIContext } from '../types';
+import { clinicalAIService } from '../ClinicalAIService';;;;;
+import { AIContext } from '../types';;;;;
 
 describe('ClinicalAIService', () => {
   const testContext: AIContext = {

@@ -1,4 +1,4 @@
-import { RangeOfMotionData } from "../types/clinical";
+import { RangeOfMotionData } from "../types/clinical";;;;;
 
 /**
  * Valida que los valores de rango de movimiento sean números válidos

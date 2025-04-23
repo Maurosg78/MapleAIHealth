@@ -1,16 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
-import { 
-  AgentConfig, 
-  AgentResponse,
-  ClinicalContext,
-  LLMProviderType,
-  ConversationState,
-  MedicalSpecialty,
-  SimpleMessage
-} from '../types';
-import { DEFAULT_AGENT_CONFIG, createAgentConfigForSpecialty, LLM_PROVIDER_CONFIGS } from '../config';
-import { processWithAnthropic, estimateTokenUsage } from '../llm/anthropic';
-import { HumanMessage, AIMessage, SystemMessage, BaseMessage } from '@langchain/core/messages';
+import { v4 as uuidv4 } from 'uuid';;;;;
+import { AgentConfig, AgentResponse, ClinicalContext, LLMProviderType, ConversationState, MedicalSpecialty, SimpleMessage } from '../types';;;;;
+import { DEFAULT_AGENT_CONFIG, createAgentConfigForSpecialty, LLM_PROVIDER_CONFIGS } from '../config';;;;;
+import { processWithAnthropic, estimateTokenUsage } from '../llm/anthropic';;;;;
+import { HumanMessage, AIMessage, SystemMessage, BaseMessage } from '@langchain/core/messages';;;;;
 
 /**
  * Agente clínico basado en modelos de lenguaje avanzados

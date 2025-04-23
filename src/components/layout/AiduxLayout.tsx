@@ -1,20 +1,9 @@
-import { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
-import { 
-    UserIcon, 
-    DocumentTextIcon, 
-    CalendarIcon, 
-    ChartBarIcon,
-    CogIcon,
-    MenuIcon,
-    XIcon,
-    LightBulbIcon,
-    SearchIcon,
-    BellIcon
-} from '@heroicons/react/outline';
+import { useState } from 'react';;;;;
+import { Link, Outlet, useLocation } from 'react-router-dom';;;;;
+import { UserIcon, DocumentTextIcon, CalendarIcon, ChartBarIcon, CogIcon, MenuIcon, XIcon, LightBulbIcon, SearchIcon, BellIcon } from '@heroicons/react/outline';;;;;
 
 // Componente de asistente clínico que aparece contextualmente
-const ClinicalAssistant = () => {
+const ClinicalAssistant = (): void => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [userQuestions, setUserQuestions] = useState<string[]>([]);
     const [userInput, setUserInput] = useState('');
@@ -25,14 +14,14 @@ const ClinicalAssistant = () => {
     // Si algún dato es desconocido, SIEMPRE preguntar al profesional médico
     
     // Función para generar preguntas contextuales basadas en datos incompletos
-    const generateContextualQuestions = () => {
+    const generateContextualQuestions = (): void => {
         return [
             "¿Podría proporcionar los resultados del último hemograma del paciente?",
             "¿Cuándo fue la última evaluación de presión arterial del paciente?"
         ];
     };
     
-    const handleSubmit = () => {
+    const handleSubmit = (): void => {
         if (userInput.trim()) {
             // En un entorno real, esta información se enviaría a un backend
             // Aquí solo simulamos una respuesta que solicita más información
@@ -137,7 +126,7 @@ const ClinicalAssistant = () => {
 };
 
 // Tooltip personalizado para reducir la carga cognitiva
-const FeatureTooltip = ({ children, title, description }: { children: React.ReactNode, title: string, description: string }) => {
+const FeatureTooltip = ({ children, title, description }: { children: React.ReactNode, title: string, description: string }): void => {
     const [showTooltip, setShowTooltip] = useState(false);
     
     return (
@@ -157,7 +146,7 @@ const FeatureTooltip = ({ children, title, description }: { children: React.Reac
     );
 };
 
-export function AiduxLayout() {
+export function AiduxLayout(): void {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const location = useLocation();
     

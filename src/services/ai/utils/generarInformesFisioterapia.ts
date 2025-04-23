@@ -3,19 +3,11 @@
  * Permite crear diferentes tipos de informes basados en datos del paciente
  */
 
-import { 
-  SpanishPhysiotherapySOAP, 
-  SpanishPatientInfo,
-  SpanishTreatmentSummary
-} from '../types/spanishPhysiotherapyTypes';
+import { SpanishPhysiotherapySOAP, SpanishPatientInfo, SpanishTreatmentSummary } from '../types/spanishPhysiotherapyTypes';;;;;
 
-import {
-  obtenerRecomendacionesCIE10
-} from '../references/fisioterapiaValenciana';
+import { obtenerRecomendacionesCIE10 } from '../references/fisioterapiaValenciana';;;;;
 
-import {
-  obtenerEjerciciosPorPatologia
-} from '../references/ejerciciosTerapeuticos';
+import { obtenerEjerciciosPorPatologia } from '../references/ejerciciosTerapeuticos';;;;;
 
 /**
  * Genera un informe de valoración inicial de fisioterapia

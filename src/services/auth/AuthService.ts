@@ -1,6 +1,6 @@
-import { ApiClient } from '../api/ApiClient';
-import { AuthResponse, LoginCredentials, RegisterData, User } from './types';
-import { jwtDecode } from 'jwt-decode';
+import { ApiClient } from '../api/ApiClient';;;;;
+import { AuthResponse, LoginCredentials, RegisterData, User } from './types';;;;;
+import { jwtDecode } from 'jwt-decode';;;;;
 
 export class AuthService {
   private static instance: AuthService;

@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
-import { Transcript } from '../../types/voice';
+import { EventEmitter } from 'events';;;;;
+import { Transcript } from '../../types/voice';;;;;
 
 // Definir interfaces para la Web Speech API
 interface SpeechRecognitionErrorEvent extends Event {

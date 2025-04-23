@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ROMProgressChart } from '../charts/ROMProgressChart';
-import { Card, CardContent, CardHeader, Typography, Box, Tabs, Tab } from '@mui/material';
+import { ROMProgressChart } from '../charts/ROMProgressChart';;;;;
+import { Card, CardContent, CardHeader, Typography, Box, Tabs, Tab } from '@mui/material';;;;;
 
 // Definir interfaces localmente
 interface Patient {
@@ -111,7 +111,7 @@ export const PatientProgressDashboard: React.FC<PatientProgressDashboardProps> =
     }
   }, [assessments]);
 
-  const processMovementData = (assessments: Assessment[], movementKey: string) => {
+  const processMovementData = (assessments: Assessment[], movementKey: string): void => {
     return assessments.map(assessment => {
       const movementValue = assessment.objectiveData?.rangeOfMotion?.[movementKey] || 0;
       return {
@@ -121,7 +121,7 @@ export const PatientProgressDashboard: React.FC<PatientProgressDashboardProps> =
     });
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number): void => {
     setCurrentTab(newValue);
   };
 

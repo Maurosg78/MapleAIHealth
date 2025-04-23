@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { ClinicalEvidence } from '../types/clinicalDashboard';
-import { EvidenceVisualizerProps, EvidenceCacheMetadata } from '../types/evidenceVisualizer';
-import { CacheManagerFactory } from '../services/cache/CacheManagerFactory';
-import { Box, Typography, Paper, CircularProgress } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { ClinicalEvidence } from '../types/clinicalDashboard';;;;;
+import { EvidenceVisualizerProps, EvidenceCacheMetadata } from '../types/evidenceVisualizer';;;;;
+import { CacheManagerFactory } from '../services/cache/CacheManagerFactory';;;;;
+import { Box, Typography, Paper, CircularProgress } from '@mui/material';;;;;
+import { useTheme } from '@mui/material/styles';;;;;
 
 export const EvidenceVisualizer: React.FC<EvidenceVisualizerProps> = ({
   evidenceId,

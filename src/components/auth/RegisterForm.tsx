@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';;;;;
+import { useAuthContext } from '../../contexts/AuthContext';;;;;
 import LoadingSpinner from '../common/LoadingSpinner';
 
 const RegisterForm: React.FC = () => {
@@ -16,7 +16,7 @@ const RegisterForm: React.FC = () => {
   });
   const [formError, setFormError] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,

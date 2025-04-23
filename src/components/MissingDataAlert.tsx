@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { XCircleIcon, ExclamationIcon } from '@heroicons/react/solid';
+import { XCircleIcon, ExclamationIcon } from '@heroicons/react/solid';;;;;
 
 interface MissingDataAlertProps {
   missingFields: string[];

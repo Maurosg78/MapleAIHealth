@@ -1,22 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  CardContent, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
-  OutlinedInput, 
-  Chip,
-  Grid,
-  TextField,
-  Button,
-  Divider,
-  SelectChangeEvent,
-  CircularProgress
-} from '@mui/material';
+import { Box, Typography, Card, CardContent, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Chip, Grid, TextField, Button, Divider, SelectChangeEvent, CircularProgress } from '@mui/material';;;;;
 import PatientComparisonChart, { PatientProgressData } from '../components/comparison/PatientComparisonChart';
 
 // Simulamos la obtención de datos de pacientes
@@ -298,13 +281,13 @@ export const PatientComparisonPage: React.FC = () => {
   }, [diagnosisFilter, patientsData.patientsList]);
 
   // Manejar cambio en selección de pacientes
-  const handlePatientChange = (event: SelectChangeEvent<string[]>) => {
+  const handlePatientChange = (event: SelectChangeEvent<string[]>): void => {
     const value = event.target.value;
     setSelectedPatients(typeof value === 'string' ? [value] : value);
   };
 
   // Manejar cambio en selección de métrica
-  const handleMetricChange = (event: SelectChangeEvent) => {
+  const handleMetricChange = (event: SelectChangeEvent): void => {
     setSelectedMetric(event.target.value as string);
   };
 

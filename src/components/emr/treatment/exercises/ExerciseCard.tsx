@@ -1,26 +1,7 @@
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Chip,
-  Box,
-  IconButton,
-  Collapse,
-  CardActions,
-  Button,
-  Tooltip
-} from '@mui/material';
-import {
-  ExpandMore as ExpandMoreIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  Warning as WarningIcon,
-  Stars as StarsIcon
-} from '@mui/icons-material';
-import { TherapeuticExercise } from '../../../../types/treatment/exercises';
+import { Card, CardContent, CardMedia, Typography, Chip, Box, IconButton, Collapse, CardActions, Button, Tooltip } from '@mui/material';;;;;
+import { ExpandMore as ExpandMoreIcon, Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon, Warning as WarningIcon, Stars as StarsIcon } from '@mui/icons-material';;;;;
+import { TherapeuticExercise } from '../../../../types/treatment/exercises';;;;;
 
 // Interfaz para las props del componente
 interface ExerciseCardProps {
@@ -44,28 +25,28 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   readOnly = false
 }) => {
   // Función para manejar la expansión de la tarjeta
-  const handleExpandClick = () => {
+  const handleExpandClick = (): void => {
     if (onExpand) {
       onExpand(exercise.id);
     }
   };
 
   // Funciones para manejar las acciones de la tarjeta
-  const handleEdit = (e: React.MouseEvent) => {
+  const handleEdit = (e: React.MouseEvent): void => {
     e.stopPropagation();
     if (onEdit) {
       onEdit(exercise);
     }
   };
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = (e: React.MouseEvent): void => {
     e.stopPropagation();
     if (onDelete) {
       onDelete(exercise.id);
     }
   };
 
-  const handleAdd = (e: React.MouseEvent) => {
+  const handleAdd = (e: React.MouseEvent): void => {
     e.stopPropagation();
     if (onAdd) {
       onAdd(exercise);
@@ -73,7 +54,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   };
 
   // Obtener la primera letra de cada palabra del nombre para crear un avatar si no hay imagen
-  const getInitials = (name: string) => {
+  const getInitials = (name: string): void => {
     return name
       .split(' ')
       .map(n => n[0])

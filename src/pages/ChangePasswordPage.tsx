@@ -1,7 +1,7 @@
 import React from 'react';
-import { Container, Box, Paper, Typography } from '@mui/material';
+import { Container, Box, Paper, Typography } from '@mui/material';;;;;
 import ChangePasswordForm from '../components/auth/ChangePasswordForm';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { ProtectedRoute } from '../components/auth/ProtectedRoute';;;;;
 
 const ChangePasswordPage: React.FC = () => {
   return (

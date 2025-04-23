@@ -1,6 +1,6 @@
-import { AISuggestion } from '../AIHealthService';
-import { EvidenceLevel, ClinicalRelevance } from '../clinicalRules';
-import { ApiClient } from '../api/ApiClient';
+import { AISuggestion } from '../AIHealthService';;;;;
+import { EvidenceLevel, ClinicalRelevance } from '../clinicalRules';;;;;
+import { ApiClient } from '../api/ApiClient';;;;;
 
 export interface FeedbackData {
   suggestionId: string;

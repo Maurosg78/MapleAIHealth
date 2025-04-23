@@ -1,8 +1,8 @@
 import './App.css';
 import AppRouter from './AppRouter';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';;;;;
 
-function App() {
+function App(): void {
     return (
         <AuthProvider>
             <div className="App">

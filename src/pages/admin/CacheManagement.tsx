@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { CacheMonitor } from '../../components/CacheMonitor';
-import { CacheConfig } from '../../services/cache/types';
-import { CacheManagerFactory } from '../../services/cache';
+import { CacheMonitor } from '../../components/CacheMonitor';;;;;
+import { CacheConfig } from '../../services/cache/types';;;;;
+import { CacheManagerFactory } from '../../services/cache';;;;;
 
 /**
  * Página de administración del sistema de caché
@@ -11,7 +11,7 @@ const CacheManagement: React.FC = () => {
   const [lastOptimizedSection, setLastOptimizedSection] = useState<string | null>(null);
 
   // Manejar la optimización de configuración de caché
-  const handleOptimizeCache = (section: string, config: CacheConfig) => {
+  const handleOptimizeCache = (section: string, config: CacheConfig): void => {
     try {
       // Obtener el administrador de caché para la sección
       const cacheManager = CacheManagerFactory.getInstance(section);
@@ -23,7 +23,7 @@ const CacheManagement: React.FC = () => {
       setOptimizationCount(prev => prev + 1);
       setLastOptimizedSection(section);
       
-      console.log(`Caché optimizada para ${section}:`, config);
+      
     } catch (error) {
       console.error(`Error al optimizar caché para ${section}:`, error);
     }

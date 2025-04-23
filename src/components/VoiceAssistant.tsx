@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { VoiceAssistant } from '../services/voice/VoiceAssistant';
-import { Transcript, VoiceError } from '../types/voice';
+import { VoiceAssistant } from '../services/voice/VoiceAssistant';;;;;
+import { Transcript, VoiceError } from '../types/voice';;;;;
 
 interface VoiceAssistantProps {
   onTranscript?: (transcript: Transcript) => void;
@@ -74,7 +74,7 @@ export const VoiceAssistantComponent: React.FC<VoiceAssistantProps> = ({
     };
   }, [onTranscript, onError, selectedLanguage, showLanguageIssues]);
 
-  const toggleListening = () => {
+  const toggleListening = (): void => {
     if (!voiceAssistantRef.current) return;
 
     if (isListening) {
@@ -84,14 +84,14 @@ export const VoiceAssistantComponent: React.FC<VoiceAssistantProps> = ({
     }
   };
 
-  const changeSpeaker = (speakerId: string) => {
+  const changeSpeaker = (speakerId: string): void => {
     if (voiceAssistantRef.current) {
       voiceAssistantRef.current.setCurrentSpeaker(speakerId);
       setCurrentSpeaker(speakerId);
     }
   };
 
-  const changeLanguage = (lang: string) => {
+  const changeLanguage = (lang: string): void => {
     if (voiceAssistantRef.current) {
       voiceAssistantRef.current.setLanguage(lang);
       setSelectedLanguage(lang);

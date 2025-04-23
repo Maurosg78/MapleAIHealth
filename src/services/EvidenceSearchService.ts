@@ -1,12 +1,12 @@
-import { ClinicalEvidence, ClinicalDashboardFilters } from '../types/clinicalDashboard';
-import { CacheManagerFactory } from './cache/CacheManagerFactory';
-import { estimateClinicalEvidenceSize } from './cache/utils/memorySizeEstimator';
-import { CacheMetadata } from './cache/types';
-import { MongoClient, Collection, ObjectId, Filter } from 'mongodb';
-import { Client } from '@elastic/elasticsearch';
-import { CacheManager } from './cache/CacheManager';
-import { config } from '../config/config';
-import { MedicalSourceVerifier } from './medical/MedicalSourceVerifier';
+import { ClinicalEvidence, ClinicalDashboardFilters } from '../types/clinicalDashboard';;;;;
+;
+;
+import { CacheMetadata } from './cache/types';;;;;
+import { MongoClient, Collection, ObjectId, Filter } from 'mongodb';;;;;
+import { Client } from '@elastic/elasticsearch';;;;;
+import { CacheManager } from './cache/CacheManager';;;;;
+import { config } from '../config/config';;;;;
+import { MedicalSourceVerifier } from './medical/MedicalSourceVerifier';;;;;
 
 interface SearchResult {
   results: ClinicalEvidence[];
@@ -111,7 +111,7 @@ export class EvidenceSearchService {
     try {
       await this.mongoClient.connect();
       await this.elasticClient.ping();
-      console.log('Conexiones establecidas exitosamente');
+      
     } catch (error) {
       console.error('Error al inicializar conexiones:', error);
       throw error;

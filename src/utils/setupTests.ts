@@ -1,7 +1,7 @@
 // Configuración adicional para pruebas
 import '@testing-library/jest-dom';
-import { jest } from '@jest/globals';
-import { TextEncoder, TextDecoder } from 'util';
+import { jest } from '@jest/globals';;;;;
+import { TextEncoder, TextDecoder } from 'util';;;;;
 
 // Agregar TextEncoder y TextDecoder al objeto global
 global.TextEncoder = TextEncoder;

@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { VoiceCommandService, VoiceCommand } from '../services/voice/VoiceCommandService';
-import { MedicalVoiceAssistant } from '../services/voice/MedicalVoiceAssistant';
-import { Transcript } from '../types/voice';
+import { useEffect, useState, useCallback, useRef } from 'react';;;;;
+import { VoiceCommandService, VoiceCommand } from '../services/voice/VoiceCommandService';;;;;
+import { MedicalVoiceAssistant } from '../services/voice/MedicalVoiceAssistant';;;;;
+import { Transcript } from '../types/voice';;;;;
 
 interface UseVoiceCommandsOptions {
   context?: string | string[];
@@ -87,20 +87,20 @@ export function useVoiceCommands(options: UseVoiceCommandsOptions = {}): VoiceCo
     updateAvailableCommands();
 
     // Establecer event listeners
-    const handleCommandExecuted = (commandId: string) => {
+    const handleCommandExecuted = (commandId: string): void => {
       setLastCommand(commandId);
       if (onCommandExecuted) {
         onCommandExecuted(commandId);
       }
     };
 
-    const handleCommandNotFound = (text: string) => {
+    const handleCommandNotFound = (text: string): void => {
       if (onCommandNotFound) {
         onCommandNotFound(text);
       }
     };
 
-    const handleContextChanged = () => {
+    const handleContextChanged = (): void => {
       updateAvailableCommands();
       setCurrentContextState(commandService.getAvailableCommands()
         .flatMap(cmd => cmd.context || [])

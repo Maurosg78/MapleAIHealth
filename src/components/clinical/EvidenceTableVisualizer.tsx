@@ -1,24 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TablePagination,
-  Chip,
-  Tooltip,
-  IconButton,
-  useMediaQuery
-} from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Chip, Tooltip, IconButton, useMediaQuery } from '@mui/material';;;;;
 import InfoIcon from '@mui/icons-material/Info';
-import { useTheme } from '@mui/material/styles';
-import { ClinicalEvidence } from '../../types/clinicalDashboard';
-import { CacheManagerFactory } from '../../services/cache/CacheManagerFactory';
+import { useTheme } from '@mui/material/styles';;;;;
+import { ClinicalEvidence } from '../../types/clinicalDashboard';;;;;
+import { CacheManagerFactory } from '../../services/cache/CacheManagerFactory';;;;;
 
 interface EvidenceTableVisualizerProps {
   evidenceList: ClinicalEvidence[];
@@ -86,16 +71,16 @@ export const EvidenceTableVisualizer: React.FC<EvidenceTableVisualizerProps> = (
     savePreferences();
   }, [page, rowsPerPage, title, patientId]);
   
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (event: unknown, newPage: number): void => {
     setPage(newPage);
   };
   
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
   
-  const handleRowClick = (evidence: ClinicalEvidence) => {
+  const handleRowClick = (evidence: ClinicalEvidence): void => {
     if (onEvidenceClick) {
       onEvidenceClick(evidence);
     }

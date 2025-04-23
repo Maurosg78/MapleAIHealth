@@ -1,10 +1,10 @@
-import { useDashboard } from '@/hooks/common/useDashboard';
-import { MetricCard } from '@/components/shared/dashboard/MetricCard';
-import { RecentActivities } from '@/components/shared/dashboard/RecentActivities';
-import { Button } from '@/components/shared/common/Button';
-import { Link } from 'react-router-dom';
+import { useDashboard } from '@/hooks/common/useDashboard';;;;;
+import { MetricCard } from '@/components/shared/dashboard/MetricCard';;;;;
+import { RecentActivities } from '@/components/shared/dashboard/RecentActivities';;;;;
+import { Button } from '@/components/shared/common/Button';;;;;
+import { Link } from 'react-router-dom';;;;;
 
-export const DashboardPage = () => {
+export const DashboardPage = (): void => {
     const { metrics, isLoading, error } = useDashboard();
 
     if (isLoading) {

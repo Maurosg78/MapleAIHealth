@@ -1,27 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Paper,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Slider,
-  IconButton,
-  Divider,
-  Chip,
-  Collapse,
-  SelectChangeEvent
-} from '@mui/material';
-import { Search as SearchIcon,
-  Close as CloseIcon,
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon
-} from '@mui/icons-material';
+import { Paper, Box, Typography, TextField, Button, Grid, FormControl, InputLabel, Select, MenuItem, Slider, IconButton, Divider, Chip, Collapse, SelectChangeEvent } from '@mui/material';
+import { Search as SearchIcon, Close as CloseIcon, ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon } from '@mui/icons-material';
 
 interface SearchFilters {
   query?: string;
@@ -56,12 +35,12 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
   const [lastVisitBeforeStr, setLastVisitBeforeStr] = useState('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (e: SelectChangeEvent) => {
+  const handleSelectChange = (e: SelectChangeEvent): void => {
     const { name, value } = e.target;
     if (name === 'orderBy') {
       setFilters(prev => ({ 
@@ -73,7 +52,7 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
     }
   };
 
-  const handleAgeRangeChange = (_event: Event, newValue: number | number[]) => {
+  const handleAgeRangeChange = (_event: Event, newValue: number | number[]): void => {
     if (Array.isArray(newValue)) {
       const [ageMin, ageMax] = newValue;
       setFilters(prev => ({
@@ -84,7 +63,7 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
     }
   };
 
-  const handleLastVisitAfterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLastVisitAfterChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
     setLastVisitAfterStr(value);
     setFilters(prev => {
@@ -97,7 +76,7 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
     });
   };
 
-  const handleLastVisitBeforeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLastVisitBeforeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
     setLastVisitBeforeStr(value);
     setFilters(prev => {
@@ -110,16 +89,25 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
     });
   };
 
-  const applyFilters = () => {
+  const getGenderText = (gender: string): string => {
+    switch (gender) {
+      case 'male':
+        return 'Masculino';
+      case 'female':
+        return 'Femenino';
+      default:
+        return 'Otro';
+    }
+  };
+
+  const applyFilters = (): void => {
     const newActiveFilters: string[] = [];
     
     if (filters.query) {
       newActiveFilters.push(`Búsqueda: ${filters.query}`);
     }
     if (filters.gender) {
-      const genderText = filters.gender === 'male' ? 'Masculino' : 
-                        filters.gender === 'female' ? 'Femenino' : 'Otro';
-      newActiveFilters.push(`Género: ${genderText}`);
+      newActiveFilters.push(`Género: ${getGenderText(filters.gender)}`);
     }
     if (filters.ageMin !== 0 || filters.ageMax !== 100) {
       newActiveFilters.push(`Edad: ${filters.ageMin}-${filters.ageMax}`);
@@ -135,7 +123,7 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
     onSearch({...filters});
   };
 
-  const clearFilters = () => {
+  const clearFilters = (): void => {
     setFilters({
       query: '',
       gender: '',
@@ -151,7 +139,7 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
     onSearch({});
   };
 
-  const removeFilter = (filterToRemove: string) => {
+  const removeFilter = (filterToRemove: string): void => {
     const newActiveFilters = activeFilters.filter(filter => filter !== filterToRemove);
     setActiveFilters(newActiveFilters);
 
@@ -176,7 +164,6 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
     onSearch(newFilters);
   };
 
-  // Sincronizar los campos de fecha con el estado de filtros al inicializar
   useEffect(() => {
     if (filters.lastVisitAfter && !lastVisitAfterStr) {
       setLastVisitAfterStr(filters.lastVisitAfter);
@@ -185,6 +172,10 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
       setLastVisitBeforeStr(filters.lastVisitBefore);
     }
   }, [filters.lastVisitAfter, filters.lastVisitBefore, lastVisitAfterStr, lastVisitBeforeStr]);
+
+  const generateFilterId = (filter: string): string => {
+    return `filter-${filter.toLowerCase().replace(/\s+/g, '-')}`;
+  };
 
   return (
     <Paper elevation={3} sx={{ p: 2, mb: 3 }}>
@@ -197,9 +188,9 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
 
       {activeFilters.length > 0 && (
         <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {activeFilters.map((filter, index) => (
+          {activeFilters.map((filter) => (
             <Chip
-              key={index}
+              key={generateFilterId(filter)}
               label={filter}
               onDelete={() => removeFilter(filter)}
               color="primary"
@@ -221,27 +212,24 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
           <Grid item xs={12} sm={6} md={4}>
             <TextField
               fullWidth
-              label="Buscar pacientes"
               name="query"
-              value={filters.query || ''}
+              label="Buscar paciente"
+              value={filters.query ?? ''}
               onChange={handleInputChange}
-              InputProps={{
-                endAdornment: (
-                  <SearchIcon color="action" />
-                )
-              }}
+              size="small"
+              sx={{ mb: 2 }}
             />
           </Grid>
-          
+
           <Grid item xs={12} sm={6} md={4}>
-            <FormControl fullWidth>
-              <InputLabel id="gender-select-label">Género</InputLabel>
+            <FormControl fullWidth size="small">
+              <InputLabel id="gender-label">Género</InputLabel>
               <Select
-                labelId="gender-select-label"
+                labelId="gender-label"
                 name="gender"
-                value={filters.gender || ''}
-                label="Género"
+                value={filters.gender ?? ''}
                 onChange={handleSelectChange}
+                label="Género"
               >
                 <MenuItem value="">Todos</MenuItem>
                 <MenuItem value="male">Masculino</MenuItem>
@@ -250,83 +238,75 @@ const AdvancedSearchPanel: React.FC<AdvancedSearchPanelProps> = ({
               </Select>
             </FormControl>
           </Grid>
-          
+
           <Grid item xs={12} sm={6} md={4}>
-            <Box>
-              <Typography gutterBottom>Rango de edad</Typography>
+            <Box sx={{ width: '100%' }}>
+              <Typography gutterBottom>
+                Rango de edad: {filters.ageMin ?? 0} - {filters.ageMax ?? 100}
+              </Typography>
               <Slider
-                value={[filters.ageMin || 0, filters.ageMax || 100]}
+                value={[filters.ageMin ?? 0, filters.ageMax ?? 100]}
                 onChange={handleAgeRangeChange}
-                valueLabelDisplay="auto"
                 min={0}
                 max={100}
-                sx={{ width: '100%' }}
+                valueLabelDisplay="auto"
               />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="caption">{filters.ageMin || 0} años</Typography>
-                <Typography variant="caption">{filters.ageMax || 100} años</Typography>
-              </Box>
             </Box>
           </Grid>
-          
+
           <Grid item xs={12} sm={6} md={4}>
             <TextField
               fullWidth
-              label="Última visita después de"
               type="date"
+              name="lastVisitAfter"
+              label="Visita después de"
               value={lastVisitAfterStr}
               onChange={handleLastVisitAfterChange}
-              InputLabelProps={{ shrink: true }}
+              size="small"
+              sx={{ mb: 2 }}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </Grid>
-          
+
           <Grid item xs={12} sm={6} md={4}>
             <TextField
               fullWidth
-              label="Última visita antes de"
               type="date"
+              name="lastVisitBefore"
+              label="Visita antes de"
               value={lastVisitBeforeStr}
               onChange={handleLastVisitBeforeChange}
-              InputLabelProps={{ shrink: true }}
+              size="small"
+              sx={{ mb: 2 }}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </Grid>
-          
+
           <Grid item xs={12} sm={6} md={4}>
-            <FormControl fullWidth>
-              <InputLabel id="sort-select-label">Ordenar por</InputLabel>
-              <Select
-                labelId="sort-select-label"
-                name="orderBy"
-                value={filters.orderBy || 'name'}
-                label="Ordenar por"
-                onChange={handleSelectChange}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={applyFilters}
+                startIcon={<SearchIcon />}
+                disabled={loading}
+                sx={{ mr: 1 }}
               >
-                <MenuItem value="name">Nombre</MenuItem>
-                <MenuItem value="age">Edad</MenuItem>
-                <MenuItem value="lastVisit">Última visita</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          
-          <Grid item xs={12} sm={6} md={4} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={applyFilters}
-              disabled={loading}
-              startIcon={<SearchIcon />}
-              sx={{ mr: 1 }}
-            >
-              Aplicar filtros
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={clearFilters}
-              disabled={loading}
-              startIcon={<CloseIcon />}
-            >
-              Limpiar
-            </Button>
+                Buscar
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={clearFilters}
+                startIcon={<CloseIcon />}
+                disabled={loading}
+              >
+                Limpiar
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </Collapse>

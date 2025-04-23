@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  Legend,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, Tooltip, ResponsiveContainer } from 'recharts';;;;;
 
 export interface TherapeuticGoal {
   name: string;
@@ -55,7 +46,7 @@ const GoalTrackingChart: React.FC<GoalTrackingChartProps> = ({
   }));
 
   // Calcular el porcentaje de progreso total
-  const calculateOverallProgress = () => {
+  const calculateOverallProgress = (): void => {
     if (goals.length === 0) return 0;
     
     let totalProgress = 0;
@@ -94,7 +85,7 @@ const GoalTrackingChart: React.FC<GoalTrackingChartProps> = ({
   }
 
   // Formatear el tooltip personalizado
-  const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
+  const CustomTooltip = ({ active, payload }: CustomTooltipProps): void => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

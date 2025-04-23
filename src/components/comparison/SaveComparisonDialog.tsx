@@ -1,23 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Box,
-  Typography,
-  Chip,
-  InputAdornment,
-  Autocomplete
-} from '@mui/material';
-import {
-  Save as SaveIcon,
-  Tag as TagIcon
-} from '@mui/icons-material';
-import { NewComparisonData } from '../../services/comparisonStorage';
-import { MetricFilters } from './MetricFilterDialog';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Box, Typography, Chip, InputAdornment, Autocomplete } from '@mui/material';;;;;
+import { Save as SaveIcon, Tag as TagIcon } from '@mui/icons-material';;;;;
+import { NewComparisonData } from '../../services/comparisonStorage';;;;;
+import { MetricFilters } from './MetricFilterDialog';;;;;
 
 interface SaveComparisonDialogProps {
   open: boolean;
@@ -50,7 +35,7 @@ const SaveComparisonDialog: React.FC<SaveComparisonDialogProps> = ({
   const [nameError, setNameError] = useState('');
 
   // Restablecer el formulario al cerrarse
-  const handleClose = () => {
+  const handleClose = (): void => {
     setName('');
     setDescription('');
     setTags([]);
@@ -60,7 +45,7 @@ const SaveComparisonDialog: React.FC<SaveComparisonDialogProps> = ({
   };
 
   // Validar y guardar la comparación
-  const handleSave = () => {
+  const handleSave = (): void => {
     // Validar que haya un nombre
     if (!name.trim()) {
       setNameError('El nombre es obligatorio');
@@ -83,7 +68,7 @@ const SaveComparisonDialog: React.FC<SaveComparisonDialogProps> = ({
   };
 
   // Agregar una etiqueta
-  const handleAddTag = (tag: string) => {
+  const handleAddTag = (tag: string): void => {
     if (tag && !tags.includes(tag)) {
       setTags([...tags, tag]);
     }

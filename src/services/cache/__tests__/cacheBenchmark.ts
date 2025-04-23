@@ -1,6 +1,6 @@
-import { EnhancedCacheManager } from '../EnhancedCacheManager';
-import { ClinicalDashboardService } from '../../clinicalDashboard';
-import { ClinicalDashboardData, ClinicalDashboardFilters } from '../../../types/clinicalDashboard';
+import { EnhancedCacheManager } from '../EnhancedCacheManager';;;;;
+import { ClinicalDashboardService } from '../../clinicalDashboard';;;;;
+import { ClinicalDashboardData, ClinicalDashboardFilters } from '../../../types/clinicalDashboard';;;;;
 
 /**
  * Utilidad para medir el rendimiento de la caché con grandes conjuntos de datos
@@ -116,7 +116,7 @@ class CacheBenchmarkUtil {
       
       // Mostrar progreso cada 100 solicitudes
       if (i % 100 === 0) {
-        console.log(`Progress: ${i}/${totalRequests}`);
+        
       }
     }
     
@@ -142,10 +142,10 @@ class CacheBenchmarkUtil {
    * Ejecuta una prueba de rendimiento para diferentes tamaños de caché
    */
   public async benchmarkCacheSizes(sizes: number[] = [10, 50, 100, 200, 500]): Promise<void> {
-    console.log('===== CACHE SIZE BENCHMARK =====');
+    
     
     for (const size of sizes) {
-      console.log(`\nTesting cache size: ${size}`);
+      
       
       // Crear nueva instancia con tamaño específico
       this.cacheManager = new EnhancedCacheManager<ClinicalDashboardData>({
@@ -157,32 +157,32 @@ class CacheBenchmarkUtil {
       // Simular acceso con 3 veces el tamaño de la caché para forzar evictions
       const result = await this.simulateRealisticAccess(size * 3, size, 0.7);
       
-      console.log('Results:');
-      console.log(`- Hit Ratio: ${(result.hitRatio * 100).toFixed(2)}%`);
-      console.log(`- Average Response Time: ${result.averageResponseTime.toFixed(2)}ms`);
-      console.log(`- Total Hits: ${result.hitCount}`);
-      console.log(`- Total Misses: ${result.missCount}`);
+      
+      .toFixed(2)}%`);
+      }ms`);
+      
+      
     }
   }
 }
 
 // Ejecutar benchmark
-async function runBenchmark() {
+async function runBenchmark(): void {
   const benchmark = new CacheBenchmarkUtil();
   
-  console.log('Starting cache performance benchmark...');
+  
   
   // Simular uso realista
-  console.log('\n1. Realistic Usage Simulation:');
+  
   const realisticResult = await benchmark.simulateRealisticAccess(1000, 100, 0.7);
-  console.log('Results:');
-  console.log(`- Hit Ratio: ${(realisticResult.hitRatio * 100).toFixed(2)}%`);
-  console.log(`- Average Response Time: ${realisticResult.averageResponseTime.toFixed(2)}ms`);
+  
+  .toFixed(2)}%`);
+  }ms`);
   
   // Benchmark de tamaños de caché
   await benchmark.benchmarkCacheSizes();
   
-  console.log('\nBenchmark completed!');
+  
 }
 
 // Solo ejecutar si se llama directamente

@@ -1,13 +1,5 @@
 import React from 'react';
-import { 
-  Box, 
-  Card, 
-  CardContent, 
-  Typography, 
-  Paper,
-  Container,
-  Divider
-} from '@mui/material';
+import { Box, Card, CardContent, Typography, Paper, Container, Divider } from '@mui/material';;;;;
 
 // Definir la interfaz Patient localmente
 interface Patient {

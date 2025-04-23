@@ -1,6 +1,6 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';;;;;
 
-export function MainLayout() {
+export function MainLayout(): void {
     return (
         <div className="min-h-screen bg-gray-100">
             {/* Header */}

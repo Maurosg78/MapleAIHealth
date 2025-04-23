@@ -1,6 +1,8 @@
-import { CacheConfig, CacheEntry, CacheMetadata, CacheStats } from './types';
-import { CacheDependencyManager, CacheDependency } from './DependencyManager';
-import { PrioritizationAlgorithm } from './CachePrioritizationService';
+import { createLogger } from '../../utils/logger';;;;
+const logger = createLogger('EnhancedCacheManager.ts');
+import { CacheConfig, CacheEntry, CacheMetadata, CacheStats } from './types';;;;;
+import { CacheDependencyManager, CacheDependency } from './DependencyManager';;;;;
+import { PrioritizationAlgorithm } from './CachePrioritizationService';;;;;
 
 export class EnhancedCacheManager<T> {
   private cache: Map<string, CacheEntry<T>> = new Map();
@@ -136,7 +138,7 @@ export class EnhancedCacheManager<T> {
   public invalidateByPatient(patientId: string): void {
     // En esta implementación simplificada, solo limpiamos toda la caché
     // ya que no estamos manteniendo un mapeo por paciente
-    console.debug(`Invalidando caché para paciente: ${patientId}`);
+    logger.debug(`Invalidando caché para paciente: ${patientId}`);
     this.clear();
   }
 
@@ -147,7 +149,7 @@ export class EnhancedCacheManager<T> {
   public invalidateBySection(section: string): void {
     // En esta implementación simplificada, solo limpiamos toda la caché
     // ya que no estamos manteniendo un mapeo por sección
-    console.debug(`Invalidando caché para sección: ${section}`);
+    logger.debug(`Invalidando caché para sección: ${section}`);
     this.clear();
   }
 
@@ -161,7 +163,7 @@ export class EnhancedCacheManager<T> {
     };
 
     // Registrar estadísticas para análisis
-    console.debug('Cache Stats:', stats);
+    logger.debug('Cache Stats:', stats);
     return stats;
   }
 

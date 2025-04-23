@@ -1,4 +1,4 @@
-import { MetricFilters } from '../components/comparison/MetricFilterDialog';
+import { MetricFilters } from '../components/comparison/MetricFilterDialog';;;;;
 
 // Clave para almacenar las comparaciones en localStorage
 const STORAGE_KEY = 'mapleHealth_savedComparisons';

@@ -1,21 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Chip,
-  CircularProgress,
-  Alert
-} from '@mui/material';
-import {
-  Info as InfoIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon
-} from '@mui/icons-material';
+import { Box, Paper, Typography, List, ListItem, ListItemIcon, ListItemText, Chip, CircularProgress, Alert } from '@mui/material';;;;;
+import { Info as InfoIcon, Warning as WarningIcon, Error as ErrorIcon } from '@mui/icons-material';;;;;
 import RecommendationService from '../../services/RecommendationService';
 
 interface Recommendation {
@@ -67,7 +52,7 @@ const RecommendationsPanel: React.FC<RecommendationsPanelProps> = ({
     loadRecommendations();
   }, [patientId, context]);
 
-  const getIcon = (type: string) => {
+  const getIcon = (type: string): void => {
     switch (type) {
       case 'warning':
         return <WarningIcon color="warning" />;
@@ -78,7 +63,7 @@ const RecommendationsPanel: React.FC<RecommendationsPanelProps> = ({
     }
   };
 
-  const getSourceColor = (source: string) => {
+  const getSourceColor = (source: string): void => {
     switch (source) {
       case 'visit_history':
         return 'primary';

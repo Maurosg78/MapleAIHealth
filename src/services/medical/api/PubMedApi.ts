@@ -1,4 +1,4 @@
-import { medicalConfig } from '../../../config/medicalConfig';
+import { medicalConfig } from '../../../config/medicalConfig';;;;;
 
 interface PubMedSearchResponse {
   esearchresult: {
@@ -98,7 +98,7 @@ export class PubMedApi {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error ?? undefined status: ${response.status}`);
       }
       const data: PubMedSearchResponse = await response.json();
       return data.esearchresult.idlist;
@@ -121,7 +121,7 @@ export class PubMedApi {
     try {
       const response = await fetch(detailsUrl);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error ?? undefined status: ${response.status}`);
       }
       const text = await response.text();
       const parser = new DOMParser();

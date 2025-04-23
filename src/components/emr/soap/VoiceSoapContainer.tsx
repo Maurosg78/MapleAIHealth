@@ -1,11 +1,11 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Tab } from '@headlessui/react';
-import { SubjectiveData, ObjectiveData, AssessmentData, PlanData, SOAPData, SpecialtyType } from '../../../types/clinical';
-import { validateRequiredFields } from './validation';
-import { ClinicalAssistant } from '../ai/ClinicalAssistant';
-import { useVoiceCommands } from '../../../hooks/useVoiceCommands';
-import { VoiceCommandsPanel } from '../../voice/VoiceCommandsPanel';
-import { CommandType } from '../../../services/voice/VoiceCommandService';
+import { Tab } from '@headlessui/react';;;;;
+import { SubjectiveData, ObjectiveData, AssessmentData, PlanData, SOAPData, SpecialtyType } from '../../../types/clinical';;;;;
+import { validateRequiredFields } from './validation';;;;;
+import { ClinicalAssistant } from '../ai/ClinicalAssistant';;;;;
+import { useVoiceCommands } from '../../../hooks/useVoiceCommands';;;;;
+import { VoiceCommandsPanel } from '../../voice/VoiceCommandsPanel';;;;;
+import { CommandType } from '../../../services/voice/VoiceCommandService';;;;;
 
 // Componentes SOAP - Se cargarán dinámicamente según la especialidad y con memoización
 const SubjectiveComponent = React.memo(React.lazy(() => import('./subjective/SubjectiveContainer')));
@@ -72,7 +72,7 @@ export default function VoiceSoapContainer({
     context: 'soap',
     specialistId,
     onCommandExecuted: (commandId) => {
-      console.log(`Comando ejecutado: ${commandId}`);
+      
     }
   });
 
@@ -233,7 +233,7 @@ export default function VoiceSoapContainer({
   // Actualizar el contexto cuando cambia la pestaña
   useEffect(() => {
     setContext(['soap', TAB_IDS[activeTab]]);
-  }, [activeTab, setContext]);
+  }, [activeTab, setContext, soap, TAB_IDS]);
 
   // Verificar si hay texto transcrito y procesarlo para inserción en campos
   useEffect(() => {
@@ -270,7 +270,7 @@ export default function VoiceSoapContainer({
   // Determinar la sección activa para el asistente
   const activeSoapSection = TAB_IDS[activeTab];
 
-  const renderSection = (tabId: TabId) => {
+  const renderSection = (tabId: TabId): void => {
     const components = {
       subjective: SubjectiveComponent,
       objective: ObjectiveComponent,

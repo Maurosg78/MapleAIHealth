@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { SubjectiveData, ObjectiveData, AssessmentData, PlanData, SpecialtyType } from '../../../types/clinical';
-import { AIHealthService, AISuggestion, SOAPSection } from '../../../services/AIHealthService';
+import { SubjectiveData, ObjectiveData, AssessmentData, PlanData, SpecialtyType } from '../../../types/clinical';;;;;
+import { AIHealthService, AISuggestion, SOAPSection } from '../../../services/AIHealthService';;;;;
 
 // Tipos de sugerencias que puede mostrar el panel
 export type SuggestionType = 'info' | 'warning' | 'required' | 'recommendation';
@@ -105,13 +105,13 @@ export const SmartSuggestionPanel: React.FC<SmartSuggestionPanelProps> = ({
   };
 
   // Función para manejar el clic en una sugerencia
-  const handleSuggestionClick = (suggestion: AISuggestion) => {
+  const handleSuggestionClick = (suggestion: AISuggestion): void => {
     if (onSuggestionSelect) {
       onSuggestionSelect(suggestion);
     }
   };
 
-  const handleSuggestionKeyDown = (event: React.KeyboardEvent, suggestion: AISuggestion) => {
+  const handleSuggestionKeyDown = (event: React.KeyboardEvent, suggestion: AISuggestion): void => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       handleSuggestionClick(suggestion);
@@ -119,7 +119,7 @@ export const SmartSuggestionPanel: React.FC<SmartSuggestionPanelProps> = ({
   };
 
   // Función para descartar una sugerencia
-  const handleDismiss = (id: string, e: React.MouseEvent) => {
+  const handleDismiss = (id: string, e: React.MouseEvent): void => {
     e.stopPropagation(); // Evitar que el clic se propague
     setDismissedSuggestions(prev => [...prev, id]);
     

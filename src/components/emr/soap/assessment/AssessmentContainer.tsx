@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { AssessmentData, SpecialtyType } from '../../../../types/clinical';
-import { useForm, Controller } from 'react-hook-form';
-import { ValidationContainer } from '../validation';
-import { debounce } from '../../../../utils/debounce';
+import { AssessmentData, SpecialtyType } from '../../../../types/clinical';;;;;
+import { useForm, Controller } from 'react-hook-form';;;;;
+import { ValidationContainer } from '../validation';;;;;
+import { debounce } from '../../../../utils/debounce';;;;;
 
 interface AssessmentContainerProps {
   patientId: string;
@@ -33,7 +33,7 @@ export default function AssessmentContainer({
   
   // Configuración dinámica según especialidad
   // La función está definida para uso futuro
-  const getSpecialtyConfig = () => {
+  const getSpecialtyConfig = (): void => {
     switch(specialty) {
       case 'physiotherapy':
         return {
@@ -151,9 +151,9 @@ export default function AssessmentContainer({
     return () => subscription.unsubscribe();
   }, [watch, updateFormData]);
   
-  const onSubmit = (data: AssessmentData) => {
+  const onSubmit = (data: AssessmentData): void => {
     // Aquí iría la lógica para guardar los datos
-    console.log('Formulario Evaluación:', data);
+    
     setFormData(data);
     setShowValidation(true);
     

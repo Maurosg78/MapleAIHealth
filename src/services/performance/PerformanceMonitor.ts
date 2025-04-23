@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';;;;;
 
 /**
  * Tipo de métrica de rendimiento
@@ -233,7 +233,7 @@ export class PerformanceMonitor {
 /**
  * Hook para medir el tiempo de renderizado de un componente
  */
-export function useRenderMonitor(componentName: string) {
+export function useRenderMonitor(componentName: string): void {
   const monitor = PerformanceMonitor.getInstance();
   const metricId = useRef<string | null>(null);
   

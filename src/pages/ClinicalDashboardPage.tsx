@@ -1,6 +1,6 @@
 import React from 'react';
 import ClinicalDashboard from '../components/clinical/ClinicalDashboard';
-import { Typography, Box, Container, Paper } from '@mui/material';
+import { Typography, Box, Container, Paper } from '@mui/material';;;;;
 
 const ClinicalDashboardPage: React.FC = () => {
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ShieldCheckIcon, ExclamationCircleIcon, DocumentDownloadIcon } from '@heroicons/react/solid';
-import { VerificationResponse } from '../services/ClinicalBlindSpotService';
+import { ShieldCheckIcon, ExclamationCircleIcon, DocumentDownloadIcon } from '@heroicons/react/solid';;;;;
+import { VerificationResponse } from '../services/ClinicalBlindSpotService';;;;;
 
 interface LegalProtectionPanelProps {
   verificationResult: VerificationResponse;
@@ -48,7 +48,7 @@ export const LegalProtectionPanel: React.FC<LegalProtectionPanelProps> = ({
     }
   };
   
-  const toggleBlindSpot = (id: string) => {
+  const toggleBlindSpot = (id: string): void => {
     if (expandedBlindSpot === id) {
       setExpandedBlindSpot(null);
     } else {
@@ -56,7 +56,7 @@ export const LegalProtectionPanel: React.FC<LegalProtectionPanelProps> = ({
     }
   };
   
-  const handleAddRecommendedFields = () => {
+  const handleAddRecommendedFields = (): void => {
     onAddRecommendedFields([
       ...verificationResult.requiredFields,
       ...verificationResult.recommendedFields

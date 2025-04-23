@@ -1,8 +1,8 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Tab } from '@headlessui/react';
-import { SubjectiveData, ObjectiveData, AssessmentData, PlanData, SOAPData, SpecialtyType } from '../../../types/clinical';
-import { validateRequiredFields } from './validation';
-import { ClinicalAssistant } from '../ai/ClinicalAssistant';
+import { Tab } from '@headlessui/react';;;;;
+import { SubjectiveData, ObjectiveData, AssessmentData, PlanData, SOAPData, SpecialtyType } from '../../../types/clinical';;;;;
+import { validateRequiredFields } from './validation';;;;;
+import { ClinicalAssistant } from '../ai/ClinicalAssistant';;;;;
 
 // Componentes SOAP - Se cargarán dinámicamente según la especialidad y con memoización
 const SubjectiveComponent = React.memo(React.lazy(() => import('./subjective/SubjectiveContainer')));
@@ -123,7 +123,7 @@ export default function SoapContainer({
   // Determinar la sección activa para el asistente
   const activeSoapSection = TAB_IDS[activeTab];
 
-  const renderSection = (tabId: TabId) => {
+  const renderSection = (tabId: TabId): void => {
     const components = {
       subjective: SubjectiveComponent,
       objective: ObjectiveComponent,

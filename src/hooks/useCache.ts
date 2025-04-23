@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
-import { CacheManagerFactory } from '../services/cache';
-import { CacheMetadata } from '../services/cache/types';
+import { useState, useCallback, useEffect } from 'react';;;;;
+import { CacheManagerFactory } from '../services/cache';;;;;
+import { CacheMetadata } from '../services/cache/types';;;;;
 
 /**
  * Hook personalizado para interactuar con el sistema de caché

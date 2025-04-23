@@ -1,5 +1,5 @@
-import { User } from '../../models/User';
-import { Patient } from '../../models/Patient';
+import { User } from '../../models/User';;;;;
+import { Patient } from '../../models/Patient';;;;;
 
 export type InteractionType = 
   | 'view'
@@ -34,7 +34,7 @@ class InteractionService {
   private static instance: InteractionService;
   private interactions: Interaction[] = [];
 
-  private constructor() {}
+  private constructor() { super(); }
 
   static getInstance(): InteractionService {
     if (!InteractionService.instance) {
@@ -79,7 +79,7 @@ class InteractionService {
 
   private async saveInteraction(interaction: Interaction): Promise<void> {
     // Implementar guardado en base de datos
-    console.log('Guardando interacción:', interaction);
+    
   }
 
   private async analyzeInteraction(interaction: Interaction): Promise<void> {
@@ -91,7 +91,7 @@ class InteractionService {
 
   private async analyzeAIAssistance(interaction: Interaction): Promise<void> {
     // Analizar uso del asistente de IA
-    console.log('Analizando interacción con IA:', interaction);
+    
   }
 
   async getUserInteractions(userId: string): Promise<Interaction[]> {
@@ -115,7 +115,7 @@ class InteractionService {
     typeBreakdown: Record<InteractionType, number>;
   }> {
     const now = new Date();
-    let startDate = new Date();
+    const startDate = new Date();
 
     switch (timeframe) {
       case 'day':

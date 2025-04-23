@@ -1,9 +1,4 @@
-import { 
-  Patient, 
-  PatientVisit, 
-  PatientSummary,
-  PatientBasicInfo
-} from '../models/Patient';
+import { Patient, PatientVisit, PatientSummary, PatientBasicInfo } from '../models/Patient';;;;;
 
 /**
  * Servicio para gestionar pacientes
@@ -308,13 +303,13 @@ class PatientService {
         // Filtro por edad
         if (filters.ageMin !== undefined) {
           filteredPatients = filteredPatients.filter(patient => 
-            patient.age >= filters.ageMin!
+            patient.age >= filters.ageMin ?? undefined
           );
         }
 
         if (filters.ageMax !== undefined) {
           filteredPatients = filteredPatients.filter(patient => 
-            patient.age <= filters.ageMax!
+            patient.age <= filters.ageMax ?? undefined
           );
         }
 

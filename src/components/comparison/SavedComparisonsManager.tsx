@@ -1,32 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Chip,
-  TextField,
-  InputAdornment,
-  Divider,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Tooltip,
-  Stack
-} from '@mui/material';
-import {
-  Search as SearchIcon,
-  Delete as DeleteIcon,
-  Visibility as ViewIcon,
-  AddCircle as AddIcon
-} from '@mui/icons-material';
+import { Box, Paper, Typography, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Chip, TextField, InputAdornment, Divider, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Tooltip, Stack } from '@mui/material';;;;;
+import { Search as SearchIcon, Delete as DeleteIcon } from '@mui/icons-material';;;;;
 import comparisonStorageService, { SavedComparison } from '../../services/comparisonStorage';
 
 interface SavedComparisonsManagerProps {
@@ -48,10 +22,10 @@ const SavedComparisonsManager: React.FC<SavedComparisonsManagerProps> = ({
   // Obtener comparaciones al cargar el componente
   useEffect(() => {
     loadComparisons();
-  }, []);
+  }, [loadComparisons]);
   
   // Cargar comparaciones desde el almacenamiento
-  const loadComparisons = () => {
+  const loadComparisons = (): void => {
     const savedComparisons = comparisonStorageService.getAllComparisons();
     // Ordenar por fecha de actualización (más reciente primero)
     savedComparisons.sort((a, b) => 
@@ -71,12 +45,12 @@ const SavedComparisonsManager: React.FC<SavedComparisonsManagerProps> = ({
   });
   
   // Abrir confirmación para eliminar una comparación
-  const handleDeleteClick = (comparison: SavedComparison) => {
+  const handleDeleteClick = (comparison: SavedComparison): void => {
     setDeletingComparison(comparison);
   };
   
   // Confirmar y eliminar la comparación
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = (): void => {
     if (deletingComparison) {
       const success = comparisonStorageService.deleteComparison(deletingComparison.id);
       if (success) {
@@ -88,26 +62,26 @@ const SavedComparisonsManager: React.FC<SavedComparisonsManagerProps> = ({
   };
   
   // Cancelar eliminación
-  const handleCancelDelete = () => {
+  const handleCancelDelete = (): void => {
     setDeletingComparison(null);
   };
   
   // Manejar la selección de una comparación
-  const handleSelect = (comparison: SavedComparison) => {
+  const handleSelect = (comparison: SavedComparison): void => {
     if (onSelect) {
       onSelect(comparison.id);
     }
   };
   
   // Manejar la creación de una nueva comparación
-  const handleCreateNew = () => {
+  const handleCreateNew = (): void => {
     if (onCreateNew) {
       onCreateNew();
     }
   };
   
   // Formatear fecha para mostrar
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string): void => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
       day: '2-digit',

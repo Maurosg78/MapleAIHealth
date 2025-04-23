@@ -1,9 +1,9 @@
-import { CacheMetadata, CacheStats, CacheOptions } from './types';
-import { compress, decompress } from '../utils/compression';
-import { Logger } from '../utils/logger';
+import { CacheMetadata, CacheStats, CacheOptions } from './types';;;;;
+import { compress, decompress } from '../utils/compression';;;;;
+import { Logger } from '../utils/logger';;;;;
 
 export class CacheManager {
-  private cache: Map<string, { data: any; metadata: CacheMetadata }>;
+  private cache: Map<string, { data: unknown; metadata: CacheMetadata }>;
   private hotQueue: string[];
   private coldQueue: string[];
   private stats: CacheStats;
@@ -54,7 +54,7 @@ export class CacheManager {
     return entry.data;
   }
 
-  public async set(key: string, value: any, metadata: Partial<CacheMetadata> = {}): Promise<void> {
+  public async set(key: string, value: unknown, metadata: Partial<CacheMetadata> = {}): Promise<void> {
     const size = this.calculateSize(value);
     const shouldCompress = size > this.options.compressionThreshold;
 
@@ -114,7 +114,7 @@ export class CacheManager {
     }
   }
 
-  private calculateSize(data: any): number {
+  private calculateSize(data: unknown): number {
     return Buffer.from(JSON.stringify(data)).length;
   }
 

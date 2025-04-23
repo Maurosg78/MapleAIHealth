@@ -1,6 +1,6 @@
-import { EvidenceSource } from '../../../types/clinicalDashboard';
-import { BaseSource, VerificationDetails } from './BaseSource';
-import { PubMedApi } from '../api/PubMedApi';
+import { EvidenceSource } from '../../../types/clinicalDashboard';;;;;
+import { BaseSource, VerificationDetails } from './BaseSource';;;;;
+import { PubMedApi } from '../api/PubMedApi';;;;;
 
 export class PubMedSource extends BaseSource {
   private readonly api: PubMedApi;

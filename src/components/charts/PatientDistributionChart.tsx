@@ -1,17 +1,5 @@
 import React from 'react';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer
-} from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';;;;;
 
 export interface DistributionData {
   name: string;
@@ -49,7 +37,7 @@ const PatientDistributionChart: React.FC<PatientDistributionChartProps> = ({
   showLabels = true,
 }) => {
   // Asignar colores a cada segmento
-  const getColors = () => {
+  const getColors = (): void => {
     return data.map((entry, index) => 
       entry.color || colors[index % colors.length]
     );
@@ -69,7 +57,7 @@ const PatientDistributionChart: React.FC<PatientDistributionChartProps> = ({
   }
 
   // Función para renderizar el label en el gráfico de torta
-  const renderCustomizedLabel = (props: PieLabelProps) => {
+  const renderCustomizedLabel = (props: PieLabelProps): void => {
     const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
     
     if (!showLabels || percent < 0.05) return null;
@@ -93,7 +81,7 @@ const PatientDistributionChart: React.FC<PatientDistributionChartProps> = ({
   };
 
   // Renderizar el tipo de gráfico seleccionado
-  const renderChart = () => {
+  const renderChart = (): void => {
     if (type === 'pie') {
       return (
         <PieChart>

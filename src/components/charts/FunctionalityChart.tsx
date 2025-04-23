@@ -1,15 +1,6 @@
 import React from 'react';
-import {
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-} from 'recharts';
-import { Box, Typography } from '@mui/material';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer, Tooltip,  } from 'recharts';;;;;
+import { Box, Typography } from '@mui/material';;;;;
 
 export interface FunctionalityData {
   area: string;
@@ -69,7 +60,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
 };
 
 // Normalizar los datos para el gráfico de radar
-const normalizeData = (data: FunctionalityData[]) => {
+const normalizeData = (data: FunctionalityData[]): void => {
   return data.map(item => ({
     ...item,
     normalizedValue: (item.value / item.maxValue) * 100,

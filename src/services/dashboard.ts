@@ -1,4 +1,4 @@
-import { DashboardMetrics } from '@/types/dashboard';
+import { DashboardMetrics } from '@/types/dashboard';;;;;
 
 // Datos de ejemplo para el desarrollo
 const mockMetrics: DashboardMetrics = {

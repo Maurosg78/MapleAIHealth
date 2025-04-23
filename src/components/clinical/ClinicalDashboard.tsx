@@ -1,24 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-  Container,
-  Paper,
-  Typography,
-  Box,
-  CircularProgress,
-  Tab,
-  Tabs,
-  Button,
-  useTheme,
-  useMediaQuery
-} from '@mui/material';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
-import { ClinicalDashboardService } from '../../services/clinicalDashboard';
-import { 
-  ClinicalDashboardData, 
-  ClinicalDashboardFilters
-} from '../../types/clinicalDashboard';
+import { Container, Paper, Typography, Box, CircularProgress, Tab, Tabs, Button, useTheme, useMediaQuery } from '@mui/material';;;;;
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';;;;;
+import { ClinicalDashboardService } from '../../services/clinicalDashboard';;;;;
+import { ClinicalDashboardData, ClinicalDashboardFilters } from '../../types/clinicalDashboard';;;;;
 import CachePerformanceWidget from './CachePerformanceWidget';
 
 // Componente funcional principal
@@ -72,13 +56,13 @@ const ClinicalDashboard: React.FC = () => {
   }, [dashboardService, filters]);
   
   // Cambiar de tab
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number): void => {
     setActiveTab(newValue);
   };
 
   // Función para aplicar filtros
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const applyFilters = (newFilters: Partial<ClinicalDashboardFilters>) => {
+  const applyFilters = (newFilters: Partial<ClinicalDashboardFilters>): void => {
     setFilters(current => ({...current, ...newFilters}));
   };
   

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ChatAltIcon, PaperAirplaneIcon, PlusCircleIcon, UserCircleIcon } from '@heroicons/react/solid';
-import { VerificationRequest } from '../services/ClinicalBlindSpotService';
+import { ChatAltIcon, PaperAirplaneIcon, PlusCircleIcon, UserCircleIcon } from '@heroicons/react/solid';;;;;
+import { VerificationRequest } from '../services/ClinicalBlindSpotService';;;;;
 
 interface Message {
   id: string;
@@ -96,7 +96,7 @@ export const ConversationalAssistant: React.FC<ConversationalAssistantProps> = (
       initialMessages.push({
         id: `complete-${Date.now()}`,
         sender: 'assistant',
-        text: '¡Excelente! La historia clínica está completa. ¿Hay algo específico en lo que pueda ayudarte?',
+        text: '¡Excelente ?? undefined La historia clínica está completa. ¿Hay algo específico en lo que pueda ayudarte?',
         timestamp: new Date(),
         type: 'info'
       });
@@ -198,7 +198,7 @@ export const ConversationalAssistant: React.FC<ConversationalAssistantProps> = (
     }
   }, [missingFields, activeConversation, currentField, suggestNextField]);
   
-  const handleUserResponse = () => {
+  const handleUserResponse = (): void => {
     if (!userInput.trim()) return;
     
     // Agregar el mensaje del usuario a la conversación
@@ -270,7 +270,7 @@ export const ConversationalAssistant: React.FC<ConversationalAssistantProps> = (
     }
   };
   
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       handleUserResponse();
     }

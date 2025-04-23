@@ -1,20 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Paper,
-  Typography,
-  Box,
-  CircularProgress,
-  Divider,
-  Chip,
-  Button,
-  Tooltip as MuiTooltip
-} from '@mui/material';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell, LineChart, Line
-} from 'recharts';
-import { ClinicalDashboardService } from '../../services/clinicalDashboard';
-import { CacheStats } from '../../services/cache/types';
+import { Paper, Typography, Box, CircularProgress, Divider, Chip, Button, Tooltip as MuiTooltip } from '@mui/material';;;;;
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';;;;;
+import { ClinicalDashboardService } from '../../services/clinicalDashboard';;;;;
+import { CacheStats } from '../../services/cache/types';;;;;
 
 // Interfaz mejorada para estadísticas de caché con todas las propiedades necesarias
 interface EnhancedCacheStats extends CacheStats {
@@ -98,7 +86,7 @@ const CachePerformanceWidget: React.FC<CachePerformanceWidgetProps> = ({
   }, [dashboardService, refreshInterval]);
   
   // Preparar datos para gráfico de rendimiento
-  const preparePerformanceData = () => {
+  const preparePerformanceData = (): void => {
     if (!stats) return [];
     
     return [
@@ -108,7 +96,7 @@ const CachePerformanceWidget: React.FC<CachePerformanceWidgetProps> = ({
   };
   
   // Preparar datos para gráfico de claves más usadas
-  const prepareTopKeysData = () => {
+  const prepareTopKeysData = (): void => {
     if (!stats || !stats.topKeys) return [];
     
     return stats.topKeys.map(item => ({
@@ -118,7 +106,7 @@ const CachePerformanceWidget: React.FC<CachePerformanceWidgetProps> = ({
   };
   
   // Preparar datos históricos para gráfico de tendencia
-  const prepareTrendData = () => {
+  const prepareTrendData = (): void => {
     return historyStats.map((item, index) => ({
       name: index,
       hitRatio: Number((item.hitRatio * 100).toFixed(1)),
@@ -128,7 +116,7 @@ const CachePerformanceWidget: React.FC<CachePerformanceWidgetProps> = ({
   };
   
   // Manejar acción de limpiar caché
-  const handleClearCache = () => {
+  const handleClearCache = (): void => {
     setLoading(true);
     
     try {

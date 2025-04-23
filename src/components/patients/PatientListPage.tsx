@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Container, 
-  Typography, 
-  Box, 
-  Button,
-  Alert
-} from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { Container, Typography, Box, Button, Alert } from '@mui/material';;;;;
+import { Add as AddIcon } from '@mui/icons-material';;;;;
+import { useNavigate } from 'react-router-dom';;;;;
 import AdvancedSearchPanel from './AdvancedSearchPanel';
 import PatientService from '../../services/PatientService';
-import { Patient } from '../../models/Patient';
+import { Patient } from '../../models/Patient';;;;;
 import PatientList from './PatientList';
 
 interface SearchFilters {
@@ -33,7 +27,7 @@ const PatientListPage: React.FC = () => {
 
   useEffect(() => {
     fetchPatients();
-  }, []);
+  }, [fetchPatients]);
 
   const fetchPatients = async (searchFilters: SearchFilters = {}) => {
     setLoading(true);
@@ -60,15 +54,15 @@ const PatientListPage: React.FC = () => {
     }
   };
 
-  const handleSearch = (searchFilters: SearchFilters) => {
+  const handleSearch = (searchFilters: SearchFilters): void => {
     fetchPatients(searchFilters);
   };
 
-  const handleViewPatient = (patientId: string) => {
+  const handleViewPatient = (patientId: string): void => {
     navigate(`/patients/${patientId}`);
   };
 
-  const handleEditPatient = (patient: Patient) => {
+  const handleEditPatient = (patient: Patient): void => {
     navigate(`/patients/${patient.id}/edit`);
   };
 
@@ -85,7 +79,7 @@ const PatientListPage: React.FC = () => {
     }
   };
 
-  const handleCreatePatient = () => {
+  const handleCreatePatient = (): void => {
     navigate('/patients/create');
   };
 

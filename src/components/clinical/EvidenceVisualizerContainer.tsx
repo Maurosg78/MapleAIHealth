@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Tabs,
-  Tab,
-  Button,
-  CircularProgress,
-  Alert,
-  useMediaQuery
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { ClinicalEvidence, ClinicalDashboardFilters, EvidenceLevelData } from '../../types/clinicalDashboard';
-import { EvidenceSearchService } from '../../services/EvidenceSearchService';
-import { EvidenceTableVisualizer } from './EvidenceTableVisualizer';
-import { EvidenceChartVisualizer } from './EvidenceChartVisualizer';
-import { EvidenceComparisonVisualizer } from './EvidenceComparisonVisualizer';
-import { EvidenceVisualizer } from '../EvidenceVisualizer';
+import { Box, Typography, Paper, Tabs, Tab, Button, CircularProgress, Alert, useMediaQuery } from '@mui/material';;;;;
+import { useTheme } from '@mui/material/styles';;;;;
+import { ClinicalEvidence, ClinicalDashboardFilters, EvidenceLevelData } from '../../types/clinicalDashboard';;;;;
+import { EvidenceSearchService } from '../../services/EvidenceSearchService';;;;;
+import { EvidenceTableVisualizer } from './EvidenceTableVisualizer';;;;;
+import { EvidenceChartVisualizer } from './EvidenceChartVisualizer';;;;;
+import { EvidenceComparisonVisualizer } from './EvidenceComparisonVisualizer';;;;;
+import { EvidenceVisualizer } from '../EvidenceVisualizer';;;;;
 
 interface EvidenceVisualizerContainerProps {
   patientId?: string;
@@ -34,7 +24,7 @@ interface TabPanelProps {
   value: number;
 }
 
-function TabPanel(props: TabPanelProps) {
+function TabPanel(props: TabPanelProps): void {
   const { children, value, index, ...other } = props;
 
   return (
@@ -105,25 +95,25 @@ export const EvidenceVisualizerContainer: React.FC<EvidenceVisualizerContainerPr
     loadEvidence();
   }, [patientId, initialFilters, maxItems]);
   
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number): void => {
     setCurrentTab(newValue);
   };
   
-  const handleEvidenceSelect = (evidence: ClinicalEvidence) => {
+  const handleEvidenceSelect = (evidence: ClinicalEvidence): void => {
     setSelectedEvidence(evidence);
   };
   
-  const handleAddToComparison = () => {
+  const handleAddToComparison = (): void => {
     if (selectedEvidence && !comparisonList.find(e => e.id === selectedEvidence.id)) {
       setComparisonList([...comparisonList, selectedEvidence]);
     }
   };
   
-  const handleRemoveFromComparison = (evidenceId: string) => {
+  const handleRemoveFromComparison = (evidenceId: string): void => {
     setComparisonList(comparisonList.filter(e => e.id !== evidenceId));
   };
   
-  const handleClearComparison = () => {
+  const handleClearComparison = (): void => {
     setComparisonList([]);
   };
   

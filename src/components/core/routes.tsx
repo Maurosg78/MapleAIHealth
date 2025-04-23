@@ -1,12 +1,12 @@
 import React from 'react';
-import { RouteObject, createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
-import { AiduxLayout } from './components/layout/AiduxLayout';
+import { RouteObject, createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';;;;;
+import { AiduxLayout } from './components/layout/AiduxLayout';;;;;
 import ClinicalAssistantPage from './pages/ClinicalAssistantPage';
-import { ProgressPage } from './components/emr/progress';
+import { ProgressPage } from './components/emr/progress';;;;;
 import VoiceEnabledClinicalPage from './pages/VoiceEnabledClinicalPage';
 import VoiceCommandsHelpPage from './pages/VoiceCommandsHelpPage';
-import { FunctionalAssessmentContainer } from './containers/FunctionalAssessmentContainer';
-import { FunctionalAssessmentSelectionPage } from './pages/FunctionalAssessmentSelectionPage';
+import { FunctionalAssessmentContainer } from './containers/FunctionalAssessmentContainer';;;;;
+import { FunctionalAssessmentSelectionPage } from './pages/FunctionalAssessmentSelectionPage';;;;;
 import PatientsPage from './pages/PatientsPage';
 import PatientDetailPage from './pages/PatientDetailPage';
 import LoginPage from './pages/LoginPage';
@@ -14,15 +14,15 @@ import RegisterPage from './pages/RegisterPage';
 import CreatePatientPage from './pages/CreatePatientPage';
 import EditPatientPage from './pages/EditPatientPage';
 import ClinicalDashboardPage from './pages/ClinicalDashboardPage';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';;;;;
 import PasswordResetRequestPage from './pages/PasswordResetRequestPage';
 import PasswordResetPage from './pages/PasswordResetPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import CacheManagement from './pages/admin/CacheManagement';
-import { UserRole } from './services/auth/types';
+import { UserRole } from './services/auth/types';;;;;
 
 // Página de inicio que redirigirá a la sección adecuada
-const HomePage = () => (
+const HomePage = (): JSX.Element => { (
   <div className="flex items-center justify-center min-h-screen bg-gray-50">
     <div className="text-center">
       <h1 className="text-4xl font-bold text-primary-700 mb-4">AIDUX EMR</h1>
@@ -35,7 +35,7 @@ const HomePage = () => (
 );
 
 // Página provisional para secciones en desarrollo
-const UnderDevelopmentPage = ({ title }: { title: string }) => (
+const UnderDevelopmentPage = ({ title }: { title: string }): JSX.Element => { (
   <div className="flex items-center justify-center min-h-full bg-gray-50 py-12">
     <div className="text-center">
       <h1 className="text-2xl font-semibold text-gray-900 mb-4">{title}</h1>

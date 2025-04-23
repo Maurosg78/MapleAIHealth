@@ -1,23 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  CardContent, 
-  TextField, 
-  InputAdornment,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  CircularProgress
-} from '@mui/material';
+import { Link } from 'react-router-dom';;;;;
+import { Box, Typography, Card, CardContent, TextField, InputAdornment, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, CircularProgress } from '@mui/material';;;;;
 
 // Interfaz para los datos de paciente
 interface Patient {
@@ -86,7 +69,7 @@ const mockPatients: Patient[] = [
 ];
 
 // Función para obtener el color de la adherencia
-const getAdherenceColor = (rate: number) => {
+const getAdherenceColor = (rate: number): void => {
   if (rate >= 85) return 'success';
   if (rate >= 70) return 'warning';
   return 'error';

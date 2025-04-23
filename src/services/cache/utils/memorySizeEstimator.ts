@@ -2,7 +2,7 @@
  * Utilidades para estimar el tamaño aproximado en memoria de diferentes tipos de datos
  * Estas estimaciones son aproximadas y se utilizan para optimizar la gestión de memoria en la caché
  */
-import { ClinicalDashboardData, ClinicalEvidence } from '../../../types/clinicalDashboard';
+import { ClinicalDashboardData, ClinicalEvidence } from '../../../types/clinicalDashboard';;;;;
 
 /**
  * Tipos de datos básicos y sus tamaños aproximados en bytes

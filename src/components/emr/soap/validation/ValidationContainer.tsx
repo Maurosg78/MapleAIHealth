@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { SpecialtyType, SubjectiveData, ObjectiveData, AssessmentData, PlanData } from '../../../../types/clinical';
-import { validateRequiredFields } from './RequiredFieldsConfig';
-import { ValidationErrorsDisplay } from './ValidationErrorsDisplay';
+import { SpecialtyType, SubjectiveData, ObjectiveData, AssessmentData, PlanData } from '../../../../types/clinical';;;;;
+import { validateRequiredFields } from './RequiredFieldsConfig';;;;;
+import { ValidationErrorsDisplay } from './ValidationErrorsDisplay';;;;;
 
 type SOAPSection = 'subjective' | 'objective' | 'assessment' | 'plan';
 type SOAPData = SubjectiveData | ObjectiveData | AssessmentData | PlanData;

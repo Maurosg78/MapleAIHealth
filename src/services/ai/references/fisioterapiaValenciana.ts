@@ -4,7 +4,7 @@
  * Adaptado al sistema sanitario valenciano
  */
 
-import { SpanishPhysiotherapyTechnique } from '../types/spanishPhysiotherapyTypes';
+import { SpanishPhysiotherapyTechnique } from '../types/spanishPhysiotherapyTypes';;;;;
 
 /**
  * Códigos CIE-10 más comunes en fisioterapia en la Comunidad Valenciana

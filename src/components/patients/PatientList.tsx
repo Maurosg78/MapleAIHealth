@@ -1,31 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  Button, 
-  Typography, 
-  Box, 
-  Chip,
-  IconButton,
-  Tooltip,
-  CircularProgress,
-  TextField,
-  TablePagination,
-  TableSortLabel
-} from '@mui/material';
-import { 
-  Edit as EditIcon, 
-  Delete as DeleteIcon, 
-  Visibility as VisibilityIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
-import { Link } from 'react-router-dom';
-import { Patient } from '../../models/Patient';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, Box, Chip, IconButton, Tooltip, CircularProgress, TextField, TablePagination, TableSortLabel } from '@mui/material';;;;;
+import { Edit as EditIcon, Delete as DeleteIcon, Visibility as VisibilityIcon, Search as SearchIcon } from '@mui/icons-material';;;;;
+import { Link } from 'react-router-dom';;;;;
+import { Patient } from '../../models/Patient';;;;;
 
 interface PatientListProps {
   patients: Patient[];
@@ -80,16 +57,16 @@ const PatientList: React.FC<PatientListProps> = ({
     setFilteredPatients(sorted);
   }, [patients, searchTerm, order, orderBy]);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (event: unknown, newPage: number): void => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const handleRequestSort = (property: OrderBy) => {
+  const handleRequestSort = (property: OrderBy): void => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);

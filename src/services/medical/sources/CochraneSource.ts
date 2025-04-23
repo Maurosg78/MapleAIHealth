@@ -1,5 +1,5 @@
-import { EvidenceSource } from '../../../types/clinicalDashboard';
-import { BaseSource, VerificationDetails } from './BaseSource';
+import { EvidenceSource } from '../../../types/clinicalDashboard';;;;;
+import { BaseSource, VerificationDetails } from './BaseSource';;;;;
 
 interface CochraneResponse {
   reviews: Array<{

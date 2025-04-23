@@ -1,4 +1,4 @@
-import { CacheMetadata } from './types';
+import { CacheMetadata } from './types';;;;;
 
 export type InvalidationPattern = 
   | 'time-based'       // Invalidación basada en tiempo (TTL)

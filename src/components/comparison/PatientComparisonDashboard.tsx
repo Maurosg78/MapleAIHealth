@@ -1,24 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Box,
-  Typography,
-  Paper,
-  Button,
-  Tabs,
-  Tab,
-  Chip,
-  Snackbar,
-  Alert
-} from '@mui/material';
-import {
-  CompareArrows as CompareIcon,
-  People as PeopleIcon,
-  FilterList as FilterIcon,
-  Save as SaveIcon
-} from '@mui/icons-material';
+import { Container, Box, Typography, Paper, Button, Tabs, Tab, Chip, Snackbar, Alert } from '@mui/material';;;;;
+import { People as PeopleIcon, Save as SaveIcon } from '@mui/icons-material';;;;;
 import PatientComparisonChart, { PatientProgressData } from './PatientComparisonChart';
-import { PatientComparisonTable, ComparisonMetric } from './PatientComparisonTable';
+import { PatientComparisonTable, ComparisonMetric } from './PatientComparisonTable';;;;;
 import PatientSelectionModal from './PatientSelectionModal';
 import MetricFilterDialog, { MetricFilters } from './MetricFilterDialog';
 import SaveComparisonDialog from './SaveComparisonDialog';
@@ -287,7 +271,7 @@ const PatientComparisonDashboard: React.FC<PatientComparisonDashboardProps> = ({
   }, [activeFilters, selectedMetric]);
   
   // Aplicar filtros a los datos de los pacientes
-  const getFilteredChartData = () => {
+  const getFilteredChartData = (): void => {
     if (!activeFilters) {
       return createChartData(selectedPatients, selectedMetric);
     }
@@ -349,24 +333,24 @@ const PatientComparisonDashboard: React.FC<PatientComparisonDashboardProps> = ({
   const chartData = getFilteredChartData();
   
   // Función para manejar el cambio de pestaña
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number): void => {
     setActiveTab(newValue);
   };
   
   // Función para manejar el cambio de métrica
-  const handleMetricChange = (metricId: string) => {
+  const handleMetricChange = (metricId: string): void => {
     setSelectedMetric(metricId);
   };
   
   // Función para manejar la eliminación de un paciente
-  const handleDeletePatient = (patientId: string) => {
+  const handleDeletePatient = (patientId: string): void => {
     setSelectedPatients(prevPatients => 
       prevPatients.filter(patient => patient.patientId !== patientId)
     );
   };
   
   // Función para manejar la adición de un paciente
-  const handleAddPatient = () => {
+  const handleAddPatient = (): void => {
     // Si hay un handler externo, lo llamamos
     if (onAddPatient) {
       onAddPatient();
@@ -377,7 +361,7 @@ const PatientComparisonDashboard: React.FC<PatientComparisonDashboardProps> = ({
   };
   
   // Función para manejar la selección de pacientes del modal
-  const handlePatientSelection = (selectedPatientIds: string[]) => {
+  const handlePatientSelection = (selectedPatientIds: string[]): void => {
     // Filtrar pacientes ya seleccionados
     const currentPatientIds = selectedPatients.map(p => p.patientId);
     
@@ -397,17 +381,17 @@ const PatientComparisonDashboard: React.FC<PatientComparisonDashboardProps> = ({
   };
   
   // Función para abrir el diálogo de filtros
-  const handleOpenFilterDialog = () => {
+  const handleOpenFilterDialog = (): void => {
     setShowFilterDialog(true);
   };
   
   // Función para aplicar los filtros seleccionados
-  const handleApplyFilters = (filters: MetricFilters) => {
+  const handleApplyFilters = (filters: MetricFilters): void => {
     setActiveFilters(filters);
   };
   
   // Función para manejar el guardado de comparaciones
-  const handleSaveComparison = () => {
+  const handleSaveComparison = (): void => {
     // Si hay un handler externo, lo llamamos y retornamos
     if (onSaveComparison) {
       onSaveComparison();
@@ -429,7 +413,7 @@ const PatientComparisonDashboard: React.FC<PatientComparisonDashboardProps> = ({
   };
   
   // Función para guardar la comparación en el almacenamiento local
-  const saveComparisonToStorage = (data: NewComparisonData) => {
+  const saveComparisonToStorage = (data: NewComparisonData): void => {
     try {
       // Guardar la comparación
       const savedComparison = comparisonStorageService.saveComparison(data);
@@ -452,7 +436,7 @@ const PatientComparisonDashboard: React.FC<PatientComparisonDashboardProps> = ({
   };
   
   // Cerrar notificación
-  const handleCloseNotification = () => {
+  const handleCloseNotification = (): void => {
     setNotification(prev => ({ ...prev, show: false }));
   };
 

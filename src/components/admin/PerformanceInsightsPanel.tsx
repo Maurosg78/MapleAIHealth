@@ -1,39 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  List, 
-  ListItem, 
-  ListItemIcon, 
-  ListItemText,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Button,
-  CircularProgress,
-  Alert,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails
-} from '@mui/material';
-import { 
-  Speed as SpeedIcon,
-  Warning as WarningIcon,
-  CheckCircle as CheckCircleIcon,
-  Refresh as RefreshIcon,
-  ExpandMore as ExpandMoreIcon,
-  Api as ApiIcon,
-  Memory as MemoryIcon,
-  Build as BuildIcon,
-  DataObject as DataObjectIcon
-} from '@mui/icons-material';
-import { PerformanceMonitor } from '../../services/performance/PerformanceMonitor';
-import { AIHealthService } from '../../services/AIHealthService';
+import { Box, Typography, Paper, List, ListItem, ListItemIcon, ListItemText, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, CircularProgress, Alert, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';;;;;
+import { Speed as SpeedIcon, Warning as WarningIcon, CheckCircle as CheckCircleIcon, Refresh as RefreshIcon, ExpandMore as ExpandMoreIcon, Api as ApiIcon, Memory as MemoryIcon, Build as BuildIcon, DataObject as DataObjectIcon } from '@mui/icons-material';;;;;
+import { PerformanceMonitor } from '../../services/performance/PerformanceMonitor';;;;;
+import { AIHealthService } from '../../services/AIHealthService';;;;;
 
 /**
  * Componente para mostrar información sobre el rendimiento del sistema
@@ -46,7 +15,7 @@ export const PerformanceInsightsPanel: React.FC = () => {
   } | null>(null);
 
   // Cargar los datos de rendimiento
-  const loadPerformanceData = () => {
+  const loadPerformanceData = (): void => {
     setLoading(true);
     try {
       // Obtener instancia pero no se usa directamente
@@ -67,10 +36,10 @@ export const PerformanceInsightsPanel: React.FC = () => {
   // Cargar los datos al montar el componente
   useEffect(() => {
     loadPerformanceData();
-  }, []);
+  }, [loadPerformanceData]);
 
   // Renderizar un icono según el tipo de operación
-  const getOperationIcon = (type: string) => {
+  const getOperationIcon = (type: string): void => {
     switch (type) {
       case 'api':
         return <ApiIcon color="primary" />;

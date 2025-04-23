@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { PlanData, SpecialtyType } from '../../../../types/clinical';
-import { useForm, Controller } from 'react-hook-form';
-import { ValidationContainer } from '../validation';
-import { debounce } from '../../../../utils/debounce';
+import { PlanData, SpecialtyType } from '../../../../types/clinical';;;;;
+import { useForm, Controller } from 'react-hook-form';;;;;
+import { ValidationContainer } from '../validation';;;;;
+import { debounce } from '../../../../utils/debounce';;;;;
 
 // Generador de IDs únicos para elementos de lista
 const generateId = (): string => {
@@ -56,7 +56,7 @@ export default function PlanContainer({
   const [autoValidateAfterEdit, setAutoValidateAfterEdit] = useState(false);
   
   // Configuración dinámica según especialidad
-  const getSpecialtyConfig = () => {
+  const getSpecialtyConfig = (): void => {
     if (specialty === 'physiotherapy') {
       return {
         interventionOptions: {
@@ -270,8 +270,8 @@ export default function PlanContainer({
     return () => subscription.unsubscribe();
   }, [watch, updateFormData]);
   
-  const onSubmit = (data: PlanData) => {
-    console.log('Datos del plan:', data);
+  const onSubmit = (data: PlanData): void => {
+    
     setFormData(data);
     setShowValidation(true);
     

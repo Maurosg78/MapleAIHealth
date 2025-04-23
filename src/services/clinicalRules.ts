@@ -1,4 +1,4 @@
-import { SoapData, SpecialtyType, SOAPSection as SoapSection } from '../types/clinical';
+import { SoapData, SpecialtyType } from '../types/clinical';;;;;
 
 // Niveles de evidencia para las reglas clínicas
 export enum EvidenceLevel {

@@ -1,3 +1,5 @@
+import { createLogger } from '../../utils/logger';;;;
+const logger = createLogger('logger.ts');
 export enum LogLevel {
   DEBUG = 'DEBUG',
   INFO = 'INFO',
@@ -21,7 +23,7 @@ export class Logger {
   }
 
   info(message: string, context?: Record<string, unknown>): void {
-    console.info(`[${this.name}] ${message}`, context);
+    logger.debug(`[${this.name}] ${message}`, context);
   }
 
   warn(message: string, context?: Record<string, unknown>): void {
@@ -29,6 +31,6 @@ export class Logger {
   }
 
   debug(message: string, context?: Record<string, unknown>): void {
-    console.debug(`[${this.name}] ${message}`, context);
+    logger.debug(`[${this.name}] ${message}`, context);
   }
 } 

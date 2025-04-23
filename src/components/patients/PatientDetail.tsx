@@ -1,39 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Divider,
-  Chip,
-  Button,
-  Tabs,
-  Tab,
-  IconButton,
-  Avatar,
-  CircularProgress,
-  Card,
-  CardContent,
-  CardHeader,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon
-} from '@mui/material';
-import {
-  Person as PersonIcon,
-  Edit as EditIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  CalendarToday as CalendarIcon,
-  AssignmentLate as AssignmentIcon,
-  MedicalServices as MedicalIcon,
-  LocalHospital as HospitalIcon,
-  Event as EventIcon,
-  Assignment as NoteIcon
-} from '@mui/icons-material';
-import { Patient, PatientVisit } from '../../models/Patient';
+import { useParams, useNavigate } from 'react-router-dom';;;;;
+import { Box, Typography, Paper, Grid, Chip, Button, Tabs, Tab, IconButton, Avatar, CircularProgress, Card, CardContent, CardHeader, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';;;;;
+import { Person as PersonIcon, Edit as EditIcon, Email as EmailIcon, Phone as PhoneIcon, Event as EventIcon, Assignment as NoteIcon } from '@mui/icons-material';;;;;
+import { Patient, PatientVisit } from '../../models/Patient';;;;;
 import PatientService from '../../services/PatientService';
 
 interface TabPanelProps {
@@ -43,7 +12,7 @@ interface TabPanelProps {
 }
 
 // Componente para el panel de pestañas
-const TabPanel = (props: TabPanelProps) => {
+const TabPanel = (props: TabPanelProps): void => {
   const { children, value, index, ...other } = props;
 
   return (
@@ -93,7 +62,7 @@ const PatientDetail: React.FC = () => {
   }, [id]);
 
   // Manejar cambio de pestaña
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number): void => {
     setActiveTab(newValue);
   };
 

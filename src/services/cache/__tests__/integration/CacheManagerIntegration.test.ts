@@ -1,7 +1,7 @@
-import { EnhancedCacheManager } from '../../EnhancedCacheManager';
-import { ClinicalDashboardService } from '../../../clinicalDashboard';
-import { estimateClinicalDashboardSize } from '../../utils/memorySizeEstimator';
-import { ClinicalDashboardData, ClinicalDashboardFilters, ClinicalEvidence, ClinicalMetrics } from '../../../../types/clinicalDashboard';
+import { EnhancedCacheManager } from '../../EnhancedCacheManager';;;;;
+import { ClinicalDashboardService } from '../../../clinicalDashboard';;;;;
+import { estimateClinicalDashboardSize } from '../../utils/memorySizeEstimator';;;;;
+import { ClinicalDashboardData, ClinicalDashboardFilters, ClinicalEvidence, ClinicalMetrics } from '../../../../types/clinicalDashboard';;;;;
 
 describe('EnhancedCacheManager Integration Tests', () => {
   let cacheManager: EnhancedCacheManager<ClinicalDashboardData>;

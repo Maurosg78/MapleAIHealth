@@ -1,6 +1,6 @@
-import { EnhancedCacheManager } from './EnhancedCacheManager';
-import { PrioritizationAlgorithm } from './CachePrioritizationService';
-import { CacheConfig } from './types';
+import { EnhancedCacheManager } from './EnhancedCacheManager';;;;;
+import { PrioritizationAlgorithm } from './CachePrioritizationService';;;;;
+import { CacheConfig } from './types';;;;;
 
 // Configuraciones optimizadas por sección
 const SECTION_CONFIGS: Record<string, {

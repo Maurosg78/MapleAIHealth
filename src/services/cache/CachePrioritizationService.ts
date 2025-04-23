@@ -69,7 +69,7 @@ export class CachePrioritizationService {
     relevance: 0.2
   };
 
-  private constructor() {}
+  private constructor() { super(); }
 
   public static getInstance<T>(): CachePrioritizationService<T> {
     if (!CachePrioritizationService.instance) {

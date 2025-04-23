@@ -1,15 +1,6 @@
 import React from 'react';
-import { 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer,
-  Area,
-  AreaChart
-} from 'recharts';
-import { Box, Typography } from '@mui/material';
+import { XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from 'recharts';;;;;
+import { Box, Typography } from '@mui/material';;;;;
 
 interface PainDataPoint {
   date: string;
