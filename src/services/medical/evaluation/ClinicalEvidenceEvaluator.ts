@@ -1,5 +1,6 @@
 import { ClinicalEvidence, EvidenceSource } from '../../../types/clinicalDashboard';;;;;
 import { EvidenceLevel } from '../../clinicalRules';;;;;
+import { SpecialtyType } from '../../types/clinical';
 
 export interface EvaluationCriteria {
   sourceReliability: number;  // 0-1
@@ -19,8 +20,13 @@ export interface EvaluationResult {
 
 export class ClinicalEvidenceEvaluator {
   private static instance: ClinicalEvidenceEvaluator;
+  private pubmedApiKey: string;
+  private evidenceCache: Map<string, ClinicalEvidence[]>;
 
-  private constructor() { super(); }
+  private constructor() {
+    this.pubmedApiKey = process.env.PUBMED_API_KEY || '';
+    this.evidenceCache = new Map();
+  }
 
   public static getInstance(): ClinicalEvidenceEvaluator {
     if (!ClinicalEvidenceEvaluator.instance) {
@@ -228,5 +234,87 @@ export class ClinicalEvidenceEvaluator {
     }
 
     return limitations;
+  }
+
+  /**
+   * Obtiene evidencia clínica de PubMed basada en la condición del paciente
+   */
+  public async getClinicalEvidence(
+    condition: string,
+    specialty: SpecialtyType,
+    patientAge?: number,
+    comorbidities?: string[]
+  ): Promise<ClinicalEvidence[]> {
+    const cacheKey = `${condition}-${specialty}-${patientAge}-${comorbidities?.join(',')}`;
+    
+    if (this.evidenceCache.has(cacheKey)) {
+      return this.evidenceCache.get(cacheKey)!;
+    }
+
+    try {
+      const response = await fetch(
+        `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(
+          `${condition} AND ${specialty} AND clinical trial`
+        )}&api_key=${this.pubmedApiKey}`
+      );
+
+      const data = await response.json();
+      const evidence = await this.processPubMedResults(data);
+      
+      this.evidenceCache.set(cacheKey, evidence);
+      return evidence;
+    } catch (error) {
+      console.error('Error fetching PubMed evidence:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Procesa los resultados de PubMed y los convierte en evidencia clínica
+   */
+  private async processPubMedResults(data: any): Promise<ClinicalEvidence[]> {
+    // Implementación del procesamiento de resultados de PubMed
+    return [];
+  }
+
+  /**
+   * Evalúa la relevancia de la evidencia para el paciente
+   */
+  public evaluateEvidenceRelevance(
+    evidence: ClinicalEvidence,
+    patientAge?: number,
+    comorbidities?: string[]
+  ): number {
+    let relevance = 1.0;
+
+    // Ajustar relevancia basado en edad del paciente
+    if (patientAge) {
+      const ageMatch = this.evaluateAgeMatch(evidence, patientAge);
+      relevance *= ageMatch;
+    }
+
+    // Ajustar relevancia basado en comorbilidades
+    if (comorbidities?.length) {
+      const comorbidityMatch = this.evaluateComorbidityMatch(evidence, comorbidities);
+      relevance *= comorbidityMatch;
+    }
+
+    return relevance;
+  }
+
+  /**
+   * Evalúa la coincidencia de edad
+   */
+  private evaluateAgeMatch(evidence: ClinicalEvidence, patientAge: number): number {
+    // Implementar lógica de coincidencia de edad
+    return 1.0;
+  }
+
+  /**
+   * Evalúa la coincidencia de comorbilidades
+   */
+  private evaluateComorbidityMatch(evidence: ClinicalEvidence, comorbidities: string[]): number {
+    // Implementar lógica de coincidencia de comorbilidades
+    return 1.0;
   }
 } 

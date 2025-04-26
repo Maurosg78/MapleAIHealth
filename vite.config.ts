@@ -15,4 +15,18 @@ export default defineConfig({
             'events': 'eventemitter3',
         },
     },
+    server: {
+        port: 8080,
+        strictPort: true,
+        force: true,
+        hmr: {
+            port: 8081
+        }
+    },
+    optimizeDeps: {
+        disabled: true
+    },
+    build: {
+        sourcemap: true
+    }
 });

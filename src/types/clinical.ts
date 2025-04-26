@@ -520,4 +520,120 @@ export interface ROMAssessment {
   endFeel?: 'normal' | 'empty' | 'firm' | 'hard' | 'spasm';
   pain?: boolean;
   notes?: string;
+}
+
+export type SuggestionType = 
+  | 'documentation'  // Sugerencias para mejorar la documentación
+  | 'warning'       // Advertencias clínicas importantes
+  | 'blindspot'     // Posibles puntos ciegos en la evaluación
+  | 'interaction'   // Interacciones medicamentosas o contraindicaciones
+  | 'followup'      // Sugerencias de seguimiento
+  | 'reference'     // Referencias a guías clínicas o protocolos;
+
+export interface AssistantSuggestion {
+  id: string;
+  type: SuggestionType;
+  content: string;
+  confidence?: number;  // Nivel de confianza de la sugerencia (0-1)
+  source?: string;     // Fuente de la sugerencia (ej: "Guía Clínica X")
+  priority?: 'high' | 'medium' | 'low';
+  metadata?: {
+    section?: string;  // Sección SOAP a la que se aplica
+    context?: string; // Contexto específico de la sugerencia
+    references?: string[]; // Referencias bibliográficas
+  };
+}
+
+export interface SuggestionStats {
+  total: number;
+  accepted: number;
+  rejected: number;
+  byType: Record<SuggestionType, number>;
+  byPriority: {
+    high: number;
+    medium: number;
+    low: number;
+  };
+}
+
+export interface ClinicalContext {
+  patientId: string;
+  visitId: string;
+  specialty: string;
+  activeSection: string;
+  documentation: string;
+  previousNotes?: string[];
+  patientHistory?: {
+    conditions: string[];
+    medications: string[];
+    allergies: string[];
+  };
+}
+
+/**
+ * Evento médico en la línea de tiempo
+ */
+export interface MedicalEvent {
+  id: string;
+  type: 'condition' | 'medication' | 'procedure' | 'test' | 'visit' | 'symptom';
+  date: string;
+  description: string;
+  severity?: number;
+  status?: 'active' | 'resolved' | 'chronic';
+  relatedEvents?: string[];
+  notes?: string;
+  metadata?: Record<string, any>;
+}
+
+/**
+ * Línea de tiempo médica del paciente
+ */
+export interface MedicalTimeline {
+  patientId: string;
+  events: MedicalEvent[];
+  conditions: {
+    [conditionId: string]: {
+      onset: string;
+      resolution?: string;
+      severity: number;
+      relatedEvents: string[];
+    };
+  };
+  medications: {
+    [medicationId: string]: {
+      startDate: string;
+      endDate?: string;
+      dosage: string;
+      frequency: string;
+      relatedEvents: string[];
+    };
+  };
+  tests: {
+    [testId: string]: {
+      date: string;
+      type: string;
+      results: string;
+      relatedEvents: string[];
+    };
+  };
+}
+
+/**
+ * Sugerencia de test basada en evidencia
+ */
+export interface EvidenceBasedTest {
+  id: string;
+  name: string;
+  description: string;
+  evidenceLevel: EvidenceLevel;
+  relevance: number;
+  urgency: 'immediate' | 'urgent' | 'routine';
+  conditions: string[];
+  contraindications: string[];
+  references: {
+    source: string;
+    title: string;
+    url: string;
+    publicationDate: string;
+  }[];
 } 

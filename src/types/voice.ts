@@ -49,12 +49,59 @@ export interface SpeechRecognitionError extends Event {
 export interface Transcript {
   text: string;
   confidence: number;
-  speaker: string | null;
+  speaker: {
+    id: string;
+    name: string;
+    color: string;
+  } | null;
   timestamp: Date;
   languageIssues?: string[];
+  unclearWords?: {
+    word: string;
+    alternatives: string[];
+    confidence: number;
+  }[];
+  voiceCharacteristics?: {
+    pitch: number;
+    timbre: number;
+    speakingRate: number;
+  };
 }
 
 export interface VoiceError {
   error: string;
   message: string;
+}
+
+export interface PendingTranscript {
+  id: string;
+  transcript: Transcript;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: Date;
+  reviewedAt?: Date;
+  reviewedBy?: string;
+  comments?: string;
+  patientId: string;
+  visitId: string;
+}
+
+export interface TranscriptReview {
+  transcriptId: string;
+  status: 'approved' | 'rejected';
+  reviewedBy: string;
+  reviewedAt: Date;
+  comments?: string;
+  modifications?: {
+    text: string;
+    speaker?: {
+      id: string;
+      name: string;
+      color: string;
+    };
+    unclearWords?: {
+      word: string;
+      alternatives: string[];
+      confidence: number;
+    }[];
+  };
 } 
