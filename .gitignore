@@ -1,12 +1,18 @@
-# Environment variables
-.env
-.env.local
-.env.*
-
-# Dependencies
+# Node dependencies
 node_modules/
+
+# Build outputs
 dist/
 build/
+out/
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Logs
 *.log
@@ -14,30 +20,26 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# IDE
+# IDE settings
 .vscode/
 .idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# System files
+.DS_Store
+Thumbs.db
+
+# Token or sensitive files
+.github_token.txt
+*.key
+*.pem
+
+# Compressed files
+*.zip
+*.tar.gz
+*.rar
+
